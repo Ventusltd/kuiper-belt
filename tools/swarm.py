@@ -115,6 +115,16 @@ def l3(d):
     r['checks']['scripts_parse'] = bool(j.get('checks', {}).get('scripts_parse'))
     r['checks']['data_sums'] = bool(j.get('checks', {}).get('data_sums'))
     r['checks']['tools_pass_their_own_self_tests'], r['tools'] = tool_selftests()
+    # A PART IS RELEASED ONLY IF IT PASSED IN THE SHAPE IT IS SERVED IN. One passed in its folder, beside the
+    # module it imports, and on the live address could not find it; the dots never gathered and nothing said why.
+    if os.path.exists(os.path.join(d, 'CARTRIDGE.json')):
+        cp = os.path.join(d, 'composed.json')
+        try:
+            cj = json.load(io.open(cp, encoding='utf-8'))
+            fresh = os.path.getmtime(cp) >= os.path.getmtime(os.path.join(d, json.load(io.open(os.path.join(d, 'CARTRIDGE.json'), encoding='utf-8'))['file']))
+            r['checks']['composed_as_published_and_passed_there'] = bool(cj.get('composed_as_published')) and fresh
+        except Exception:
+            r['checks']['composed_as_published_and_passed_there'] = False
     # A SHARED MODULE IS COPIED, NEVER EDITED. The gathering animation belongs to the lane that lifted
     # it from the wafer; an iteration carries it byte for byte or not at all, so the two pages move
     # alike and a fix made there is a fix here.

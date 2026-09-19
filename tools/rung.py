@@ -106,6 +106,11 @@ def rung(n, gate=True, cartridge=None):
         cartridge['sha256'] = hashlib.sha256(io.open(f, 'rb').read()).hexdigest()
         json.dump(cartridge, io.open(os.path.join(d, 'CARTRIDGE.json'), 'w', encoding='utf-8', newline='\n'), indent=1)
         print('CARTRIDGE.json: %s (%s) sha256 %s' % (cartridge['file'], cartridge['id'], cartridge['sha256'][:12]))
+        # AND IT IS TESTED IN THE SHAPE IT IS SERVED IN. A part that passes in its own folder, beside everything
+        # it loads, can still fail where it is published; one did, on the live address.
+        if run([os.path.join(HERE, 'compose.py'), str(n)], 'composed exactly as published, and checked there'):
+            print('STOPPED: %s passes in its folder and FAILS as published. It does not go to the gate.' % name)
+            return 1
     if not gate:
         print('\n%s is tested, photographed and clean on every face. The gate was not run.' % name)
         return 0
@@ -145,7 +150,8 @@ def main(argv):
     cart = None
     if '--cartridge' in argv:
         f = argv[argv.index('--cartridge') + 1]
-        cart = {'id': os.path.splitext(f)[0], 'slot': 'replace-script', 'replaces': f, 'file': f,
+        # a script the page names in a slot, or (--slot import-map) a module the page imports by name
+        cart = {'id': os.path.splitext(f)[0], 'slot': argv[argv.index('--slot') + 1] if '--slot' in argv else 'replace-script', 'replaces': f, 'file': f,
                 'job': argv[argv.index('--job') + 1] if '--job' in argv else ''}
     return rung(int(argv[0]), gate='--no-gate' not in argv, cartridge=cart)
 
