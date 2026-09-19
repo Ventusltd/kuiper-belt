@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""tools/publish_proof.py - publish one numbered proof to globalgrid2050.com, at most one per twenty minutes.
+"""tools/publish_proof.py - publish one numbered proof to globalgrid2050.com, at most one per ten minutes unless the timer says otherwise.
 
     python tools/publish_proof.py <n> "<title>" "<one line for the homepage>" <proof.md> [<folder to publish from>]
 
@@ -9,7 +9,7 @@ instead of from this repository. The tools always come from this repository.
 Copies the wafer page, its data and its tools into a stamped directory of the site worktree, adds
 PROOF.md, links it from the homepage nest "Kuiper: proofs", commits and pushes to main.
 
-SAFEGUARDS. Refuses if the last proof is less than twenty minutes old. Refuses if any name of a
+SAFEGUARDS. Refuses if the last proof is younger than the ordered gap (ten minutes by default, never under five). Refuses if any name of a
 repository known not to be public appears in what is about to be published. Refuses if the site
 worktree is not at origin/main. Touches nothing on the homepage except its own nest.
 """
@@ -42,8 +42,12 @@ def main():
                     or d.endswith('-one-wafer'))
     if stamps:
         last = datetime.strptime(stamps[-1], '%Y%m%d%H%M').replace(tzinfo=timezone.utc)
-        if (now - last).total_seconds() < 1200:
-            print('REFUSED: the last proof is %d s old; one per twenty minutes' % (now - last).total_seconds())
+        # THE PACE IS ORDERED, NOT WRITTEN HERE. The timer passes its own gap down; on its own this
+        # tool holds to ten minutes. It never goes below five, whoever asks: a guard that can be set
+        # to nothing is not a guard.
+        gap = max(300, int(os.environ.get('KUIPER_GAP_SECONDS', '600') or 600))
+        if (now - last).total_seconds() < gap:
+            print('REFUSED: the last proof is %d s old; one per %d minutes' % ((now - last).total_seconds(), gap // 60))
             return 2
     git('fetch', '-q', 'origin')
     if git('rev-list', '--count', 'HEAD..origin/main').stdout.strip() != '0':

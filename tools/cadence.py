@@ -123,6 +123,7 @@ def look():
     subprocess.run(['git', 'fetch', '-q', 'origin'], cwd=SITE)
     subprocess.run(['git', 'merge', '-q', '--ff-only', 'origin/main'], cwd=SITE, capture_output=True)
     r = subprocess.run([sys.executable, os.path.join(HERE, 'publish_proof.py'), PREFIX + d, first, first, proof, f],
+                       env=dict(os.environ, KUIPER_GAP_SECONDS=str(GAP)),     # one pace, set in one place
                        capture_output=True, text=True)
     out = (r.stdout + r.stderr).strip().split('\n')
     if r.returncode == 0:

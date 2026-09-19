@@ -45,6 +45,30 @@ def link_of(owner, repo, commit, path, line=None):
                                                       '' if line is None else '#L%d' % line)
 
 
+APPS = r'E:\kuiper-iterations\APPS\apps.tsv'
+
+
+def app_of(owner, repo, path):
+    """The application a file is part of, PROVED BY ITS FOLDER and never by its name: the repository
+    is the application's and the path sits under one of its folders (no folders means all of it).
+    The page works this out for itself; this is the second working it is checked against."""
+    if not os.path.exists(APPS):
+        return ''
+    full = ('%s/%s' % (owner, repo)).lower()
+    best, depth = '', -1
+    for l in io.open(APPS, encoding='utf-8'):
+        p = l.rstrip('\n').split('\t')
+        if len(p) < 5 or p[0] == 'app' or p[2].lower() != full:
+            continue
+        folders = [x.strip() for x in p[3].split(';') if x.strip()]
+        if not folders and depth < 0:
+            best, depth = p[0], 0
+        for f in folders:
+            if (path == f or path.startswith(f + '/')) and len(f) > depth:
+                best, depth = p[0], len(f)
+    return best
+
+
 def clone(repo):
     return os.path.join(KB, '..', repo)
 
@@ -143,12 +167,13 @@ def build(repo, path):
     json.dump(card, io.open(p, 'w', encoding='utf-8', newline='\n'), indent=1)
     # A SMALL LIST, SO THE PAGE FETCHES A CARD ONLY WHEN A TAP LANDS IN ONE. Loading every carried
     # file up front would cost a reader a megabyte to look at one line.
-    rows = ['# path\trepository\tfirst_key\tlines\tfile\tcommit\tstill_here\towner\tcommit_unix']
+    rows = ['# path\trepository\tfirst_key\tlines\tfile\tcommit\tstill_here\towner\tcommit_unix\tapp']
     for f in sorted(x for x in os.listdir(CARDS) if x.endswith('.json')):
         j = json.load(io.open(os.path.join(CARDS, f), encoding='utf-8'))
         rows.append('\t'.join(str(x) for x in [j['path'], j['repository'], j['first_key'], j['lines'],
                                                f, j['commit'], 'yes' if j['still_in_the_repository'] else 'no',
-                                               j.get('owner', ''), j.get('commit_unix', 0)]))
+                                               j.get('owner', ''), j.get('commit_unix', 0),
+                                               app_of(j.get('owner', ''), j['repository'], j['path'])]))
     io.open(os.path.join(CARDS, 'list.tsv'), 'w', encoding='utf-8', newline='\n').write('\n'.join(rows) + '\n')
     print('%s / %s' % (cite, path))
     print('  commit %s of %s' % (sha[:12], __import__('datetime').datetime.utcfromtimestamp(at).strftime('%Y-%m-%d')))
@@ -157,6 +182,12 @@ def build(repo, path):
     print('  %s' % ('still in the repository' if at_head else 'This file was later removed.'))
     print('  written to %s' % p)
     return 0
+
+
+def say(text):
+    """Print what the console can print. A test must not die on a character it was only reporting."""
+    enc = getattr(sys.stdout, 'encoding', None) or 'utf-8'
+    print(text.encode(enc, 'replace').decode(enc, 'replace'))
 
 
 def selftest():
@@ -169,7 +200,7 @@ def selftest():
         print('SELFTEST FAIL: no cards built yet')
         return 1
     bad = 0
-    for f in files[:2]:
+    for f in files:                                  # every carried file, not the first two
         card = json.load(io.open(os.path.join(CARDS, f), encoding='utf-8'))
         # the address a reader is sent to must be the rule applied to the fields, and nothing else
         want = link_of(card.get('owner'), card['repository'], card['commit'], card['path'])
@@ -179,18 +210,31 @@ def selftest():
         if not ok:
             bad += 1
         n = card['lines']
-        picks = sorted({0, n // 2, n - 1})
+        # A BLANK LINE PROVES NOTHING: there is no text to find in what git says. The middle of one
+        # file happened to be blank and the test failed a card that was right. Walk to the nearest
+        # line with something on it.
+        def solid(i):
+            for d in range(n):
+                for j in (i + d, i - d):
+                    if 0 <= j < n and card['text'][j].strip() and card['text'][j] != '[withheld]':
+                        return j
+            return i
+        picks = sorted({solid(0), solid(n // 2), solid(n - 1)})
         for i in picks:
             if card['text'][i] == '[withheld]':
                 continue
             k = card['first_key'] + i
+            # THE OTHER TOOL MUST ANSWER IN THE SAME ALPHABET. Left to itself it answers in the console's
+            # code page, so a file holding a byte that is not valid text came back spelt differently
+            # from the card although the two agreed, and a correct card was failed.
             out = subprocess.run([sys.executable, os.path.join(HERE, 'key.py'), str(k)],
+                                 env=dict(os.environ, PYTHONIOENCODING='utf-8'),
                                  cwd=KB, capture_output=True, text=True, timeout=180,
                                  encoding='utf-8', errors='replace').stdout or ''
             want = card['text'][i].strip()
             ok = bool(want) and want in out
-            print('%s  %s line %d, key %d%s' % ('pass' if ok else 'FAIL', card['path'].split('/')[-1], i + 1, k,
-                                                '' if ok else '\n     git said: ' + out.strip()[-160:]))
+            say('%s  %s line %d, key %d%s' % ('pass' if ok else 'FAIL', card['path'].split('/')[-1], i + 1, k,
+                                              '' if ok else '\n     git said: ' + out.strip()[-160:]))
             if not ok:
                 bad += 1
     print('SELFTEST %s' % ('PASS' if bad == 0 else 'FAIL'))
