@@ -112,6 +112,15 @@ def answers(url):
         return False
 
 
+_FRONT = {}
+
+
+def alive_front(url):
+    if url not in _FRONT:
+        _FRONT[url] = answers(url)
+    return _FRONT[url]
+
+
 def build():
     repos = [l.rstrip('\n').split('\t') for l in io.open(os.path.join(COSMOS, 'repos.tsv'), encoding='utf-8')
              if l.strip() and not l.startswith('#')]
@@ -124,6 +133,7 @@ def build():
         p = l.rstrip('\n').split('\t')
         on_wafer.setdefault(p[2], set()).add(p[3])
     found = {}                                       # sha12 -> (address, clone, page, how)
+    fronts, folders = {}, Counter()                  # work that only reaches a front door, and where it sits
     total = sum(len(v) for v in on_wafer.values())
     for idx, name, _lines in repos:
         if name not in pub or idx not in on_wafer:
@@ -145,10 +155,20 @@ def build():
             if sha not in on_wafer[idx]:
                 continue
             per = [nearest(f, standing, served) for f in lines[1:] if f.strip()]
-            page = choose([p for p, _h in per])
+            root = (served + '/' if served else '') + 'index.html'
+            # A FILE THAT ONLY REACHES THE TOP OF THE SITE HAS FOUND NO PAGE, SO IT CASTS NO VOTE. Left
+            # in, the many files that walk all the way up outvote the few that sit beside a real page.
+            page = choose([p for p, _h in per if p != root]) or choose([p for p, _h in per])
             if not page:
                 continue
             hows = {h for p, h in per if p == page}
+            # THE TOP OF A SITE IS A FRONT DOOR, NOT A PAGE OF ONE'S OWN. Walking up through folders
+            # that hold no page always ends there, and calling that "found" turned a third into three
+            # quarters in a published note.
+            if page == root:
+                fronts[sha] = address(base, page, served)
+                folders.update(os.path.dirname(f).replace('\\', '/') or '(top folder)' for f in lines[1:] if f.strip())
+                continue
             how = 'itself' if hows == {'itself'} and sum(1 for p, _ in per if p) == 1 else ('folder' if len({p for p, _ in per if p}) == 1 else 'votes')
             found[sha] = (address(base, page, served), clone, page, how)
             n_here += 1
@@ -172,13 +192,26 @@ def build():
         rows.append((sha, str(ids[addr]), how))
     io.open(os.path.join(COSMOS, 'pages.tsv'), 'w', encoding='utf-8', newline='\n').write(
         '# id\taddress\ttitle\n' + '\n'.join('\t'.join(p) for p in pages) + '\n')
+    roots = {p[1] for p in pages} & set(fronts.values())
+    assert not roots, 'a page of its own may never be a site root: %s' % sorted(roots)[:3]
     io.open(os.path.join(COSMOS, 'work-pages.tsv'), 'w', encoding='utf-8', newline='\n').write(
         '# commit\tpage\thow\n' + '\n'.join('\t'.join(r) for r in rows) + '\n')
+    # the front door each of the rest reaches, so the card can say so plainly and still lead somewhere
+    io.open(os.path.join(COSMOS, 'work-fronts.tsv'), 'w', encoding='utf-8', newline='\n').write(
+        '# commit\tfront_door\n' + '\n'.join('%s\t%s' % kv for kv in sorted(fronts.items()) if alive_front(kv[1])) + '\n')
+    io.open(os.path.join(COSMOS, 'missing-pages.tsv'), 'w', encoding='utf-8', newline='\n').write(
+        '# folder\tfiles_touched_by_work_that_only_reaches_a_front_door\n'
+        + '\n'.join('%s\t%d' % kv for kv in folders.most_common(60)) + '\n')
     hows = Counter(r[2] for r in rows)
     print('\nOF %s PIECES OF WORK ON THE RECORD' % format(total, ','))
     print('  %6s land on a page of their own   (%s the work is that page, %s its folder, %s by the agreement of its files)'
           % (format(len(rows), ','), format(hows['itself'], ','), format(hows['folder'], ','), format(hows['votes'], ',')))
-    print('  %6s have no page from this ladder: an app tile if one is proved, otherwise the front page' % format(total - len(rows), ','))
+    print('  %6s reach only the FRONT DOOR of their site: an application where one is proved, else the front page'
+          % format(len(fronts), ','))
+    print('  %6s are in repositories that serve no pages or are not public' % format(total - len(rows) - len(fronts), ','))
+    print('  THE TWENTY FOLDERS WHERE A PAGE IS MOST MISSED (files touched by work that only reaches a front door):')
+    for f, k in folders.most_common(20):
+        print('    %6s  %s' % (format(k, ','), f))
     print('  %d distinct pages; %d addresses did not answer and were dropped' % (len(pages), len(dead)))
     return 0
 

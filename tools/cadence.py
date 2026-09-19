@@ -77,7 +77,7 @@ def candidate(done):
         # THE RELEASE GATE. Three healthy phases and a sound earth (tools/swarm.py), then a written review by L1 or L2.
         sw = os.path.join(f, 'swarm.json')
         if not os.path.exists(sw) or os.path.getmtime(sw) < newest:
-            subprocess.run([sys.executable, os.path.join(HERE, 'swarm.py'), d], capture_output=True, text=True, timeout=600)
+            subprocess.run([sys.executable, os.path.join(HERE, 'swarm.py'), f], capture_output=True, text=True, timeout=600)   # the folder itself, so a second lane's root is honoured
         if not os.path.exists(sw):
             HELD[d] = 'the swarm could not run'
             continue

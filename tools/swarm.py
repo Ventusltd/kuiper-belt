@@ -217,7 +217,10 @@ def earth():
 
 def main():
     n = sys.argv[1]
-    d = folder(n)
+    # A NUMBER, OR THE FOLDER ITSELF. A number is looked up on this lane's drive; a second lane keeps
+    # its iterations somewhere else, and its timer must be able to point at the folder it means.
+    d = n if os.path.isdir(n) else folder(n)
+    n = os.path.basename(os.path.normpath(d)) if os.path.isdir(sys.argv[1]) else n
     t0 = time.time()
     with ThreadPoolExecutor(5) as ex:
         f = {k: ex.submit(fn, *a) for k, fn, a in (('L1', l1, (d,)), ('L2', l2, (d,)), ('L3', l3, (d,)), ('N', neutral, (d,)), ('E', earth, ()))}
