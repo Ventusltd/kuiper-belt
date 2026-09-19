@@ -177,8 +177,14 @@ def apps_mode():
     # offered at the end. The page runs these and knows none of them by name; a later program - a
     # shape to gather into, a different front - is a new entry here and no new code there.
     import json
+    # THE BUTTON ROW HOLDS APPLICATIONS A PERSON ACTS IN, IN THIS ORDER, AND NOTHING ELSE. The front page
+    # of the site is not an application and a drawing is not an application; both still have a tile on
+    # a card, where a piece of their work leads, but neither has a button. A new button needs a live
+    # page a stranger can use, a plain sentence, and Vikram's word.
+    ROW = ['gridatlas', 'pipelinenews', 'cables', 'real-systems', 'spider', 'grid-engine', 'periodic-table']
     progs = []
-    for l in io.open(APPS, encoding='utf-8'):
+    for l in sorted((x for x in io.open(APPS, encoding='utf-8') if x.split('	')[0] in ROW),
+                    key=lambda x: ROW.index(x.split('	')[0])):
         p = l.rstrip('\n').split('\t')
         if len(p) < 5 or p[0] == 'app' or not any(r.startswith(p[0] + '\t') for r in rows):
             continue

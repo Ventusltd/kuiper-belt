@@ -77,10 +77,10 @@
    }
   },
   {
-   "name": "spider",
-   "button": "SPIDER SANDBOX",
+   "name": "cables",
+   "button": "CABLES",
    "select": {
-    "app": "spider"
+    "app": "cables"
    },
    "pulse": {
     "origin": "centre",
@@ -110,44 +110,7 @@
     ]
    },
    "end": {
-    "tile": "https://ventusltd.github.io/ventus-grid-engine/?graph=engine-graph"
-   }
-  },
-  {
-   "name": "periodic-table",
-   "button": "PERIODIC TABLE",
-   "select": {
-    "app": "periodic-table"
-   },
-   "pulse": {
-    "origin": "centre",
-    "seconds": 1.5
-   },
-   "off": {
-    "dim": 0.1
-   },
-   "on": {
-    "colour": [
-     0.13,
-     0.93,
-     0.47
-    ],
-    "size": 10,
-    "bright": 0.85,
-    "sparks": 10,
-    "sequence": [
-     {
-      "shape": "cluster",
-      "hold_ms": 1500
-     },
-     {
-      "shape": "text",
-      "hold_ms": 900
-     }
-    ]
-   },
-   "end": {
-    "tile": "https://ventusltd.github.io/stars/table.html"
+    "tile": "https://globalgrid2050.com/testcode/wafer-development-environment/202609190330-cable-cross-sections/"
    }
   },
   {
@@ -188,10 +151,10 @@
    }
   },
   {
-   "name": "cables",
-   "button": "CABLES",
+   "name": "spider",
+   "button": "SPIDER SANDBOX",
    "select": {
-    "app": "cables"
+    "app": "spider"
    },
    "pulse": {
     "origin": "centre",
@@ -221,7 +184,7 @@
     ]
    },
    "end": {
-    "tile": "https://globalgrid2050.com/testcode/wafer-development-environment/202609190330-cable-cross-sections/"
+    "tile": "https://ventusltd.github.io/ventus-grid-engine/?graph=engine-graph"
    }
   },
   {
@@ -262,10 +225,10 @@
    }
   },
   {
-   "name": "sun",
-   "button": "THE SUN",
+   "name": "periodic-table",
+   "button": "PERIODIC TABLE",
    "select": {
-    "app": "sun"
+    "app": "periodic-table"
    },
    "pulse": {
     "origin": "centre",
@@ -295,44 +258,7 @@
     ]
    },
    "end": {
-    "tile": "https://www.globalgrid2050.com/"
-   }
-  },
-  {
-   "name": "underground",
-   "button": "LONDON UNDERGROUND",
-   "select": {
-    "app": "underground"
-   },
-   "pulse": {
-    "origin": "centre",
-    "seconds": 1.5
-   },
-   "off": {
-    "dim": 0.1
-   },
-   "on": {
-    "colour": [
-     0.13,
-     0.93,
-     0.47
-    ],
-    "size": 10,
-    "bright": 0.85,
-    "sparks": 10,
-    "sequence": [
-     {
-      "shape": "cluster",
-      "hold_ms": 1500
-     },
-     {
-      "shape": "text",
-      "hold_ms": 900
-     }
-    ]
-   },
-   "end": {
-    "tile": "https://globalgrid2050.com/testcode/wafer-development-environment/202609180205-underground/"
+    "tile": "https://ventusltd.github.io/stars/table.html"
    }
   }
  ]

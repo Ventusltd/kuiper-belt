@@ -135,15 +135,15 @@ addEventListener('load', function(){ poll(40); });
 </script>"""
 
 
-def headless(url, wait, size='1280,900'):
+def headless(url, wait, size='1280,900', vt=9):
     """The page sets its own title to 'selftest PASS' or 'selftest FAIL'. A test that animates in
     real time is given real seconds, because virtual time does not move requestAnimationFrame."""
     prof = os.path.join(ROOT, '_profile')
     args = [CHROME[0], '--headless=new', '--disable-gpu-sandbox', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist',
             '--user-data-dir=' + prof, '--window-size=' + size]
-    args += ['--timeout=%d' % (wait * 1000)] if wait else ['--virtual-time-budget=9000']
+    args += ['--timeout=%d' % (wait * 1000)] if wait else ['--virtual-time-budget=%d' % (vt * 1000)]
     try:
-        out = subprocess.run(args + ['--dump-dom', url], capture_output=True, text=True, timeout=60 + wait,
+        out = subprocess.run(args + ['--dump-dom', url], capture_output=True, text=True, timeout=60 + wait + vt,
                              encoding='utf-8', errors='replace').stdout
     except subprocess.TimeoutExpired:
         return 'TIMEOUT'
@@ -165,10 +165,12 @@ def test(n):
         # a line is a query, then any of  wait=<seconds>  w=<width>x<height>. A page that only
         # misbehaves on a phone has to be ASKED at phone width or the verdict never sees it.
         parts = line.split()
-        q, wait, size = parts[0], 0, '1280,900'
+        q, wait, size, vt = parts[0], 0, '1280,900', 9
         for t in parts[1:]:
             if t.startswith('wait='):
                 wait = int(t[5:])
+            elif t.startswith('vt='):
+                vt = int(t[3:])                          # a long test is given a long budget, and says so on its own line
             elif t.startswith('w='):
                 size = t[2:].replace('x', ',')
         page = 'index.html'
@@ -181,11 +183,12 @@ def test(n):
             w, h = size.split(',')
             fr = os.path.join(d, '_frame.html')
             io.open(fr, 'w', encoding='utf-8', newline='\n').write(
-                FRAME.replace('__URL__', page + '?' + q).replace('__W__', w).replace('__H__', h))
-            title = headless(base + '_frame.html', wait, '1280,%d' % (int(h) + 40))
+                FRAME.replace('__URL__', page + '?' + q).replace('__W__', w).replace('__H__', h)
+                     .replace('poll(40)', 'poll(%d)' % max(40, vt * 4)))
+            title = headless(base + '_frame.html', wait, '1280,%d' % (int(h) + 40), vt)
             os.remove(fr)
         else:
-            title = headless(base + page + '?' + q, wait, size)
+            title = headless(base + page + '?' + q, wait, size, vt)
         v['selftests'][line] = {'title': title, 'pass': title.endswith('PASS'), 'seconds': round(time.time() - t0, 1)}
     srv.shutdown()
     # checks that need no browser
