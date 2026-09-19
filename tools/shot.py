@@ -31,7 +31,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from iterate import CHROME, Quiet, folder, ROOT
 
-SIZES = (('phone', '390,844'), ('desktop', '1366,900'))
+# AND ONE ON A SCREEN LIKE A VISITOR'S. Every photograph used to be taken at a pixel ratio of 1, and a
+# real screen has 1.5 or 2: a fault that only exists at 2 (every dot drawn twice its size) went past
+# all of them and was found by a reviewer driving a real browser. "@2" is that screen.
+SIZES = (('phone', '390,844'), ('desktop', '1366,900'), ('screen2x', '834,792@2'))
 SHOTS = os.path.join(ROOT, 'SHOTS')
 
 
@@ -51,6 +54,7 @@ def shoot(base, page, query, out, size, d=None):
     hand third is simply cropped off the image, which looks exactly like text running off the edge
     and is not. Inside a frame of 390 the page is really laid out at 390, and the photograph shows
     what a reader holds rather than a corner of something wider."""
+    size, _, scale = size.partition('@')
     w, h = size.split(',')
     if d and int(w) < 500:
         fr = os.path.join(d, '_shot_frame.html')
@@ -61,7 +65,7 @@ def shoot(base, page, query, out, size, d=None):
         finally:
             os.remove(fr)
     subprocess.run([CHROME[0], '--headless=new', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist',
-                    '--hide-scrollbars', '--force-device-scale-factor=1',
+                    '--hide-scrollbars', '--force-device-scale-factor=%s' % (scale or '1'),
                     '--user-data-dir=' + os.path.join(ROOT, '_profile_shot_%d' % os.getpid()),
                     '--window-size=' + size, '--virtual-time-budget=9000',
                     '--screenshot=' + out, base + page + ('?' + query if query else '')],

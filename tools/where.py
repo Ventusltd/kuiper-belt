@@ -193,7 +193,7 @@ def apps_mode():
                       'off': {'dim': 0.10},
                       # on: the colour, and how LOUD: the size of a spark in pixels, its brightness, and how
                       # many sparks one piece of work may throw. Louder or quieter is an edit here.
-                      'on': {'colour': [0.13, 0.93, 0.47], 'size': 10, 'bright': 0.85, 'sparks': 10,
+                      'on': {'colour': [0.13, 0.93, 0.47], 'size': 0, 'bright': 0, 'sparks': 1,    # no additive sparks: light that adds is how neighbours merge
                              # after the dark falls: a smaller Kuiper of the application's own work, held, then its name
                              'sequence': [{'shape': 'cluster', 'hold_ms': 1500}, {'shape': 'text', 'hold_ms': 900}]},
                       'end': {'tile': p[4]}})
