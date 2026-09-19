@@ -70,7 +70,8 @@ SLOTS = ('replace-script', 'import-map')
 # fires for listed paths and the new addresses were not listed. The deploy file records the same fault three times
 # over and gives the rule: compare published bytes, not status codes.
 LIVE = 'https://globalgrid2050.com'
-VERIFY_WAIT = 600                                   # seconds to wait out a deployment before saying it did not arrive
+VERIFY_WAIT = 480                                   # A HARD DEADLINE, in seconds, and shorter than the pace: the timer that calls this
+                                                    # does nothing else while it waits, so it may never wait as long as a slot
 LOG = r'E:\kuiper-iterations\LOG.md'                # where a release that did not arrive is said, loudly, for every lane to read
 COMPOSER = os.path.join(HERE, 'composer.html')     # the small page that sits at the permanent address and reads the pointer
 sys.path.insert(0, HERE)
@@ -222,22 +223,27 @@ def verify_live(address, rels, n):
     import time
     import urllib.request
     top, t0, last = os.path.join(SITE, address), time.time(), {}
+    deadline = t0 + VERIFY_WAIT
+    print('pushed; waiting up to %d s for %s/%s/ to serve it' % (VERIFY_WAIT, LIVE, address), flush=True)
     while True:
         last = {}
         for rel in rels:
+            if time.time() > deadline:                               # the deadline holds INSIDE a round too, not only between rounds
+                last.setdefault(rel, 'not checked: out of time')
+                continue
             want = io.open(os.path.join(top, rel.replace('/', os.sep)), 'rb').read()
             try:
                 got = urllib.request.urlopen(urllib.request.Request('%s/%s/%s?t=%d' % (LIVE, address, rel, time.time()),
-                                             headers={'Cache-Control': 'no-cache'}), timeout=20).read()
+                                             headers={'Cache-Control': 'no-cache'}), timeout=10).read()
                 last[rel] = 'as pushed' if got == want else 'DIFFERENT BYTES (%d served, %d pushed)' % (len(got), len(want))
             except Exception as e:
                 last[rel] = 'not served (%s)' % (getattr(e, 'code', None) or type(e).__name__)
         if all(v == 'as pushed' for v in last.values()):
             print('verified live after %d s: %s' % (time.time() - t0, ', '.join(rels)))
             return True
-        if time.time() - t0 > VERIFY_WAIT:
+        if time.time() + 10 > deadline:
             break
-        time.sleep(15)
+        time.sleep(10)
     line = ('%s  RELEASED BUT NOT LIVE  %s was pushed to main and after %d s %s/%s/ is NOT serving it: %s. The release is '
             'correct and on main; its DEPLOYMENT did not happen. Check the paths list in .github/workflows/deploy-pages.yml '
             'and run the deploy.' % (datetime.now().strftime('%Y-%m-%d %H:%M'), n, time.time() - t0, LIVE, address,
