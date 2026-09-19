@@ -153,6 +153,8 @@ def main(argv):
         # a script the page names in a slot, or (--slot import-map) a module the page imports by name
         cart = {'id': os.path.splitext(f)[0], 'slot': argv[argv.index('--slot') + 1] if '--slot' in argv else 'replace-script', 'replaces': f, 'file': f,
                 'job': argv[argv.index('--job') + 1] if '--job' in argv else ''}
+        if '--with' in argv:                         # the other half of the same change, released beside it
+            cart['with'] = [int(v) for v in argv[argv.index('--with') + 1].split(',')]
     return rung(int(argv[0]), gate='--no-gate' not in argv, cartridge=cart)
 
 

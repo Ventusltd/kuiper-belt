@@ -65,10 +65,16 @@ def build(n, out):
     os.makedirs(os.path.join(top, 'cartridges'))
     shutil.copy(os.path.join(HERE, 'composer.html'), os.path.join(top, 'index.html'))
     order, carts = [], {}
+    # A PART AND THE CHECKS WRITTEN FOR IT ARE TWO RELEASES OF ONE CHANGE: each is one file, so they go out a few
+    # minutes apart, and either alone is judged by the other's old half. CARTRIDGE.json may name its pair ("with"),
+    # and the pair is composed together, which is the state the live address is in once both have landed.
+    mine = os.path.join(folder(n), 'CARTRIDGE.json')
+    pair = set(json.load(io.open(mine, encoding='utf-8')).get('with', [])) if os.path.exists(mine) else set()
+    nums = sorted(set(nums) | {p for p in pair if os.path.isdir(folder(p))})
     for x in [y for y in nums if y > sh]:
         d = folder(x)
         meta_p = os.path.join(d, 'CARTRIDGE.json')
-        if not os.path.exists(meta_p) or not (x == n or passed(d)):
+        if not os.path.exists(meta_p) or not (x == n or x in pair or passed(d)):
             continue                                   # only what has PASSED is on the live address, plus this one
         m = json.load(io.open(meta_p, encoding='utf-8'))
         src = os.path.join(d, m['file'])
