@@ -69,6 +69,33 @@ def app_of(owner, repo, path):
     return best
 
 
+_SITES = {}
+
+
+def page_of(owner, repo, path):
+    """(address, title) of the nearest page to ONE file, by the same ladder tools/pages.py climbs:
+    the file itself if it is a page that still stands, else the first folder above it with an
+    index.html standing today. Empty when the repository serves no pages or nothing stands."""
+    import pages as pg
+    d = clone(repo)
+    key = '%s/%s' % (owner, repo)
+    if key not in _SITES:
+        base, served = pg.site_of(d, key)
+        standing = set(subprocess.run(['git', 'ls-files'], cwd=d, capture_output=True, text=True,
+                                      encoding='utf-8', errors='replace').stdout.split('\n')) if base else set()
+        _SITES[key] = (base, served, standing)
+    base, served, standing = _SITES[key]
+    if not base:
+        return '', ''
+    page, _how = pg.nearest(path, standing, served)
+    if not page:
+        return '', ''
+    addr = pg.address(base, page, served)
+    if not pg.answers(addr):
+        return '', ''
+    return addr, pg.title_of(d, page)
+
+
 def clone(repo):
     return os.path.join(KB, '..', repo)
 
@@ -167,13 +194,14 @@ def build(repo, path):
     json.dump(card, io.open(p, 'w', encoding='utf-8', newline='\n'), indent=1)
     # A SMALL LIST, SO THE PAGE FETCHES A CARD ONLY WHEN A TAP LANDS IN ONE. Loading every carried
     # file up front would cost a reader a megabyte to look at one line.
-    rows = ['# path\trepository\tfirst_key\tlines\tfile\tcommit\tstill_here\towner\tcommit_unix\tapp']
+    rows = ['# path\trepository\tfirst_key\tlines\tfile\tcommit\tstill_here\towner\tcommit_unix\tapp\tpage\tpage_title']
     for f in sorted(x for x in os.listdir(CARDS) if x.endswith('.json')):
         j = json.load(io.open(os.path.join(CARDS, f), encoding='utf-8'))
         rows.append('\t'.join(str(x) for x in [j['path'], j['repository'], j['first_key'], j['lines'],
                                                f, j['commit'], 'yes' if j['still_in_the_repository'] else 'no',
                                                j.get('owner', ''), j.get('commit_unix', 0),
-                                               app_of(j.get('owner', ''), j['repository'], j['path'])]))
+                                               app_of(j.get('owner', ''), j['repository'], j['path'])]
+                                              + list(page_of(j.get('owner', ''), j['repository'], j['path']))))
     io.open(os.path.join(CARDS, 'list.tsv'), 'w', encoding='utf-8', newline='\n').write('\n'.join(rows) + '\n')
     print('%s / %s' % (cite, path))
     print('  commit %s of %s' % (sha[:12], __import__('datetime').datetime.utcfromtimestamp(at).strftime('%Y-%m-%d')))
