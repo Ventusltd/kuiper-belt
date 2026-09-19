@@ -16,6 +16,19 @@ of a new line in the Kuiper nest the homepage links that already lead to that ap
 folder. Until this was written a folder of the second shape was published as its index.html and nothing else, a page
 that could not run, and then failed on the missing cosmos folder and left its half made folder on the site.
 
+AND TWO MORE SHAPES, WHICH END THE COPYING (Vikram, 19 Sept: "we shouldnt keep rebuilding the earlier versions but have
+plugins"; GridAtlas's pattern as it stands, IMMUTABLE_SHELL_PLUS_HASHED_CARTRIDGES). Each application has ONE address
+that never changes, globalgrid2050.com/kuiper/ or /systems/, holding index.html (the composer), current.json (the
+pointer), releases/, cartridges/ and state/.
+  A folder carrying SHELL.json is published ONCE to <address>/releases/<generation>-<name>/; <address>/index.html
+    becomes the composer and current.json names the shell and its sha256. A shell is never edited again: a second one
+    is refused unless SHELL.json names the one it replaces.
+  A folder carrying CARTRIDGE.json publishes THAT ONE FILE to <address>/cartridges/<generation>-<id>.ext, checks the
+    hash before and after copying, and rewrites current.json in one step. A release is a change to the pointer.
+  python tools/publish_proof.py --rollback <address>   puts the pointer back to what it was before the last release.
+Neither shape touches the homepage, ever: the address does not change, so no link has to. A lane may write only its
+own address (k: kuiper, s: systems).
+
 SAFEGUARDS. Refuses if the last proof OF THE SAME LANE is younger than the ordered gap (ten minutes by default, never
 under five): the lane is the letters that lead the proof's name (k0026, s0004), so one lane can never take or block
 another's slot. Refuses if any name of a repository known not to be public appears in what is about to be published.
@@ -25,6 +38,7 @@ before it writes: any other changed byte and nothing is published. ON ANY FAILUR
 folder it made and puts the homepage back, so a failed publication never sits in the site pretending to be the last.
 """
 import io
+import json
 import os
 import re
 import shutil
@@ -47,8 +61,22 @@ BESIDE_THE_PAGES = ('.mjs', '.js', '.css')
 # published in, or any folder this publisher has moved it to since. ONLY the folder name inside such a link may change.
 SYSTEMS_FIRST = '202609180245-real-systems'
 SYSTEMS_LINK = re.compile(r'(href="[^"]*?' + re.escape(BASE) + r'/)(' + re.escape(SYSTEMS_FIRST) + r'|\d{12}-proof-s\d+)(/[^"]*")')
+# The permanent addresses, and which lane may write which. Vikram said yes to these two and to no others.
+ADDRESSES = {'k': 'kuiper', 's': 'systems'}
+SCHEMA, ARCH = 'globalgrid.current.v1', 'IMMUTABLE_SHELL_PLUS_HASHED_CARTRIDGES'
+SLOTS = ('replace-script', 'import-map')
+COMPOSER = os.path.join(HERE, 'composer.html')     # the small page that sits at the permanent address and reads the pointer
 sys.path.insert(0, HERE)
 from check_proof import leaks          # digests, not names: the guard must not spell what it guards
+
+
+def clock():
+    return datetime.now(timezone.utc)
+
+
+def sha256_of(path):
+    import hashlib
+    return hashlib.sha256(io.open(path, 'rb').read()).hexdigest()
 
 
 def git(*a):
@@ -70,6 +98,11 @@ def stamps_of(lane):
             out.append(m.group(1))
         elif lane == 'k' and d.endswith('-one-wafer') and re.match(r'^\d{12}', d):
             out.append(d[:12])
+    cur = os.path.join(SITE, ADDRESSES.get(lane, ''), 'current.json') if lane in ADDRESSES else None
+    if cur and os.path.exists(cur):
+        g = str(json.load(io.open(cur, encoding='utf-8')).get('generation') or '')
+        if re.match(r'^\d{12}$', g):
+            out.append(g)
     return sorted(out)
 
 
@@ -113,11 +146,204 @@ def move_the_links(s, folder):
     return moved, count
 
 
+class Undo:
+    """Everything a pointer publication writes, so that ON ANY FAILURE it can all be taken back: files and folders it
+    made are removed, files it changed are put back byte for byte, and only its own address is ever touched."""
+
+    def __init__(self, address):
+        self.address, self.made, self.was, self.committed = address, [], {}, False
+
+    def keep(self, path):
+        if path not in self.was:
+            self.was[path] = io.open(path, 'rb').read() if os.path.exists(path) else None
+
+    def write(self, path, data):
+        self.keep(path)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        tmp = path + '.new'
+        io.open(tmp, 'wb').write(data)
+        os.replace(tmp, path)                                        # in one step, or not at all
+
+    def back(self):
+        if self.committed:
+            git('reset', '-q', '--soft', 'HEAD~1')
+        git('restore', '--staged', '--', self.address)
+        for p in reversed(self.made):
+            shutil.rmtree(p, ignore_errors=True) if os.path.isdir(p) else (os.path.exists(p) and os.remove(p))
+        for p, data in self.was.items():
+            if data is None:
+                os.path.exists(p) and os.remove(p)
+            else:
+                io.open(p, 'wb').write(data)
+
+
+def read_pointer(address):
+    p = os.path.join(SITE, address, 'current.json')
+    return json.load(io.open(p, encoding='utf-8')) if os.path.exists(p) else None
+
+
+def dump(cur):
+    return (json.dumps(cur, indent=1) + '\n').encode('utf-8')
+
+
+def no_leaks(top):
+    for root, _, files in os.walk(top) if os.path.isdir(top) else [(os.path.dirname(top), [], [os.path.basename(top)])]:
+        for f in files:
+            if not f.endswith('.py') and leaks(io.open(os.path.join(root, f), encoding='utf-8', errors='replace').read()):
+                raise RuntimeError('(L6) a name that is not public appears in %s' % f)
+
+
+def commit_and_push(undo, n, title, md):
+    git('add', '--', undo.address)
+    msg = ('RELEASE %s: %s\n\n%s\n\nCo-Authored-By: Claude <noreply@anthropic.com>' % (n, title, io.open(md, encoding='utf-8').read().strip()))
+    c = git('commit', '-q', '-m', msg)
+    if c.returncode != 0:
+        raise RuntimeError('the commit was refused: %s' % (c.stderr or c.stdout).strip().split('\n')[-1])
+    undo.committed = True
+    r = git('push', 'origin', 'HEAD:main')
+    if r.returncode != 0:
+        raise RuntimeError('the push was refused: %s' % (r.stderr or r.stdout).strip().split('\n')[-1])
+    return (r.stderr or r.stdout).strip().split('\n')[-1]
+
+
+def publish_pointer(n, title, md, SRC, lane, now):
+    """A shell (once) or a cartridge (one file and the pointer). Never the homepage."""
+    if lane not in ADDRESSES:
+        print('REFUSED: lane %s has no permanent address; the addresses are %s' % (lane, ', '.join(sorted(ADDRESSES.values()))))
+        return 2
+    address, gen = ADDRESSES[lane], now.strftime('%Y%m%d%H%M')
+    top = os.path.join(SITE, address)
+    undo, home_before = Undo(address), io.open(os.path.join(SITE, 'index.html'), 'rb').read()
+    try:
+        cur = read_pointer(address)
+        before = dump(cur) if cur else b'null\n'
+        if os.path.exists(os.path.join(SRC, 'SHELL.json')):
+            meta = json.load(io.open(os.path.join(SRC, 'SHELL.json'), encoding='utf-8'))
+            name = str(meta.get('name') or '')
+            if not re.match(r'^[a-z0-9-]{1,40}$', name):
+                raise RuntimeError('SHELL.json needs a name of lower case letters, digits and hyphens')
+            if cur and meta.get('replaces') != cur['shell']['release_id']:
+                raise RuntimeError('%s already has a shell, %s, and a shell is never edited: a new one must name the one it replaces'
+                                   % (address, cur['shell']['release_id']))
+            rid = '%s-%s' % (gen, name)
+            dst = os.path.join(top, 'releases', rid)
+            if os.path.exists(dst):
+                raise RuntimeError('%s is already there' % rid)
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            undo.made.append(dst)
+            copy_application(SRC, dst)
+            os.remove(os.path.join(dst, 'SHELL.json'))
+            shutil.copy(md, os.path.join(dst, 'PROOF.md'))
+            no_leaks(dst)
+            undo.write(os.path.join(top, 'index.html'), io.open(COMPOSER, 'rb').read())
+            cur = {'schema': SCHEMA, 'generation': gen, 'previous_generation': (cur or {}).get('generation'),
+                   'architecture': ARCH, 'live_route': '/%s/' % address, 'release_id': rid,
+                   'shell': {'release_id': rid, 'index': './releases/%s/index.html' % rid, 'base': './releases/%s/' % rid,
+                             'sha256': sha256_of(os.path.join(dst, 'index.html'))},
+                   'cartridge_order': [], 'cartridges': [],
+                   'last_known_green': {'generation': gen, 'release': n, 'proved': title}}
+            what = 'shell %s' % rid
+        else:
+            meta = json.load(io.open(os.path.join(SRC, 'CARTRIDGE.json'), encoding='utf-8'))
+            cid, slot, f = str(meta.get('id') or ''), meta.get('slot'), str(meta.get('file') or '')
+            if not cur:
+                raise RuntimeError('%s has no shell yet, and a cartridge is a part of a shell' % address)
+            if not re.match(r'^[a-z0-9-]{1,40}$', cid) or slot not in SLOTS or not meta.get('replaces'):
+                raise RuntimeError('CARTRIDGE.json needs an id, a slot (%s) and what it replaces' % ' or '.join(SLOTS))
+            src = os.path.join(SRC, f)
+            if os.path.basename(f) != f or not os.path.isfile(src):
+                raise RuntimeError('CARTRIDGE.json names a file that is not in the folder: %r' % f)
+            digest = sha256_of(src)
+            if digest != meta.get('sha256'):
+                raise RuntimeError('%s hashes to %s, and CARTRIDGE.json says %s: what was tested is not what is here'
+                                   % (f, digest[:12], str(meta.get('sha256'))[:12]))
+            rel = 'cartridges/%s-%s%s' % (gen, cid, os.path.splitext(f)[1])
+            dst = os.path.join(top, rel.replace('/', os.sep))
+            if os.path.exists(dst):
+                raise RuntimeError('%s is already there, and a released cartridge is never overwritten' % rel)
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            undo.made.append(dst)
+            shutil.copyfile(src, dst)
+            if sha256_of(dst) != digest:
+                raise RuntimeError('the copy of %s does not hash to the original' % f)
+            no_leaks(dst)
+            entry = {'id': cid, 'generation': gen, 'type': meta.get('type') or 'script', 'slot': slot,
+                     'replaces': meta['replaces'], 'path': './' + rel, 'sha256': digest, 'bytes': os.path.getsize(dst),
+                     'release': n, 'job': meta.get('job')}
+            cur['cartridges'] = [c for c in cur['cartridges'] if c['id'] != cid] + [entry]
+            if cid not in cur['cartridge_order']:
+                cur['cartridge_order'].append(cid)
+            cur['previous_generation'], cur['generation'] = cur.get('generation'), gen
+            cur['last_known_green'] = {'generation': gen, 'release': n, 'proved': title}
+            undo.write(os.path.join(top, 'state', '%s-%s-PROOF.md' % (gen, cid)), io.open(md, 'rb').read())
+            what = 'cartridge %s' % rel
+        # what the pointer was, kept so that a rollback is the pointer PUT BACK and not somebody's memory of it
+        undo.write(os.path.join(top, 'state', '%s-before.json' % gen), before)
+        undo.write(os.path.join(top, 'current.json'), dump(cur))
+        if io.open(os.path.join(SITE, 'index.html'), 'rb').read() != home_before:
+            raise RuntimeError('the homepage changed, and this shape never touches it')
+        last = commit_and_push(undo, n, title, md)
+    except Exception as e:
+        undo.back()
+        print('REFUSED: %s' % e)
+        return 2
+    print(last)
+    print('released %s; https://globalgrid2050.com/%s/' % (what, address))
+    return 0
+
+
+def rollback(address):
+    """The pointer put back to what it was before the last release. Nothing is deleted: the cartridge that was released
+    stays where it is, unpointed at, and the record of the rollback stays beside it."""
+    if address not in ADDRESSES.values():
+        print('REFUSED: no such address; the addresses are %s' % ', '.join(sorted(ADDRESSES.values())))
+        return 2
+    top = os.path.join(SITE, address)
+    state = os.path.join(top, 'state')
+    kept = sorted(f for f in (os.listdir(state) if os.path.isdir(state) else []) if f.endswith('-before.json'))
+    if not kept:
+        print('REFUSED: %s has nothing to go back to' % address)
+        return 2
+    was = io.open(os.path.join(state, kept[-1]), 'rb').read()
+    if was.strip() == b'null':
+        print('REFUSED: before that release %s had no shell at all; there is nothing to go back to' % address)
+        return 2
+    git('fetch', '-q', 'origin')
+    if git('rev-list', '--count', 'HEAD..origin/main').stdout.strip() != '0':
+        print('REFUSED: the site worktree is behind origin/main')
+        return 2
+    undo = Undo(address)
+    md = os.path.join(state, kept[-1])
+    try:
+        json.loads(was.decode('utf-8'))                                  # it must still be a pointer
+        undo.write(os.path.join(top, 'current.json'), was)
+        used = os.path.join(state, kept[-1][:-len('-before.json')] + '-rolled-back.json')
+        undo.write(used, was)
+        undo.keep(md)
+        os.remove(md)                                                # so the next rollback goes one release further back
+        git('add', '--', address)
+        c = git('commit', '-q', '-m', 'ROLLBACK %s: the pointer put back to what it was before %s' % (address, kept[-1][:12]))
+        if c.returncode != 0:
+            raise RuntimeError('the commit was refused')
+        undo.committed = True
+        r = git('push', 'origin', 'HEAD:main')
+        if r.returncode != 0:
+            raise RuntimeError('the push was refused: %s' % (r.stderr or r.stdout).strip().split('\n')[-1])
+    except Exception as e:
+        undo.back()
+        print('REFUSED: %s' % e)
+        return 2
+    print('rolled back %s to generation %s; https://globalgrid2050.com/%s/' % (address, json.loads(was).get('generation'), address))
+    return 0
+
+
 def main():
+    if len(sys.argv) > 2 and sys.argv[1] == '--rollback':
+        return rollback(sys.argv[2])
     n, title, small, md = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
     SRC = sys.argv[5] if len(sys.argv) > 5 else KB
     lane = lane_of(n)
-    now = datetime.now(timezone.utc)
+    now = clock()
     stamps = stamps_of(lane)
     if stamps:
         last = datetime.strptime(stamps[-1], '%Y%m%d%H%M').replace(tzinfo=timezone.utc)
@@ -132,6 +358,9 @@ def main():
     if git('rev-list', '--count', 'HEAD..origin/main').stdout.strip() != '0':
         print('REFUSED: the site worktree is behind origin/main')
         return 2
+
+    if os.path.exists(os.path.join(SRC, 'SHELL.json')) or os.path.exists(os.path.join(SRC, 'CARTRIDGE.json')):
+        return publish_pointer(n, title, md, SRC, lane, now)
 
     stamp = now.strftime('%Y%m%d%H%M')
     folder = '%s-proof-%s' % (stamp, n)
