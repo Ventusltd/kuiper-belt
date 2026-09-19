@@ -31,6 +31,7 @@ OUT = os.path.join(COSMOS, 'link-contract.json')
 PARAMS = [
     ('key', 'whole number', 'one line of one piece of work'),
     ('path', 'text', 'a file or folder whose work is highlighted'),
+    ('isolate', 'text', 'an application whose work alone stays lit'),
     ('selftest', 'text', 'ask the page to check itself and say so in its title'),
 ]
 KINDS = {k: kind for k, kind, _ in PARAMS}
@@ -95,6 +96,7 @@ EXAMPLES = [
     {'path': 'a folder with spaces & an ampersand'},
     {'path': 'café/ångström'},
     {'selftest': 'card'},
+    {'isolate': 'gridatlas'},
     {'key': 9128980453, 'path': 'conductor_resistances', 'selftest': 'phone'},
     {},
 ]

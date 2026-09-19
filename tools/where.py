@@ -18,6 +18,7 @@ page cannot drift apart without one of them failing the other's self test. That 
     python tools/where.py globalgrid2050 conductor_resistances
     python tools/where.py --five                     the five pages Vikram flagged, and write the data
     python tools/where.py <repo> <prefix> --write    write cosmos/tracked.tsv and cosmos/tracked-commits.tsv
+    python tools/where.py --apps                     which pieces of work belong to each application
 
 Writes  cosmos/tracked.tsv           one row per tracked path: counts, key range, dates, and its use
         cosmos/tracked-commits.tsv   one row per commit of a tracked path: sha, keys, lines
@@ -140,10 +141,68 @@ def write(recs, uses):
     print('cosmos/tracked-commits.tsv: %d commits' % (len(c) - 1))
 
 
+APPS = r'E:\kuiper-iterations\APPS\apps.tsv'
+
+
+def apps_mode():
+    """cosmos/app-commits.tsv: app, commit. Git says which commits touched an application's folders;
+    only those this record holds are written, and both counts are said."""
+    import subprocess
+    on_record = set()
+    for l in io.open(os.path.join(COSMOS, 'wafer.tsv'), encoding='utf-8'):
+        if l.strip() and not l.startswith('#'):
+            on_record.add(l.split('\t')[3])
+    rows, said = [], []
+    for l in io.open(APPS, encoding='utf-8'):
+        p = l.rstrip('\n').split('\t')
+        if len(p) < 5 or p[0] == 'app':
+            continue
+        app, repo, folders = p[0], p[2].split('/')[-1], [x for x in p[3].split(';') if x.strip()]
+        # the clone of the main site is a worktree under another name; every other clone is named as its repository
+        d = next((c for c in (os.path.join(KB, '..', repo), os.path.join(KB, '..', '_wt-estate'))
+                  if os.path.isdir(os.path.join(c, '.git')) or os.path.isfile(os.path.join(c, '.git'))), None)
+        if not d:
+            said.append('%-16s no clone of %s here' % (app, repo))
+            continue
+        out = subprocess.run(['git', 'log', '--all', '--format=%H', '--'] + (folders or ['.']), cwd=d,
+                             capture_output=True, text=True, encoding='utf-8', errors='replace').stdout.split()
+        shas = sorted({h[:12] for h in out})
+        held = [h for h in shas if h in on_record]
+        rows += ['%s\t%s' % (app, h) for h in held]
+        said.append('%-16s %5d pieces of work by git, %5d of them on this record' % (app, len(shas), len(held)))
+    io.open(os.path.join(COSMOS, 'app-commits.tsv'), 'w', encoding='utf-8', newline='\n').write(
+        '# app\tcommit\n' + '\n'.join(rows) + '\n')
+    # ONE PROGRAM FOR EVERY APPLICATION, AS DATA. Which work it selects, where its pulse starts and
+    # how long the front takes to cross the record, what a dot looks like off and on, and what is
+    # offered at the end. The page runs these and knows none of them by name; a later program - a
+    # shape to gather into, a different front - is a new entry here and no new code there.
+    import json
+    progs = []
+    for l in io.open(APPS, encoding='utf-8'):
+        p = l.rstrip('\n').split('\t')
+        if len(p) < 5 or p[0] == 'app' or not any(r.startswith(p[0] + '\t') for r in rows):
+            continue
+        progs.append({'name': p[0], 'button': p[1], 'select': {'app': p[0]},
+                      'pulse': {'origin': 'centre', 'seconds': 1.5},
+                      'off': {'dim': 0.10}, 'on': {'colour': [0.13, 0.93, 0.47]},
+                      'end': {'tile': p[4]}})
+    json.dump({'schema': 'kuiper-program.v1',
+               'what_it_is': 'What is shown when a button is pressed: the work selected, how the pulse '
+                             'travels, how a dot looks off and on, and what is offered at the end.',
+               'programs': progs},
+              io.open(os.path.join(COSMOS, 'programs.json'), 'w', encoding='utf-8', newline='\n'), indent=1)
+    said.append('written: cosmos/programs.json, %d programs' % len(progs))
+    print('\n'.join(said))
+    print('written: cosmos/app-commits.tsv, %d rows' % len(rows))
+    return 0
+
+
 def main(argv):
     if not argv:
         print(__doc__)
         return 2
+    if argv[0] == '--apps':
+        return apps_mode()
     W, _ = wafer()
     if argv[0] == '--five':
         recs = [r for r in (look(rp, pf, W) for rp, pf, _u in FIVE) if r]

@@ -56,6 +56,12 @@ def views(d):
         c = line.rstrip('\n').split('\t')
         if len(c) > 3:
             out.append(('index.html', 'key=%d' % (int(c[2]) + int(c[3]) // 2)))
+    # AND AN ISOLATED APPLICATION OR TWO, because that state exists only after a button is pressed and
+    # no photograph of the resting page will ever show it. Two, not all: every photograph is a browser.
+    pj = os.path.join(d, 'cosmos', 'programs.json')
+    if os.path.exists(pj):
+        for pr in json.load(io.open(pj, encoding='utf-8')).get('programs', [])[:1] +                   [p for p in json.load(io.open(pj, encoding='utf-8')).get('programs', []) if p['name'] == 'cables'][:1]:
+            out.append(('index.html', 'isolate=%s' % pr['name']))
     return out
 
 
