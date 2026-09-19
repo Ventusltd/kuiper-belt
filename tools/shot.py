@@ -99,7 +99,7 @@ def take(n, only=None, query=''):
 # WHAT IS NOT EVIDENCE ABOUT A PAGE. verdict.json, swarm.json, REVIEW.md and the note are written
 # after the pictures are taken, on purpose; everything else in the folder is the page itself.
 AFTERWARDS = ('verdict.json', 'swarm.json', 'REVIEW.md', 'PULSE.md', 'PULSE-L2.md', 'PARENT.txt',
-              'NOTE.md', 'PROOF.md')
+              'NOTE.md', 'PROOF.md', 'CARTRIDGE.json', 'SHELL.json', 'SUPERSEDED.txt')   # papers about a release, not the page
 
 
 def newest_edit(d):

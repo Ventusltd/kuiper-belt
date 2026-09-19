@@ -18,6 +18,7 @@ WHAT IT DOES, IN THIS ORDER, STOPPING AT THE FIRST REFUSAL.
 
     python tools/rung.py 15                 the whole thing
     python tools/rung.py 15 --no-gate       stop after the faces, while still building
+    python tools/rung.py 32 --cartridge kuiper-chrome.js --job "how the page is dressed"    a release of ONE part
     python tools/rung.py --selftest         a refusal in the middle must stop the rest
 """
 import io
@@ -71,7 +72,7 @@ def views(d):
     return out
 
 
-def rung(n, gate=True):
+def rung(n, gate=True, cartridge=None):
     d = folder(n)
     if not os.path.isdir(d):
         print('REFUSED: no iteration %s' % n)
@@ -94,6 +95,17 @@ def rung(n, gate=True):
         return 1
     if run([os.path.join(HERE, 'face.py'), str(n)], 'what each page puts in front of a reader'):
         return 1
+    # A CARTRIDGE RELEASE IS ONE FILE AND THE POINTER. CARTRIDGE.json says which file goes out, and its
+    # fingerprint is taken HERE, after the tests and the photographs, so what is released is what passed.
+    if cartridge:
+        import hashlib
+        f = os.path.join(d, cartridge['file'])
+        if not os.path.isfile(f):
+            print('REFUSED: %s is not in %s' % (cartridge['file'], name))
+            return 1
+        cartridge['sha256'] = hashlib.sha256(io.open(f, 'rb').read()).hexdigest()
+        json.dump(cartridge, io.open(os.path.join(d, 'CARTRIDGE.json'), 'w', encoding='utf-8', newline='\n'), indent=1)
+        print('CARTRIDGE.json: %s (%s) sha256 %s' % (cartridge['file'], cartridge['id'], cartridge['sha256'][:12]))
     if not gate:
         print('\n%s is tested, photographed and clean on every face. The gate was not run.' % name)
         return 0
@@ -130,7 +142,12 @@ def main(argv):
     if not argv[0].isdigit():
         print('REFUSED: give an iteration number, or --selftest')
         return 2
-    return rung(int(argv[0]), gate='--no-gate' not in argv)
+    cart = None
+    if '--cartridge' in argv:
+        f = argv[argv.index('--cartridge') + 1]
+        cart = {'id': os.path.splitext(f)[0], 'slot': 'replace-script', 'replaces': f, 'file': f,
+                'job': argv[argv.index('--job') + 1] if '--job' in argv else ''}
+    return rung(int(argv[0]), gate='--no-gate' not in argv, cartridge=cart)
 
 
 if __name__ == '__main__':
