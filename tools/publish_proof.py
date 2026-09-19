@@ -65,6 +65,13 @@ SYSTEMS_LINK = re.compile(r'(href="[^"]*?' + re.escape(BASE) + r'/)(' + re.escap
 ADDRESSES = {'k': 'kuiper', 's': 'systems'}
 SCHEMA, ARCH = 'globalgrid.current.v1', 'IMMUTABLE_SHELL_PLUS_HASHED_CARTRIDGES'
 SLOTS = ('replace-script', 'import-map')
+# AFTER A RELEASE THE PUBLISHED BYTES ARE FETCHED BACK AND COMPARED. A push is not a publication: the first shell
+# was pushed at 00:01 on 20 Sept and its address was still 404 seven minutes later, because the site's deploy only
+# fires for listed paths and the new addresses were not listed. The deploy file records the same fault three times
+# over and gives the rule: compare published bytes, not status codes.
+LIVE = 'https://globalgrid2050.com'
+VERIFY_WAIT = 600                                   # seconds to wait out a deployment before saying it did not arrive
+LOG = r'E:\kuiper-iterations\LOG.md'                # where a release that did not arrive is said, loudly, for every lane to read
 COMPOSER = os.path.join(HERE, 'composer.html')     # the small page that sits at the permanent address and reads the pointer
 sys.path.insert(0, HERE)
 from check_proof import leaks          # digests, not names: the guard must not spell what it guards
@@ -206,6 +213,43 @@ def commit_and_push(undo, n, title, md):
     return (r.stderr or r.stdout).strip().split('\n')[-1]
 
 
+def verify_live(address, rels, n):
+    """Fetch back what was pushed and compare BYTES. Waits out the deployment. Says so loudly if it never arrives.
+    It does not undo anything: the release is on main and correct; what is missing is its deployment, and hiding the
+    release would hide the fault. Returns True when every file is being served exactly as pushed."""
+    if not LIVE:
+        return True
+    import time
+    import urllib.request
+    top, t0, last = os.path.join(SITE, address), time.time(), {}
+    while True:
+        last = {}
+        for rel in rels:
+            want = io.open(os.path.join(top, rel.replace('/', os.sep)), 'rb').read()
+            try:
+                got = urllib.request.urlopen(urllib.request.Request('%s/%s/%s?t=%d' % (LIVE, address, rel, time.time()),
+                                             headers={'Cache-Control': 'no-cache'}), timeout=20).read()
+                last[rel] = 'as pushed' if got == want else 'DIFFERENT BYTES (%d served, %d pushed)' % (len(got), len(want))
+            except Exception as e:
+                last[rel] = 'not served (%s)' % (getattr(e, 'code', None) or type(e).__name__)
+        if all(v == 'as pushed' for v in last.values()):
+            print('verified live after %d s: %s' % (time.time() - t0, ', '.join(rels)))
+            return True
+        if time.time() - t0 > VERIFY_WAIT:
+            break
+        time.sleep(15)
+    line = ('%s  RELEASED BUT NOT LIVE  %s was pushed to main and after %d s %s/%s/ is NOT serving it: %s. The release is '
+            'correct and on main; its DEPLOYMENT did not happen. Check the paths list in .github/workflows/deploy-pages.yml '
+            'and run the deploy.' % (datetime.now().strftime('%Y-%m-%d %H:%M'), n, time.time() - t0, LIVE, address,
+                                     '; '.join('%s %s' % kv for kv in sorted(last.items()))))
+    try:
+        io.open(LOG, 'ab').write((line + '\n').encode('utf-8'))
+    except OSError:
+        pass
+    print(line.strip())
+    return False
+
+
 def publish_pointer(n, title, md, SRC, lane, now):
     """A shell (once) or a cartridge (one file and the pointer). Never the homepage."""
     if lane not in ADDRESSES:
@@ -243,6 +287,7 @@ def publish_pointer(n, title, md, SRC, lane, now):
                    'cartridge_order': [], 'cartridges': [],
                    'last_known_green': {'generation': gen, 'release': n, 'proved': title}}
             what = 'shell %s' % rid
+            fetch_back = ['current.json', 'index.html', 'releases/%s/index.html' % rid]
         else:
             meta = json.load(io.open(os.path.join(SRC, 'CARTRIDGE.json'), encoding='utf-8'))
             cid, slot, f = str(meta.get('id') or ''), meta.get('slot'), str(meta.get('file') or '')
@@ -277,6 +322,7 @@ def publish_pointer(n, title, md, SRC, lane, now):
             cur['last_known_green'] = {'generation': gen, 'release': n, 'proved': title}
             undo.write(os.path.join(top, 'state', '%s-%s-PROOF.md' % (gen, cid)), io.open(md, 'rb').read())
             what = 'cartridge %s' % rel
+            fetch_back = ['current.json', rel]
         # what the pointer was, kept so that a rollback is the pointer PUT BACK and not somebody's memory of it
         undo.write(os.path.join(top, 'state', '%s-before.json' % gen), before)
         undo.write(os.path.join(top, 'current.json'), dump(cur))
@@ -288,6 +334,7 @@ def publish_pointer(n, title, md, SRC, lane, now):
         print('REFUSED: %s' % e)
         return 2
     print(last)
+    verify_live(address, fetch_back, n)
     print('released %s; https://globalgrid2050.com/%s/' % (what, address))
     return 0
 
@@ -333,6 +380,7 @@ def rollback(address):
         undo.back()
         print('REFUSED: %s' % e)
         return 2
+    verify_live(address, ['current.json'], 'ROLLBACK %s' % address)
     print('rolled back %s to generation %s; https://globalgrid2050.com/%s/' % (address, json.loads(was).get('generation'), address))
     return 0
 
