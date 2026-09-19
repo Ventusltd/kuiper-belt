@@ -1,0 +1,45 @@
+# THE WAFER'S CARD AND THE KUIPER'S CARD MUST SHOW THE SAME CODE, checked on a machine that is not ours.
+#
+# Vikram, 20 September: "The pop up card doesn't show code from GitHub, this is already built in wafer
+# iterations if you use a CI runner to compare." Parity with the wafer is the definition of done, so it is
+# held here, on a schedule, and not left to anybody's memory of having looked.
+#
+# It opens both live pages headless. The wafer (galaxies-wafers iteration 31, the canonical card) opens
+# twenty seeded lines with its own openLine(); the Kuiper's code window is asked for the same places;
+# every row both windows show must carry the same text. One difference fails the run and prints both.
+# The second step plants a difference on purpose and requires the check to fail: a check nobody has tried
+# to fool is a check nobody knows the strength of.
+name: card parity (wafer and Kuiper show the same code)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+  push:
+    paths:
+      - 'tools/card_parity.mjs'
+      - '.github/workflows/card-parity.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: the headless driver (it drives the Chrome the runner already has)
+        run: npm install --no-audit --no-fund --no-save puppeteer-core
+      - name: twenty seeded lines, both cards, the same text
+        run: node tools/card_parity.mjs
+      - name: a planted difference must FAIL
+        run: |
+          if LINES=3 PLANT=1 node tools/card_parity.mjs; then
+            echo "the check passed with a difference planted in it: it proves nothing"; exit 1
+          else
+            echo "the planted difference was caught"
+          fi
