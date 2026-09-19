@@ -82,7 +82,28 @@ def new(note):
         if f.endswith('.html'):
             shutil.copy(os.path.join(base, f), d)
     shutil.copytree(os.path.join(base, 'cosmos'), os.path.join(d, 'cosmos'), ignore=shutil.ignore_patterns('commits', 'belt.tsv'))
+    # DATA MADE SINCE THE LAST ITERATION HAS TO REACH THIS ONE. An iteration inherits its cosmos from
+    # the iteration it grew from, which is right for everything that was already there and wrong for
+    # anything built since: a new file written into the repository's cosmos would never arrive, and
+    # the page would fetch it and fail. Anything in the repository that the parent did not have is
+    # copied in. Nothing already inherited is overwritten, so an iteration's own data still wins.
+    for root, _dirs, fs in os.walk(os.path.join(KB, 'cosmos')):
+        rel = os.path.relpath(root, os.path.join(KB, 'cosmos'))
+        if rel.split(os.sep)[0] in ('commits', '.git'):
+            continue
+        for f in fs:
+            if f == 'belt.tsv':
+                continue
+            dst = os.path.join(d, 'cosmos', rel, f) if rel != '.' else os.path.join(d, 'cosmos', f)
+            if not os.path.exists(dst):
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                shutil.copy(os.path.join(root, f), dst)
     print('started from %s' % base)
+    # WHAT IT GREW FROM, written down. The pulse needs to know which iteration these lines are new
+    # AGAINST, and 'the number before' stopped being the answer the moment a new iteration started
+    # from the newest one that scored full marks instead of the last one tried.
+    io.open(os.path.join(d, 'PARENT.txt'), 'w', encoding='utf-8', newline='\n').write(
+        (os.path.basename(base) if base != KB else 'repository') + '\n')
     io.open(os.path.join(d, 'NOTE.md'), 'w', encoding='utf-8', newline='\n').write(note.strip() + '\n')
     prior = os.path.join(base, 'selftests.txt')                     # tests are inherited too, so a new test is never lost
     tests = io.open(prior, encoding='utf-8').read() if base != KB and os.path.exists(prior) else '\n'.join(DEFAULT_TESTS) + '\n'
@@ -91,12 +112,33 @@ def new(note):
     return n
 
 
-def headless(url, wait):
+FRAME = """<!DOCTYPE html><meta charset="utf-8"><title>frame</title>
+<body style="margin:0;background:#000">
+<iframe id="f" src="__URL__" style="width:__W__px;height:__H__px;border:0;display:block"></iframe>
+<script>
+// A REAL PHONE WIDTH, BECAUSE THE WINDOW WILL NOT GO THAT NARROW. Headless Chrome on this machine
+// refuses a window under about 500 CSS pixels: asking for 390 gives a 500 wide page, so every
+// "phone" test ever run here was run at 500 and the faults a reviewer found at 390 could not be
+// reproduced. An iframe has whatever width it is given, and media queries inside it obey that
+// width, so the page really is laid out at 390 and really is tested there.
+var f = document.getElementById('f');
+function poll(n){
+  try {
+    var t = f.contentDocument && f.contentDocument.title;
+    if (t && /PASS|FAIL/.test(t)) { document.title = t; return; }
+  } catch (e) { document.title = 'FRAME BLOCKED ' + e; return; }
+  if (n > 0) setTimeout(function(){ poll(n - 1); }, 250); else document.title = f.contentDocument ? (f.contentDocument.title || 'NO TITLE') : 'NO FRAME';
+}
+addEventListener('load', function(){ poll(40); });
+</script>"""
+
+
+def headless(url, wait, size='1280,900'):
     """The page sets its own title to 'selftest PASS' or 'selftest FAIL'. A test that animates in
     real time is given real seconds, because virtual time does not move requestAnimationFrame."""
     prof = os.path.join(ROOT, '_profile')
     args = [CHROME[0], '--headless=new', '--disable-gpu-sandbox', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist',
-            '--user-data-dir=' + prof, '--window-size=1280,900']
+            '--user-data-dir=' + prof, '--window-size=' + size]
     args += ['--timeout=%d' % (wait * 1000)] if wait else ['--virtual-time-budget=9000']
     try:
         out = subprocess.run(args + ['--dump-dom', url], capture_output=True, text=True, timeout=60 + wait,
@@ -118,13 +160,30 @@ def test(n):
     v = {'iteration': int(n), 'tested': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'), 'selftests': {}, 'checks': {}}
     lines = [l.strip() for l in io.open(os.path.join(d, 'selftests.txt'), encoding='utf-8') if l.strip()]
     for line in lines:
-        m = re.match(r'^(\S+)(?:\s+wait=(\d+))?$', line)
-        q, wait = m.group(1), int(m.group(2) or 0)
+        # a line is a query, then any of  wait=<seconds>  w=<width>x<height>. A page that only
+        # misbehaves on a phone has to be ASKED at phone width or the verdict never sees it.
+        parts = line.split()
+        q, wait, size = parts[0], 0, '1280,900'
+        for t in parts[1:]:
+            if t.startswith('wait='):
+                wait = int(t[5:])
+            elif t.startswith('w='):
+                size = t[2:].replace('x', ',')
         page = 'index.html'
         if ':' in q and q.split(':')[0].endswith('.html'):
             page, q = q.split(':', 1)
         t0 = time.time()
-        title = headless(base + page + '?' + q, wait)
+        # A width that is not the default is asked for inside a frame of exactly that width, which is
+        # the only way to get it; the frame reports the page's own verdict as its title.
+        if size != '1280,900':
+            w, h = size.split(',')
+            fr = os.path.join(d, '_frame.html')
+            io.open(fr, 'w', encoding='utf-8', newline='\n').write(
+                FRAME.replace('__URL__', page + '?' + q).replace('__W__', w).replace('__H__', h))
+            title = headless(base + '_frame.html', wait, '1280,%d' % (int(h) + 40))
+            os.remove(fr)
+        else:
+            title = headless(base + page + '?' + q, wait, size)
         v['selftests'][line] = {'title': title, 'pass': title.endswith('PASS'), 'seconds': round(time.time() - t0, 1)}
     srv.shutdown()
     # checks that need no browser

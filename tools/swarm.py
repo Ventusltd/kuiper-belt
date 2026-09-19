@@ -19,6 +19,7 @@ Writes swarm.json in the iteration folder. tools/cadence.py releases only on thr
 earth, and a written review by L1 or L2 (REVIEW.md, first line PASS or FAIL, with the reviewer's name).
 The banned words and the facts live on the E: drive, not in this repository, so the guard never spells what it guards.
 """
+import hashlib
 import io
 import json
 import os
@@ -49,13 +50,17 @@ def text(p):
     return io.open(p, encoding='utf-8', errors='replace').read()
 
 
+from face import check as face_check, dom, visible, MACHINERY, NOTE_MACHINERY
+
+
 def phone(d, base, page, query):
-    prof = os.path.join(ROOT, '_profile_phone')
-    out = subprocess.run([CHROME[0], '--headless=new', '--enable-unsafe-swiftshader', '--user-data-dir=' + prof, '--window-size=390,844',
-                          '--virtual-time-budget=9000', '--dump-dom', base + page + '?' + query],
-                         capture_output=True, text=True, timeout=90, encoding='utf-8', errors='replace').stdout or ''
-    m = re.search(r'<title>([^<]*)</title>', out)
+    m = re.search(r'<title>([^<]*)</title>', dom(base, page, query))
     return m.group(1).strip() if m else 'NO TITLE'
+
+
+def public_face(d, base):
+    bad = face_check(d, base)
+    return not bad, bad
 
 
 def l1(d):
@@ -72,6 +77,7 @@ def l1(d):
     srv = ThreadingHTTPServer(('127.0.0.1', 0), partial(Quiet, directory=d))
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     base = 'http://127.0.0.1:%d/' % srv.server_address[1]
+    r['checks']['the_public_face_shows_no_machinery'], r['machinery_on_the_face'] = public_face(d, base)
     tests = [l.split()[0] for l in text(os.path.join(d, 'selftests.txt')).split('\n') if l.strip().startswith('conductor')]
     titles = {t: phone(d, base, *t.split(':', 1)) for t in tests}
     srv.shutdown()
@@ -106,7 +112,82 @@ def l3(d):
     r['checks']['tested_after_last_edit'] = all(os.path.getmtime(os.path.join(d, f)) <= os.path.getmtime(v) for f in pages(d))
     r['checks']['scripts_parse'] = bool(j.get('checks', {}).get('scripts_parse'))
     r['checks']['data_sums'] = bool(j.get('checks', {}).get('data_sums'))
+    r['checks']['tools_pass_their_own_self_tests'], r['tools'] = tool_selftests()
+    # A PHOTOGRAPH OLDER THAN THE PAGE IS NOT EVIDENCE ABOUT THE PAGE. A review was spent on a fault
+    # that had already been fixed, because the picture was taken before the last edit and the note
+    # said otherwise. Both were true. Neither was any use.
+    try:
+        import shot
+        buf = io.StringIO()
+        keep, sys.stdout = sys.stdout, buf
+        try:
+            code = shot.fresh(int(os.path.basename(d)))
+        finally:
+            sys.stdout = keep
+        r['checks']['photographs_are_of_the_page_as_it_is_now'] = code == 0
+        r['photographs'] = buf.getvalue().strip().splitlines()[:6]
+    except Exception as e:
+        r['checks']['photographs_are_of_the_page_as_it_is_now'] = False
+        r['photographs'] = ['could not be checked: %s' % type(e).__name__]
     return r
+
+
+TOOLCACHE = os.path.join(ROOT, 'tool-selftests.json') if 'ROOT' in dir() else None
+
+
+def _tool_cache():
+    try:
+        return json.load(io.open(TOOLCACHE, encoding='utf-8'))
+    except Exception:
+        return {}
+
+
+def tool_selftests():
+    """A TOOL THAT OFFERS A SELF TEST MUST PASS IT. The pages have been tested by their own tests since
+    the first iteration; the Python that feeds them was only ever checked for parsing, which is the
+    same as checking a cable for being cable shaped. Any tool whose docstring offers --selftest is run
+    here, every time, so a tool cannot be quietly broken by a later change to the data it reads."""
+    out, ok = {}, True
+    tools = os.path.join(HERE)
+    # AND A TOOL THAT HAS NOT CHANGED DOES NOT NEED TESTING AGAIN. Several of these launch a browser
+    # per page; running all of them at every gate was starting more processes in an hour than any
+    # virus scanner will sit still for, and this machine's scanner started denying execution of
+    # python itself. The answer is kept against the SHA of the tool's own source, so an edited tool
+    # is always tested and an untouched one is not.
+    cache = _tool_cache()
+    fresh = {}
+    for f in sorted(os.listdir(tools)):
+        if not f.endswith('.py'):
+            continue
+        try:
+            whole = io.open(os.path.join(tools, f), 'rb').read()
+        except OSError:
+            continue
+        src = whole[:4000].decode('utf-8', 'replace')
+        if '--selftest' not in src:
+            continue
+        sha = hashlib.sha256(whole).hexdigest()
+        was = cache.get(f)
+        if was and was.get('sha') == sha and was.get('verdict') == 'pass':
+            out[f] = 'pass (unchanged since it last passed)'
+            fresh[f] = was
+            continue
+        try:
+            p = subprocess.run([sys.executable, os.path.join(tools, f), '--selftest'],
+                               cwd=os.path.join(HERE, '..'), capture_output=True, text=True, timeout=300)
+            out[f] = 'pass' if p.returncode == 0 else (p.stdout or p.stderr or '').strip().splitlines()[-1:][0] if (p.stdout or p.stderr) else 'FAIL'
+            if p.returncode != 0:
+                ok = False
+            else:
+                fresh[f] = {'sha': sha, 'verdict': 'pass', 'at': time.strftime('%Y-%m-%dT%H:%M')}
+        except subprocess.TimeoutExpired:
+            out[f] = 'FAIL: timed out'
+            ok = False
+    try:
+        json.dump(fresh, io.open(TOOLCACHE, 'w', encoding='utf-8', newline='\n'), indent=1)
+    except Exception:
+        pass
+    return ok, out
 
 
 def neutral(d):

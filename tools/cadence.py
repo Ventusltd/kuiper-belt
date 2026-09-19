@@ -3,6 +3,14 @@ r"""tools/cadence.py - publish the next tested iteration every twenty minutes, w
 
     python tools/cadence.py --until 2026-09-20T16:30        run until that local time
     python tools/cadence.py --once                          one look, then stop
+    python tools/cadence.py --gap 10                        minutes between publications (default 20)
+    python tools/cadence.py --root E:\systems-iterations    a second lane, with its own record and timer
+    python tools/cadence.py --prefix s                      the published folder is s0014 rather than k0014
+
+THE PACE AND THE DRIVE ARE NOT FACTS ABOUT THIS SCRIPT. Twenty minutes and one drive were written
+into it, so a second lane could not have a timer of its own and the pace could not be changed
+without editing a script that was already running. Each lane keeps its own published record, its own
+held list and its own log, in its own root, so two timers can never overwrite one another's history.
 
 Publishing must not cost an assistant a step. Assistants build iterations in E:\kuiper-iterations and
 test them with tools/iterate.py. This script, plain Python on the desktop machine, looks once a minute.
@@ -27,6 +35,7 @@ from datetime import datetime
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = r'E:\kuiper-iterations'
+PREFIX = 'k'
 SITE = os.path.join(HERE, '..', '..', '_wt-estate')
 STATE = os.path.join(ROOT, 'published.json')
 LOG = os.path.join(ROOT, 'LOG.md')
@@ -113,7 +122,7 @@ def look():
         % (d, note, verdict['score'], verdict['out_of'], verdict['tested'], tests))
     subprocess.run(['git', 'fetch', '-q', 'origin'], cwd=SITE)
     subprocess.run(['git', 'merge', '-q', '--ff-only', 'origin/main'], cwd=SITE, capture_output=True)
-    r = subprocess.run([sys.executable, os.path.join(HERE, 'publish_proof.py'), 'k' + d, first, first, proof, f],
+    r = subprocess.run([sys.executable, os.path.join(HERE, 'publish_proof.py'), PREFIX + d, first, first, proof, f],
                        capture_output=True, text=True)
     out = (r.stdout + r.stderr).strip().split('\n')
     if r.returncode == 0:
@@ -126,13 +135,27 @@ def look():
 
 
 def main():
+    global ROOT, STATE, LOG, GAP, PREFIX
     a = sys.argv[1:]
+    if '--root' in a:
+        ROOT = os.path.abspath(a[a.index('--root') + 1])
+        STATE = os.path.join(ROOT, 'published.json')
+        LOG = os.path.join(ROOT, 'LOG.md')
+    if '--gap' in a:
+        # minutes, because that is the unit the person setting the pace is thinking in
+        GAP = max(1, int(float(a[a.index('--gap') + 1]) * 60))
+    if '--prefix' in a:
+        PREFIX = a[a.index('--prefix') + 1]
+        if not re.match(r'^[a-z0-9-]{1,8}$', PREFIX):
+            print('REFUSED: a prefix is one to eight lower case letters, digits or hyphens')
+            return 2
     os.makedirs(ROOT, exist_ok=True)
     if '--once' in a:
         look()
         return 0
     until = datetime.fromisoformat(a[a.index('--until') + 1]) if '--until' in a else None
-    say('cadence started, one publication per %d minutes at most%s' % (GAP // 60, ', until ' + until.isoformat() if until else ''))
+    say('cadence started in %s, one publication per %d minutes at most, published as %s0000%s'
+        % (ROOT, GAP // 60, PREFIX, ', until ' + until.isoformat() if until else ''))
     while not until or datetime.now() < until:
         try:
             look()
