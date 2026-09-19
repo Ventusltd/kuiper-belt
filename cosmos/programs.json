@@ -20,7 +20,10 @@
      0.13,
      0.93,
      0.47
-    ]
+    ],
+    "size": 10,
+    "bright": 0.85,
+    "sparks": 10
    },
    "end": {
     "tile": "https://ventusltd.github.io/gridatlas/atlas/"
@@ -44,7 +47,10 @@
      0.13,
      0.93,
      0.47
-    ]
+    ],
+    "size": 10,
+    "bright": 0.85,
+    "sparks": 10
    },
    "end": {
     "tile": "https://globalgrid2050.com/uk_renewables_pipeline/202609082224/"
@@ -68,7 +74,10 @@
      0.13,
      0.93,
      0.47
-    ]
+    ],
+    "size": 10,
+    "bright": 0.85,
+    "sparks": 10
    },
    "end": {
     "tile": "https://ventusltd.github.io/ventus-grid-engine/?graph=engine-graph"
@@ -92,7 +101,10 @@
      0.13,
      0.93,
      0.47
-    ]
+    ],
+    "size": 10,
+    "bright": 0.85,
+    "sparks": 10
    },
    "end": {
     "tile": "https://ventusltd.github.io/stars/table.html"
@@ -116,7 +128,10 @@
      0.13,
      0.93,
      0.47
-    ]
+    ],
+    "size": 10,
+    "bright": 0.85,
+    "sparks": 10
    },
    "end": {
     "tile": "https://globalgrid2050.com/testcode/wafer-development-environment/202609180245-real-systems/"
@@ -140,7 +155,10 @@
      0.13,
      0.93,
      0.47
-    ]
+    ],
+    "size": 10,
+    "bright": 0.85,
+    "sparks": 10
    },
    "end": {
     "tile": "https://globalgrid2050.com/testcode/wafer-development-environment/202609190330-cable-cross-sections/"
@@ -164,7 +182,10 @@
      0.13,
      0.93,
      0.47
-    ]
+    ],
+    "size": 10,
+    "bright": 0.85,
+    "sparks": 10
    },
    "end": {
     "tile": "https://ventusltd.github.io/ventus-grid-engine/"
@@ -188,7 +209,10 @@
      0.13,
      0.93,
      0.47
-    ]
+    ],
+    "size": 10,
+    "bright": 0.85,
+    "sparks": 10
    },
    "end": {
     "tile": "https://www.globalgrid2050.com/"
@@ -212,7 +236,10 @@
      0.13,
      0.93,
      0.47
-    ]
+    ],
+    "size": 10,
+    "bright": 0.85,
+    "sparks": 10
    },
    "end": {
     "tile": "https://globalgrid2050.com/testcode/wafer-development-environment/202609180205-underground/"

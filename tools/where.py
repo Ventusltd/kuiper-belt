@@ -184,7 +184,10 @@ def apps_mode():
             continue
         progs.append({'name': p[0], 'button': p[1], 'select': {'app': p[0]},
                       'pulse': {'origin': 'centre', 'seconds': 1.5},
-                      'off': {'dim': 0.10}, 'on': {'colour': [0.13, 0.93, 0.47]},
+                      'off': {'dim': 0.10},
+                      # on: the colour, and how LOUD: the size of a spark in pixels, its brightness, and how
+                      # many sparks one piece of work may throw. Louder or quieter is an edit here.
+                      'on': {'colour': [0.13, 0.93, 0.47], 'size': 10, 'bright': 0.85, 'sparks': 10},
                       'end': {'tile': p[4]}})
     json.dump({'schema': 'kuiper-program.v1',
                'what_it_is': 'What is shown when a button is pressed: the work selected, how the pulse '
