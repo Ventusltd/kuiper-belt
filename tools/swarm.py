@@ -109,7 +109,9 @@ def l3(d):
     j = json.load(io.open(v, encoding='utf-8'))
     r['checks']['full_marks'] = j['score'] == j['out_of']
     r['score'] = '%d/%d' % (j['score'], j['out_of'])
-    r['checks']['tested_after_last_edit'] = all(os.path.getmtime(os.path.join(d, f)) <= os.path.getmtime(v) for f in pages(d))
+    # a page is now several files: a part edited after the test is a page edited after the test
+    served = [f for f in os.listdir(d) if f.endswith(('.html', '.js', '.mjs', '.css')) and not f.startswith('_')]
+    r['checks']['tested_after_last_edit'] = all(os.path.getmtime(os.path.join(d, f)) <= os.path.getmtime(v) for f in served)
     r['checks']['scripts_parse'] = bool(j.get('checks', {}).get('scripts_parse'))
     r['checks']['data_sums'] = bool(j.get('checks', {}).get('data_sums'))
     r['checks']['tools_pass_their_own_self_tests'], r['tools'] = tool_selftests()

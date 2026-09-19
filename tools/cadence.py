@@ -70,7 +70,11 @@ def candidate(done):
         verdict = json.load(io.open(v, encoding='utf-8'))
         if verdict['score'] != verdict['out_of']:
             continue
-        pages = [os.path.join(f, p) for p in os.listdir(f) if p.endswith('.html')]
+        # WHAT A READER IS SERVED: the pages and the parts they load. A cartridge folder may hold no page at
+        # all, only the one file it releases; its freshness is that file's, and max() of nothing is a crash.
+        pages = [os.path.join(f, p) for p in os.listdir(f) if p.endswith(('.html', '.js', '.mjs', '.css'))]
+        if not pages:
+            continue
         if any(os.path.getmtime(p) > os.path.getmtime(v) for p in pages):
             continue                                                # edited after it was tested: test it again first
         newest = max(os.path.getmtime(p) for p in pages)
