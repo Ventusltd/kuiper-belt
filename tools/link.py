@@ -32,6 +32,7 @@ PARAMS = [
     ('key', 'whole number', 'one line of one piece of work'),
     ('path', 'text', 'a file or folder whose work is highlighted'),
     ('isolate', 'text', 'an application whose work alone stays lit'),
+    ('moment', 'text', 'with isolate: cluster, flight or end, to arrive at that moment of the show'),
     ('selftest', 'text', 'ask the page to check itself and say so in its title'),
 ]
 KINDS = {k: kind for k, kind, _ in PARAMS}
@@ -97,6 +98,7 @@ EXAMPLES = [
     {'path': 'café/ångström'},
     {'selftest': 'card'},
     {'isolate': 'gridatlas'},
+    {'isolate': 'cables', 'moment': 'cluster'},
     {'key': 9128980453, 'path': 'conductor_resistances', 'selftest': 'phone'},
     {},
 ]

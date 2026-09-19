@@ -14,6 +14,10 @@
    "kind": "text",
    "note": "an application whose work alone stays lit"
   },
+  "moment": {
+   "kind": "text",
+   "note": "with isolate: cluster, flight or end, to arrive at that moment of the show"
+  },
   "selftest": {
    "kind": "text",
    "note": "ask the page to check itself and say so in its title"
@@ -23,6 +27,7 @@
   "key",
   "path",
   "isolate",
+  "moment",
   "selftest"
  ],
  "examples": [
@@ -67,6 +72,13 @@
     "isolate": "gridatlas"
    },
    "built": "?isolate=gridatlas"
+  },
+  {
+   "asked": {
+    "isolate": "cables",
+    "moment": "cluster"
+   },
+   "built": "?isolate=cables&moment=cluster"
   },
   {
    "asked": {

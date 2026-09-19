@@ -79,7 +79,9 @@ def new(note):
                 break
     os.makedirs(d)
     for f in os.listdir(base):
-        if f.endswith('.html'):
+        # A PAGE AND WHAT IT LOADS. Only the .html used to be carried, so a new iteration started without
+        # the shared module its page imports; the page fell back quietly and a guarded test hid it.
+        if f.endswith(('.html', '.mjs', '.js', '.css')):
             shutil.copy(os.path.join(base, f), d)
     shutil.copytree(os.path.join(base, 'cosmos'), os.path.join(d, 'cosmos'), ignore=shutil.ignore_patterns('commits', 'belt.tsv'))
     # DATA MADE SINCE THE LAST ITERATION HAS TO REACH THIS ONE. An iteration inherits its cosmos from

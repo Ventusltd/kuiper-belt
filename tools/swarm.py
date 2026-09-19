@@ -113,6 +113,14 @@ def l3(d):
     r['checks']['scripts_parse'] = bool(j.get('checks', {}).get('scripts_parse'))
     r['checks']['data_sums'] = bool(j.get('checks', {}).get('data_sums'))
     r['checks']['tools_pass_their_own_self_tests'], r['tools'] = tool_selftests()
+    # A SHARED MODULE IS COPIED, NEVER EDITED. The gathering animation belongs to the lane that lifted
+    # it from the wafer; an iteration carries it byte for byte or not at all, so the two pages move
+    # alike and a fix made there is a fix here.
+    mine, theirs = os.path.join(d, 'assemble.mjs'), os.path.join('E:' + os.sep, 'systems-iterations', 'SHARED', 'assemble.mjs')
+    if os.path.exists(mine):
+        same = os.path.exists(theirs) and hashlib.sha256(io.open(mine, 'rb').read()).hexdigest() == hashlib.sha256(io.open(theirs, 'rb').read()).hexdigest()
+        r['checks']['the_shared_animation_is_byte_identical'] = same
+        r['assemble_sha256'] = hashlib.sha256(io.open(mine, 'rb').read()).hexdigest()[:12]
     # A PHOTOGRAPH OLDER THAN THE PAGE IS NOT EVIDENCE ABOUT THE PAGE. A review was spent on a fault
     # that had already been fixed, because the picture was taken before the last edit and the note
     # said otherwise. Both were true. Neither was any use.

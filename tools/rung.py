@@ -62,6 +62,12 @@ def views(d):
     if os.path.exists(pj):
         for pr in json.load(io.open(pj, encoding='utf-8')).get('programs', [])[:1] +                   [p for p in json.load(io.open(pj, encoding='utf-8')).get('programs', []) if p['name'] == 'cables'][:1]:
             out.append(('index.html', 'isolate=%s' % pr['name']))
+        # THE SHOW HAS MOMENTS, and a photograph of its first frame is not evidence about its last. The
+        # small Kuiper, one frame of the flight to the name, and the end, each arrived at by its link.
+        progs = json.load(io.open(pj, encoding='utf-8')).get('programs', [])
+        if progs and any('sequence' in (p.get('on') or {}) for p in progs):
+            for m in ('cluster', 'flight', 'end'):
+                out.append(('index.html', 'isolate=%s&moment=%s' % (progs[0]['name'], m)))
     return out
 
 
