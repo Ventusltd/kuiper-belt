@@ -42,17 +42,28 @@ sys.path.insert(0, HERE)
 from check_proof import leaks
 
 
+# A SPECIMEN OF A PAGE IS NOT A PAGE. A file kept under one of these folders is source material, an extract, a
+# fixture, a test or an archive: it answers, and it cannot work where it sits. A visitor was sent to one.
+NOT_A_PLACE = ('sources', 'source', 'extracts', 'extract', 'fixtures', 'fixture', 'tests', 'test', '__tests__', 'spec',
+               'archive', 'archives', 'archived', 'node_modules', 'vendor', 'third_party', 'backup', 'backups', 'old', 'deprecated')
+
+
+def specimen(path):
+    parts = [p.lower() for p in path.split('/')[:-1]]
+    return any(p in NOT_A_PLACE or 'extract' in p or p.startswith('archive') for p in parts)
+
+
 def nearest(path, standing, served=''):
     """The ladder's first two steps for one file. Returns (page path, how) or (None, None).
     `served` is the folder the site is served from ('' for the top, 'docs' for /docs)."""
     if served and not (path == served or path.startswith(served + '/')):
         return None, None
-    if path.lower().endswith(('.html', '.htm')) and path in standing:
+    if path.lower().endswith(('.html', '.htm')) and path in standing and not specimen(path):
         return path, 'itself'
     d = os.path.dirname(path).replace('\\', '/')
     while True:
         cand = (d + '/' if d else '') + 'index.html'
-        if cand in standing and (not served or cand.startswith(served + '/')):
+        if cand in standing and not specimen(cand) and (not served or cand.startswith(served + '/')):
             return cand, 'folder'
         if not d or d == served:
             return None, None
@@ -179,6 +190,16 @@ def build():
     with ThreadPoolExecutor(max_workers=6) as ex:
         alive = dict(zip(distinct, ex.map(answers, distinct)))
     dead = [a for a, ok in alive.items() if not ok]
+    # WHAT IS SHOWN, NOT WHAT ANSWERS. tools/page_faces.mjs opens every page once; a page it found blank or
+    # saying that it failed is treated as not there, and its work falls to the next rung.
+    faces_p, broken = os.path.join(COSMOS, 'page-faces.tsv'), {}
+    if os.path.exists(faces_p):
+        for l in io.open(faces_p, encoding='utf-8'):
+            p = l.rstrip('\n').split('\t')
+            if len(p) >= 2 and not l.startswith('#') and p[1] == 'no':
+                broken[p[0]] = p[2] if len(p) > 2 else ''
+        for a in broken:
+            alive[a] = False
     pages, ids, rows = [], {}, []
     for sha, (addr, clone, page, how) in sorted(found.items()):
         if not alive.get(addr):
@@ -202,6 +223,13 @@ def build():
     io.open(os.path.join(COSMOS, 'missing-pages.tsv'), 'w', encoding='utf-8', newline='\n').write(
         '# folder\tfiles_touched_by_work_that_only_reaches_a_front_door\n'
         + '\n'.join('%s\t%d' % kv for kv in folders.most_common(60)) + '\n')
+    # AND AS ONE MODULE, so a corrected table can be released as ONE part to a shell that is never edited
+    io.open(os.path.join(COSMOS, 'kuiper-pages.mjs'), 'w', encoding='utf-8', newline='\n').write(
+        '// kuiper-pages.mjs - the nearest page to every piece of work. Built by tools/pages.py: proved from where the files sit,\n'
+        '// never under a folder of specimens, and every page opened once and found to work for a stranger.\n'
+        'export const PAGES = ' + json.dumps({p[0]: [p[1], p[2]] for p in pages}, separators=(',', ':'), ensure_ascii=False) + ';\n'
+        'export const WORK_PAGES = ' + json.dumps({r[0]: r[1] for r in rows}, separators=(',', ':')) + ';\n'
+        'export const FRONTS = ' + json.dumps({k: v for k, v in sorted(fronts.items()) if alive_front(v)}, separators=(',', ':')) + ';\n')
     hows = Counter(r[2] for r in rows)
     print('\nOF %s PIECES OF WORK ON THE RECORD' % format(total, ','))
     print('  %6s land on a page of their own   (%s the work is that page, %s its folder, %s by the agreement of its files)'
@@ -212,7 +240,9 @@ def build():
     print('  THE TWENTY FOLDERS WHERE A PAGE IS MOST MISSED (files touched by work that only reaches a front door):')
     for f, k in folders.most_common(20):
         print('    %6s  %s' % (format(k, ','), f))
-    print('  %d distinct pages; %d addresses did not answer and were dropped' % (len(pages), len(dead)))
+    print('  %d distinct pages; %d addresses did not answer and %d did not WORK FOR A STRANGER; all were dropped' % (len(pages), len(dead), len(broken)))
+    for a, why in sorted(broken.items())[:12]:
+        print('      dropped: %s   (%s)' % (a, why))
     return 0
 
 
@@ -225,6 +255,9 @@ def selftest():
         ('a page that no longer stands is not a door', nearest('gone/old.html', standing - {'index.html'}) == (None, None)),
         ('most files agree; a tie goes to the deepest', choose(['index.html', 'cable_geometry/index.html']) == 'cable_geometry/index.html'),
         ('an index page is addressed as its folder', address('https://x.com/', 'cable_geometry/index.html') == 'https://x.com/cable_geometry/'),
+        ('a kept extract of a page is a specimen, not a page', nearest('sources/deeplink-extracts/receiver/index-composer.html',
+            {'sources/deeplink-extracts/receiver/index-composer.html', 'index.html'}) == ('index.html', 'folder')),
+        ('a page in a tests folder is not a place to send anybody', nearest('tests/fixture.html', {'tests/fixture.html'}) == (None, None)),
         ('a site served from /docs ignores what is outside it', nearest('src/a.js', {'docs/index.html', 'index.html'}, 'docs') == (None, None)),
     ]
     for what, ok in checks:
