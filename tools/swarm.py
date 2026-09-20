@@ -227,7 +227,10 @@ def neutral(d):
 
 def earth():
     try:
-        j = json.loads(subprocess.run(['gh', 'run', 'list', '-R', 'Ventusltd/kuiper-belt', '-L', '1', '--json', 'conclusion,status,workflowName,createdAt'],
+        j = json.loads(subprocess.run(# THE EARTH IS THE MAIN BRANCH'S OWN CHECKS. A run on another branch is somebody's work in progress: the parity
+        # check, pushed on a branch, fails honestly until the part it asks about is released, and read as the earth it
+        # held back the very release that would have made it pass.
+        ['gh', 'run', 'list', '-R', 'Ventusltd/kuiper-belt', '--branch', 'main', '-L', '1', '--json', 'conclusion,status,workflowName,createdAt'],
                                       capture_output=True, text=True, timeout=30).stdout or '[]')
         last = j[0] if j else {}
         return {'sound': last.get('conclusion') != 'failure', 'last': last}
