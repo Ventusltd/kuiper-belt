@@ -4,9 +4,9 @@
 2	grid	3449
 3	cosmic	359953
 4	stones	4749
-5	Kuiper-belt	5597180
+5	Kuiper-belt	5658308
 6	unnamed-01	7923
-7	particle-physics-drawing-engine	4449631
+7	particle-physics-drawing-engine	4629400
 8	unnamed-02	205096
 9	elements	643461
 10	galaxies-wafers	10388257
@@ -18,7 +18,7 @@
 16	star-quantum-twin	77066
 17	grid-dictionary	9022
 18	code-generator	268775
-19	stars	122314367
+19	stars	123681713
 20	star-maker	22207132
 21	control-pad	350
 22	gridmachine2	1094986
@@ -33,7 +33,7 @@
 31	testcode	710020215
 32	ventusltd.com	138
 33	studies	2
-34	ventus-grid-engine	2140720
+34	ventus-grid-engine	2158596
 35	codex-chatgpt	23392
 36	claude	69054199
 37	gemini	876
@@ -65,7 +65,7 @@
 63	youengineer-code-review	316443
 64	unnamed-05	1863
 65	unnamed-06	2
-66	globalgrid2050	40142957335
+66	globalgrid2050	40179491366
 67	Solar-PV-Hybrid-and-off-grid	2
 68	solar-repowering-whitepaper	3819
 69	pv-arc-protection-circuit	57572
@@ -83,10 +83,13 @@
 81	solar-dc-string-wiring-and-topology	203
 82	solar-panels	2
 83	substations	4
-84	time-stone	34873
+84	time-stone	35770
 85	tokens	899
 86	trillion-loop	2387
 87	worlds-	10870441
 88	binoculars	67
 89	buggy	4982
 90	primordial-brain	79
+91	energy-transition-simulator	196862
+92	wire-frame-scanner	18597
+93	world-lidar	7384
