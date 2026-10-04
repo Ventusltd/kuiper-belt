@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Real Kuiper Game test</title>
+<style>html,body{margin:0;height:100%;background:#000;color:#fff;font:bold 24px "Segoe UI",Arial,sans-serif;overflow:hidden}
+#host{position:fixed;inset:0}#closed{display:none;padding:40px}</style></head><body>
+<div id="host"></div><div id="closed">CLOSED. <a href="" style="color:#00ffff">OPEN AGAIN</a></div>
+<script src="../kuiper-law.js"></script>
+<script src="../scale-logic.js"></script>
+<script src="realgame-data.js"></script>
+<script src="realgame.js"></script>
+<script>
+var mod = (window.KGModules || []).filter(function (m) { return m.id === 'realgame'; })[0];
+var host = document.getElementById('host');
+host.addEventListener('kg-close', function () { host.remove(); document.getElementById('closed').style.display = 'block'; });
+mod.open(host);
+</script>
+</body></html>

@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Draw the grid test</title>
+<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}#host{position:fixed;inset:0;background:#000}
+#closed{color:#ffb000;font:bold 32px "Segoe UI",Arial,sans-serif;padding:40px;display:none}</style></head>
+<body><div id="host"></div><div id="closed">DRAW THE GRID CLOSED. Reload to open again.</div>
+<script src="../kuiper-law.js"></script>
+<script src="../scale-logic.js"></script>
+<script src="grid-data.js"></script>
+<script src="grid.js"></script>
+<script>
+(function(){
+  var m=(window.KGModules||[]).filter(function(x){return x.id==='grid'})[0], host=document.getElementById('host');
+  var close=m.close; m.close=function(){close.call(m); host.style.display='none'; document.getElementById('closed').style.display='block'; window.__closed=true;};
+  m.open(host);
+})();
+</script></body></html>

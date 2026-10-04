@@ -1,0 +1,16 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ZOOM test harness</title>
+<style>html,body{margin:0;height:100%;background:#000;color:#fff;font:bold 28px "Segoe UI",Arial,sans-serif;overflow:hidden}
+#host{position:fixed;inset:0}#closed{display:none;padding:40px}</style></head>
+<body><div id="host"></div><div id="closed">ZOOM CLOSED</div>
+<script src="../kuiper-law.js"></script>
+<script src="../scale-logic.js"></script>
+<script src="realgame-data.js"></script>
+<script src="zoom.js"></script>
+<script>
+var mod = (window.KGModules || []).filter(function (m) { return m.id === 'zoom'; })[0];
+var host = document.getElementById('host');
+host.addEventListener('kgclose', function () { host.style.display = 'none'; document.getElementById('closed').style.display = 'block'; window.__closed = true; });
+mod.open(host);
+</script></body></html>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Learn the Kuiper</title>
+<style>
+  html,body{margin:0;min-height:100%;background:#000;color:#fff;font:700 24px/1.35 "Segoe UI",Arial,sans-serif}
+  canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+  main{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:max(28px,env(safe-area-inset-top)) 20px 40px}
+  h1{font-size:clamp(34px,8vw,64px);line-height:1.02;margin:0 0 8px;color:#00ffff;letter-spacing:-.02em}
+  p{margin:0 0 22px;color:#d6f6ff}
+  a.b{display:block;margin:0 0 14px;padding:20px 22px;min-height:32px;border:2px solid rgba(0,255,255,.55);border-radius:10px;color:#fff;text-decoration:none;background:rgba(0,0,0,.72)}
+  a.b:hover,a.b:focus-visible{border-color:#00ffff;outline:none;background:rgba(0,40,48,.8)}
+  a.b small{display:block;font-size:24px;font-weight:600;color:#66ccff}
+  .f{font-size:24px;font-weight:600;color:#66ccff;margin-top:26px}
+  .f a{color:#ffb000}
+</style>
+</head>
+<body>
+<canvas id="s"></canvas>
+<main>
+  <h1>LEARN THE KUIPER</h1>
+  <p>Every dot has an address. Learn the rule. Help electrify the world.</p>
+  <a class="b" href="modules/zoom-test.html">ZOOM<small>Fly from the whole Kuiper down to one star and the code behind it</small></a>
+  <a class="b" href="modules/realgame-test.html">REAL KUIPER GAME<small>Missions on the real wafer: first line, newest work, longest silence</small></a>
+  <a class="b" href="modules/radar-test.html">RADAR<small>Sweep the Kuiper like a radar scope. Find any key or grid name</small></a>
+  <a class="b" href="modules/grid-test.html">DRAW THE GRID<small>Watch the stars fly out to draw every UK substation, then return</small></a>
+  <a class="b" href="modules/strings-test.html">SOLAR STRINGS<small>Grow a solar farm where every part has a permanent key</small></a>
+  <a class="b" href="sheet.html">THE SHEET<small>One particle, then millions: change how many and how far it turns</small></a>
+  <a class="b" href="modules/deep-test.html">DEEP<small>The maths and the proofs, for engineers and professors</small></a>
+  <div class="f">Runs offline: <a href="learn-the-kuiper.zip">download this folder</a> and open index.html. The rule is the live Kuiper's own code, checked with 0 differences. Illustrative only, not a design study. <a href="NOTICE.md">Sources and licences</a>. <a href="https://ventusltd.github.io/kuiper-belt/">See the real Kuiper</a>.</div>
+</main>
+<script src="kuiper-law.js"></script>
+<script>
+(function(){var c=document.getElementById('s'),g=c.getContext('2d'),t=0;
+function size(){var d=Math.min(window.devicePixelRatio||1,2);c.width=innerWidth*d;c.height=innerHeight*d;g.setTransform(d,0,0,d,0,0)}
+function draw(){var w=innerWidth,h=innerHeight,n=Math.min(1400,Math.floor(t*90)+1),s=Math.min(w,h)*0.48/Math.sqrt(1400.5);
+g.fillStyle='#000';g.fillRect(0,0,w,h);
+for(var k=0;k<n;k++){var p=KuiperLaw.place(k),x=w/2+p.x*s,y=h/2-p.y*s;g.fillStyle='rgba(0,255,255,.16)';g.beginPath();g.arc(x,y,3.2,0,7);g.fill();g.fillStyle='rgba(255,255,255,.55)';g.beginPath();g.arc(x,y,1.1,0,7);g.fill()}
+t+=1/60;if(n<1400)requestAnimationFrame(draw)}
+size();addEventListener('resize',function(){size();t=99;draw()});
+if(matchMedia('(prefers-reduced-motion: reduce)').matches){t=99}draw()})();
+</script>
+</body>
+</html>
