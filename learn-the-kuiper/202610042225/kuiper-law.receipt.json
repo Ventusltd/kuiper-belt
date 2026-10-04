@@ -1,0 +1,335 @@
+{
+ "gate": "FIDELITY GATE: electron (live index.html keyPlace executed from the file text) vs positron (kuiper-law.js)",
+ "commit": "7a65dd315b0c60b1baf9a7090206c900b2cfd0a1",
+ "live_index_sha256": "425a03d53f4a5d77743f8c1cf67cfaa1b2bf47ffcf39be2d7e52339d3271bccb",
+ "kuiper_law_sha256": "2c7512ea1bfdc65f646684655338fa9e2e0564fa89ba38b42577cbc1ceb564ea",
+ "keyPlace_live_text": "function keyPlace(k){ const m = Math.imul((k % 4294967296) >>> 0, G32) >>> 0, th = 2*Math.PI*m/4294967296, r = Math.sqrt(k + 0.5);\n  return [r*Math.cos(th), r*Math.sin(th)]; }",
+ "keyPlace_text_identical_in_kuiper_law": true,
+ "G32_line": "const G32 = 2654435769, TW = 4096;",
+ "verbatim_comments_checked": 14,
+ "verbatim_comments_wrong": 0,
+ "verbatim": [
+  {
+   "line": 79,
+   "ok": true,
+   "quoted": "//     key k  ->  r = sqrt(k),  theta = 2 pi frac(k G / 2^32"
+  },
+  {
+   "line": 92,
+   "ok": true,
+   "quoted": "const G32 = 2654435769, TW = 4096;"
+  },
+  {
+   "line": 250,
+   "ok": true,
+   "quoted": "function keyPlace(k){ const m = Math.imul((k % 4294967296) >"
+  },
+  {
+   "line": 251,
+   "ok": true,
+   "quoted": "return [r*Math.cos(th), r*Math.sin(th)]; }"
+  },
+  {
+   "line": 143,
+   "ok": true,
+   "quoted": "float d = float(gl_VertexID);"
+  },
+  {
+   "line": 144,
+   "ok": true,
+   "quoted": "float r = u_R0 + (d + 0.5) / (u_R0 + sqrt(u_R0*u_R0 + d + 0."
+  },
+  {
+   "line": 145,
+   "ok": true,
+   "quoted": "uint m = (u_k0lo + uint(gl_VertexID)) * ${G32}u;"
+  },
+  {
+   "line": 146,
+   "ok": true,
+   "quoted": "float A = 6.283185307179586 * float(m >> 16) / 65536.0, B = "
+  },
+  {
+   "line": 147,
+   "ok": true,
+   "quoted": "vec2 cs = vec2(cos(A)*cos(B) - sin(A)*sin(B), sin(A)*cos(B) "
+  },
+  {
+   "line": 148,
+   "ok": true,
+   "quoted": "gl_Position = vec4((r*cs - u_center) * u_zoom / (0.5*u_res),"
+  },
+  {
+   "line": 333,
+   "ok": true,
+   "quoted": "for (let off = s0; off < s1; off += 4000000) {              "
+  },
+  {
+   "line": 334,
+   "ok": true,
+   "quoted": "gl.uniform1ui(U(PK,'u_k0lo'), (off % 4294967296) >>> 0); gl."
+  },
+  {
+   "line": 335,
+   "ok": true,
+   "quoted": "gl.drawArrays(gl.POINTS, 0, Math.min(4000000, s1 - off)); } "
+  },
+  {
+   "line": 357,
+   "ok": true,
+   "quoted": "{ const x0 = (0 - cx)*zoom + ov.width/2, y0 = ov.height/2 + "
+  }
+ ],
+ "SPACE": 59637070538,
+ "cases": 11000008,
+ "photons": 0,
+ "tolerance": {
+  "turns": 1e-09,
+  "radius": 1e-09
+ },
+ "max_diff": {
+  "radius": 5.820766091346741e-11,
+  "turns": 2.220446049250313e-16,
+  "x": 0,
+  "y": 0,
+  "m_and_keyPlace_vs_place": 0
+ },
+ "shader_float32_vs_double": {
+  "note": "the live GPU view itself carries this float32 rounding; it is not a photon",
+  "maxDr": 0.015613685915013775,
+  "maxDx": 0.09874430479248986,
+  "maxDy": 0.09920793068340572,
+  "maxDturns": 0,
+  "cases": 11000008,
+  "worst": {
+   "k": 59082588229,
+   "off": 59080000000,
+   "electron": [
+    243008.22671582413,
+    -5439.667079024433
+   ],
+   "shader_f32": [
+    243008.234375,
+    -5439.56787109375
+   ],
+   "dx": 0.007659175869775936,
+   "dy": 0.09920793068340572
+  }
+ },
+ "random_seed": "0x4B554950 mulberry32",
+ "random_cases": 1000000,
+ "range": "0..10,000,000 inclusive",
+ "turn_per_key": 0.6180339886341244,
+ "deg_per_key_anticlockwise_y_up": 222.49223590828478,
+ "deg_per_key_clockwise": 137.50776409171522,
+ "on_screen": "world y is UP on screen (WebGL clip space index.html:148; overlay :357 y0 = ov.height/2 + cy*zoom); increasing key turns ANTICLOCKWISE by 222.4922 deg, which is 137.5078 deg CLOCKWISE",
+ "witness": "no photons; sample of agreed points below",
+ "sample": [
+  {
+   "k": 0,
+   "m": 0,
+   "turns": 0,
+   "deg": 0,
+   "r": 0.707106781,
+   "x": 0.707106781,
+   "y": 0,
+   "electron": [
+    0.707106781,
+    0
+   ]
+  },
+  {
+   "k": 1,
+   "m": 2654435769,
+   "turns": 0.6180339886,
+   "deg": 222.492236,
+   "r": 1.224744871,
+   "x": -0.903088752,
+   "y": -0.827303273,
+   "electron": [
+    -0.903088752,
+    -0.827303273
+   ]
+  },
+  {
+   "k": 2,
+   "m": 1013904242,
+   "turns": 0.2360679773,
+   "deg": 84.984472,
+   "r": 1.58113883,
+   "x": 0.13823221,
+   "y": 1.575084714,
+   "electron": [
+    0.13823221,
+    1.575084714
+   ]
+  },
+  {
+   "k": 3,
+   "m": 3668340011,
+   "turns": 0.8541019659,
+   "deg": 307.476708,
+   "r": 1.870828693,
+   "x": 1.138284876,
+   "y": -1.484691059,
+   "electron": [
+    1.138284876,
+    -1.484691059
+   ]
+  },
+  {
+   "k": 4,
+   "m": 2027808484,
+   "turns": 0.4721359545,
+   "deg": 169.968944,
+   "r": 2.121320344,
+   "x": -2.088892748,
+   "y": 0.369495721,
+   "electron": [
+    -2.088892748,
+    0.369495721
+   ]
+  },
+  {
+   "k": 5,
+   "m": 387276957,
+   "turns": 0.0901699432,
+   "deg": 32.46118,
+   "r": 2.34520788,
+   "x": 1.978781571,
+   "y": 1.258738851,
+   "electron": [
+    1.978781571,
+    1.258738851
+   ]
+  },
+  {
+   "k": 10,
+   "m": 774553914,
+   "turns": 0.1803398863,
+   "deg": 64.922359,
+   "r": 3.240370349,
+   "x": 1.373418016,
+   "y": 2.934914471,
+   "electron": [
+    1.373418016,
+    2.934914471
+   ]
+  },
+  {
+   "k": 100,
+   "m": 3450571844,
+   "turns": 0.8033988634,
+   "deg": 289.223591,
+   "r": 10.024968828,
+   "x": 3.300775664,
+   "y": -9.465985422,
+   "electron": [
+    3.300775664,
+    -9.465985422
+   ]
+  },
+  {
+   "k": 1000,
+   "m": 145980072,
+   "turns": 0.0339886341,
+   "deg": 12.235908,
+   "r": 31.630681308,
+   "x": 30.912135387,
+   "y": 6.70372179,
+   "electron": [
+    30.912135387,
+    6.70372179
+   ]
+  },
+  {
+   "k": 4294967296,
+   "m": 0,
+   "turns": 0,
+   "deg": 0,
+   "r": 65536.000003815,
+   "x": 65536.000003815,
+   "y": 0,
+   "electron": [
+    65536.000003815,
+    0
+   ]
+  },
+  {
+   "k": 59637070537,
+   "m": 1875754049,
+   "turns": 0.4367330226,
+   "deg": 157.223888,
+   "r": 244207.023931541,
+   "x": -225164.892579104,
+   "y": 94540.159124791,
+   "electron": [
+    -225164.892579104,
+    94540.159124791
+   ]
+  }
+ ],
+ "node_ms": 1663,
+ "node": "v24.19.0",
+ "PASS_node": true,
+ "cupy_uint64_law": {
+  "gpu": true,
+  "backend": "cupy 14.2.0",
+  "range": {
+   "cases": 10000001,
+   "m_mismatches": 0,
+   "max_dturns": 0.0,
+   "max_dr": 0.0,
+   "sha256_m_gpu": "32c9c03a4053b34b5208941afc8888cd8334e08a99242248a69a50b295361e17",
+   "sha256_m_positron": "32c9c03a4053b34b5208941afc8888cd8334e08a99242248a69a50b295361e17"
+  },
+  "random": {
+   "cases": 1000000,
+   "max_key": 59637060221,
+   "m_mismatches": 0,
+   "max_dturns": 0.0,
+   "max_dr": 0.0
+  },
+  "photons": 0,
+  "ms": 394
+ },
+ "PASS": true,
+ "photons_total": 0,
+ "visual_gate": {
+  "live_url": "https://ventusltd.github.io/kuiper-belt/",
+  "chrome": "headless, --use-angle=d3d11, 1280x800",
+  "method": "live flown with its own goto (/ key Enter -> goKey(k): flyTo(keyPlace(k), zoom 14), index.html:388); game = _fidelity.html via KuiperLaw at the same key, zoom 14, issued keys from cosmos/wafer.tsv",
+  "key_59537904924_middle_of_largest_commit": {
+   "game_bright_px": 14466,
+   "live_bright_px": 23286,
+   "game_px_on_live_within_2px": 13630,
+   "live_px_on_game_within_2px": 18370,
+   "game_on_live_frac": 0.9422,
+   "live_on_game_frac": 0.7889,
+   "mirror_y_game_on_live_frac": 0.1383
+  },
+  "key_0_centre": {
+   "game_bright_px": 84,
+   "live_bright_px": 4556,
+   "game_px_on_live_within_2px": 48,
+   "live_px_on_game_within_2px": 77,
+   "game_on_live_frac": 0.5714,
+   "live_on_game_frac": 0.0169,
+   "mirror_y_game_on_live_frac": 0.2857,
+   "note": "the live centre holds only 2 issued keys (0 and 1), then 318,600 silent addresses: the picture is real silence, not a mismatch"
+  },
+  "on_screen_direction": "ANTICLOCKWISE 222.4922 deg per key with world y UP (index.html:148 WebGL clip space, :357 overlay y0 = ov.height/2 + cy*zoom, :386 toWorld cy - (py - H/2)/zoom); the y-flipped game scores 0.138 vs 0.942 upright",
+  "live_page_wording_note": "index.html:79 and the footer :69 say r = sqrt(key); the code at :250 and :144 uses sqrt(key + 0.5). The code is the law; the wording on the live page is half a key short.",
+  "shots": [
+   "shots/fid-live-59537904924.png",
+   "shots/fid-game-59537904924.png",
+   "shots/fid-overlay-59537904924.png (red game, green live, yellow both)",
+   "shots/fid-live-0.png",
+   "shots/fid-game-0.png",
+   "shots/fid-overlay-0.png",
+   "shots/fid-law-0-2000.png",
+   "shots/fid-law-vs-excel.png"
+  ],
+  "PASS": true
+ }
+}

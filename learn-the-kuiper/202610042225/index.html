@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Learn the Kuiper</title>
+<style>html,body{margin:0;height:100%;background:#000;color:#fff;overflow:hidden}</style>
+</head>
+<body>
+<script src="kuiper-law.js"></script>
+<script src="start-here.js"></script>
+<script>
+  // one sheet, full screen. ?quiet skips the opening wonder; ?run=SENTENCE runs one sentence after opening (for looking at it).
+  var q = new URLSearchParams(location.search);
+  window.KGStartHere.open({ quiet: q.has('quiet') || q.has('run') });
+  if (q.get('run')) setTimeout(function () { window.KGStartHere.run(q.get('run')); }, 200);
+</script>
+</body>
+</html>
