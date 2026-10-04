@@ -1,0 +1,144 @@
+{
+  "sourceUrl": "https://github.com/Ventusltd/kuiper-belt",
+  "commit": "7a65dd315b0c60b1baf9a7090206c900b2cfd0a1",
+  "remoteMainConfirmed": "7a65dd315b0c60b1baf9a7090206c900b2cfd0a1",
+  "inputFiles": {
+    "index.html": {
+      "sha256": "425a03d53f4a5d77743f8c1cf67cfaa1b2bf47ffcf39be2d7e52339d3271bccb",
+      "bytes": 47788,
+      "sourceUrl": "https://github.com/Ventusltd/kuiper-belt/blob/7a65dd315b0c60b1baf9a7090206c900b2cfd0a1/index.html"
+    },
+    "cosmos/wafer.tsv": {
+      "sha256": "28a04b8d618aaf84b3c2dd4955b05605bb464c087750bd7e35551f231d821590",
+      "bytes": 454665,
+      "sourceUrl": "https://github.com/Ventusltd/kuiper-belt/blob/7a65dd315b0c60b1baf9a7090206c900b2cfd0a1/cosmos/wafer.tsv"
+    },
+    "cosmos/wafer-meta.json": {
+      "sha256": "a382f2591a332aeca9ee687abc7fdb7a915e00ae5f85c76c57b4a2524d40b314",
+      "bytes": 335,
+      "sourceUrl": "https://github.com/Ventusltd/kuiper-belt/blob/7a65dd315b0c60b1baf9a7090206c900b2cfd0a1/cosmos/wafer-meta.json"
+    },
+    "cosmos/repos.tsv": {
+      "sha256": "3733eb73799cb425a11889c1d51eecf1caebf00235b2f69636ce2579776ba898",
+      "bytes": 2361,
+      "sourceUrl": "https://github.com/Ventusltd/kuiper-belt/blob/7a65dd315b0c60b1baf9a7090206c900b2cfd0a1/cosmos/repos.tsv"
+    },
+    "tools/key.py": {
+      "sha256": "547ba07edb58d6d213a4cdb7f1969c7e447abb2acf718a292e301bc07ee78ff1",
+      "bytes": 7949,
+      "sourceUrl": "https://github.com/Ventusltd/kuiper-belt/blob/7a65dd315b0c60b1baf9a7090206c900b2cfd0a1/tools/key.py"
+    }
+  },
+  "codeDataSha256": "604aceb5de8d24b847eca7b990f3c3e3cd26fdc86585b31c46c3c2f90c35fe62",
+  "codeDataBytes": 825778,
+  "codeLineCount": 594,
+  "blankLines": 8,
+  "repeatedTextGroups": 8,
+  "repeatedLineOccurrences": 35,
+  "intervalCount": 11326,
+  "intervalEnd": "exclusive",
+  "totals": {
+    "issued_keys": 43486619138,
+    "unissued_keys": 16150451400,
+    "address_space": 59637070538,
+    "silence_share": 0.2708,
+    "commits": 11326,
+    "repositories": 94,
+    "first_unix": 1748560273,
+    "last_unix": 1791116057,
+    "gap_keys_per_second": 600,
+    "cap_seconds": 1209600,
+    "law": "r = sqrt(key), theta = 2 pi frac(key x 2654435769 / 2^32)"
+  },
+  "historicalKey1": {
+    "key": 1,
+    "text": "Module-Level DC Arc Suppression and Insulation Fault Disconnection Circuit (CERN OHL-S v2)",
+    "path": "README.md",
+    "line": 2,
+    "repository": "pv-arc-protection-circuit",
+    "sourceCommit": "7b9eabb832ea6ded871a4781f1c6bd2a2b68135b",
+    "sourceUrl": "https://github.com/Ventusltd/pv-arc-protection-circuit/blob/7b9eabb832ea6ded871a4781f1c6bd2a2b68135b/README.md#L2",
+    "blob": "05e5261af29d813d6884f252c6fc080d5ba8cdc1",
+    "kind": "historical-issued-source-text",
+    "verified": true,
+    "note": "Actual historical estate Key 1 is README prose. The Kuiper code example uses demonstration keys and does not claim this mapping."
+  },
+  "keyMapping": "Code example: each source line receives a demonstration key in file order, beginning at 0. These are not historical estate keys. Blank and repeated lines are preserved.",
+  "cases": 11923,
+  "photons": 0,
+  "max_abs_diff": 0,
+  "witness": {
+    "firstCodeLines": [
+      {
+        "text": "<!DOCTYPE html>",
+        "path": "index.html",
+        "line": 1,
+        "sourceCommit": "7a65dd315b0c60b1baf9a7090206c900b2cfd0a1",
+        "duplicateGroup": "c77e5168dffda66b"
+      },
+      {
+        "text": "<html lang=\"en\">",
+        "path": "index.html",
+        "line": 2,
+        "sourceCommit": "7a65dd315b0c60b1baf9a7090206c900b2cfd0a1",
+        "duplicateGroup": "876b0aade9c7ab4f"
+      },
+      {
+        "text": "<head>",
+        "path": "index.html",
+        "line": 3,
+        "sourceCommit": "7a65dd315b0c60b1baf9a7090206c900b2cfd0a1",
+        "duplicateGroup": "ce519cccc38cf22b"
+      }
+    ],
+    "firstIntervals": [
+      [
+        0,
+        2,
+        1748560273,
+        69,
+        "7b9eabb832ea",
+        0
+      ],
+      [
+        318602,
+        318896,
+        1748560804,
+        69,
+        "27f7109a9d0d",
+        318600
+      ],
+      [
+        530696,
+        531135,
+        1748561157,
+        69,
+        "8bdfdadb02ca",
+        211800
+      ]
+    ],
+    "lastInterval": [
+      59637052290,
+      59637070538,
+      1791116057,
+      34,
+      "cea097b163b8",
+      4560000
+    ],
+    "historicalFirstCommitLineCount": 2
+  },
+  "seeds": [],
+  "sha256": "8d82eb60025d873f7f1f570be30db19df1da284d7f136bda34b86e6d819a8aed",
+  "timing": {
+    "sourceSnapshotCommit": "7a65dd315b0c60b1baf9a7090206c900b2cfd0a1",
+    "generatedUtc": "2026-10-04T21:15:01.794992+00:00"
+  },
+  "validation": [
+    "Every retained code line equals the pinned public index.html line, including blank lines and duplicates.",
+    "Every interval uses cumulative preceding gap and line counts, with exclusive end.",
+    "Every gap independently recomputed from successive timestamps and the 600-per-second, 14-day cap rule.",
+    "Issued, silent and address totals exactly equal public wafer-meta.json.",
+    "Historical Key1 verified from the first public wafer commit, its Git tree and 2-line README blob.",
+    "Public GitHub API confirmed pv-arc-protection-circuit private=false and Kuiper main equals the pinned local origin/main."
+  ]
+}

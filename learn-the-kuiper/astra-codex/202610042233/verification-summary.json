@@ -1,0 +1,1762 @@
+{
+  "release": {
+    "name": "Astra by Codex for GlobalGrid2050",
+    "path": "learn-the-kuiper/astra-codex/202610042233/",
+    "preparedAt": "2026-10-04T21:37:42.256Z",
+    "sha256": {
+      "index.html": "25263a6efdb900a2a33d313d079bac704a141e4c96308908e45b96abb6a0364f",
+      "style.css": "3a20630258072ec6e5186076e500efe9b307934ed59949ad78610fed8e91a005",
+      "ui.js": "d96a54a66cdc2f5ad11aa23e38d09c809283a57af4301d8a8abb703a1857cb41",
+      "logic.js": "fdebfaf75fcafe5d49250644c391d16880c3ee6515cc4aa430547d4c7d41a331",
+      "kuiper-law.js": "2c7512ea1bfdc65f646684655338fa9e2e0564fa89ba38b42577cbc1ceb564ea",
+      "sound.js": "896bd56a622a203e311f0e25c13354332336e64a2459a60ca00c0a99857dbef9",
+      "code-data.js": "604aceb5de8d24b847eca7b990f3c3e3cd26fdc86585b31c46c3c2f90c35fe62",
+      "code-data.source.json": "93ad74207ee9bddb214b537252155f1f6aa7f1bddb7a7df126629ed0b89c0b13"
+    },
+    "hashNote": "These are staged Git blob bytes. The repository normalizes text to LF. Individual test gates retain the hashes of the exact local files they tested."
+  },
+  "source": {
+    "repository": "https://github.com/Ventusltd/kuiper-belt",
+    "commit": "7a65dd315b0c60b1baf9a7090206c900b2cfd0a1"
+  },
+  "placement": {
+    "cases": 1100009,
+    "photons": 0,
+    "max_abs_diff": 0,
+    "first_failures": [],
+    "at": "2026-10-04T21:17:03.975Z",
+    "witness": {
+      "sequential": "keys 0 through 1000000 inclusive",
+      "random": "100000 seeded keys through 2^53",
+      "boundary": "8 additional witnesses"
+    },
+    "seeds": {
+      "fidelity": "0xC0DE2026"
+    },
+    "sha256": {
+      "kuiper-law.js": "2c7512ea1bfdc65f646684655338fa9e2e0564fa89ba38b42577cbc1ceb564ea",
+      "logic.js": "fdebfaf75fcafe5d49250644c391d16880c3ee6515cc4aa430547d4c7d41a331",
+      "runner": "d363d94410e7826d9a0f949e685b529296670a545b9bce97ecd08ea42490df94"
+    },
+    "timing": {
+      "milliseconds": 745.6934
+    },
+    "pass": true,
+    "scope": "Equality to the shared live placement function. Real placements delegate to that function, so this checks faithful use, not independent mathematical correctness."
+  },
+  "picking": {
+    "cases": 114,
+    "photons": 0,
+    "max_abs_diff": 0,
+    "witness": [
+      {
+        "count": 1000,
+        "key": 19,
+        "kind": "sampled",
+        "got": 19,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000,
+        "key": 38,
+        "kind": "sampled",
+        "got": 38,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000,
+        "key": 88,
+        "kind": "sampled",
+        "got": 88,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000,
+        "key": 108,
+        "kind": "sampled",
+        "got": 108,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000,
+        "key": 0,
+        "kind": "unsampled",
+        "got": 0,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000,
+        "key": 1,
+        "kind": "unsampled",
+        "got": 1,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000,
+        "key": 7,
+        "kind": "unsampled",
+        "got": 7,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000,
+        "key": 20,
+        "kind": "unsampled",
+        "got": 20,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000000000,
+        "key": 19313562,
+        "kind": "sampled",
+        "got": 19313562,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000000000,
+        "key": 38627124,
+        "kind": "sampled",
+        "got": 38627124,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000000000,
+        "key": 89190686,
+        "kind": "sampled",
+        "got": 89190686,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000000000,
+        "key": 108504248,
+        "kind": "sampled",
+        "got": 108504248,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000000000,
+        "key": 0,
+        "kind": "unsampled",
+        "got": 0,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000000000,
+        "key": 1,
+        "kind": "unsampled",
+        "got": 1,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000000000,
+        "key": 7,
+        "kind": "unsampled",
+        "got": 7,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000000000,
+        "key": 20,
+        "kind": "unsampled",
+        "got": 20,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000000000000000,
+        "key": 19313562086608,
+        "kind": "sampled",
+        "got": 19313562086608,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000000000000000,
+        "key": 38627124173217,
+        "kind": "sampled",
+        "got": 38627124173217,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000000000000000,
+        "key": 89190686259826,
+        "kind": "sampled",
+        "got": 89190686259826,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000000000000000,
+        "key": 108504248346434,
+        "kind": "sampled",
+        "got": 108504248346434,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000000000000000,
+        "key": 0,
+        "kind": "unsampled",
+        "got": 0,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000000000000000,
+        "key": 1,
+        "kind": "unsampled",
+        "got": 1,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000000000000000,
+        "key": 7,
+        "kind": "unsampled",
+        "got": 7,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      },
+      {
+        "count": 1000000000000000,
+        "key": 20,
+        "kind": "unsampled",
+        "got": 20,
+        "distance": 0,
+        "exact": true,
+        "certified": true
+      }
+    ],
+    "seeds": {
+      "picking": "0x5049434B"
+    },
+    "sha256": {
+      "logic.js": "fdebfaf75fcafe5d49250644c391d16880c3ee6515cc4aa430547d4c7d41a331"
+    },
+    "timing": {
+      "picking_and_sampling_ms": 2.143599999999992
+    },
+    "pass": true
+  },
+  "sampling": {
+    "cases": 96,
+    "photons": 0,
+    "max_abs_diff": 0,
+    "witness": [
+      {
+        "count": 1000,
+        "requested": 32,
+        "returned": 32,
+        "unique": 32,
+        "first": 19,
+        "last": 992,
+        "bounds": {
+          "first": 0,
+          "last": 999,
+          "count": 1000,
+          "radius": 31.614869919074472,
+          "minRadius": 0.7071067811865476,
+          "valid": true,
+          "exactKeys": true,
+          "reason": ""
+        }
+      },
+      {
+        "count": 1000000000,
+        "requested": 32,
+        "returned": 32,
+        "unique": 32,
+        "first": 19313562,
+        "last": 993033986,
+        "bounds": {
+          "first": 0,
+          "last": 999999999,
+          "count": 1000000000,
+          "radius": 31622.7765937781,
+          "minRadius": 0.7071067811865476,
+          "valid": true,
+          "exactKeys": true,
+          "reason": ""
+        }
+      },
+      {
+        "count": 1000000000000000,
+        "requested": 32,
+        "returned": 32,
+        "unique": 32,
+        "first": 19313562086608,
+        "last": 993033986771479,
+        "bounds": {
+          "first": 0,
+          "last": 999999999999999,
+          "count": 1000000000000000,
+          "radius": 31622776.601683784,
+          "minRadius": 0.7071067811865476,
+          "valid": true,
+          "exactKeys": true,
+          "reason": ""
+        }
+      }
+    ],
+    "seeds": {
+      "sampling": "deterministic stratified address selection"
+    },
+    "sha256": {
+      "logic.js": "fdebfaf75fcafe5d49250644c391d16880c3ee6515cc4aa430547d4c7d41a331"
+    },
+    "timing": {
+      "included_in_picking_sampling_ms": 2.143599999999992
+    },
+    "pass": true
+  },
+  "fuzz": {
+    "cases": 10000,
+    "photons": 0,
+    "max_abs_diff": null,
+    "witness": {
+      "valid_results": 3741,
+      "invalid_results": 6259
+    },
+    "seeds": {
+      "fuzz": "0xF0222026"
+    },
+    "sha256": {
+      "logic.js": "fdebfaf75fcafe5d49250644c391d16880c3ee6515cc4aa430547d4c7d41a331"
+    },
+    "timing": {
+      "milliseconds": 77.77629999999999
+    },
+    "pass": true,
+    "scope": "No exceptions and explicit invalid-domain flags, not a claim that every arbitrary parameter choice is mathematically useful."
+  },
+  "independentOracle": {
+    "at": "2026-10-04T21:17:40.881Z",
+    "cases": 566,
+    "photons": 0,
+    "max_abs_diff": 0,
+    "witness": [
+      {
+        "patch": {},
+        "key": 312,
+        "nearest": 312,
+        "certified": true,
+        "neighbours": 0,
+        "neighboursCertified": true
+      },
+      {
+        "patch": {
+          "degreesPerKey": 90
+        },
+        "key": 13,
+        "nearest": 17,
+        "certified": true,
+        "neighbours": 1,
+        "neighboursCertified": true
+      },
+      {
+        "patch": {
+          "degreesPerKey": 0.0001
+        },
+        "key": 178,
+        "nearest": 173,
+        "certified": true,
+        "neighbours": 0,
+        "neighboursCertified": true
+      },
+      {
+        "patch": {
+          "wrap": 7
+        },
+        "key": 597,
+        "nearest": 548,
+        "certified": true,
+        "neighbours": 0,
+        "neighboursCertified": true
+      },
+      {
+        "patch": {
+          "power": 3
+        },
+        "key": 827,
+        "nearest": 827,
+        "certified": true,
+        "neighbours": 1,
+        "neighboursCertified": true
+      },
+      {
+        "patch": {
+          "offset": -10
+        },
+        "key": 197,
+        "nearest": 197,
+        "certified": true,
+        "neighbours": 1,
+        "neighboursCertified": true
+      },
+      {
+        "patch": {
+          "workLines": 10,
+          "restSeconds": 1
+        },
+        "key": 46971,
+        "nearest": 46971,
+        "certified": true,
+        "neighbours": 2,
+        "neighboursCertified": true
+      },
+      {
+        "label": "unsafe count",
+        "valid": false,
+        "reason": "Above 9 quadrillion the computer cannot count every key exactly.",
+        "last": null
+      },
+      {
+        "label": "unsafe first",
+        "valid": false,
+        "reason": "First key must be a whole number from 0 through 2^53.",
+        "last": null
+      },
+      {
+        "label": "negative count",
+        "valid": false,
+        "reason": "How many must be a positive whole number.",
+        "last": null
+      },
+      {
+        "label": "negative radius domain",
+        "valid": false,
+        "reason": "This power of a negative distance is not a drawable real radius.",
+        "last": 0
+      },
+      {
+        "label": "zero wrap",
+        "valid": false,
+        "reason": "The turn must be finite and the wrap size positive.",
+        "last": 0
+      },
+      {
+        "label": "century quiet capped",
+        "valid": true,
+        "reason": "",
+        "last": 725760001
+      }
+    ],
+    "seeds": {
+      "certificate": "0x43455254"
+    },
+    "sha256": {
+      "logic.js": "fdebfaf75fcafe5d49250644c391d16880c3ee6515cc4aa430547d4c7d41a331",
+      "kuiper-law.js": "2c7512ea1bfdc65f646684655338fa9e2e0564fa89ba38b42577cbc1ceb564ea",
+      "tests/test-certificates.cjs": "cd3e5d2e2903bf26e323ffcaba72652de7d37e519408f6444a8d1d536b57c523"
+    },
+    "timing": {
+      "total_ms": 86.0911
+    },
+    "pass": true,
+    "counts": {
+      "nearest": 280,
+      "neighbours": 280,
+      "domain": 6
+    },
+    "scope": "Exhaustive small-population checks of perturbed nearest queries, neighbour enumeration and invalid domains."
+  },
+  "interactions": {
+    "at": "2026-10-04T21:31:24.594Z",
+    "cases": 91,
+    "photons": 0,
+    "max_abs_diff": null,
+    "witness": [
+      {
+        "label": "pc initial YOUR SPIRAL",
+        "pass": true,
+        "first": 1,
+        "count": 1,
+        "turn": 137.5,
+        "offset": 0
+      },
+      {
+        "label": "pc next lever 1",
+        "pass": true
+      },
+      {
+        "label": "pc spread changes key 2 radius",
+        "pass": true,
+        "before": {
+          "key": 2,
+          "r": 1.4142135623730951,
+          "turns": 0.7638888888888888,
+          "deg": 275,
+          "theta": 4.799655442984406,
+          "x": 0.12325683343243832,
+          "y": -1.4088320528055174,
+          "valid": true,
+          "exactKey": true,
+          "real": false,
+          "reason": "",
+          "precisionLimited": false
+        },
+        "after": {
+          "key": 2,
+          "r": 2,
+          "turns": 0.7638888888888888,
+          "deg": 275,
+          "theta": 4.799655442984406,
+          "x": 0.17431148549531578,
+          "y": -1.992389396183491,
+          "valid": true,
+          "exactKey": true,
+          "real": false,
+          "reason": "",
+          "precisionLimited": false
+        }
+      },
+      {
+        "label": "pc next lever 2",
+        "pass": true
+      },
+      {
+        "label": "pc introduction advances keys from one",
+        "pass": true,
+        "first": 1,
+        "count": 2,
+        "code": false
+      },
+      {
+        "label": "pc next lever 3",
+        "pass": true
+      },
+      {
+        "label": "pc next lever 4",
+        "pass": true
+      },
+      {
+        "label": "pc next lever 5",
+        "pass": true
+      },
+      {
+        "label": "pc numbers dialog",
+        "pass": true
+      },
+      {
+        "label": "pc sound toggle",
+        "pass": true
+      },
+      {
+        "label": "pc palette selection",
+        "pass": true
+      },
+      {
+        "label": "pc A+ changes text size",
+        "pass": true
+      },
+      {
+        "label": "pc live field first",
+        "pass": true,
+        "typed": "2",
+        "actual": 2
+      },
+      {
+        "label": "pc live field count",
+        "pass": true,
+        "typed": "1000",
+        "actual": 1000
+      },
+      {
+        "label": "pc live field turnNumber",
+        "pass": true,
+        "typed": "7",
+        "actual": 7
+      },
+      {
+        "label": "pc live field wrap",
+        "pass": true,
+        "typed": "7",
+        "actual": 7
+      },
+      {
+        "label": "pc live field degreesPerKey",
+        "pass": true,
+        "typed": "0.0001",
+        "actual": 0.0001
+      },
+      {
+        "label": "pc live field power",
+        "pass": true,
+        "typed": "3",
+        "actual": 3
+      },
+      {
+        "label": "pc live field offset",
+        "pass": true,
+        "typed": "-1",
+        "actual": -1
+      },
+      {
+        "label": "pc live field skipPerSecond",
+        "pass": true,
+        "typed": "600",
+        "actual": 600
+      },
+      {
+        "label": "pc live field capSeconds",
+        "pass": true,
+        "typed": "1209600",
+        "actual": 1209600
+      },
+      {
+        "label": "pc live field workLines",
+        "pass": true,
+        "typed": "20",
+        "actual": 20
+      },
+      {
+        "label": "pc live field restSeconds",
+        "pass": true,
+        "typed": "3155760000",
+        "actual": 3155760000
+      },
+      {
+        "label": "pc live field dotSize",
+        "pass": true,
+        "typed": "5",
+        "actual": 5
+      },
+      {
+        "label": "pc live field scale",
+        "pass": true,
+        "typed": "1.5",
+        "actual": 1.5
+      },
+      {
+        "label": "pc unsafe typed integer warning",
+        "pass": true,
+        "typed": "9007199254740993",
+        "text": "ABOVE 2^53: THE COMPUTER CANNOT COUNT EVERY KEY EXACTLY. Your typed value is preserved. The final address exceeds 2^53 after work and quiet time. Practice rule: these positions use your numbers. 3600000 repeated directions. A negative offset can leave early keys without a real distance. After each 20 lines, 725760000 addresses stay empty. At this scale floating-point coordinates lose fine detail; spacing is not literally constant. Quiet time: 600 keys per second, at most 1,209,600 seconds. No per-particle coordinate table is saved. ABOVE 2^53: THE COMPUTER CANNOT COUNT EVERY KEY EXACTLY."
+      },
+      {
+        "label": "pc particle dialog",
+        "pass": true
+      },
+      {
+        "label": "pc editable X and Y",
+        "pass": true,
+        "current": {
+          "key": 1,
+          "x": 2,
+          "y": 3,
+          "r": 3.6055512754639896,
+          "deg": 56.30993247402023,
+          "valid": true,
+          "theta": 0.9827937232473294
+        }
+      },
+      {
+        "label": "pc editable angle",
+        "pass": true,
+        "current": {
+          "key": 1,
+          "x": 2.2077634143293157e-16,
+          "y": 3.6055512754639896,
+          "r": 3.6055512754639896,
+          "deg": 90,
+          "valid": true,
+          "theta": 1.5707963267948966
+        }
+      },
+      {
+        "label": "pc editable distance",
+        "pass": true,
+        "current": {
+          "key": 1,
+          "x": 2.4492935982947064e-16,
+          "y": 4,
+          "r": 4,
+          "deg": 90,
+          "valid": true,
+          "theta": 1.5707963267948966
+        }
+      },
+      {
+        "label": "pc restore true position",
+        "pass": true
+      },
+      {
+        "label": "pc actual mouse drag",
+        "pass": true,
+        "hit": {
+          "key": 1,
+          "x": 394.86118426242246,
+          "y": 166.72156480741197
+        },
+        "current": {
+          "key": 1,
+          "x": -0.2578910908100132,
+          "y": 0.9951812461299537,
+          "r": 1.0280532706858854,
+          "deg": 104.52804263613677,
+          "valid": true,
+          "theta": 1.8243585046655997
+        }
+      },
+      {
+        "label": "pc keyboard move",
+        "pass": true,
+        "before": {
+          "key": 1,
+          "x": -0.2578910908100132,
+          "y": 0.9951812461299537,
+          "r": 1.0280532706858854,
+          "deg": 104.52804263613677,
+          "valid": true,
+          "theta": 1.8243585046655997
+        },
+        "after": {
+          "key": 1,
+          "x": -0.09809562900112859,
+          "y": 0.9951812461299537,
+          "r": 1.0000042325299903,
+          "deg": 95.62949494259612,
+          "valid": true,
+          "theta": 1.669049548767568
+        }
+      },
+      {
+        "label": "pc typed turn command",
+        "pass": true
+      },
+      {
+        "label": "pc typed trillion command",
+        "pass": true
+      },
+      {
+        "label": "pc slash opens commands",
+        "pass": true
+      },
+      {
+        "label": "pc sentence button selects key",
+        "pass": true
+      },
+      {
+        "label": "pc real code command",
+        "pass": true
+      },
+      {
+        "label": "pc code source after quiet gap",
+        "pass": true,
+        "text": "  #foot{position:fixed;left:0;right:0;bottom:0;padding:8px 14px;color:var(--dim);border-top:1px solid var(--line);",
+        "expected": "  #foot{position:fixed;left:0;right:0;bottom:0;padding:8px 14px;color:var(--dim);border-top:1px solid var(--line);"
+      },
+      {
+        "label": "pc playback advances",
+        "pass": true,
+        "played": 2
+      },
+      {
+        "label": "pc one more line",
+        "pass": true,
+        "played": 2,
+        "stepped": 3
+      },
+      {
+        "label": "pc browser million-key proof",
+        "pass": true,
+        "proof": {
+          "cases": 1000000,
+          "photons": 0,
+          "max_abs_diff": 0,
+          "witness": "KuiperLaw.keyPlace vs logic.place with real parameters",
+          "seeds": "0..999999",
+          "timing": 723.4000000357628
+        }
+      },
+      {
+        "label": "pc wonder starts",
+        "pass": true
+      },
+      {
+        "label": "pc wonder skips",
+        "pass": true
+      },
+      {
+        "label": "pc actual 20-second wonder completes",
+        "pass": true,
+        "counts": [
+          1,
+          10,
+          100,
+          1000000,
+          43486619138,
+          1000000000000,
+          1000000000000
+        ],
+        "end": {
+          "wonder": false,
+          "count": 1000000000000,
+          "status": "ALL OF THIS FROM ONE NUMBER AND ONE RULE. NO COORDINATES STORED."
+        }
+      },
+      {
+        "label": "phone initial YOUR SPIRAL",
+        "pass": true,
+        "first": 1,
+        "count": 1,
+        "turn": 137.5,
+        "offset": 0
+      },
+      {
+        "label": "phone next lever 1",
+        "pass": true
+      },
+      {
+        "label": "phone spread changes key 2 radius",
+        "pass": true,
+        "before": {
+          "key": 2,
+          "r": 1.4142135623730951,
+          "turns": 0.7638888888888888,
+          "deg": 275,
+          "theta": 4.799655442984406,
+          "x": 0.12325683343243832,
+          "y": -1.4088320528055174,
+          "valid": true,
+          "exactKey": true,
+          "real": false,
+          "reason": "",
+          "precisionLimited": false
+        },
+        "after": {
+          "key": 2,
+          "r": 2,
+          "turns": 0.7638888888888888,
+          "deg": 275,
+          "theta": 4.799655442984406,
+          "x": 0.17431148549531578,
+          "y": -1.992389396183491,
+          "valid": true,
+          "exactKey": true,
+          "real": false,
+          "reason": "",
+          "precisionLimited": false
+        }
+      },
+      {
+        "label": "phone next lever 2",
+        "pass": true
+      },
+      {
+        "label": "phone introduction advances keys from one",
+        "pass": true,
+        "first": 1,
+        "count": 2,
+        "code": false
+      },
+      {
+        "label": "phone next lever 3",
+        "pass": true
+      },
+      {
+        "label": "phone next lever 4",
+        "pass": true
+      },
+      {
+        "label": "phone next lever 5",
+        "pass": true
+      },
+      {
+        "label": "phone numbers dialog",
+        "pass": true
+      },
+      {
+        "label": "phone sound toggle",
+        "pass": true
+      },
+      {
+        "label": "phone palette selection",
+        "pass": true
+      },
+      {
+        "label": "phone A+ changes text size",
+        "pass": true
+      },
+      {
+        "label": "phone live field first",
+        "pass": true,
+        "typed": "2",
+        "actual": 2
+      },
+      {
+        "label": "phone live field count",
+        "pass": true,
+        "typed": "1000",
+        "actual": 1000
+      },
+      {
+        "label": "phone live field turnNumber",
+        "pass": true,
+        "typed": "7",
+        "actual": 7
+      },
+      {
+        "label": "phone live field wrap",
+        "pass": true,
+        "typed": "7",
+        "actual": 7
+      },
+      {
+        "label": "phone live field degreesPerKey",
+        "pass": true,
+        "typed": "0.0001",
+        "actual": 0.0001
+      },
+      {
+        "label": "phone live field power",
+        "pass": true,
+        "typed": "3",
+        "actual": 3
+      },
+      {
+        "label": "phone live field offset",
+        "pass": true,
+        "typed": "-1",
+        "actual": -1
+      },
+      {
+        "label": "phone live field skipPerSecond",
+        "pass": true,
+        "typed": "600",
+        "actual": 600
+      },
+      {
+        "label": "phone live field capSeconds",
+        "pass": true,
+        "typed": "1209600",
+        "actual": 1209600
+      },
+      {
+        "label": "phone live field workLines",
+        "pass": true,
+        "typed": "20",
+        "actual": 20
+      },
+      {
+        "label": "phone live field restSeconds",
+        "pass": true,
+        "typed": "3155760000",
+        "actual": 3155760000
+      },
+      {
+        "label": "phone live field dotSize",
+        "pass": true,
+        "typed": "5",
+        "actual": 5
+      },
+      {
+        "label": "phone live field scale",
+        "pass": true,
+        "typed": "1.5",
+        "actual": 1.5
+      },
+      {
+        "label": "phone unsafe typed integer warning",
+        "pass": true,
+        "typed": "9007199254740993",
+        "text": "ABOVE 2^53: THE COMPUTER CANNOT COUNT EVERY KEY EXACTLY. Your typed value is preserved. The final address exceeds 2^53 after work and quiet time. Practice rule: these positions use your numbers. 3600000 repeated directions. A negative offset can leave early keys without a real distance. After each 20 lines, 725760000 addresses stay empty. At this scale floating-point coordinates lose fine detail; spacing is not literally constant. Quiet time: 600 keys per second, at most 1,209,600 seconds. No per-particle coordinate table is saved. ABOVE 2^53: THE COMPUTER CANNOT COUNT EVERY KEY EXACTLY."
+      },
+      {
+        "label": "phone particle dialog",
+        "pass": true
+      },
+      {
+        "label": "phone editable X and Y",
+        "pass": true,
+        "current": {
+          "key": 1,
+          "x": 2,
+          "y": 3,
+          "r": 3.6055512754639896,
+          "deg": 56.30993247402023,
+          "valid": true,
+          "theta": 0.9827937232473294
+        }
+      },
+      {
+        "label": "phone editable angle",
+        "pass": true,
+        "current": {
+          "key": 1,
+          "x": 2.2077634143293157e-16,
+          "y": 3.6055512754639896,
+          "r": 3.6055512754639896,
+          "deg": 90,
+          "valid": true,
+          "theta": 1.5707963267948966
+        }
+      },
+      {
+        "label": "phone editable distance",
+        "pass": true,
+        "current": {
+          "key": 1,
+          "x": 2.4492935982947064e-16,
+          "y": 4,
+          "r": 4,
+          "deg": 90,
+          "valid": true,
+          "theta": 1.5707963267948966
+        }
+      },
+      {
+        "label": "phone restore true position",
+        "pass": true
+      },
+      {
+        "label": "phone actual mouse drag",
+        "pass": true,
+        "hit": {
+          "key": 1,
+          "x": 154.03435185397478,
+          "y": 193.62521128014225
+        },
+        "current": {
+          "key": 1,
+          "x": -0.022991725376674106,
+          "y": 1.1517806280226934,
+          "r": 1.1520100843847447,
+          "deg": 91.14358052425206,
+          "valid": true,
+          "theta": 1.590755572204778
+        }
+      },
+      {
+        "label": "phone keyboard move",
+        "pass": true,
+        "before": {
+          "key": 1,
+          "x": -0.022991725376674106,
+          "y": 1.1517806280226934,
+          "r": 1.1520100843847447,
+          "deg": 91.14358052425206,
+          "valid": true,
+          "theta": 1.590755572204778
+        },
+        "after": {
+          "key": 1,
+          "x": 0.21510351271856398,
+          "y": 1.1517806280226934,
+          "r": 1.1716945575841067,
+          "deg": 79.42145512543294,
+          "valid": true,
+          "theta": 1.386165888663731
+        }
+      },
+      {
+        "label": "phone actual touch free placement",
+        "pass": true,
+        "touch": {
+          "key": 1,
+          "x": -3.4523809523809526,
+          "y": 0.2857142857142857,
+          "r": 3.464183438189155,
+          "deg": 175.26906137622075,
+          "valid": true,
+          "theta": 3.0590221978950756
+        }
+      },
+      {
+        "label": "phone typed turn command",
+        "pass": true
+      },
+      {
+        "label": "phone typed trillion command",
+        "pass": true
+      },
+      {
+        "label": "phone slash opens commands",
+        "pass": true
+      },
+      {
+        "label": "phone sentence button selects key",
+        "pass": true
+      },
+      {
+        "label": "phone real code command",
+        "pass": true
+      },
+      {
+        "label": "phone code source after quiet gap",
+        "pass": true,
+        "text": "  #foot{position:fixed;left:0;right:0;bottom:0;padding:8px 14px;color:var(--dim);border-top:1px solid var(--line);",
+        "expected": "  #foot{position:fixed;left:0;right:0;bottom:0;padding:8px 14px;color:var(--dim);border-top:1px solid var(--line);"
+      },
+      {
+        "label": "phone playback advances",
+        "pass": true,
+        "played": 2
+      },
+      {
+        "label": "phone one more line",
+        "pass": true,
+        "played": 2,
+        "stepped": 3
+      },
+      {
+        "label": "phone browser million-key proof",
+        "pass": true,
+        "proof": {
+          "cases": 1000000,
+          "photons": 0,
+          "max_abs_diff": 0,
+          "witness": "KuiperLaw.keyPlace vs logic.place with real parameters",
+          "seeds": "0..999999",
+          "timing": 723.1000000238419
+        }
+      },
+      {
+        "label": "phone wonder starts",
+        "pass": true
+      },
+      {
+        "label": "phone wonder skips",
+        "pass": true
+      },
+      {
+        "label": "phone actual 20-second wonder completes",
+        "pass": true,
+        "counts": [
+          1,
+          10,
+          100,
+          1000000,
+          43486619138,
+          1000000000000,
+          1000000000000
+        ],
+        "end": {
+          "wonder": false,
+          "count": 1000000000000,
+          "status": "ONE NUMBER. ONE RULE. NO COORDINATES STORED."
+        }
+      }
+    ],
+    "seeds": {
+      "interactions": "fixed DOM inputs, mouse paths and command sentences"
+    },
+    "sha256": {
+      "index.html": "d387aa8a8a58cf014a04b2305701c94d60eba1cfd0daa24dad2569d56f9b75c4",
+      "ui.js": "e63b4332f12ff8b4a9fa06bf3ffb5167269e0dbc5e7c1670b9a58373d2f4bf68",
+      "style.css": "51c8016a9067f58f6c176f41694d5811cb9bf9154a2577c456e5ce6aeac83a88",
+      "logic.js": "fdebfaf75fcafe5d49250644c391d16880c3ee6515cc4aa430547d4c7d41a331",
+      "kuiper-law.js": "2c7512ea1bfdc65f646684655338fa9e2e0564fa89ba38b42577cbc1ceb564ea",
+      "sound.js": "896bd56a622a203e311f0e25c13354332336e64a2459a60ca00c0a99857dbef9",
+      "code-data.js": "604aceb5de8d24b847eca7b990f3c3e3cd26fdc86585b31c46c3c2f90c35fe62",
+      "tests/browser-interactions.cjs": "86563d37021272ac6dac3841807523ce8f5930666d90b0cb03ba1718b1c4d7af"
+    },
+    "timing": {
+      "total_ms": 49373.9931
+    },
+    "pass": true,
+    "scope": "91 desktop/phone interaction assertions on the hashes recorded in this gate. Later targeted supplements cover final UI changes."
+  },
+  "screenshots": {
+    "at": "2026-10-04T21:31:24.594Z",
+    "cases": 26,
+    "photons": null,
+    "max_abs_diff": null,
+    "witness": [
+      {
+        "viewport": "pc",
+        "scene": "one-particle",
+        "sha256": "02e357c81b07e166fecd03022b4e3b519b3c9b74f8f7ed84f750cc0f5bc4d4c9"
+      },
+      {
+        "viewport": "pc",
+        "scene": "moved-particle",
+        "sha256": "30c2c5de1b158678ef92253a170d3df6f5ac63ce208db57ecc0a67a25883173f"
+      },
+      {
+        "viewport": "pc",
+        "scene": "one-trillion",
+        "sha256": "c32f2fae86219b53f238c1d22d553ef5e657211ccfa41f6ba258230cfbdd63d6"
+      },
+      {
+        "viewport": "pc",
+        "scene": "turn-360",
+        "sha256": "bc577ccd6345fe82e46e02dc6160b20c0e49f2916ea3360afb279295ae1875a6"
+      },
+      {
+        "viewport": "pc",
+        "scene": "code-duplicates",
+        "sha256": "a0c0cf45f5cf925f39c3473a0ae859a900a337a9f5cbbec7cf2a4eb5e6a215df"
+      },
+      {
+        "viewport": "pc",
+        "scene": "commands",
+        "sha256": "b7cc5af715cdb3ea9fb8229dfbe3a810c0db58c486efdbc309c3b343f249b895"
+      },
+      {
+        "viewport": "pc",
+        "scene": "wonder-end",
+        "sha256": "d5ca4cb733fef5cac60ca4c134558bc4839b5ccac07f24112e48366311b1191e"
+      },
+      {
+        "viewport": "pc",
+        "scene": "lever-0",
+        "sha256": "6808da38b1217e41b92941d3383001ab15a692b0a4a1f43cf08ad172efd2545d"
+      },
+      {
+        "viewport": "pc",
+        "scene": "lever-1",
+        "sha256": "a67c1b5927fba4e51c59717bd2440255a3d85cd6737dbe85484afd79d82cc79b"
+      },
+      {
+        "viewport": "pc",
+        "scene": "lever-2",
+        "sha256": "528b9e5d1318e60047ce7f33ba1a74fceec5a2b323232159a693e7c0012296b0"
+      },
+      {
+        "viewport": "pc",
+        "scene": "lever-3",
+        "sha256": "94cc74e039b48cdabd6aedb4a5d99dcde2b91f4c37193a9a8885c7c5e45b866a"
+      },
+      {
+        "viewport": "pc",
+        "scene": "lever-4",
+        "sha256": "d23bbc433d57c600b167c05e2ec0dde75c0a6348a7d79433559b0ca812b3cc38"
+      },
+      {
+        "viewport": "pc",
+        "scene": "lever-5",
+        "sha256": "fb3d72cd1b4b1fa55e7f3255f93cfc91bfda1d73c4c08b894af82aff627ac841"
+      },
+      {
+        "viewport": "phone",
+        "scene": "one-particle",
+        "sha256": "3666b893dda42098749bfe52d35ec25839d7acb8dafb341f7c088d052b25be06"
+      },
+      {
+        "viewport": "phone",
+        "scene": "moved-particle",
+        "sha256": "24adfa69013814c5e6f871352495cc338d08d5a3c04cc66b95e5c561e49ac935"
+      },
+      {
+        "viewport": "phone",
+        "scene": "one-trillion",
+        "sha256": "dc4a114914c9ce525812fc54dc0ca875f79d4e93373eaf0c52450f7f2913610e"
+      },
+      {
+        "viewport": "phone",
+        "scene": "turn-360",
+        "sha256": "9016828bfbde0fb7e82e57d22f4b2029b93527366a08e29ac921376975477d7e"
+      },
+      {
+        "viewport": "phone",
+        "scene": "code-duplicates",
+        "sha256": "46659e6f9f2de9cab4c31ec51cef08552779d0787add0ad4432fdc523bcac21d"
+      },
+      {
+        "viewport": "phone",
+        "scene": "commands",
+        "sha256": "601cd6ae283d72b133aff5c47bbf8437e52aacec9b3c1f4534641da66a208a6c"
+      },
+      {
+        "viewport": "phone",
+        "scene": "wonder-end",
+        "sha256": "8e86b21c9fcf3daeccb7065b88f6ac82db2c7f35f063dd7904cc73f9f014bdc4"
+      },
+      {
+        "viewport": "phone",
+        "scene": "lever-0",
+        "sha256": "be9c879ed1817284bc243036c71cfd22aa5aab0ee729003334df7642418e47cb"
+      },
+      {
+        "viewport": "phone",
+        "scene": "lever-1",
+        "sha256": "e7bb2920e02eaa0ff372b57b9657013beccbcca32c1cd41328a9e6d19e3bdb32"
+      },
+      {
+        "viewport": "phone",
+        "scene": "lever-2",
+        "sha256": "656a30641c2b345e6a199a0fd72ccf455e862583896024e308f4d49aca82275a"
+      },
+      {
+        "viewport": "phone",
+        "scene": "lever-3",
+        "sha256": "7d357a76b0a9d7757251d773895b9fe32ad6e46297a90f3fcd3ba67794382b17"
+      },
+      {
+        "viewport": "phone",
+        "scene": "lever-4",
+        "sha256": "2977bd4b1746e9ead60401ca1fba6689de8337f6cd8aabb3c8a42c5f09115e7f"
+      },
+      {
+        "viewport": "phone",
+        "scene": "lever-5",
+        "sha256": "4b5e1c961192617c27e5723bc7569bebf67e84604ef2e7b337141ad348593062"
+      }
+    ],
+    "seeds": {
+      "scenes": "seven required scenes and six lever stages, two viewports"
+    },
+    "sha256": {
+      "index.html": "d387aa8a8a58cf014a04b2305701c94d60eba1cfd0daa24dad2569d56f9b75c4",
+      "ui.js": "e63b4332f12ff8b4a9fa06bf3ffb5167269e0dbc5e7c1670b9a58373d2f4bf68",
+      "style.css": "51c8016a9067f58f6c176f41694d5811cb9bf9154a2577c456e5ce6aeac83a88",
+      "logic.js": "fdebfaf75fcafe5d49250644c391d16880c3ee6515cc4aa430547d4c7d41a331",
+      "kuiper-law.js": "2c7512ea1bfdc65f646684655338fa9e2e0564fa89ba38b42577cbc1ceb564ea",
+      "sound.js": "896bd56a622a203e311f0e25c13354332336e64a2459a60ca00c0a99857dbef9",
+      "code-data.js": "604aceb5de8d24b847eca7b990f3c3e3cd26fdc86585b31c46c3c2f90c35fe62",
+      "tests/browser-check.cjs": "c599e4937e6e070777a4305116464444109fef7ca3cf3cc371b64951531e0448"
+    },
+    "timing": {
+      "total_ms": 12641.7287
+    },
+    "pass": true,
+    "inspection": "All 26 screenshots opened and visually inspected. Long real-law title initially obscured the lower desktop disk; ten final follow-up captures supersede affected scenes."
+  },
+  "supplements": [
+    {
+      "source": "scope-final-results.json",
+      "at": "2026-10-04T21:36:11.668Z",
+      "cases": 8,
+      "photons": 0,
+      "max_abs_diff": null,
+      "witness": [
+        {
+          "label": "pc blob exact count",
+          "pass": true,
+          "count": 9007199254740992
+        },
+        {
+          "label": "pc blob real law",
+          "pass": true,
+          "params": {
+            "first": 0,
+            "count": 9007199254740992,
+            "turnNumber": 2654435769,
+            "wrap": 4294967296,
+            "degreesPerKey": null,
+            "power": 0.5,
+            "offset": 0.5,
+            "skipPerSecond": 600,
+            "capSeconds": 1209600,
+            "workLines": 100,
+            "restSeconds": 0,
+            "dotSize": 3,
+            "scale": 1,
+            "_raw": {
+              "first": 0,
+              "count": 9007199254740992,
+              "turnNumber": 2654435769,
+              "wrap": 4294967296,
+              "degreesPerKey": null,
+              "power": 0.5,
+              "offset": 0.5,
+              "skipPerSecond": 600,
+              "capSeconds": 1209600,
+              "workLines": 100,
+              "restSeconds": 0,
+              "dotSize": 3,
+              "scale": 1
+            }
+          }
+        },
+        {
+          "label": "pc blob drawable sample",
+          "pass": true,
+          "drawn": 2400
+        },
+        {
+          "label": "pc crowded to four spokes resets power",
+          "pass": true,
+          "crowded": 1,
+          "spokes": {
+            "first": 0,
+            "count": 1000,
+            "turnNumber": 2654435769,
+            "wrap": 4294967296,
+            "degreesPerKey": 90,
+            "power": 0.5,
+            "offset": 0.5,
+            "skipPerSecond": 600,
+            "capSeconds": 1209600,
+            "workLines": 100,
+            "restSeconds": 0,
+            "dotSize": 3,
+            "scale": 1,
+            "_raw": {
+              "first": 0,
+              "count": 1000,
+              "turnNumber": 2654435769,
+              "wrap": 4294967296,
+              "degreesPerKey": 90,
+              "power": 0.5,
+              "offset": 0.5,
+              "skipPerSecond": 600,
+              "capSeconds": 1209600,
+              "workLines": 100,
+              "restSeconds": 0,
+              "dotSize": 3,
+              "scale": 1
+            }
+          }
+        },
+        {
+          "label": "phone blob exact count",
+          "pass": true,
+          "count": 9007199254740992
+        },
+        {
+          "label": "phone blob real law",
+          "pass": true,
+          "params": {
+            "first": 0,
+            "count": 9007199254740992,
+            "turnNumber": 2654435769,
+            "wrap": 4294967296,
+            "degreesPerKey": null,
+            "power": 0.5,
+            "offset": 0.5,
+            "skipPerSecond": 600,
+            "capSeconds": 1209600,
+            "workLines": 100,
+            "restSeconds": 0,
+            "dotSize": 3,
+            "scale": 1,
+            "_raw": {
+              "first": 0,
+              "count": 9007199254740992,
+              "turnNumber": 2654435769,
+              "wrap": 4294967296,
+              "degreesPerKey": null,
+              "power": 0.5,
+              "offset": 0.5,
+              "skipPerSecond": 600,
+              "capSeconds": 1209600,
+              "workLines": 100,
+              "restSeconds": 0,
+              "dotSize": 3,
+              "scale": 1
+            }
+          }
+        },
+        {
+          "label": "phone blob drawable sample",
+          "pass": true,
+          "drawn": 1200
+        },
+        {
+          "label": "phone crowded to four spokes resets power",
+          "pass": true,
+          "crowded": 1,
+          "spokes": {
+            "first": 0,
+            "count": 1000,
+            "turnNumber": 2654435769,
+            "wrap": 4294967296,
+            "degreesPerKey": 90,
+            "power": 0.5,
+            "offset": 0.5,
+            "skipPerSecond": 600,
+            "capSeconds": 1209600,
+            "workLines": 100,
+            "restSeconds": 0,
+            "dotSize": 3,
+            "scale": 1,
+            "_raw": {
+              "first": 0,
+              "count": 1000,
+              "turnNumber": 2654435769,
+              "wrap": 4294967296,
+              "degreesPerKey": 90,
+              "power": 0.5,
+              "offset": 0.5,
+              "skipPerSecond": 600,
+              "capSeconds": 1209600,
+              "workLines": 100,
+              "restSeconds": 0,
+              "dotSize": 3,
+              "scale": 1
+            }
+          }
+        }
+      ],
+      "seeds": [
+        "named blob command and chained presets on desktop and phone"
+      ],
+      "sha256": {
+        "index.html": "17f4c4b09f97fd61018e75c473d0049465766ab04709ef2896d8d81925373ed1",
+        "style.css": "51c8016a9067f58f6c176f41694d5811cb9bf9154a2577c456e5ce6aeac83a88",
+        "ui.js": "d96a54a66cdc2f5ad11aa23e38d09c809283a57af4301d8a8abb703a1857cb41",
+        "logic.js": "fdebfaf75fcafe5d49250644c391d16880c3ee6515cc4aa430547d4c7d41a331",
+        "kuiper-law.js": "2c7512ea1bfdc65f646684655338fa9e2e0564fa89ba38b42577cbc1ceb564ea",
+        "sound.js": "896bd56a622a203e311f0e25c13354332336e64a2459a60ca00c0a99857dbef9",
+        "code-data.js": "604aceb5de8d24b847eca7b990f3c3e3cd26fdc86585b31c46c3c2f90c35fe62"
+      },
+      "timing": {
+        "total_ms": 3242.6327
+      },
+      "pass": true,
+      "scope": "Targeted final UI checks",
+      "screenshots": [
+        {
+          "name": "pc-blob-2p53.png",
+          "sha256": "397e98f11d95bac33450fcd2168e7542c0566ad8a2a7da505704769924861cce"
+        },
+        {
+          "name": "phone-blob-2p53.png",
+          "sha256": "3e82c0bf94d6ad660180515848c6e3b38a5a0dae49a563b248f2751e76a4d903"
+        }
+      ],
+      "visualInspection": "Both 2^53 blob screenshots opened and inspected: sampled disk and exact-limit count rendered. Long phone status/log disclosure scrolls within its text region."
+    },
+    {
+      "source": "visual-final-results.json",
+      "at": "2026-10-04T21:34:14.443Z",
+      "cases": 10,
+      "photons": null,
+      "max_abs_diff": null,
+      "witness": [],
+      "seeds": {
+        "scenes": "focused captures after final formula-label shortening"
+      },
+      "sha256": {
+        "index.html": "17f4c4b09f97fd61018e75c473d0049465766ab04709ef2896d8d81925373ed1",
+        "ui.js": "2b4c05db1f6f2440549e046edaf63d68e18448535c667d403c9b3935742dcf96",
+        "style.css": "51c8016a9067f58f6c176f41694d5811cb9bf9154a2577c456e5ce6aeac83a88",
+        "logic.js": "fdebfaf75fcafe5d49250644c391d16880c3ee6515cc4aa430547d4c7d41a331",
+        "kuiper-law.js": "2c7512ea1bfdc65f646684655338fa9e2e0564fa89ba38b42577cbc1ceb564ea",
+        "sound.js": "896bd56a622a203e311f0e25c13354332336e64a2459a60ca00c0a99857dbef9",
+        "code-data.js": "604aceb5de8d24b847eca7b990f3c3e3cd26fdc86585b31c46c3c2f90c35fe62",
+        "tests/browser-visual-final.cjs": "aab385a83242a72a6836813e6a9ac9bc410495b9fd3faa597d948f19ed55e5df"
+      },
+      "timing": {
+        "total_ms": 5618.3907
+      },
+      "pass": true,
+      "scope": "Targeted final UI checks",
+      "checks": [
+        {
+          "viewport": "pc",
+          "scene": "one-trillion",
+          "sha256": "372c60886e8c5f82182d402fd7dcb7f60a37d77d759b51618d8af62581eda0f9",
+          "metrics": {
+            "viewport": {
+              "width": 1280,
+              "height": 800
+            },
+            "document": {
+              "width": 1280,
+              "height": 800
+            },
+            "smallText": [],
+            "smallButtons": []
+          }
+        },
+        {
+          "viewport": "pc",
+          "scene": "wonder-end",
+          "sha256": "7cfd489abe1ce7564488e02e167ca6df9542c9437fc8abd38818c971038688d0",
+          "metrics": {
+            "viewport": {
+              "width": 1280,
+              "height": 800
+            },
+            "document": {
+              "width": 1280,
+              "height": 800
+            },
+            "smallText": [],
+            "smallButtons": []
+          }
+        },
+        {
+          "viewport": "pc",
+          "scene": "lever-5",
+          "sha256": "b4b63fea29a319a4e5be987ec0dc313ded91765f608ca6294ecd393e3a800e10",
+          "metrics": {
+            "viewport": {
+              "width": 1280,
+              "height": 800
+            },
+            "document": {
+              "width": 1280,
+              "height": 800
+            },
+            "smallText": [],
+            "smallButtons": []
+          }
+        },
+        {
+          "viewport": "phone",
+          "scene": "moved-particle",
+          "sha256": "4f3999feea586c8c7bd3db56ee3950a100cf61a53e8b7a50929a4ace7fa9cb10",
+          "metrics": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "document": {
+              "width": 390,
+              "height": 844
+            },
+            "smallText": [],
+            "smallButtons": []
+          }
+        },
+        {
+          "viewport": "phone",
+          "scene": "turn-360",
+          "sha256": "3b4fbe5cd41d6e1d9c3709c756046b10001e06cad2e4e264c1ec7b592a854b0c",
+          "metrics": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "document": {
+              "width": 390,
+              "height": 844
+            },
+            "smallText": [],
+            "smallButtons": []
+          }
+        },
+        {
+          "viewport": "phone",
+          "scene": "lever-1",
+          "sha256": "c618524a54a8d7fc5287d4e123434872155b7acd4123e004b3f7690f3e50dd44",
+          "metrics": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "document": {
+              "width": 390,
+              "height": 844
+            },
+            "smallText": [],
+            "smallButtons": []
+          }
+        },
+        {
+          "viewport": "phone",
+          "scene": "lever-2",
+          "sha256": "51749549eeea627ca5a13afed9402d625b7d228930f7315c8b64756418d625dc",
+          "metrics": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "document": {
+              "width": 390,
+              "height": 844
+            },
+            "smallText": [],
+            "smallButtons": []
+          }
+        },
+        {
+          "viewport": "phone",
+          "scene": "lever-3",
+          "sha256": "966647ec19cb6784aa154c18a8bd1affed6c68e8a6aacffab03b39517fad2348",
+          "metrics": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "document": {
+              "width": 390,
+              "height": 844
+            },
+            "smallText": [],
+            "smallButtons": []
+          }
+        },
+        {
+          "viewport": "phone",
+          "scene": "lever-4",
+          "sha256": "9e53b4693f1cf0a139613860c4e3e68817c75c5cf227403b171233f067808a27",
+          "metrics": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "document": {
+              "width": 390,
+              "height": 844
+            },
+            "smallText": [],
+            "smallButtons": []
+          }
+        },
+        {
+          "viewport": "phone",
+          "scene": "lever-5",
+          "sha256": "7cf10837ac9949127094a2fb99531c8f39f4ad17f45ba138985ba39a800c9e75",
+          "metrics": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "document": {
+              "width": 390,
+              "height": 844
+            },
+            "smallText": [],
+            "smallButtons": []
+          }
+        }
+      ],
+      "visualInspection": "All ten screenshots opened and visually inspected. Desktop disk fully visible; mobile formula, moved values and each active lever readable. Long logs/source lines intentionally scroll; ordinary labels remain 24px."
+    }
+  ],
+  "limits": [
+    "Very large drawings are sampled.",
+    "Neighbour queries are certified only for supported inverses that finish within budget.",
+    "Float64 coordinates lose fine detail near very large addresses.",
+    "Angular residues repeat every 2^32 keys; spacing is not literally constant.",
+    "No per-address coordinate database is persisted; temporary drawing samples exist in memory."
+  ],
+  "totals": {
+    "interactionAssertions": 99,
+    "reviewedScreenshots": 38
+  }
+}

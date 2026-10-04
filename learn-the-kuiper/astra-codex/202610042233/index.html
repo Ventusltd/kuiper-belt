@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <title>Learn the Kuiper | Astra by Codex</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="sheet">
+    <header class="heading">
+      <div class="brand">ASTRA BY CODEX <strong>KUIPER</strong><span id="header-layer">YOUR SPIRAL</span></div>
+      <div class="counter"><span id="count-label">1 particle addressed</span><span>Coordinates stored: 0</span></div>
+      <button id="reset" class="quiet" title="Reset to the real Kuiper">Real Kuiper</button>
+    </header>
+    <section id="drawing" aria-label="Interactive Kuiper engineering drawing">
+      <canvas id="canvas" tabindex="0" aria-label="Drag the selected particle, or tap anywhere to explore a place. Arrow keys move the practice dot."></canvas>
+      <div id="status" role="status">One number gives this particle its place.</div>
+      <div id="wonder" hidden><span id="wonder-label"></span><button id="skip">Skip wonder</button></div>
+      <div id="selection">
+        <p id="layer-label">YOUR SPIRAL</p>
+        <div class="selection-title"><button id="inspect">Key <span id="key-label">1</span> ↗</button><button id="magnify" aria-pressed="false">Magnify</button></div>
+        <div id="lever-strip">
+          <label class="lever" data-level="0">Turn per key · degrees<input id="angle" inputmode="decimal" type="text" aria-label="Degrees per key"></label>
+          <label class="lever" data-level="1" hidden>Spread · power<input id="lever-power" inputmode="decimal" type="text" value="0.5"></label>
+          <label class="lever" data-level="2" hidden>How many · try 1 to 20<input id="lever-count" inputmode="decimal" type="text" value="1"></label>
+          <div class="lever" data-level="3" hidden><p>X is across. Y is up.</p><button id="shadows">Show X / Y shadows</button></div>
+          <label class="lever" data-level="4" hidden>Quiet time · seconds<input id="lever-quiet" inputmode="decimal" type="text" value="0"></label>
+          <div class="lever" data-level="5" hidden><p>Compare the two laws.</p><button id="switch-real">THE REAL KUIPER</button></div>
+        </div>
+        <p id="source-line"></p>
+        <p id="source-caption"></p>
+      </div>
+      <div id="title-block"><p id="formula-radius">DISTANCE = √(KEY + 0.5)</p><p id="formula-turn">TURN = KEY × 222.49°, FULL LAPS REMOVED</p><p id="sample-label">One particle. Drag it and see.</p></div>
+      <div id="hint" role="status" hidden></div>
+    </section>
+    <footer id="dock">
+      <div id="command-log" aria-live="polite"><p>KUIPER: move the dot.</p><p id="proof-line">Live law loaded. Say “Measure this against the real Kuiper code”.</p></div>
+      <form id="command-form"><label class="sr-only" for="command">Tell Kuiper what to do</label><input id="command" placeholder="Try turn 360" autocomplete="off" spellcheck="false"><button type="submit" aria-label="Run command">↵</button></form>
+      <div class="actions"><button id="commands">Commands /</button><button id="next-lever">+ NEXT LEVER</button><button id="numbers" hidden>Numbers</button><button id="play" aria-label="Play code particles" hidden>Play</button></div>
+    </footer>
+  </main>
+  <dialog id="commands-dialog" aria-labelledby="commands-title"><div class="dialog-heading"><h1 id="commands-title">Say what you want to see.</h1><button data-close="commands-dialog" aria-label="Close commands">×</button></div><div id="sentences"></div></dialog>
+  <dialog id="numbers-dialog" aria-labelledby="numbers-title"><div class="dialog-heading"><h1 id="numbers-title">Every number is yours.</h1><button data-close="numbers-dialog" aria-label="Close number controls">×</button></div><p>Astra by Codex. Independent build for GlobalGrid2050. Changes act on the same drawing. Real Kuiper restores the original rule.</p><div id="parameter-fields" class="field-grid"></div><div class="extra-controls"><label>Colour palette<select id="palette"><option value="kuiper">Kuiper</option><option value="paper">White ink</option><option value="ember">Ember</option><option value="ocean">Ocean</option><option value="orchid">Orchid</option></select></label><label>Colour each particle by<select id="colour"><option value="age">Age</option><option value="turn">Turn</option><option value="duplicate">Repeated line</option></select></label><label>Music mood<select id="mood"><option value="calm">Calm</option><option value="arcade">Arcade</option><option value="piano">Piano by distance</option></select></label></div><div class="button-wrap"><button id="mute">Sound off</button><button id="text-up">A+</button><button id="text-down">A−</button><button id="step">One more line</button><button id="slower">Slower</button><button id="faster">Faster</button><button id="reset-numbers">Real Kuiper</button></div><p id="parameter-note"></p></dialog>
+  <dialog id="particle-dialog" aria-labelledby="particle-title"><div class="dialog-heading"><h1 id="particle-title">This particle</h1><button data-close="particle-dialog" aria-label="Close particle details">×</button></div><p>Move the example. Its true place remains marked on the drawing.</p><div id="particle-fields" class="field-grid"></div><p id="nearest-label"></p><button id="restore-dot">Return to its true place</button><div id="real-check"><h2>Check it in the real Kuiper</h2><p id="real-instructions"></p><a class="button" href="https://ventusltd.github.io/kuiper-belt/" target="_blank" rel="noopener">Open the real Kuiper ↗</a><p id="real-provenance"></p></div></dialog>
+  <script src="kuiper-law.js"></script><script src="code-data.js"></script><script src="logic.js"></script><script src="sound.js"></script><script src="ui.js"></script>
+</body>
+</html>
