@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Solar Strings test</title>
+<style>html,body{margin:0;height:100%;background:#000;color:#fff;overflow:hidden}#host{position:fixed;inset:0}</style>
+</head>
+<body>
+<div id="host"></div>
+<pre id="report" style="display:none"></pre>
+<script src="../kuiper-law.js"></script>
+<script src="../scale-logic.js"></script>
+<script src="strings.js"></script>
+<script>
+  var mod = window.KGModules.filter(function (m) { return m.id === 'strings'; })[0];
+  var host = document.getElementById('host');
+  host.addEventListener('kgclose', function () { host.textContent = 'closed'; });
+  mod.open(host);
+  // ?act=a,b,c runs real dispatched events (clicks, pointer, keys) for the self-test; results go into #report
+  var q = new URLSearchParams(location.search), acts = (q.get('act') || '').split(',').filter(Boolean), out = [];
+  function btn(k, d) { return host.querySelector('button[data-k="' + k + '"][data-d="' + d + '"]'); }
+  function ptr(cv, x, y) { var r = cv.getBoundingClientRect(); cv.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: r.left + x, clientY: r.top + y, pointerType: 'touch' })); }
+  function st() { return mod._state(); }
+  function log(s) { out.push(s); }
+  setTimeout(function () {
+    acts.forEach(function (a) {
+      var m = a.split(':');
+      if (m[0] === 'plus' || m[0] === 'minus') { var n = +(m[2] || 1); for (var i = 0; i < n; i++) btn(m[1], m[0] === 'plus' ? 1 : -1).click(); }
+      else if (m[0] === 'type') { var inp = host.querySelector('input[data-k="' + m[1] + '"]'); inp.focus(); inp.value = m[2]; inp.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); }
+      else if (m[0] === 'tapstring') { var S = st(), G = S.geom; ptr(S.cvL, (G.colS0 + G.colS1) / 2, G.sy[+m[1]]); }
+      else if (m[0] === 'tapinv') { var S2 = st(), G2 = S2.geom; ptr(S2.cvL, G2.colI, G2.iy[+m[1]]); }
+      else if (m[0] === 'tapkey') { var S3 = st(), c = S3.waferCamDrawn, o = S3.plan.byKey[+m[1]]; ptr(S3.cvW, c.ox + o.pos.x * c.z, c.oy - o.pos.y * c.z); }
+      else if (m[0] === 'why') { st().whyBtn.click(); }
+      else if (m[0] === 'esc') { window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); }
+      var s = st();
+      if (!s) { log(a + ' -> CLOSED, host: ' + host.textContent); return; }
+      var P = s.plan, sel = s.sel;
+      // check every position against the law
+      var bad = 0; P.items.forEach(function (o) { var k = KuiperLaw.keyPlace(o.key); if (k[0] !== o.pos.x || k[1] !== o.pos.y) bad++; });
+      log(a + ' -> p=' + JSON.stringify(s.p) + ' panels=' + P.panels + ' strings=' + P.strs.length + ' combs=' + P.combs.length + ' invs=' + P.invs.length +
+          ' keys=' + P.keysUsed + ' maxKey=' + P.maxKey + ' sel=' + (sel ? sel.label + '@' + sel.key : 'none') + ' lawMismatch=' + bad + ' cap="' + s.cap.textContent + '"');
+    });
+    out.push('viewport -> ' + innerWidth + 'x' + innerHeight + ' scrollW=' + document.documentElement.scrollWidth);
+    document.getElementById('report').textContent = out.join('\n');
+    document.title = 'DONE';
+  }, 300);
+</script>
+</body>
+</html>
