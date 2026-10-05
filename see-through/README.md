@@ -29,6 +29,6 @@ terrain come from online services, so it needs the internet.
 - See Through is offered under the CERN Open Hardware Licence Version 2, Strongly Reciprocal (CERN-OHL-S v2): see
   `LICENSE.md` in each dated folder.
 - Substations, lines and outlines: (c) OpenStreetMap contributors, Open Database Licence 1.0.
-- Map: (c) CARTO. Satellite imagery: Esri, Maxar, Earthstar Geographics. Terrain: AWS Terrain Tiles.
+- Map: (c) CARTO. Satellite imagery: Esri, Vantor, Earthstar Geographics, and the GIS User Community. Terrain: AWS Terrain Tiles.
 - MapLibre GL JS: BSD-3-Clause, (c) MapLibre contributors and Mapbox.
 - Full credits: `NOTICE.md` in each dated folder.

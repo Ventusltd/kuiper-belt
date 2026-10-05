@@ -38,5 +38,7 @@ Excel or Google Sheets and has no macros.
 - Map and network data: (c) OpenStreetMap contributors, Open Database Licence 1.0. Coastline: Natural Earth, public domain.
 - Online map services used only by SEE THROUGH: CARTO, Esri World Imagery and MapLibre GL JS (BSD-3-Clause).
 - Each dated folder has its own `NOTICE.md` (or a credits line in its `README`) naming the sources of its files.
+- The placement rule follows H. Vogel (1979), "A better way to construct the sunflower head", Mathematical
+  Biosciences 44 (3-4), 179-189.
 
 Illustrative only: not a design study.

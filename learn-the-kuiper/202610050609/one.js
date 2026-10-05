@@ -133,7 +133,7 @@
     var slots = [], i;
     for (i = 0; i < 7; i++) slots.push(newSlot());   // six levels and one for the player's own [M] and [C]
     var A = D(4n, 0), B = 0n, pA = A, pB = B, linked = false, sel = 'B', buf = null, score = 0, listeners = [];
-    var g = {};
+    var g = {}, inputBlocked = false;
 
     function newSlot() { return { found: 0, lit: [], target: null, tries: 0, ghosts: [] }; }
     function emit(type, data) { data = data || {}; for (var j = 0; j < listeners.length; j++) listeners[j](type, data); }
@@ -260,41 +260,45 @@
     g.press = function (name) {
       var cur, next, p, onAB = sel === 'A' || sel === 'B';
       if (/^[0-9]$/.test(name)) {
+        if (inputBlocked) return; // freeze only while this refused draft remains active
         cur = buf === null ? '' : buf;                   // after a commit the next digit starts a new number
         next = cur === '0' ? name : cur === '-0' ? '-' + name : cur + name;
         if (sel === 'A' && !linked) {
           p = parseDec(next);
-          if (!p.ok) { buf=next.slice(0,128); emit('change',{how:'preview',which:sel}); if (p.tooLarge) emit('limit'); return; }
+          if (!p.ok) { buf=next.slice(0,128); emit('change',{how:'preview',which:sel}); if (p.tooLarge) { inputBlocked = true; emit('limit'); } return; }
         } else {
           p = parseWhole(next, sel === 'B' && !linked);
-          if (!p.ok) { buf=next.slice(0,128); emit('change',{how:'preview',which:sel}); if (p.tooLarge) emit('limit'); return; }   // the last good value stays
+          if (!p.ok) { buf=next.slice(0,128); emit('change',{how:'preview',which:sel}); if (p.tooLarge) { inputBlocked = true; emit('limit'); } return; }   // the last good value stays
         }
         buf = next; emit('change', { how: 'preview', which: sel }); return;
       }
       if (name === 'dot') {
+        if (inputBlocked) return;
         if (sel !== 'A' || linked) return;
         cur = buf === null ? '' : buf;
         if (cur.indexOf('.') >= 0) return;
         buf = (cur === '' ? '0' : cur) + '.'; emit('change', { how: 'preview', which: sel }); return;
       }
       if (name === 'sign') {
+        if (inputBlocked) return;
         if (sel !== 'B' || linked) return;
         cur = buf === null ? '' : buf;
         buf = cur[0] === '-' ? cur.slice(1) : '-' + cur; emit('change', { how: 'preview', which: sel }); return;
       }
-      if (name === 'back') { cur = buf === null ? fieldText() : buf; buf = cur.slice(0, -1); emit('change', { how: 'preview', which: sel }); return; }
-      if (name === 'clear') { buf = ''; emit('change', { how: 'preview', which: sel }); return; }
+      if (name === 'back') { inputBlocked = false; cur = buf === null ? fieldText() : buf; buf = cur.slice(0, -1); emit('change', { how: 'preview', which: sel }); return; }
+      if (name === 'clear') { inputBlocked = false; buf = ''; emit('change', { how: 'preview', which: sel }); return; }
       if (name === 'enter') {
         if (buf === null) return false;
+        if (inputBlocked) { g.dismissRefusal(); emit('limit'); return false; }
         if (onAB) {
           var v = parseSel(buf);
           if (v === null) { if ((sel==='A'&&!linked?parseDec(buf):parseWhole(buf,sel==='B'&&!linked)).tooLarge) emit('limit'); return false; }
           var s = slot(), which = sel;
           // A commit of the same numerical value is not another try or a reward.
           var changed = linked ? v !== B || !dEq(A, D(v, 0)) : which === 'A' ? !dEq(A, v) : v !== B;
-          if (!changed) { buf = null; emit('change', { how: 'commit', which: which }); return true; }
+          if (!changed) { buf = null; inputBlocked = false; emit('change', { how: 'commit', which: which }); return true; }
           s.tries++;
-          setOne(which, v); buf = null;
+          setOne(which, v); buf = null; inputBlocked = false;
           emit('change', { how: 'commit', which: which });
           if (isHit(A, B, s.target)) award(true);
           else if (!s.ghosts.some(function (q) { return dEq(q.a, A) && q.b === B; })) { s.ghosts.push({ a: A, b: B }); if (s.ghosts.length > 60) s.ghosts.shift(); }
@@ -302,10 +306,15 @@
         }
         var f = sel, pv = parseWhole(buf, false);
         if (!pv.ok) { if (pv.tooLarge) emit('limit'); return false; }
-        sel = 'B'; buf = null;
+        sel = 'B'; buf = null; inputBlocked = false;
         if (!pv.ok || (f === 'C' && pv.value < 1n) || !setNumbers(f === 'M' ? pv.value : M, f === 'C' ? pv.value : C)) emit('change', { how: 'field' });
         return true;
       }
+    };
+    // Timeout/tick discard only a refused draft; a later valid edit must survive.
+    g.dismissRefusal = function () {
+      if (!inputBlocked) return;
+      buf = null; inputBlocked = false; emit('change', { how: 'field' });
     };
     // rolling: the number steps, the dot answers. fine = tenths, for [A] only.
     g.roll = function (which, steps, fine) {
@@ -314,9 +323,9 @@
         var v = (which === 'M' ? M : C) + BigInt(steps);
         if (v > MAXB) { emit('limit'); return; }
         if (v < (which === 'C' ? 1n : 0n)) return;
-        buf = null; setNumbers(which === 'M' ? v : M, which === 'C' ? v : C); return;
+        buf = null; inputBlocked = false; setNumbers(which === 'M' ? v : M, which === 'C' ? v : C); return;
       }
-      buf = null; sel = which;
+      buf = null; inputBlocked = false; sel = which;
       if (linked) {
         var k = B + BigInt(steps);
         if (k > MAXB) { emit('limit'); k = MAXB; }
@@ -335,13 +344,13 @@
     };
     // the roll has come to rest: a target reached this way is found quietly
     g.settle = function () { if (buf === null && isHit(A, B, slot().target)) { award(false); return true; } return false; };
-    g.select = function (f) { if ('ABMC'.indexOf(f) < 0 || f.length !== 1) return; sel = f; buf = null; emit('change', { how: 'field' }); };
-    g.setLevel = function (li) { if (li < 0 || li > 5) return; if (sel !== 'A') sel = 'B'; buf = null; setNumbers(LEVELS[li][0], LEVELS[li][1], 'level'); };
+    g.select = function (f) { if ('ABMC'.indexOf(f) < 0 || f.length !== 1) return; sel = f; buf = null; inputBlocked = false; emit('change', { how: 'field' }); };
+    g.setLevel = function (li) { if (li < 0 || li > 5) return; if (sel !== 'A') sel = 'B'; buf = null; inputBlocked = false; setNumbers(LEVELS[li][0], LEVELS[li][1], 'level'); };
     // LINK: both numbers become the same KEY. The key is the selected number, as a whole number of 0 or more.
     g.setLink = function (on) {
       on = !!on; if (on === linked) return;
       var s = slot();
-      buf = null; if (sel !== 'A') sel = 'B';
+      buf = null; inputBlocked = false; if (sel !== 'A') sel = 'B';
       if (on) { var k = sel === 'A' ? dFloor(A) : (B < 0n ? 0n : B); linked = true; setAB(D(k, 0), k); }
       else linked = false;
       // the target must suit the way of playing: a linked target is always one a single key can hit
@@ -420,7 +429,7 @@
       if (q.a) { p = parseDec(q.a); if (p.ok) A = p.value; }
       if (q.b) { p = parseWhole(q.b, true); if (p.ok) B = p.value; }
       if (q.k === '1') { linked = true; if (B < 0n) B = 0n; A = D(B, 0); }
-      pA = A; pB = B; sel = 'B'; buf = null;
+      pA = A; pB = B; sel = 'B'; buf = null; inputBlocked = false;
       slot().target = null;
       setNumbers(m, c, 'level');
       if (q.t && /^\d{1,9}(\.\d{1,9}){5}$/.test(q.t)) {     // a target sent in a link: kept only if numbers can hit it
@@ -598,7 +607,7 @@
   function overflows(r) { return r.row.scrollWidth > r.clientWidth + 1 || r.head.scrollWidth > r.clientWidth + 1; }
   function say(text, ms) {
     msgEl.textContent = text; msgEl.style.display = text ? 'block' : 'none';
-    clearTimeout(msgTimer); if (text) msgTimer = setTimeout(function () { msgEl.style.display = 'none'; msgEl.textContent = ''; }, ms || 5000);
+    clearTimeout(msgTimer); if (text) msgTimer = setTimeout(function () { msgEl.style.display = 'none'; msgEl.textContent = ''; if (text === LIMIT_LINE) game.dismissRefusal(); }, ms || 5000);
   }
   function rollTick(r, dir) {   // the number slides the way the finger went
     if (calm) return;
@@ -617,7 +626,7 @@
   var view = { lrv: Math.log(4), target: Math.log(4) };
   // the dot: distance r0 -> r1; angle a1 at the end, reached after a sweep of `sweep` turns (signed, the true way round)
   var dot = { r0: 2, r1: 2, a1: 0, sweep: 0, t0: -1e9, dur: 0, dim: 0, warm: 0, warmTo: 0, q: 0n, b: 0n, trueWay: false };
-  var fx = { hitT: -1e9, softT: -1e9, hitCell: null, hitAt: null, parts: [], ringT: -1e9, ringN: 0, targetT: 0, hold: null, drops: [], lapShown: null };
+  var fx = { hitT: -1e9, softT: -1e9, hitCell: null, hitAt: null, parts: [], ringT: -1e9, ringN: 0, targetT: 0, hold: null, drops: [], lapShown: null, turnGoal: null };
   var lastRing = 2, lastT = performance.now();
 
   function cfont(px) { return '400 ' + px + 'px ' + FONT; }
@@ -700,6 +709,8 @@
     if (base > 0.5) base -= 1; if (base < -0.5) base += 1;
     sweep = base;
     var db = v.b - dot.b;
+    // Committing the displayed preview must not skip the laps that fill the owed coils.
+    if (d.how === 'commit' && st.target && st.target.turns && dot.trueWay && db === 0n && v.dist === dot.r1 && !p.done) return;
     dot.trueWay = db !== 0n && (!st.linked || db === 1n || db === -1n);
     if (dot.trueWay) {
       var want = Number(db * st.M) / Number(st.C);                       // the true sweep, in turns
@@ -887,21 +898,26 @@
     // whole circles thrown away: a small stack with its count. A circle drops onto it each time the dot comes round.
     var laps = dot.trueWay ? dot.q + BigInt(Math.floor(p.u + 1e-9)) : dot.q, sp = stackPlace(W, H, cx, cy, R);
     if (v.empty) laps = 0n;
-    // The exact quotient describes the entered number, even during its animated travel.
-    if (missingTurns) laps = v.Q;
+    // Coils follow the animated dot crossing step zero; the working retains the exact entered quotient.
+    var turnGoal = fx.turnGoal && now <= fx.turnGoal.until ? fx.turnGoal : t;
+    var owed = !v.empty && turnGoal ? turnGoal.turns : 0;
     var wrap = Math.floor(p.u + 1e-9);   // the dot has just come round past 3 o'clock: one whole circle drops onto the stack
     if (dot.trueWay && fx.lapShown !== null && wrap > fx.lapShown && !calm && fx.drops.length < 3) fx.drops.push({ t: now });
     fx.lapShown = wrap;
-    if (laps !== 0n || fx.drops.length || missingTurns) {
+    if (laps !== 0n || fx.drops.length || owed) {
       var ltxt = laps.toString(), lw, nring = laps < 0n ? Number(-laps > 5n ? 5n : -laps) : Number(laps > 5n ? 5n : laps);
       ctx.font = cfont(24); ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
-      if (missingTurns) ltxt += ' of ' + t.turns;
+      if (owed) { ltxt += ' of ' + owed; nring = owed; }
       else if (ltxt.length > 5) ltxt = '';   // a long count stays in the working under the number; here it would crowd the rim
       lw = ctx.measureText(ltxt).width;
-      if ((laps !== 0n || missingTurns) && ltxt) { ctx.fillStyle = missingTurns ? '#fff' : 'rgba(255,255,255,0.75)'; ctx.fillText(ltxt, sp[0], sp[1]); }
+      if ((laps !== 0n || owed) && ltxt) { ctx.fillStyle = owed ? '#fff' : 'rgba(255,255,255,0.75)'; ctx.fillText(ltxt, sp[0], sp[1]); }
       ctx.strokeStyle = 'rgba(255,255,255,0.75)'; ctx.lineWidth = 1.2;
-      if (laps < 0n) ctx.setLineDash([3, 3]);
-      for (j = 0; j < nring; j++) { ctx.beginPath(); ctx.ellipse(sp[0] - lw - 22, sp[1] - 5 - j * 5, 13, 4.5, 0, 0, 2 * Math.PI); ctx.stroke(); }
+      if (laps < 0n && !owed) ctx.setLineDash([3, 3]);
+      for (j = 0; j < nring; j++) {
+        ctx.beginPath(); ctx.ellipse(sp[0] - lw - 22, sp[1] - 5 - j * (owed ? 12 : 5), 13, 4.5, 0, 0, 2 * Math.PI);
+        if (owed && laps > BigInt(j)) { ctx.fillStyle = '#fff'; ctx.fill(); }
+        ctx.stroke();
+      }
       ctx.setLineDash([]);
       for (j = fx.drops.length - 1; j >= 0; j--) {
         var du = (now - fx.drops[j].t) / 450; if (du >= 1) { fx.drops.splice(j, 1); continue; }
@@ -946,6 +962,7 @@
     var st = game.state(), now = performance.now();
     if (type === 'change') {
       var nk = st.M + '/' + st.C;
+      if (d.how !== 'preview' && d.how !== 'commit') fx.turnGoal = null;
       if (msgEl.textContent === LIMIT_LINE || d.how !== 'preview') say('');
       if (nk !== numbersKey) {   // new numbers: a new circle
         numbersKey = nk; showFull = false; fx.targetT = now; fx.hitCell = null;
@@ -960,6 +977,8 @@
       if (d.how !== 'preview' && d.how !== 'field') writeAddress();
     } else if (type === 'limit') { say(LIMIT_LINE, 6000);
     } else if (type === 'hit') {
+      // Keep the completed turn picture through the final lap, although the next target is already chosen.
+      if (d.target.turns) fx.turnGoal = { turns: d.target.turns, until: now + dot.dur + 650 };
       fx.hitCell = st.lit[st.lit.length - 1]; fx.targetT = now + (d.typed ? 650 : 350);
       if (d.typed) {
         var sc = cv.R / Math.exp(view.target), pl = game.place(d.a, d.b), a = 2 * Math.PI * pl.turn;

@@ -1,8 +1,8 @@
 // grid.js  DRAW THE GRID, a LEARN THE KUIPER module.
 // The wafer at rest (every place from KuiperLaw.place), then the same particles fly onto the UK grid and back.
-// Reused from the owner's public page globalgrid2050 testcode/wafer-development-environment/202609180245-real-systems:
+// Reused from the public page globalgrid2050 testcode/wafer-development-environment/202609180245-real-systems:
 //   pilot.mjs networkTargets()  the rule that lays particles along edges by length and clusters them at stations
-//                               on the golden angle (adapted: edge networks put every particle on edges).
+//                               on the angle GA (adapted: edge networks put every particle on edges).
 //   app.mjs blendTo()           drawn = from + (target - from) * ease(u), cubic in-out ease, one target per particle.
 //   app.mjs release()           every particle back to its own law place exactly.
 //   pilot.mjs NETWORKS + the "Draw every substation / 400 kV / 132 kV / British Isles / Release" sentences.
@@ -14,7 +14,7 @@
   var FONT = '"Segoe UI", Arial, sans-serif';
   var N = 20000;                      // particles shown
   var MOVE_MS = 2600;                 // app.mjs MOVE_MS is 2000; a little slower so the eye can follow
-  var GA = 2.399963229728653;         // golden angle, as pilot.mjs networkTargets uses for station clusters
+  var GA = 2.399963229728653;         // 2 pi (1 - 0.6180339887) radians, as pilot.mjs networkTargets uses for station clusters
   var ORDER = ['substations', 'grid400', 'grid132', 'uk'];
   var SENT = {
     substations: 'DRAW EVERY SUBSTATION', grid400: 'DRAW THE 400 kV GRID', grid132: 'DRAW THE 132 kV NETWORK',
@@ -71,7 +71,7 @@
         }
       }
     }
-    for (var s = 0; j < N; s++, j++) {      // pilot.mjs: station q = s mod n, ring c, golden-angle cluster
+    for (var s = 0; j < N; s++, j++) {      // pilot.mjs: station q = s mod n, ring c, GA-angle cluster
       var q2 = s % n, c = Math.floor(s / n), th = c * GA, r = 0.004 * Sc * Math.sqrt(c);
       t[2 * j] = Sc * st[2 * q2] + r * Math.cos(th); t[2 * j + 1] = Sc * st[2 * q2 + 1] + r * Math.sin(th);
       node[j] = q2;
@@ -306,7 +306,7 @@
         var n = D[k]; if (!n) return;
         para(n.label.toUpperCase() + ': ' + n.n.toLocaleString('en-GB') + ' nodes, ' + (n.e.length / 2).toLocaleString('en-GB') + ' edges. Source: ' + n.source + '. ' + n.attribution + '. Law: ' + n.law + '.', '#cfe');
       });
-      para('Copied from the owner\'s public folder globalgrid2050 testcode/wafer-development-environment/202609180245-real-systems (*-network.json). Coordinates kept to 4 decimals as published; circuit names on line vertices dropped. It charts published data; it is not a design.', C.sky);
+      para('From the public globalgrid2050 network files (*-network.json). Coordinates kept to 4 decimals as published; circuit names on line vertices dropped. It charts published data; it is not a design.', C.sky);
     });
   }
 

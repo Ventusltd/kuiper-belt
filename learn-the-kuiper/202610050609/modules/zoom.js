@@ -1,4 +1,4 @@
-// LEARN THE KUIPER: ZOOM module (Opus 1). Deep-zoom viewer of the real Kuiper law.
+// LEARN THE KUIPER: ZOOM module. Deep-zoom viewer of the real Kuiper law.
 // Plug-in shape per MODULE-CONTRACT.md. Every position comes from KuiperLaw.place; the key lists come from
 // KuiperScale.visibleKeys (zoomed in, exact) and KuiperScale.sample (zoomed out). No build step, works from file://.
 // REAL view (on when realgame-data.js is loaded): only issued lines are stars; silence (keys skipped for quiet time)
@@ -620,7 +620,7 @@
     fly(q.x, cy, z, sec, true);
   }
 
-  // ------------------------------------------------------------------ the WHY panel (for a PhD)
+  // ------------------------------------------------------------------ the WHY panel
   function whyText() {
     var f = S.facts, k = S.sel ? S.sel.key : 123456789;
     var q = KuiperLaw.place(k);
@@ -631,12 +631,12 @@
       ['turn = m / 2^32     r = sqrt(k + 0.5)     x = r cos(2 pi turn), y = r sin(2 pi turn)', C.white],
       ['Live: k = ' + fmt(k) + ', m = ' + fmt(q.m) + ', turn = ' + q.turns.toFixed(9) + ', r = ' + q.r.toFixed(6), C.amber],
       ['WHICH KEYS ARE DRAWN', C.cyan],
-      ['Zoomed in: KuiperScale.visibleKeys. The window becomes a key band by inverting r: k from r^2 - 0.5. Inside the band the keys at the window\'s angles form a 2-D lattice {(k, kG - w 2^32)}. A reduced basis enumerates only those candidates, and each is tested exactly. When the window holds no more candidates than the budget (' + fmt(MAXDOTS) + ' addresses, ' + fmt(MAXCAND) + ' in the REAL view), every address in it is found; past the budget the window is thinned and the exact flag below says NO.', C.white],
-      ['REAL VIEW: only addresses a commit issued are stars. Each candidate is tested against the public commit table by a binary search over commit start keys; silence (keys skipped for quiet time) stays dark and can still be tapped, showing SILENCE: NEVER ISSUED. Zoomed out, the stars are a sample of issued lines (one from each of ' + fmt(SAMPLEDOTS) + ' equal-count bands of lines). Now: ' + (realView() ? 'REAL, ' + fmt(S.issuedN) + ' issued lines below key ' + fmt(S.N) : 'OFF, every dot is an address, not an issued line') + '.', C.white],
+      ['Zoomed in: KuiperScale.visibleKeys. The window becomes a key band by inverting r: k from r^2 - 0.5. Inside the band the keys at the window\'s angles form a 2-D lattice {(k, kG - w 2^32)}. A reduced basis enumerates only those candidates, and each is checked exactly. When the window holds no more candidates than the budget (' + fmt(MAXDOTS) + ' addresses, ' + fmt(MAXCAND) + ' in the REAL view), every address in it is found; past the budget the window is thinned and the exact flag below says NO.', C.white],
+      ['REAL VIEW: only addresses a commit issued are stars. Each candidate is checked against the public commit table by a binary search over commit start keys; silence (keys skipped for quiet time) stays dark and can still be tapped, showing SILENCE: NEVER ISSUED. Zoomed out, the stars are a sample of issued lines (one from each of ' + fmt(SAMPLEDOTS) + ' equal-count bands of lines). Now: ' + (realView() ? 'REAL, ' + fmt(S.issuedN) + ' issued lines below key ' + fmt(S.N) : 'OFF, every dot is an address, not an issued line') + '.', C.white],
       ['Zoomed out: KuiperScale.sample. One fixed pick from each of ' + fmt(SAMPLEDOTS) + ' equal-count key bands (equal count is equal area for this law), plus the visible window thinned the same way.', C.white],
-      ['Now: method ' + S.method + (info ? ', candidates ' + fmt(info.candidates || 0) + ', expected ' + fmt(info.expected || 0) : '') + ', exact ' + (S.exact ? 'YES (every address in the window was tested)' : 'NO (thinned)') + '.', C.amber],
+      ['Now: method ' + S.method + (info ? ', candidates ' + fmt(info.candidates || 0) + ', expected ' + fmt(info.expected || 0) : '') + ', exact ' + (S.exact ? 'YES (every address in the window was checked)' : 'NO (thinned)') + '.', C.amber],
       ['EXACT TO 2^53', C.cyan],
-      ['Keys are JavaScript doubles, whole numbers to 2^53 = 9,007,199,254,740,992. k mod 2^32 is exact there, and Math.imul works on 32-bit integers, so m is exact for every key. scale-logic receipt: 1,000,000 + 100,000 random keys to 2^53, 0 differences from KuiperLaw.place.', C.white],
+      ['Keys are JavaScript doubles, whole numbers to 2^53 = 9,007,199,254,740,992. k mod 2^32 is exact there, and Math.imul works on 32-bit integers, so m is exact for every key.', C.white],
       ['ANGLES REPEAT EVERY 2^32', C.cyan],
       ['m depends only on k mod 2^32, so key k and key k + 4,294,967,296 point the same way at different distances. With ' + fmt(S.N) + ' keys the angle list repeats ' + (f.angleRepeats < 1 ? f.angleRepeats.toPrecision(3) : fmt(f.angleRepeats)) + ' times.', C.white],
       ['EVERY KEY OWNS THE SAME AREA', C.cyan],
@@ -931,7 +931,7 @@
     S.sweep.setOn(S.scanOn);
     paintToggles(); S.dirty = true;
   }
-  // the radar sweep is JOB 3 (handed to Codex): zoom.js never loads sweep.js itself. If a page has already loaded it
+  // the radar sweep is a separate file: zoom.js never loads sweep.js itself. If a page has already loaded it
   // (window.KGSweep), the SCAN toggle appears and uses it; otherwise SCAN stays hidden and nothing changes.
   function attachSweep() {
     if (window.KGSweep) makeSweep();

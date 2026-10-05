@@ -222,6 +222,9 @@
     '.kgl-ic svg{width:28px;height:28px;display:block}.kgl-ic.off{color:rgba(255,255,255,.3)}.kgl-ic.lit{color:#ffb000}';
   CSS += '.kgl-root *{font-weight:400;text-shadow:none!important}.kgl-panel{max-height:46%;overflow-y:auto;overflow-x:hidden;justify-content:flex-start;pointer-events:auto;touch-action:pan-y}.kgl-panel,.kgl-panel *{color:#fff!important}.kgl-g{min-width:0;max-width:100%;flex-wrap:wrap;white-space:normal;overflow-wrap:anywhere;flex:0 1 auto}.kgl-working{font-size:24px!important;line-height:1.5;margin-top:12px}.kgl-f{border:1px solid #fff;border-radius:0;padding:2px 4px;max-width:100%;box-sizing:border-box;white-space:normal;overflow-wrap:anywhere}.kgl-f.kgl-ed{border-radius:0;background:#000;border-bottom:3px solid white}.kgl-b{display:none}.kgl-tag,.kgl-tag.on,.kgl-pill{border:1px solid white;border-radius:0;box-shadow:none;background:#000}.kgl-tag.on{border-bottom:3px solid white}.kgl-cell.on{border-bottom-color:white}.kgl-pip,.kgl-pip.on,.kgl-ic.lit{color:white}.kgl-pip i{border-color:white}.kgl-pip.on i,.kgl-meter i.on{background:white;border-color:white}.kgl-pad button,.kgl-pad button.fn{color:white;background:black;border:1px solid white;border-radius:0}.kgl-editing .kgl-strip,.kgl-editing .kgl-tags{display:none}.kgl-side .kgl-panel{max-height:none}.kgl-pulse{animation:none;outline:2px solid white}.kgl-root .kgl-mod{font-size:28px;gap:8px}.kgl-strip{flex-wrap:wrap;overflow:visible;gap:8px}.kgl-cell{max-width:100%;overflow-wrap:anywhere;white-space:normal}.kgl-cell.big{font-size:24px}';
   CSS += '.kgl-invalid .kgl-strip,.kgl-invalid .kgl-live,.kgl-invalid-root .kgl-root-result{visibility:hidden}';
+  CSS += '.kgl-tags,.kgl-tags *{color:#fff!important;font-weight:400;text-shadow:none!important}';
+  // Short landscape footer; optional tags open over the drawing, never over the working line.
+  CSS += '.kgl-extra{display:contents}.kgl-more-button{display:none;font:inherit;color:inherit}.kgl-side .kgl-panel{padding-bottom:4px}.kgl-side .kgl-strip{padding-bottom:2px}.kgl-side .kgl-tags{flex-wrap:nowrap}.kgl-side .kgl-tags>.kgl-tag{flex:none}.kgl-side .kgl-more-button{display:inline-block;font-size:24px}.kgl-side .kgl-extra{display:none;position:absolute;right:calc(100% + 8px);bottom:0;box-sizing:border-box;background:#000;border:1px solid #fff;padding:8px;gap:8px;flex-wrap:wrap;justify-content:center;overflow-y:auto;touch-action:pan-y}.kgl-side.kgl-more .kgl-extra{display:flex}';
   var SVG_NOTE = '<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M11 21V6l11-2v14"/><ellipse cx="8" cy="21" rx="3.4" ry="2.6" fill="currentColor"/><ellipse cx="19" cy="18" rx="3.4" ry="2.6" fill="currentColor"/><path class="s" d="M4 4l20 20" stroke-width="3" style="display:none"/></svg>';
   var SVG_PLAY = '<svg viewBox="0 0 28 28" fill="currentColor"><path class="p" d="M8 5l15 9-15 9z"/><path class="q" d="M7 5h5v18H7zM16 5h5v18h-5z" style="display:none"/></svg>';
   var SVG_STAR = '<svg viewBox="0 0 28 28" fill="currentColor"><path d="M14 2l3.2 8.2 8.8.6-6.8 5.6 2.2 8.6L14 20.2 6.6 25l2.2-8.6L2 10.8l8.8-.6z"/></svg>';
@@ -429,6 +432,7 @@
   }
   function showPad(v) {
     var s = S; s.pad.style.display = v ? 'grid' : 'none'; s.root.classList.toggle('kgl-editing', !!v);
+    if (v && s.F.moreTag) { s.root.classList.remove('kgl-more'); s.F.moreTag.setAttribute('aria-expanded', 'false'); }
     s.padH = v ? s.pad.offsetHeight : 0; applyPanelPos(); fitLines(); placeCircle(); need();
   }
   function grp(line, cls) { return E('span', 'kgl-g' + (cls ? ' ' + cls : ''), null, line); }
@@ -563,16 +567,31 @@
 
     // ---- one row of one-word taps: the two presets, how near these numbers are to the live Kuiper,
     //      the experiments of the open part, and the copy for a spreadsheet
-    var tags = F.tags = E('div', 'kgl-tags', null, panel);
+    var tags = F.tags = E('div', 'kgl-tags', null, s.root);
+    tags.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:#000;color:#fff;padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px));box-sizing:border-box;z-index:4';
     function tag(parent, text, fn) { var t = E('span', 'kgl-tag', text, parent); t.addEventListener('click', function () { gesture(); endEdit(true); fn(); }); return t; }
     F.exTag = tag(tags, 'EXERCISE', function () { preset(1, 0); });
     F.liveTag = tag(tags, 'LIVE', function () { preset(0, 0.5); });
-    F.meter = E('span', 'kgl-meter', null, tags); F.mDots = [E('i', null, null, F.meter), E('i', null, null, F.meter), E('i', null, null, F.meter), E('i', null, null, F.meter)];
-    F.tgK = E('span', 'kgl-tagset', null, tags);
+    F.copyTag = tag(tags, 'COPY', copySheet);
+    F.moreTag = E('button', 'kgl-tag kgl-more-button', '...', tags);
+    F.moreTag.setAttribute('type', 'button');
+    F.moreTag.setAttribute('aria-label', 'More lesson controls');
+    F.moreTag.setAttribute('aria-expanded', 'false');
+    F.moreTag.addEventListener('click', function () {
+      gesture(); endEdit(true);
+      var open = s.root.classList.toggle('kgl-more');
+      F.moreTag.setAttribute('aria-expanded', String(open));
+    });
+    var extra = F.extra = E('div', 'kgl-extra', null, tags);
+    extra.addEventListener('click', function () {
+      s.root.classList.remove('kgl-more'); F.moreTag.setAttribute('aria-expanded', 'false');
+    });
+    F.meter = E('span', 'kgl-meter', null, extra); F.mDots = [E('i', null, null, F.meter), E('i', null, null, F.meter), E('i', null, null, F.meter), E('i', null, null, F.meter)];
+    F.tgK = E('span', 'kgl-tagset', null, extra);
     [100, 1000, 10000].forEach(function (n) { tag(F.tgK, commas(String(n)), function () { setCount(n); }); });
-    F.tgR = E('span', 'kgl-tagset', null, tags); F.radTags = {};
+    F.tgR = E('span', 'kgl-tagset', null, extra); F.radTags = {};
     [['sqrt', 'SQRT(k)'], ['lin', 'k'], ['cbrt', 'k^(1/3)']].forEach(function (a) { F.radTags[a[0]] = tag(F.tgR, a[1], function () { setRule(function (R) { R.rad = a[0]; }, true); }); });
-    F.tgT = E('span', 'kgl-tagset', null, tags);
+    F.tgT = E('span', 'kgl-tagset', null, extra);
     tag(F.tgT, '12', function () { setRule(function(R){R.G=1;R.W=12;},false); });
     tag(F.tgT, '360', function () { setRule(function(R){R.G=1;R.W=360;},false); });
     F.dragTag = tag(F.tgT, 'DRAG', function () { s.dragRule=!s.dragRule; F.dragTag.className='kgl-tag'+(s.dragRule?' on':''); F.dragTag.setAttribute('aria-pressed',String(s.dragRule)); });
@@ -588,7 +607,7 @@
         }, true);
       });
     });
-    F.copyTag = tag(tags, 'COPY', copySheet);
+    F.offsetTag = E('span', 'kgl-tag', '', extra); F.offsetTag.style.border = '0';
     F.msg = E('div', 'kgl-msg', '', panel);
     var id; for (id in F) if (F[id] && F[id].el && F[id].o) F[id].el.setAttribute('data-f', id);
   }
@@ -648,11 +667,12 @@
     var ex = isExercise(R), lv = isLive(R);
     if (F.exTag._on !== ex) { F.exTag._on = ex; F.exTag.className = 'kgl-tag' + (ex ? ' on' : ''); }
     if (F.liveTag._on !== lv) { F.liveTag._on = lv; F.liveTag.className = 'kgl-tag' + (lv ? ' on' : ''); }
+    setT(F.offsetTag, 'SQRT(k' + (R.off ? ' + ' + R.off : '') + ')');
     var eq = [R.G === G32(), R.W === TWO32, R.rad === 'sqrt' && R.off === 0.5, R.start === 0], i;
     for (i = 0; i < 4; i++) { var c = eq[i] ? 'on' : ''; if (F.mDots[i].className !== c) F.mDots[i].className = c; }
     s.lblRem = f.degStr + '°'; s.lblDist = rs; s.lblArea = sqs; s.lblX = xs; s.lblY = ys;
     s.stackNum = f.nNum; s.stackStr = f.nStr; s.selR = r; s.selTh = T.turns * 360;
-    fitLines(); writeHash();
+    applyPanelPos(); fitLines(); writeHash();
   }
   function liveFormula(now) { // while the arm swings the computed numbers run with it (text only, at most 20 times a second)
     var s = S, A = s.A, D = s.D, F = s.F; if (now - A.lastText < 50) return; A.lastText = now;
@@ -692,6 +712,7 @@
     if (s.canvas.width !== cw || s.canvas.height !== chh) { s.canvas.width = cw; s.canvas.height = chh; }
     var side = s.side = W > H * 1.4 && H < 560, small = Math.min(W, H) < 560;
     s.root.classList.toggle('kgl-side', side);
+    s.root.classList.remove('kgl-more'); s.F.moreTag.setAttribute('aria-expanded', 'false');
     s.fs = small ? 28 : (W >= 1100 ? 32 : 30);
     s.panel.style.fontSize = s.fs + 'px';
     s.colW = side ? Math.max(300, W - H) : W;
@@ -707,14 +728,18 @@
   }
   function applyPanelPos() {
     var s = S, ps = s.panel.style;
-    if (s.side) { ps.left = (s.W - s.colW) + 'px'; ps.right = '0'; ps.top = '50px'; ps.bottom = (s.padH > 0 ? s.padH : 44) + 'px'; }
-    else { ps.left = '0'; ps.right = '0'; ps.top = 'auto'; ps.bottom = s.padH + 'px'; }
+    s.F.extra.style.width = s.side ? Math.max(120, s.W - s.colW - 16) + 'px' : '';
+    s.F.extra.style.maxHeight = s.side ? Math.max(80, s.H - 60) + 'px' : '';
+    s.F.tags.style.left = (s.side ? s.W - s.colW : 0) + 'px';
+    s.tagsH = s.edit ? 0 : s.F.tags.offsetHeight;
+    if (s.side) { ps.left = (s.W - s.colW) + 'px'; ps.right = '0'; ps.top = '50px'; ps.bottom = Math.max(s.padH, s.tagsH, 44) + 'px'; }
+    else { ps.left = '0'; ps.right = '0'; ps.top = 'auto'; ps.bottom = (s.padH + s.tagsH) + 'px'; }
   }
   function placeCircle() {
     var s = S, W = s.W, H = s.H, x1 = W, y0, y1, R;
-    if (s.side) { x1 = W - s.colW; y0 = 0; y1 = H; R = Math.min(x1, y1 - y0) / 2 - 14; s.stackX = x1 + 28; s.stackY = H - 22; s.marksX = W - 20; }
+    if (s.side) { x1 = W - s.colW; y0 = 0; y1 = H; R = Math.min(x1, y1 - y0) / 2 - 14; s.stackX = 30; s.stackY = H - 22; s.marksX = W - 20; }
     else {
-      y0 = 50; y1 = H - s.panel.offsetHeight - s.padH; R = Math.min(W, y1 - y0) / 2 - 14;
+      y0 = 50; y1 = H - s.panel.offsetHeight - s.padH - (s.tagsH || 0); R = Math.min(W, y1 - y0) / 2 - 14;
       if (W / 2 - R >= 190) { s.stackX = 30; s.stackY = y1 - 24; }
       else { y1 -= 40; R = Math.min(W, y1 - y0) / 2 - 14; s.stackX = 30; s.stackY = (y0 + y1) / 2 + R + 14 + 22; }
       s.marksX = W - 20;
@@ -767,7 +792,7 @@
     if (morph && s.prevSig === s.sig) { s.morph = 0; s.morphT0 = performance.now(); hold(700); } else s.morph = 1;
     s.zoomK = 1; updateFormula(); need();
   }
-  function preset(start, off) { setRule(function (R) { R.start = start; R.off = off; R.G = G32(); R.W = TWO32; R.rad = 'sqrt'; }, S.rule.start === start); }
+  function preset(start, off) { setRule(function (R) { S.N = Math.max(S.N, S.K - start + 1); R.start = start; R.off = off; R.G = G32(); R.W = TWO32; R.rad = 'sqrt'; }, S.rule.start === start); }
   function ensureKey(k) { var s = S, st = s.rule.start; if (k >= st && k - st + 1 > s.N) s.N = Math.min(TWO53 - st, k - st + 1); }
 
   // ------------------------------------------------------------------ keys: one more equal turn each

@@ -20,7 +20,7 @@
   var NSUB = 5800;
   var DMAX = 8;                 // the one control: D = 0 stars, 1 to 2 the stars gather, 2 to 8 the fall to one substation
   var ZEND = 16;                // MapLibre zoom at the bottom of the fall
-  var GA = 2.399963229728653;   // golden angle (grid.js / pilot.mjs station clusters)
+  var GA = 2.399963229728653;   // 2 pi (1 - 0.6180339887) radians (grid.js / pilot.mjs station clusters)
   // See Through: MapLibre GL 4.7.1 vendored locally (the simulator overlay's version, overlay.html:4-5), one library for
   // the porthole and the 3D view. The original module loaded 3.6.2 from jsDelivr (GridAtlas shell index.html:8, :133).
   var MAPLIBRE_JS = SCRIPT_SRC.replace(/[^\/]*$/, '') + 'vendor/maplibre-gl.js';
@@ -30,7 +30,7 @@
   var GA_DATA = 'https://ventusltd.github.io/gridatlas/atlas/releases/202608300453-atlas-v9/data/';
   var GA_LINES = [['400', '#0054ff', 2.5], ['275', '#ff0000', 2.0], ['132', '#00cc00', 1.5]]; // GridAtlas ukConfig, shell :145-149
   var ATTR_MAP = 'Data © OpenStreetMap contributors | © CARTO';                       // GridAtlas shell :39
-  var ATTR_SAT = 'Imagery: Esri, Maxar, Earthstar Geographics';                                 // simulator overlay.html:43
+  var ATTR_SAT = 'Imagery: Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community';                                 // simulator overlay.html:43
   var ATTR_SUBS = 'Substations and lines © OpenStreetMap contributors, ODbL';
   var ATLAS_URL = 'https://ventusltd.github.io/gridatlas/atlas/';
   var SIM_URL = 'https://globalgrid2050.com/energy-transition-simulator/202609282123/overlay.html';
@@ -833,7 +833,7 @@
   function attrib() {
     var t = [], bad = S.failedSources && Object.keys(S.failedSources).length;
     if (S.D > 1.5) t.push(ATTR_SUBS);
-    if (!bad && (S.mapVis || S.in3d)) { t.push(ATTR_MAP); if (S.view === 'sat' || S.in3d) t.push(ATTR_SAT); if (S.in3d) t.push('Terrain: AWS Terrain Tiles (open)'); }
+    if (!bad && (S.mapVis || S.in3d)) { t.push(ATTR_MAP); if (S.view === 'sat' || S.in3d) t.push(ATTR_SAT); if (S.in3d) t.push('Terrain: Terrain Tiles (Tilezen) on AWS; UK terrain (c) Environment Agency copyright and/or database right 2015. All rights reserved'); }
     edgeText(S.att, t.join(' · ')); S.att.style.display = t.length ? 'block' : 'none';
     S.netNote.style.display = bad && S.D > 1.5 ? 'block' : 'none';
   }

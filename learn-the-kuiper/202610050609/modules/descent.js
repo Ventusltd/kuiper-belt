@@ -20,7 +20,7 @@
   var NSUB = 5800;
   var DMAX = 8;                 // the one control: D = 0 stars, 1 to 2 the stars gather, 2 to 8 the fall to one substation
   var ZEND = 18;                // MapLibre zoom at the bottom of the fall
-  var GA = 2.399963229728653;   // golden angle (grid.js / pilot.mjs station clusters)
+  var GA = 2.399963229728653;   // 2 pi (1 - 0.6180339887) radians (grid.js / pilot.mjs station clusters)
   var MAPLIBRE_JS = 'https://cdn.jsdelivr.net/npm/maplibre-gl@3.6.2/dist/maplibre-gl.js';    // GridAtlas shell index.html:133
   var MAPLIBRE_CSS = 'https://cdn.jsdelivr.net/npm/maplibre-gl@3.6.2/dist/maplibre-gl.css';  // GridAtlas shell index.html:8
   var DARK_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';       // GridAtlas engine :667
@@ -28,7 +28,7 @@
   var GA_DATA = 'https://ventusltd.github.io/gridatlas/atlas/releases/202608300453-atlas-v9/data/';
   var GA_LINES = [['400', '#0054ff', 2.5], ['275', '#ff0000', 2.0], ['132', '#00cc00', 1.5]]; // GridAtlas ukConfig, shell :145-149
   var ATTR_MAP = 'Data © OpenStreetMap contributors | © CARTO';                       // GridAtlas shell :39
-  var ATTR_SAT = 'Imagery: Esri, Maxar, Earthstar Geographics';                                 // simulator overlay.html:43
+  var ATTR_SAT = 'Imagery: Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community';                                 // simulator overlay.html:43
   var ATTR_SUBS = 'Substations and lines © OpenStreetMap contributors, ODbL';
   var ATLAS_URL = 'https://ventusltd.github.io/gridatlas/atlas/';
   var SIM_URL = 'https://globalgrid2050.com/energy-transition-simulator/202609282123/overlay.html';
@@ -797,9 +797,9 @@
       a.href = href; a.target = '_blank'; a.rel = 'noopener'; a.title = why; return a;
     }
     link('OPEN IN GRIDATLAS', ATLAS_URL + '?latitude=' + lat.toFixed(5) + '&longitude=' + lon.toFixed(5) + '&zoom=15', 'GridAtlas reads latitude, longitude and zoom; it opens at this point with its own card');
-    link('FLY IT IN THE SIMULATOR', SIM_URL + '?lat=' + lat.toFixed(6) + '&lon=' + lon.toFixed(6), 'the simulator overlay reads lat and lon (overlay.html:48-49)');
-    brow('HELICOPTER, LIDAR: NEXT', 'rgba(255,255,255,0.45)');
-    // WHY: the exact rule and the sources, for the engineer (one tap, closed by default)
+    link('FLY IT IN THE SIMULATOR', SIM_URL + '?lat=' + lat.toFixed(6) + '&lon=' + lon.toFixed(6), 'opens the simulator at this point');
+    brow('', 'rgba(255,255,255,0.45)');
+    // WHY: the exact rule and the sources (one tap, closed by default)
     var why = el('div', 'margin-top:6px;color:' + C.cyan + ';cursor:pointer;text-decoration:underline;text-underline-offset:4px', S.whyOpen ? 'WHY -' : 'WHY +', body);
     why.addEventListener('click', function () { S.whyOpen = !S.whyOpen; showCard(); });
     if (S.whyOpen) {

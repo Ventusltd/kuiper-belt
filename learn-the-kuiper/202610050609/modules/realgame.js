@@ -1,4 +1,4 @@
-// realgame.js: REAL KUIPER GAME, a module of LEARN THE KUIPER (owner: Opus 2).
+// realgame.js: REAL KUIPER GAME, a module of LEARN THE KUIPER.
 // A radar game played on the REAL wafer: 11,326 real public commits from kuiper-belt cosmos/wafer.tsv (realgame-data.js).
 // Every real position comes from KuiperLaw.place; dark rings are real unissued keys (600 per second of quiet, 14-day cap).
 // Missions are done by pointing and tapping. No arithmetic, no quiz. WHY gives the exact numbers and the sources.
@@ -536,7 +536,7 @@
     S.root.classList.toggle('busy', !!S.fly || !!(S.land && !S.land.fin));
   }
 
-  // test hooks: read the state, and aim real pointer events where a child would tap
+  // test hooks: read the state, and aim real pointer events where a finger would tap
   window.KGRealGame = {
     state: function () {
       if (!S) return { open: false };

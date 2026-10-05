@@ -27,10 +27,10 @@ The full CERN-OHL-S v2 text, as carried by globalgrid2050: `licences/globalgrid2
   OpenStreetMap-derived, ODbL; loaded at run time.
 - **CARTO** dark-matter basemap style: (c) CARTO, map data (c) OpenStreetMap contributors. Shown on screen:
   "Data © OpenStreetMap contributors | © CARTO".
-- **Esri World Imagery**: shown on screen "Imagery: Esri, Maxar, Earthstar Geographics". Used under Esri's terms for
+- **Esri World Imagery**: shown on screen "Imagery: Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community". Used under Esri's terms for
   the World Imagery service.
-- **AWS Terrain Tiles** (terrarium, `s3.amazonaws.com/elevation-tiles-prod`): shown on screen "Terrain: AWS Terrain
-  Tiles (open)". The tiles' own sources and attributions are listed by the Terrain Tiles project
+- **AWS Terrain Tiles** (terrarium, `s3.amazonaws.com/elevation-tiles-prod`): shown on screen with the credit the tiles require for the UK: "United Kingdom terrain data (c) Environment Agency
+  copyright and/or database right 2015. All rights reserved". Other sources are listed by the Terrain Tiles project
   (https://github.com/tilezen/joerd/blob/master/docs/attribution.md).
 
 ## Third-party software

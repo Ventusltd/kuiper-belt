@@ -25,9 +25,16 @@ These are used only when the device is online; they are not bundled in this fold
 
 - Substation names, voltages, operators, positions and lines: (c) OpenStreetMap contributors, ODbL.
 - Map: CARTO dark matter, (c) CARTO, map data (c) OpenStreetMap contributors.
-- Satellite: Esri World Imagery (Esri, Maxar, Earthstar Geographics), under Esri's terms of use.
+- Satellite: Esri World Imagery (Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community), under Esri's terms of use.
 - MapLibre GL JS 3.6.2, BSD-3-Clause, loaded from cdn.jsdelivr.net.
 
 ## Fonts
 
 System fonts only.
+
+## Acknowledgements
+
+- The placement rule (distance by the square root of the number, a fixed turn per item) follows H. Vogel (1979),
+  "A better way to construct the sunflower head", Mathematical Biosciences 44 (3-4), 179-189.
+- Design influenced by Bret Victor, "Explorable Explanations" (2011).
+- The spiral family is explained for a general audience by Daniel Shiffman, The Coding Train.

@@ -1,4 +1,4 @@
-// RADAR module for LEARN THE KUIPER (Opus 3, 4 Oct 2026). Converted from finish3/radar.html (the prototype is untouched).
+// RADAR module for LEARN THE KUIPER.
 // The circle as a radar scope for grid engineering. Every real-wafer position comes from KuiperLaw.place.
 // Plain JS, no build step, works from file:// and offline. Follows MODULE-CONTRACT.md.
 (function () {
@@ -221,7 +221,7 @@
         g.setLineDash([8, 6]); g.beginPath(); g.moveTo(c, c); g.lineTo(px, py); g.stroke(); g.setLineDash([]);
         if (!S.big || tsec - S.big.t > 4) { g.fillStyle = '#ffb000'; g.textAlign = 'left'; var lab = 'KEY ' + fmt(S.contact.key) + '  ' + S.contact.deg.toFixed(1) + ' deg  r ' + S.contact.r.toFixed(2); g.fillText(lab, Math.max(8, Math.min(px + 20, W - g.measureText(lab).width - 8)), Math.max(30, Math.min(py + 34, W - 30))); }
       }
-      // toddler big numbers
+      // big numbers
       if (S.big && tsec - S.big.t < 4) {
         var fa = Math.min(1, 4 - (tsec - S.big.t)), bs = small ? 48 : 72;
         g.globalAlpha = fa; g.textAlign = 'center'; g.font = 'bold ' + bs + 'px "Segoe UI",Arial,sans-serif'; g.fillStyle = '#ffffff';
@@ -266,7 +266,7 @@
     function onMove(e) { if (!S.drag) return; S.moved = Math.max(S.moved, Math.hypot(e.clientX - S.downAt.x, e.clientY - S.downAt.y)); aim(e); }
     function onUp(e) {
       if (!S.drag) return; S.drag = false;
-      if (S.moved < 10) { var i = nearest(world(e)); if (i >= 0) { S.probe = null; setContact(P.k[i], 'KEY ' + fmt(P.k[i])); } }   // tap: toddler contact
+      if (S.moved < 10) { var i = nearest(world(e)); if (i >= 0) { S.probe = null; setContact(P.k[i], 'KEY ' + fmt(P.k[i])); } }   // tap: contact
       timers.push(setTimeout(function () { S.probe = null; }, 2500));
     }
     cv.addEventListener('pointerdown', onDown); cv.addEventListener('pointermove', onMove);

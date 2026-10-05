@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="color-scheme" content="dark"><title>Learn the Kuiper</title>
 <style>html,body{margin:0;height:100%;background:#000;overflow:hidden;overscroll-behavior:none}body,#host{position:fixed;inset:0;touch-action:none}</style></head>
-<body><div id="host"></div><script src="play.js"></script><script>
+<body><div id="host"></div><script src="audio-unlock.js"></script><script src="play.js"></script><script>
 var q=new URLSearchParams(location.search),o={standalone:true,hash:false};
 if(q.has('rung'))o.rung=+q.get('rung');if(q.has('find'))o.find=q.get('find')!=='0';if(q.has('seed'))o.seed=+q.get('seed');if(q.has('calm'))o.reducedMotion=q.get('calm')!=='0';
 KGPlay.open(document.getElementById('host'),o);

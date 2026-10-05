@@ -1,5 +1,5 @@
 // strings.js  SOLAR STRINGS: place a generic solar farm with Kuiper keys.
-// Owner: Opus 5 (DC strings). Plug-in shape per MODULE-CONTRACT.md. No build step, works from file:// and offline.
+// DC strings. Plug-in shape per MODULE-CONTRACT.md. No build step, works from file:// and offline.
 // GENERIC ONLY: a textbook block, no real site, no real design. Every wafer position comes from window.KuiperLaw.place.
 (function () {
   'use strict';
@@ -96,7 +96,7 @@
     S.muteBtn = el('button', null, tr, '♫'); S.muteBtn.className = 'kgs-b kgs-s'; S.muteBtn.style.fontSize = '30px'; S.muteBtn.title = 'sound on / off';
     S.xBtn = el('button', 'height:72px;width:72px;font-size:40px;padding:0', tr, '✕'); S.xBtn.className = 'kgs-b'; S.xBtn.title = 'close';
 
-    // bottom: one row. Toddler -/+ (more or fewer strings) at the corners, BUILD / DRAWING / WHY in the middle
+    // bottom: one row. Big -/+ (more or fewer strings) at the corners, BUILD / DRAWING / WHY in the middle
     var bot = el('div', 'position:absolute;left:calc(8px + env(safe-area-inset-left));right:calc(8px + env(safe-area-inset-right));bottom:calc(8px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:6px', root);
     S.bot = bot;
     S.fMinus = el('button', null, bot, '−'); S.fMinus.className = 'kgs-b kgs-s'; S.fMinus.setAttribute('data-f', '-1'); S.fMinus.title = 'fewer strings';
@@ -466,7 +466,7 @@
     select(o || null);
   }
 
-  // ---------- WHY: for engineers ----------
+  // ---------- WHY ----------
   function fillWhy() {
     var P = S.plan, p = S.p;
     var dT = MOD.Tmin - 25, vocC = MOD.Voc * (1 + MOD.betaVoc * dT), maxN = Math.floor(MOD.Vsys / vocC);
@@ -491,7 +491,7 @@
     H('WHY STABLE KEYS HELP PEOPLE TALK', C.green);
     Pp('Everyone on a project, from the drawing to the repair, talks about the same string. If it is called "key ' + (P.strs[0] ? P.strs[0].key : 102) + '" by everyone, a drawing, a test sheet, a monitoring alarm and a repair ticket can all point at one thing without a translation table. The key never changes; the place on the wafer is <b>computed</b> from the key by the law, so nobody has to store or send coordinates. The range tells you the family: any key between ' + (P.invs[0] ? P.invs[0].start + ' and ' + P.invs[0].end : '') + ' belongs to INV1.');
     H('DC STRING SIZING NOTES (ILLUSTRATIVE, NOT DESIGN)', C.amber);
-    Pp('Generic textbook values only, not a product datasheet, not any real site, and not a design. Real sizing follows the module datasheet, the inverter limits and the local code (for example IEC 62548 or the NEC), checked by a qualified person.');
+    Pp('Generic example values only, not a product datasheet, not any real site, and not a design. Real sizing follows the module datasheet, the inverter limits and the local code (for example IEC 62548 or the NEC), checked by a qualified person.');
     F('module: ' + MOD.W + ' W, Voc ' + MOD.Voc + ' V, Vmp ' + MOD.Vmp + ' V, Isc ' + MOD.Isc + ' A, beta(Voc) ' + (MOD.betaVoc * 100).toFixed(2) + ' %/C<br>' +
       'coldest cell ' + MOD.Tmin + ' C: Voc(cold) = ' + MOD.Voc + ' x (1 + ' + MOD.betaVoc + ' x (' + MOD.Tmin + ' - 25)) = ' + vocC.toFixed(2) + ' V<br>' +
       'string Voc(cold) = ' + p.pps + ' x ' + vocC.toFixed(2) + ' = <b style="color:' + (sVoc > MOD.Vsys ? C.amber : C.green) + '">' + sVoc.toFixed(0) + ' V</b> against a ' + MOD.Vsys + ' V system limit' + (sVoc > MOD.Vsys ? ' : TOO MANY PANELS' : ' : inside') + '<br>' +
