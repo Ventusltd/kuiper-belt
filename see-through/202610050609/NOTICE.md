@@ -42,3 +42,16 @@ The full CERN-OHL-S v2 text, as carried by globalgrid2050: `licences/globalgrid2
 
 No account, key or tracking. The network is used only for map tiles (CARTO, Esri, AWS terrain), the GridAtlas line
 files and, for a site without a saved detail file, one Overpass query.
+
+## Acknowledgements
+
+The stars gather into the grid by the Kuiper placement rule (`kuiper-law.js`). That rule is built on:
+
+- Leonardo of Pisa, known as Fibonacci, "Liber Abaci" (1202): the number sequence behind the golden ratio.
+- L. and A. Bravais (1837), Annales des Sciences Naturelles, Botanique 7: the golden angle in plant spirals.
+- H. Vogel (1979), "A better way to construct the sunflower head", Mathematical Biosciences 44 (3-4), 179-189:
+  distance by the square root of the number, one golden-angle turn per item.
+- D. E. Knuth, "The Art of Computer Programming, Volume 3: Sorting and Searching" (1973), section 6.4: the
+  golden-ratio multiplier, known as Fibonacci hashing.
+
+Any error in how their work is used here is ours.

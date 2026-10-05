@@ -39,6 +39,8 @@ Excel or Google Sheets and has no macros.
 - Online map services used only by SEE THROUGH: CARTO, Esri World Imagery and MapLibre GL JS (BSD-3-Clause).
 - Each dated folder has its own `NOTICE.md` (or a credits line in its `README`) naming the sources of its files.
 - The placement rule follows H. Vogel (1979), "A better way to construct the sunflower head", Mathematical
-  Biosciences 44 (3-4), 179-189.
+  Biosciences 44 (3-4), 179-189. Its multiplier is the golden-ratio constant of D. E. Knuth's Fibonacci hashing
+  ("The Art of Computer Programming", Volume 3, section 6.4). The numbers behind both are Fibonacci's (1202).
+  The full list of authors is under Acknowledgements in each dated folder's `NOTICE.md`.
 
 Illustrative only: not a design study.

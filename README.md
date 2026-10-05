@@ -158,6 +158,20 @@ under Apache-2.0, see [LICENSE](LICENSE); documentation and generated data under
 warranty is given, as Ubuntu gives none. Nothing here is a design; a drawing of a system is a chart, and an
 engineering design carries a named engineer and indemnity.
 
+## Acknowledgements
+
+The placement law is built on other people's work:
+
+- Leonardo of Pisa, known as Fibonacci, "Liber Abaci" (1202): the number sequence whose neighbouring ratios settle
+  on the golden ratio.
+- L. and A. Bravais (1837), Annales des Sciences Naturelles, Botanique 7: the golden angle in plant spirals.
+- H. Vogel (1979), "A better way to construct the sunflower head", Mathematical Biosciences 44 (3-4), 179-189:
+  radius by the square root of the number, one golden-angle turn per item.
+- D. E. Knuth, "The Art of Computer Programming, Volume 3: Sorting and Searching" (1973), section 6.4: the
+  multiplier 2654435769, which is 2^32 divided by the golden ratio, rounded down, known as Fibonacci hashing.
+
+Any error in how their work is used here is ours.
+
 ## State
 
 Seeded 2026-09-18. `tools/estate.py` is **not yet written**. See [SPEC.md](SPEC.md) for its

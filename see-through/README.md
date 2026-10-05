@@ -31,4 +31,6 @@ terrain come from online services, so it needs the internet.
 - Substations, lines and outlines: (c) OpenStreetMap contributors, Open Database Licence 1.0.
 - Map: (c) CARTO. Satellite imagery: Esri, Vantor, Earthstar Geographics, and the GIS User Community. Terrain: AWS Terrain Tiles.
 - MapLibre GL JS: BSD-3-Clause, (c) MapLibre contributors and Mapbox.
+- The stars gather by the Kuiper placement rule, which follows H. Vogel (1979) and uses the golden-ratio multiplier
+  of D. E. Knuth's Fibonacci hashing.
 - Full credits: `NOTICE.md` in each dated folder.

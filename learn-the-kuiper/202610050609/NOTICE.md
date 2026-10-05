@@ -34,7 +34,23 @@ System fonts only.
 
 ## Acknowledgements
 
-- The placement rule (distance by the square root of the number, a fixed turn per item) follows H. Vogel (1979),
-  "A better way to construct the sunflower head", Mathematical Biosciences 44 (3-4), 179-189.
+The rule this game teaches is built on other people's work. Oldest first:
+
+- Archimedes, "On the Sphere and Cylinder" (about 225 BC): equal steps in height cut a sphere into bands of equal
+  area. The SPHERE screen sets height this way.
+- Leonardo of Pisa, known as Fibonacci, "Liber Abaci" (1202): the number sequence whose neighbouring ratios settle
+  on the golden ratio. The spiral arms you can count in the circle come in neighbouring Fibonacci numbers.
+- L. and A. Bravais (1837), Annales des Sciences Naturelles, Botanique 7: the golden angle, about 137.5 degrees,
+  as the turn between one leaf or seed and the next.
+- H. Vogel (1979), "A better way to construct the sunflower head", Mathematical Biosciences 44 (3-4), 179-189:
+  the placement rule (distance by the square root of the number, one golden-angle turn per item). The Kuiper
+  turns 222.4922 degrees per key, which is the same angle measured the other way round.
+- D. E. Knuth, "The Art of Computer Programming, Volume 3: Sorting and Searching" (1973), section 6.4: multiply
+  by a whole-number form of the golden ratio and keep the remainder, known as Fibonacci hashing. The multiplier
+  2654435769 is 2^32 divided by the golden ratio, rounded down.
+- M. Roberts (2018), "The Unreasonable Effectiveness of Quasirandom Sequences", extremelearning.com.au: the
+  plastic-number pair behind the two multipliers on the SPHERE screen.
 - Design influenced by Bret Victor, "Explorable Explanations" (2011).
 - The spiral family is explained for a general audience by Daniel Shiffman, The Coding Train.
+
+Any error in how their work is used here is ours.
