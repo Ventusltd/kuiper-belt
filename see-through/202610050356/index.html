@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>See Through</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="vendor/maplibre-gl.css">
+<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}#host{position:fixed;inset:0;background:#000}
+#closed{color:#ffb000;font:bold 32px "Segoe UI",Arial,sans-serif;padding:40px;display:none}</style></head>
+<body><div id="host"></div><div id="closed">CLOSED</div>
+<script src="kuiper-law.js"></script>
+<script src="grid-data.js"></script>
+<script src="vendor/maplibre-gl.js"></script>
+<script src="pf.js"></script>
+<script src="model.js"></script>
+<script src="see3d.js"></script>
+<script src="descent.js"></script>
+<script>
+(function(){
+  var m=(window.KGModules||[]).filter(function(x){return x.id==='descent'})[0], host=document.getElementById('host');
+  var close=m.close; m.close=function(){close.call(m); host.style.display='none'; document.getElementById('closed').style.display='block'; window.__closed=true;};
+  window.__errors=[]; window.addEventListener('error',function(e){window.__errors.push(String(e.message));});
+  m.open(host);
+})();
+</script></body></html>
