@@ -1,0 +1,44 @@
+/* ST1: presentation only. Keep drawing colours, input handlers and audio. */
+.st-plain, .st-plain div, .st-plain button, .st-plain input, .st-plain a {
+  color: #fff !important;
+  font-family: system-ui, sans-serif !important;
+  font-weight: 400 !important;
+  font-variant-numeric: tabular-nums;
+  text-shadow: none !important;
+  letter-spacing: normal !important;
+}
+.st-plain button, .st-plain input {
+  border: 1px solid #fff !important;
+  border-radius: 0 !important;
+  background: #000 !important;
+  opacity: 1 !important;
+  font-size: 24px !important;
+}
+.st-plain button[data-on="1"] { text-decoration: underline; text-underline-offset: 6px; }
+.st-plain button:focus-visible, .st-plain input:focus-visible { outline: 2px solid #fff !important; outline-offset: 3px; }
+/* Transparent full-screen containers stay transparent; textual blocks get black backing. */
+.st-plain div[style*="font:"], .st-plain div[style*="font-size:"], .st-plain a { background-color: #000 !important; }
+.st-plain { background-color: transparent !important; }
+.st-plain div[style*="border-radius:10px"] { border-color: #fff !important; border-radius: 0 !important; }
+.st-plain .st-model-note { font-size: 24px !important; border: 0 !important; border-radius: 0 !important; padding: 4px !important; }
+.st-plain .st-model-counts { font-size: 24px !important; line-height: 1.25 !important; }
+
+/* ST2 edge layout; the text never occupies the circle. */
+.st-plain button { font-size:20px !important; }
+.st-plain .st-edge { white-space:nowrap !important; overflow-x:auto !important; overflow-y:hidden !important; max-height:24px !important; background:#000 !important; color:#fff !important; font-weight:400 !important; pointer-events:auto; }
+.st-plain .st-model-counts { font-size:14px !important; line-height:22px !important; }
+.st-plain .st-network { pointer-events:none; }
+.st-plain .st-joystick { border-color:#fff !important; background:rgba(0,0,0,.65) !important; }
+.st-plain .st-joystick > div { border-color:#fff !important; }
+
+/* ST3: only the words have backing; preserve every wrapped fact and credit. */
+.st-plain .st-edge.st-wrap {
+  white-space:normal !important; overflow:visible !important; max-height:none !important;
+  width:fit-content; box-sizing:border-box; overflow-wrap:anywhere;
+  background:transparent !important; pointer-events:none;
+}
+.st-plain .st-words {
+  color:#fff; background:#000; padding:1px 3px;
+  -webkit-box-decoration-break:clone; box-decoration-break:clone;
+}
+.st-plain .st-attribution { font-size:11px !important; line-height:16px !important; }
