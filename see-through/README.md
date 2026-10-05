@@ -20,7 +20,7 @@ terrain come from online services, so it needs the internet.
 
 ## How the folders are organised
 
-- The stable link above always opens the newest dated folder, `202610050609/`.
+- The stable link above always opens the newest dated folder.
 - Each folder is named by a date and time stamp: year, month, day, hour, minute.
 - Earlier dated folders are kept unchanged as history, so old links keep working.
 

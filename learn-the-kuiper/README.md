@@ -18,9 +18,15 @@ Play it here: https://ventusltd.github.io/kuiper-belt/learn-the-kuiper/
 Open the newest dated folder, download `learn-the-kuiper.zip`, unzip it and open `index.html` in a web browser.
 Everything runs from the folder. Only the real map in SEE THROUGH (under MORE) needs the internet.
 
+## Rebuild it in a spreadsheet
+
+`build-your-own-kuiper/Build-Your-Own-Kuiper.xlsx` holds the same rule as spreadsheet formulas: keys 1 to 1,000 with the
+chart, the two-number screen as a sheet, and a sheet that shows where the short formula stops being exact. It opens in
+Excel or Google Sheets and has no macros.
+
 ## How the folders are organised
 
-- The stable link above always opens the newest dated folder, `202610050609/`.
+- The stable link above always opens the newest dated folder.
 - Each folder is named by a date and time stamp: year, month, day, hour, minute.
 - Earlier dated folders are kept unchanged as history, so old links keep working.
 - `astra-codex/202610042233/` is a separate version of the same idea, kept the same way.
