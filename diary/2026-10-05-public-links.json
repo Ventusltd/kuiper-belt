@@ -1,0 +1,78 @@
+{
+  "schema": "ventus.public-project-links.v1",
+  "title": "Learn the Kuiper: public diary and connected projects",
+  "date": "2026-10-05",
+  "checked_at": "2026-10-05T14:00:37.863094+00:00",
+  "publisher": "Ventus Ltd / GlobalGrid2050",
+  "canonical_diary": "https://github.com/Ventusltd/kuiper-belt/blob/main/diary/2026-10-05-learn-kuiper-project-links.md",
+  "scope": "Public project navigation and dated source references; links do not imply runtime integration or release certification.",
+  "applications": [
+    {
+      "name": "Learn the Kuiper",
+      "url": "https://ventusltd.github.io/kuiper-belt/learn-the-kuiper/",
+      "dated_page": "https://ventusltd.github.io/kuiper-belt/learn-the-kuiper/202610050609/"
+    },
+    {
+      "name": "What is the Kuiper?",
+      "url": "https://ventusltd.github.io/kuiper-belt/what-is-kuiper.html"
+    },
+    {
+      "name": "See Through",
+      "url": "https://ventusltd.github.io/kuiper-belt/see-through/",
+      "dated_page": "https://ventusltd.github.io/kuiper-belt/see-through/202610050609/"
+    },
+    {
+      "name": "Kuiper diary, 5 October",
+      "url": "https://ventusltd.github.io/kuiper-belt/diary/20261005.html"
+    }
+  ],
+  "projects": [
+    {
+      "name": "Kuiper",
+      "repository": "https://github.com/Ventusltd/kuiper-belt",
+      "role": "The Kuiper instrument, Learn the Kuiper, and See Through.",
+      "diary": "https://github.com/Ventusltd/kuiper-belt/blob/main/diary/2026-10-05-learn-kuiper-project-links.md",
+      "reference_commit": "8e24d1f3142c805e13695b9c48ce3e2979454cf3",
+      "reference_readme": "https://github.com/Ventusltd/kuiper-belt/blob/8e24d1f3142c805e13695b9c48ce3e2979454cf3/README.md"
+    },
+    {
+      "name": "CVAA",
+      "repository": "https://github.com/Ventusltd/cvaa",
+      "role": "Executable regression checks and their provenance.",
+      "diary": "https://github.com/Ventusltd/cvaa/blob/main/reports/DIARY-20261005-learn-the-kuiper.md",
+      "reference_commit": "d766f2e450145a60b1c406bcac7e93f1e77d20e1",
+      "reference_readme": "https://github.com/Ventusltd/cvaa/blob/d766f2e450145a60b1c406bcac7e93f1e77d20e1/README.md"
+    },
+    {
+      "name": "Cosmic",
+      "repository": "https://github.com/Ventusltd/cosmic",
+      "role": "Navigation through a measured hierarchy and its declared placement laws.",
+      "diary": "https://github.com/Ventusltd/cosmic/blob/main/docs/DIARY-LEARN-THE-KUIPER-20261005.md",
+      "reference_commit": "a265317f7d6ad3ce9912fc2c269d1fc5393a8172",
+      "reference_readme": "https://github.com/Ventusltd/cosmic/blob/a265317f7d6ad3ce9912fc2c269d1fc5393a8172/README.md"
+    },
+    {
+      "name": "Spiders",
+      "repository": "https://github.com/Ventusltd/spiders",
+      "role": "Repository relationships and network-topology views.",
+      "diary": "https://github.com/Ventusltd/spiders/blob/main/docs/diary/2026-10-05-learn-the-kuiper.md",
+      "reference_commit": "4568e34666844f3be92f3c3709f20d5766526dfb",
+      "reference_readme": "https://github.com/Ventusltd/spiders/blob/4568e34666844f3be92f3c3709f20d5766526dfb/README.md"
+    },
+    {
+      "name": "Maths",
+      "repository": "https://github.com/Ventusltd/maths",
+      "role": "First-principles notes and spreadsheet exercises.",
+      "diary": "https://github.com/Ventusltd/maths/blob/main/diary/2026-10-05-learn-the-kuiper.md",
+      "reference_commit": "1b92448a6336a4931a7f22d192610d23e659a782",
+      "reference_readme": "https://github.com/Ventusltd/maths/blob/1b92448a6336a4931a7f22d192610d23e659a782/README.md"
+    }
+  ],
+  "related": [
+    {
+      "name": "Worlds",
+      "repository": "https://github.com/Ventusltd/worlds-",
+      "role": "Procedural geometry and design-space exploration."
+    }
+  ]
+}

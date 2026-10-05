@@ -185,3 +185,8 @@ contract and [LAWS.md](LAWS.md) for the derivation of each element. There is not
 
 Run `20260918T222408Z`, digest `a56fbe0df58281ec5971e7890d7c5ff35ab00572d83c31fd766398a30a6a56f0`. LAWS.md L10.
 <!-- DRIFT:END -->
+
+## Public diary
+
+- [5 October 2026: Learn the Kuiper and connected projects](diary/2026-10-05-learn-kuiper-project-links.md)
+- [Public project links and source revisions](https://github.com/Ventusltd/kuiper-belt/blob/main/diary/2026-10-05-public-links.json)
