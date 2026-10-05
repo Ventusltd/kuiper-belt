@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="color-scheme" content="dark">
+<title>Learn the Kuiper</title>
+<style>html,body{margin:0;height:100%;background:#000;overflow:hidden;overscroll-behavior:none}body{position:fixed;left:0;top:0;right:0;bottom:0;touch-action:none}#host{position:fixed;left:0;top:0;right:0;bottom:0}</style>
+</head>
+<body><div id="host"></div>
+<script>
+// Every file is in this folder; nothing comes from the network. A file that is not there is skipped.
+(function (list, done) {
+  var i = 0;
+  function next() {
+    if (i >= list.length) { done(); return; }
+    var s = document.createElement('script'); s.src = list[i++]; s.onload = next; s.onerror = function () { s.remove(); next(); }; document.body.appendChild(s);
+  }
+  next();
+})(['kuiper-law.js', 'scale-logic.js', 'audio-unlock.js', 'gpu/trillion/play-tuning.js', 'play.js', 'lesson.js'], function () {
+  var host = document.getElementById('host'), q = new URLSearchParams(location.search), o = { standalone: true };
+  if (q.has('rung')) o.rung = +q.get('rung');
+  if (q.has('find')) o.find = q.get('find') !== '0';
+  if (q.has('seed')) o.seed = +q.get('seed');
+  if (q.has('calm')) o.reducedMotion = q.get('calm') !== '0';
+  if (window.KGPlay) window.KGPlay.open(host, o);
+});
+</script>
+<a id="kgmenu" href="modes.html" style="position:fixed;left:12px;top:60px;z-index:50;font:700 24px/1 'Segoe UI',Arial,sans-serif;color:#8fb8c8;text-decoration:none;border:1px solid rgba(0,255,255,.35);border-radius:10px;padding:8px 12px;background:rgba(0,0,0,.35);letter-spacing:.04em">MENU</a>
+</body></html>

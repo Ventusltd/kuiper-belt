@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<title>Learn the Kuiper</title>
+<style>html,body{margin:0;height:100%;background:#000;overflow:hidden;overscroll-behavior:none}#host{position:fixed;left:0;top:0;right:0;bottom:0}</style>
+</head>
+<body><div id="host"></div>
+<script src="kuiper-law.js"></script>
+<script src="scale-logic.js"></script>
+<script>
+// these are used when they are there; the page works without them
+(function (list, done) {
+  var i = 0;
+  function next() {
+    if (i >= list.length) { done(); return; }
+    var s = document.createElement('script'); s.src = list[i++]; s.onload = next; s.onerror = next; document.body.appendChild(s);
+  }
+  next();
+})(['audio-unlock.js', 'gpu/trillion/play-tuning.js', 'gpu/trillion/bench-presets.js', 'play.js', 'lesson.js'], function () {
+  var host = document.getElementById('host');
+  if (window.KGLesson) window.KGLesson.open(host, { standalone: true });
+});
+</script>
+</body></html>
