@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Learn the Kuiper</title>
+<style>html,body{margin:0;height:100%;background:#000;color:#fff;overflow:hidden;overscroll-behavior:none}body{position:fixed;left:0;top:0;right:0;height:100%;height:100dvh;touch-action:none}</style>
+</head>
+<body>
+<!-- Fully offline: every file is in this folder, system fonts only, no network needed. Double-click index.html. -->
+<script src="audio-unlock.js"></script>
+<script src="kuiper-law.js"></script>
+<script src="scale-logic.js"></script>
+<script src="start-here.js"></script>
+<!-- the modules (each registers itself in window.KGModules; a missing file is skipped) -->
+<script src="modules/radar.js" onerror="this.remove()"></script>
+<script src="modules/realgame-data.js" onerror="this.remove()"></script>
+<script src="modules/realgame.js" onerror="this.remove()"></script>
+<script src="modules/strings.js" onerror="this.remove()"></script>
+<script src="modules/deep.js" onerror="this.remove()"></script>
+<script src="modules/zoom.js" onerror="this.remove()"></script>
+<script src="modules/grid-data.js" onerror="this.remove()"></script>
+<script src="modules/grid.js" onerror="this.remove()"></script>
+<script src="modules/sweep.js" onerror="this.remove()"></script>
+<script src="modules/descent.js" onerror="this.remove()"></script>
+<script>
+  // one sheet, full screen. ?quiet skips the opening moment; ?run=SENTENCE runs one sentence after opening (for looking at it).
+  // A shared zoom link (#key=N&zoom=Z, written by the ZOOM module) opens the sheet quietly and goes straight to ZOOM.
+  var q = new URLSearchParams(location.search), zoomLink = /^#key=/.test(location.hash);
+  window.KGStartHere.open({ quiet: q.has('quiet') || q.has('run') || zoomLink });
+  if (q.get('run')) setTimeout(function () { window.KGStartHere.run(q.get('run')); }, 200);
+  else if (zoomLink) setTimeout(function () { window.KGStartHere.openModule('zoom'); }, 50);
+</script>
+</body>
+</html>
