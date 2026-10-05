@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#000000">
-  <title>Learn the Kuiper | Astra by Codex</title>
+  <title>Learn the Kuiper</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main id="sheet">
     <header class="heading">
-      <div class="brand">ASTRA BY CODEX <strong>KUIPER</strong><span id="header-layer">YOUR SPIRAL</span></div>
+      <div class="brand">LEARN THE <strong>KUIPER</strong><span id="header-layer">YOUR SPIRAL</span></div>
       <div class="counter"><span id="count-label">1 particle addressed</span><span>Coordinates stored: 0</span></div>
       <button id="reset" class="quiet" title="Reset to the real Kuiper">Real Kuiper</button>
     </header>
@@ -42,7 +42,7 @@
     </footer>
   </main>
   <dialog id="commands-dialog" aria-labelledby="commands-title"><div class="dialog-heading"><h1 id="commands-title">Say what you want to see.</h1><button data-close="commands-dialog" aria-label="Close commands">×</button></div><div id="sentences"></div></dialog>
-  <dialog id="numbers-dialog" aria-labelledby="numbers-title"><div class="dialog-heading"><h1 id="numbers-title">Every number is yours.</h1><button data-close="numbers-dialog" aria-label="Close number controls">×</button></div><p>Astra by Codex. Independent build for GlobalGrid2050. Changes act on the same drawing. Real Kuiper restores the original rule.</p><div id="parameter-fields" class="field-grid"></div><div class="extra-controls"><label>Colour palette<select id="palette"><option value="kuiper">Kuiper</option><option value="paper">White ink</option><option value="ember">Ember</option><option value="ocean">Ocean</option><option value="orchid">Orchid</option></select></label><label>Colour each particle by<select id="colour"><option value="age">Age</option><option value="turn">Turn</option><option value="duplicate">Repeated line</option></select></label><label>Music mood<select id="mood"><option value="calm">Calm</option><option value="arcade">Arcade</option><option value="piano">Piano by distance</option></select></label></div><div class="button-wrap"><button id="mute">Sound off</button><button id="text-up">A+</button><button id="text-down">A−</button><button id="step">One more line</button><button id="slower">Slower</button><button id="faster">Faster</button><button id="reset-numbers">Real Kuiper</button></div><p id="parameter-note"></p></dialog>
+  <dialog id="numbers-dialog" aria-labelledby="numbers-title"><div class="dialog-heading"><h1 id="numbers-title">Every number is yours.</h1><button data-close="numbers-dialog" aria-label="Close number controls">×</button></div><p>Changes act on the same drawing. Real Kuiper restores the original rule.</p><div id="parameter-fields" class="field-grid"></div><div class="extra-controls"><label>Colour palette<select id="palette"><option value="kuiper">Kuiper</option><option value="paper">White ink</option><option value="ember">Ember</option><option value="ocean">Ocean</option><option value="orchid">Orchid</option></select></label><label>Colour each particle by<select id="colour"><option value="age">Age</option><option value="turn">Turn</option><option value="duplicate">Repeated line</option></select></label><label>Music mood<select id="mood"><option value="calm">Calm</option><option value="arcade">Arcade</option><option value="piano">Piano by distance</option></select></label></div><div class="button-wrap"><button id="mute">Sound off</button><button id="text-up">A+</button><button id="text-down">A−</button><button id="step">One more line</button><button id="slower">Slower</button><button id="faster">Faster</button><button id="reset-numbers">Real Kuiper</button></div><p id="parameter-note"></p></dialog>
   <dialog id="particle-dialog" aria-labelledby="particle-title"><div class="dialog-heading"><h1 id="particle-title">This particle</h1><button data-close="particle-dialog" aria-label="Close particle details">×</button></div><p>Move the example. Its true place remains marked on the drawing.</p><div id="particle-fields" class="field-grid"></div><p id="nearest-label"></p><button id="restore-dot">Return to its true place</button><div id="real-check"><h2>Check it in the real Kuiper</h2><p id="real-instructions"></p><a class="button" href="https://ventusltd.github.io/kuiper-belt/" target="_blank" rel="noopener">Open the real Kuiper ↗</a><p id="real-provenance"></p></div></dialog>
   <script src="kuiper-law.js"></script><script src="code-data.js"></script><script src="logic.js"></script><script src="sound.js"></script><script src="ui.js"></script>
 </body>
