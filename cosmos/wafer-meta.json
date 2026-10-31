@@ -1,12 +1,12 @@
 {
- "issued_keys": 45461911314,
- "unissued_keys": 17550746400,
- "address_space": 63012657714,
- "silence_share": 0.2785,
- "commits": 13177,
+ "issued_keys": 45569518239,
+ "unissued_keys": 17570576400,
+ "address_space": 63140094639,
+ "silence_share": 0.2783,
+ "commits": 13255,
  "repositories": 98,
  "first_unix": 1748560273,
- "last_unix": 1793449882,
+ "last_unix": 1793482932,
  "gap_keys_per_second": 600,
  "cap_seconds": 1209600,
  "law": "r = sqrt(key), theta = 2 pi frac(key x 2654435769 / 2^32)"
