@@ -230,8 +230,9 @@ function probeFn(sentence) {
     openPanels: [...document.querySelectorAll('.gm-open, [id^="kmb-panel-"]:not([hidden])')].filter(p => { const r = p.getBoundingClientRect();   // open = shown on screen, not a class
       return r.width > 0 && r.height > 0 && (typeof p.checkVisibility !== 'function' || p.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })); }).map(p => p.id || p.className),
     card: (() => { const c = document.getElementById('card'); if (!c || getComputedStyle(c).display === 'none') return null; const m = c.textContent.match(/(\d[\d,]*)\s+of\s+(\d[\d,]*)/);
-      const links = [...c.querySelectorAll('a')].filter(a => /see-through/.test(a.getAttribute('href') || '')).map(a => ({ text: a.textContent.trim(), hrefAttr: a.getAttribute('href'), hrefResolved: a.href, target: a.getAttribute('target'), rect: R(a) }));
-      return { index: m ? +m[1].replace(/,/g, '') : null, total: m ? +m[2].replace(/,/g, '') : null, first: c.textContent.trim().slice(0, 100), links, rect: R(c) }; })(),
+      const links = [...c.querySelectorAll('a')].filter(a => /see-through/.test(a.getAttribute('href') || '')).map(a => { const r = a.getBoundingClientRect(), h = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+        return { text: a.textContent.trim(), hrefAttr: a.getAttribute('href'), hrefResolved: a.href, target: a.getAttribute('target'), rect: R(a), hitOk: !!h && (h === a || a.contains(h)), hitAt: h ? (h.id ? '#' + h.id : h.tagName.toLowerCase()) : null }; });
+      return { visibility: getComputedStyle(c).visibility, index: m ? +m[1].replace(/,/g, '') : null, total: m ? +m[2].replace(/,/g, '') : null, first: c.textContent.trim().slice(0, 100), links, rect: R(c) }; })(),
     ky: (() => { const K = window.KY; if (!K) return null; const m = K.modules && K.modules['see-through'];
       let ins = null; try { ins = m && typeof m.inspect === 'function' ? m.inspect() : null; } catch (e) { ins = { error: String(e.message || e) }; }
       let layers = null; try { if (K.layers && typeof K.layers.inspect === 'function') { const li = K.layers.inspect(); layers = { state: li && li.states ? li.states['see-through'] : null, row: li && li.rows ? li.rows['see-through'] : null }; } } catch (e) { layers = { error: String(e.message || e) }; }
@@ -426,6 +427,8 @@ async function runDevice(browser, name, ctx) {
         if (!hashOk) why.push('hash "' + u.hash + '", documented "#key=' + body.key + '" (or with &space=' + SPACE + ')');
         if (!pathOk) why.push('href "' + link.hrefAttr + '" is not ../../see-through/ on this host');
         if (link.target && link.target !== '_self') why.push('target ' + link.target);
+        if (p.card.visibility !== 'visible') why.push('#card is visibility:' + p.card.visibility + ' (the card is not on screen)');
+        if (!link.hitOk) why.push('the row is not touchable: the hit test at its centre lands on ' + link.hitAt);
         let apiLink = null; try { apiLink = await page.evaluate((k) => { const m = window.KY.modules['see-through']; return m && m.api && typeof m.api.link === 'function' ? m.api.link({ key: k }) : null; }, body.key); } catch (err) { apiLink = 'threw ' + err.message; }
         const shotCard = await shot('spark-card');
         const nav = page.waitForURL(/\/see-through\/(\d{12}\/)?#key=/, { timeout: 30000 }).then(() => true).catch(() => false);
@@ -523,8 +526,9 @@ function buildPreview() {
   out.summary = out.devices.map(d => ({ device: d.device, viewport: d.viewport, passed: d.passed, failed: d.failed, failedSteps: d.steps.filter(s => !s.pass).map(s => s.id), consoleErrors: d.consoleErrors.length, form: (d.steps.find(s => s.id === 'entry') || {}).measured ? d.steps.find(s => s.id === 'entry').measured.form : null }));
   if (IMG) {   // the hand-off's four screenshots: the entry as a title (>= 381 px), the entry as the chip (<= 380 px), the landing, the deep-link landing
     fs.mkdirSync(IMG, { recursive: true }); const pick = []; const wideD = out.devices.find(d => d.viewport.width >= TITLE_MIN), narrowD = out.devices.find(d => d.viewport.width < TITLE_MIN);
-    if (wideD && wideD.shots.entry) pick.push([wideD.shots.entry, '01-entry-title-' + slug(wideD.device) + '.png']);
-    if (narrowD && narrowD.shots.entry) pick.push([narrowD.shots.entry, '02-entry-chip-' + slug(narrowD.device) + '.png']);
+    const formOf = d => { const e = d.steps.find(s => s.id === 'entry'); return (e && e.measured && e.measured.form) || 'none'; };   // named by the form measured, not the form wanted
+    if (wideD && wideD.shots.entry) pick.push([wideD.shots.entry, '01-entry-' + formOf(wideD) + '-' + slug(wideD.device) + '.png']);
+    if (narrowD && narrowD.shots.entry) pick.push([narrowD.shots.entry, '02-entry-' + formOf(narrowD) + '-' + slug(narrowD.device) + '.png']);
     const any = wideD || narrowD; if (any && any.shots.landing) pick.push([any.shots.landing, '03-landing-see-through-' + slug(any.device) + '.png']);
     if (any && any.shots['deep-link-landing']) pick.push([any.shots['deep-link-landing'], '04-deep-link-key-' + slug(any.device) + '.png']);
     out.img = pick.map(([s, d]) => { const size = fitPng(s, path.join(IMG, d)); return { file: d, bytes: size, under300KB: size < 300 * 1024 }; });

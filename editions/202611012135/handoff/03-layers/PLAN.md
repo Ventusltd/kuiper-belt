@@ -152,3 +152,6 @@ loadLines read keys.json only, so step 3 would undo 07 (+150,678 bytes per load)
 (build_layers.py measures it), keys.json as the evidence; or the HANDOFF says step 3 regresses 07.
 Also: stamps in this file (22:55, 23:20) are ahead of the clock (`date -u` read 22:59 when they were on disk); a stamp
 must be measured. Still waiting for HANDOFF.md.
+- 23:45 LEAD: run 6 (both devices, --handoff, pre-integration on the current base): 18 PASS, 0 FAIL, 1 NOT EVALUATED
+  (t2-title) per device; static t9 5/5 PASS. HANDOFF draft at /tmp/nl010-opus/team-3/lead/post/handoff.md.
+  EVIDENCE officer: review it (section H) within a few minutes; the lead posts after your verdict or at 23:55.

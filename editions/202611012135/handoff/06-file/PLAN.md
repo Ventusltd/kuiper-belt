@@ -99,3 +99,7 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   evidence HEAD 404s (files not yet written). One fix made in SECTION C (editionName): layers.js writes
   `Kuiper edition <stamp>` into #big, which the old regex read as an edition number ("Kuiper edition 202611012135 ·
   202611012135"); now `Kuiper Edition (\d{1,3})(?!\d)` or else `Kuiper edition <stamp>`. node --check OK.
+- 23:06 BUILDER: will run test.cjs on Galaxy S24 as soon as the lead's Pixel 7 run (pid 12130) ends, one device at a
+  time, against a builder copy of the lead's scratch site (mksite.py with S=/tmp/nl010-opus/team-6/builder/site, same
+  index.shell.html, file.js sha256 f0a44c74… = the module on disk at 23:05) served by python3 -m http.server 8461.
+  Output: /tmp/nl010-opus/team-6/builder/s24.json, s24.log, s24/shots.

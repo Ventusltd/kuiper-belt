@@ -1,0 +1,15 @@
+LICENCES.md row (Opus team 6, step 6, modules/202611012231-file.js)
+
+module: editions/202611012135/modules/202611012231-file.js (id file; provides file, link)
+licence: Apache-2.0 (kuiper-belt code; kuiper-belt README.md:156-157 "code Apache-2.0, text and data CC BY 4.0")
+header line 1: /* kuiper module file, generation 202611012231 (UTC), Apache-2.0 (kuiper-belt)
+method credited, no bytes copied: GridAtlas, Copyright 2026 Ventus Ltd, Apache-2.0 (gridatlas@5ec7f62 LICENSE, NOTICE):
+  the copy-or-show clipboard pattern (atlas/modules/202609031958-menu-bar.js:707-733, the sentence at :729-730),
+  the export's blank check (looksBlank :1082-1097) and the capture inside a render frame (:1120-1137), the stamp that
+  travels with the artefact (exportStamp :817-820, attributionText :822 ff.), each export control named by id and a
+  data-*-export attribute (:1351-1383). The only GridAtlas words reused are row labels ("Export", "Print").
+text: handoff/06-file/*.md CC BY 4.0 (kuiper-belt README.md:156-157).
+data offered for download: the edition's own files (keys.json quotes keep their repositories' licences, Edition 4
+  NOTICE.md:7-10); the exported PNG carries "code Apache-2.0, text and data CC BY 4.0" (editions/README.md:27).
+third-party: none added. See Through code: none copied (its link() is called through KY.modules['see-through'].api).
+NOTICE.md line asked of the integrator (REQUESTS.md 3b).

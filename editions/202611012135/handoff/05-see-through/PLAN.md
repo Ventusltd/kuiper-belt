@@ -100,3 +100,10 @@ See Through itself (see-through/) is untouchable this edition: its hash reader s
   of ours (pageerror must still be 0); (3) "after back #kuiper-star count 0" and the S24 sha256 mismatches in run3 came
   from files edited mid-run; the module is now frozen except for fixes you report.
 - 22:49 UTC lead: HARNESS BLOCKER (ci_check K1 privacy) fixed: the provenance field name in build-see-through-json.py and data/see-through.json renamed to 'kuiper' (the underscore form is on the not-public digest list); data regenerated: 666,940 bytes, sha256 440950711a148eb019b7309ea1a0610219c096742893ce8d7c1f81be18d479a6; python3 tools/ci_check.py from the kuiper-belt root -> K1 615 tracked files, 0 match; RESULT: PASS. No other team-5 file carries the token (grep over modules/202611012141-see-through.js, data/see-through.json, handoff/05-see-through/, the scratch patch). Opus 3 asked again to re-record the sha256.
+- 23:03 UTC tester: run5 (preview: 96736f5 index + 04-loader + 02-card patches; shell, line-card, layers, file, see-through):
+  Pixel 7 @393 load PASS, layer PASS once layers.json carried the new sha256, entry FAIL (strip at 393: shell's 434 px
+  rule vs R7 381), tap FAIL only on "a panel is open" (fixed in test.cjs: open = on screen, not the class), spark FAIL:
+  our row is right (`../../see-through/#key=36064705400`, api.link equal) but #card is visibility:hidden (layers.js:277
+  keeps `gm-open` on #layers; line-card.js:165 hides the card while any `.gm-open` exists), so the row cannot be
+  touched. FINDING posted: issuecomment-6565202316. Errors: 0 same-origin; See Through's basemaps.cartocdn.com style is
+  refused by this sandbox's egress (recorded as externalUnreachable, not counted).

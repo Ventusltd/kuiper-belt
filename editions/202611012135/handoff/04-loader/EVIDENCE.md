@@ -391,6 +391,13 @@ to it) against a72c175, i.e. port the rev-2 hunks onto the base, merging hunk 12
 `diff 96736f5 a72c175` that is `>` must still be in the page (0 missing), except lines a team-4 hunk deliberately
 merges, each named in HANDOFF.md. Until then rev 3 must not be applied, and no test result on rev 3 counts as a test
 of the integrated page.
+Root cause, measured: `/tmp/nl010-opus/team-4/lead/src/mk.sh:11` diffs the WORKING-TREE
+`editions/202611012135/index.html` (which team 10 has since moved to a72c175's content) against
+`work/patched.html` (built from the 96736f5 copy by `src/build.py:1`). The lead's rev-3 harness ran on
+`work/patched.html`, sha256 `db2ded890dc3…`, which is byte-identical to my application of rev 3 to a72c175: the
+tests passed on a page without 03-camera and 07-perf. Two consistent fixes: pin the `a` side to
+`git show 96736f5:editions/202611012135/index.html` (then HEAD 96736f5 is true and team 10 merges onto its base), or
+build on a72c175 and keep its lines. Either way the HANDOFF's HEAD line and the tested page must name the same base.
 
 HANDOFF.md as it stands (22:33 UTC) is **out of date against rev 3** and not postable:
 1. `HEAD: kuiper-belt@96736f5 … (the base the patch applies to)` and "Files … against kuiper-belt@96736f5" are now
