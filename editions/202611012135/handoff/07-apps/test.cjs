@@ -112,11 +112,17 @@ async function scriptChecks() {
   const hpIds = new Set(hpRows.map(h => h.id)), homeRows = rows.filter(r => r.key_source === 'homepage' || hpIds.has(r.id));
   const setEq = homeRows.length === 25 && hpRows.length === 25 && homeRows.every(r => hpIds.has(r.id)) && new Set(homeRows.map(r => r.id)).size === 25;
   sstep('A1 the 25 homepage ids equal the data-entity-id set of homepage_v134.html:32-56', setEq, { homepage_ids: hpRows.length, rows: homeRows.length, missing: [...hpIds].filter(i => !homeRows.some(r => r.id === i)), extra: homeRows.filter(r => !hpIds.has(r.id)).map(r => r.id) });
-  const diffs = [];
+  const diffs = [], linkNotes = [];
   for (const h of hpRows) { const r = rows.find(x => x.id === h.id); if (!r) continue;
-    const want = { key: 'surface:' + h.link, link: h.link, name: h.name, kind: h.kind, purpose: h.purpose, source: 'globalgrid2050@c66759f homepage_versions/homepage_v134.html:' + h.line };
-    for (const k of Object.keys(want)) if (r[k] !== want[k]) diffs.push({ id: h.id, field: k, row: short(r[k], 120), source: short(want[k], 120) }); }
-  sstep('A1 each homepage row = its source line (key surface:<href>, link, name, kind, purpose, source line)', diffs.length === 0, { differences: diffs.slice(0, 20), count: diffs.length });
+    // the link is the source's href, or (recorded as source_href) the stable folder above a 12-digit version folder (7.1
+    // "its stable link"), or withheld under K1 (a folder named like a repository that is not public; the URL is not printed)
+    let link = h.link, how = 'href';
+    if (r.source_href === h.link && h.link.startsWith(r.link) && /^\d{12}\/$/.test(h.link.slice(r.link.length))) { link = r.link; how = 'stable folder of source_href'; }
+    else if (r.link_withheld && r.link === 'https://globalgrid2050.com/not-public/' && r.link !== h.link) { link = r.link; how = 'withheld (K1): ' + short(r.link_withheld, 80); }
+    if (how !== 'href') linkNotes.push({ id: h.id, how });
+    const want = { key: 'surface:' + link, link, name: h.name, kind: h.kind, purpose: h.purpose, source: 'globalgrid2050@c66759f homepage_versions/homepage_v134.html:' + h.line };
+    for (const k of Object.keys(want)) if (r[k] !== want[k]) diffs.push({ id: h.id, field: k, row: short(r[k], 120), source: k === 'key' || k === 'link' ? '(the source href)' : short(want[k], 120) }); }
+  sstep('A1 each homepage row = its source line (key surface:<link>, link = href or its stable folder or K1-withheld, name, kind, purpose, source line)', diffs.length === 0, { differences: diffs.slice(0, 20), count: diffs.length, link_notes: linkNotes });
   // same_as for shared keys
   const byKey = {}; rows.forEach(r => { (byKey[r.key] = byKey[r.key] || []).push(r); });
   const shared = Object.values(byKey).filter(g => g.length > 1);
@@ -158,7 +164,8 @@ async function scriptChecks() {
   const SPACE = k, offWafer = [];
   for (const e of placed) { const w = rowsW[e.wafer_row]; if (!w || w.name !== e.repo || !String(e.commit).startsWith(w.sha12) || w.k0 !== e.k0 || !(e.key >= w.k0 && e.key < w.k0 + w.lines) || !(e.key < SPACE)) offWafer.push(e.sym); }
   sstep('A4 every placed key lies inside the cosmos/wafer.tsv row of its recorded repository and commit', offWafer.length === 0, { placed: placed.length, outside: offWafer.slice(0, 20), address_space: SPACE });
-  const elText = JSON.stringify(E), leakedE = cat.filter(c => (c.title && c.title.length >= 16 && elText.includes(c.title)) || (c.description && c.description.length >= 24 && elText.includes(c.description)));
+  // the code line (line_text), its path and its GitHub address are the code's own words, licensed by its repository: excluded
+  const elText = JSON.stringify(Object.assign({}, E, { elements: els.map(e => { const o = Object.assign({}, e); delete o.line_text; delete o.path; delete o.github; return o; }), checks: null, checks_keypy: null })), leakedE = cat.filter(c => (c.title && c.title.length >= 16 && elText.includes(c.title)) || (c.description && c.description.length >= 24 && elText.includes(c.description)));
   sstep('A4 Q1: no catalogue title or description copied into elements.json', leakedE.length === 0, { leaked: leakedE.slice(0, 10).map(c => c.key + ' ' + c.title) });
   // python tools/key.py on three sampled elements (ROOTS patched to a folder of links; key.py itself untouched)
   if (argv.includes('--skip-keypy')) { sstep('A4 python tools/key.py on three sampled elements', null, 'skipped by --skip-keypy'); return; }
@@ -286,17 +293,18 @@ async function runDevice(browser, DEV) {
     await p.waitForFunction(() => { try { const s = KY.modules.layers.api.get('spider').status; return s === 'OK' || s === 'FAIL' || s === 'EMPTY' || s === 'REFUSED'; } catch (e) { return false; } }, null, { timeout: LONG, polling: 1000 }).catch(() => {});
     await sleep(SETTLE);
     const sl = await layer(p, 'spider'), ins2 = await inspect(p), g = (ins2.spider && ins2.spider.graphs) || {}, go = g.overview || {}, gp = g['periodic-table'] || {};
+    const noKey = Number.isFinite(gp.no_key) ? gp.no_key : gp.nokey;
     const txt2 = await p.evaluate(readoutText), px1 = await ovPx();
     const nokeyLine = (txt2.split('\n').find(l => /periodic/i.test(l) && /no key/i.test(l)) || null);
     step('A5 the spider layer (real tap) is OK and draws the overview\'s 15 edges (inspect: 16 nodes, 15 edges, 15 drawn)', sl.status === 'OK' && sl.checked === true && go.nodes === 16 && go.edges === 15 && go.drawn === 15,
       { layer: sl, overview: go, overlay_px_off: px0, overlay_px_on: px1 });
-    step('A5 the readout names how many periodic-table nodes had no key (663 nodes, 2,481 edges)', !!nokeyLine && gp.nodes === 663 && gp.edges === 2481 && Number.isFinite(gp.nokey) && nokeyLine.replace(/,/g, '').includes(String(gp.nokey)),
+    step('A5 the readout names how many periodic-table nodes had no key (663 nodes, 2,481 edges)', !!nokeyLine && gp.nodes === 663 && gp.edges === 2481 && Number.isFinite(noKey) && nokeyLine.replace(/,/g, '').includes(String(noKey)),
       { line: nokeyLine, periodic: gp });
     await shot(p, 'spider-layer');
     // ------------------------------------------------------------------ A4 card from the periodic-table panel (if any)
     await closeMenus(p);
     await openMenu(p, 'file'); await tapSel(p, '#ky-file-open-app'); await sleep(3000);
-    const ptRow = '#ky-apps [data-id="periodic-table"]';
+    const ptRow = '#ky-apps [data-id="periodic-table"] button.ky-app-w';   // "keys ▸": the panel; the row's link would leave the page
     if (await p.locator(ptRow).count()) { await tapSel(p, ptRow); await sleep(3000); }
     const nEl = await p.locator('#ky-apps-elements [data-sym]').count();
     if (!nEl) step('A4 card from the periodic-table panel: first line = line_text, second = block:<Sym>', null, { why: 'no #ky-apps-elements [data-sym] rows after tapping the periodic-table row (and the REFUSED layer draws no sparks while Q1 holds)' });
@@ -307,15 +315,22 @@ async function runDevice(browser, DEV) {
       for (const e of pick) {
         if (!(await p.evaluate(() => { const L = document.getElementById('ky-apps'); return L && getComputedStyle(L).display !== 'none'; }))) { await openMenu(p, 'file'); await tapSel(p, '#ky-file-open-app'); await sleep(2500); if (await p.locator(ptRow).count()) { await tapSel(p, ptRow); await sleep(2500); } }
         await tapSel(p, '#ky-apps-elements [data-sym="' + e.sym + '"]'); await sleep(SETTLE);
-        const c = await p.evaluate(() => { const c = document.getElementById('card'); if (!c || getComputedStyle(c).display === 'none') return { open: false }; const t = (c.innerText || '').split('\n').map(s => s.trim()).filter(Boolean); return { open: true, l1: t[0], l2: t[1] }; });
-        cards.push({ sym: e.sym, open: c.open, l1: short(c.l1, 120), l2: c.l2, ok: c.open && c.l1 === e.line_text.trim() && c.l2 === e.sym });
+        // the first visible text node of the card is the header (the card law), its text = line_text; the next = block:<Sym>
+        const c = await p.evaluate(() => { const c = document.getElementById('card'); if (!c || getComputedStyle(c).display === 'none') return { open: false };
+          const w = document.createTreeWalker(c, NodeFilter.SHOW_TEXT), t = []; let n;
+          while ((n = w.nextNode()) && t.length < 6) { const el = n.parentElement; if (!n.textContent.trim() || !el || el.closest('style,script') || !el.getClientRects().length || getComputedStyle(el).visibility === 'hidden') continue;
+            const blk = el.closest('.ky-ec-h, .ky-ec-s, .lc-h, div, p, li') || el; if (t.length && t[t.length - 1].blk === blk) { t[t.length - 1].text += n.textContent; continue; } t.push({ blk, text: n.textContent }); }
+          const h = c.querySelector('.ky-ec-h code, .ky-ec-h'), sy = c.querySelector('.ky-ec-s');
+          return { open: true, l1: t[0] && t[0].text.trim(), l2: t[1] && t[1].text.trim(), header: h && h.textContent, sym: sy && sy.textContent.trim() }; });
+        const lt = String(e.line_text);
+        cards.push({ sym: e.sym, open: c.open, l1: short(c.l1, 120), l2: c.l2, header_equal: c.header === lt, ok: c.open && c.l1 === lt.trim() && (c.l2 === e.sym || c.sym === e.sym) && c.header === lt });
       }
       step('A4 card from the periodic-table panel: first line = line_text, second = block:<Sym> (3 elements)', cards.length === 3 && cards.every(c => c.ok), { rows: nEl, cards });
     }
     await closeMenus(p);
     // ------------------------------------------------------------------ A5 the spider row opens its dashboard
     await openMenu(p, 'file'); await tapSel(p, '#ky-file-open-app'); await sleep(3000);
-    const spSel = '#ky-apps [data-id="spider-sandbox"]';
+    const spSel = '#ky-apps [data-id="spider-sandbox"] a.ky-app-a';
     if (!(await p.locator(spSel).count())) step('A5 the spider row opens the dashboard', false, { why: 'no row ' + spSel });
     else {
       await tapSel(p, spSel);
@@ -327,7 +342,8 @@ async function runDevice(browser, DEV) {
     // ------------------------------------------------------------------ A3 See Through, same tab, back
     await closeMenus(p);
     await openMenu(p, 'file'); await tapSel(p, '#ky-file-open-app'); await sleep(3000);
-    const stSel = '#ky-apps [data-key="' + SEE_THROUGH_KEY + '"]';
+    const stSel = '#ky-apps [data-key="' + SEE_THROUGH_KEY + '"] a.ky-app-a';
+    const navs = []; const onReq = q => { if (q.isNavigationRequest() && q.frame() === p.mainFrame()) navs.push(q.url()); }; p.on('request', onReq);
     if (!(await p.locator(stSel).count())) step('A3 the See Through row navigates in the same tab to ../../see-through/', false, { why: 'no row ' + stSel });
     else {
       const pagesBefore = p.context().pages().length;
@@ -337,8 +353,9 @@ async function runDevice(browser, DEV) {
       const stUrl = p.url(), want = new URL('../../see-through/', URL0).href;
       const head = await fetch(want).then(r => r.status).catch(e => 'ERR ' + e.message);
       const title = await p.title().catch(() => null);
-      step('A3 the See Through row navigates in the same tab to ../../see-through/ (200, title "See Through")', stUrl.split('#')[0] === want && head === 200 && /^See Through/.test(title || '') && p.context().pages().length === pagesBefore,
-        { url: stUrl, want, status: head, title, tabs: p.context().pages().length });
+      p.off('request', onReq);
+      step('A3 the See Through row navigates in the same tab to ../../see-through/ (200, title "See Through")', navs[0] && navs[0].split('#')[0] === want && stUrl.startsWith(want) && head === 200 && /^See Through/.test(title || '') && p.context().pages().length === pagesBefore,
+        { requested: navs, landed: stUrl, want, status: head, title, tabs: p.context().pages().length });
       await p.goBack({ timeout: LONG }).catch(e => R.errors.push('goBack ' + e.message));
       await p.waitForURL(u => String(u).startsWith(URL0), { timeout: LONG }).catch(() => {});
       await ready(p);

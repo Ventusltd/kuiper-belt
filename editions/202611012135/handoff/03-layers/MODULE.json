@@ -3,8 +3,8 @@
  "file": "202611012141-layers.js",
  "generation": "202611012141",
  "path": "modules/202611012141-layers.js",
- "sha256": "90ab25e24be1750d69b5fd23c6582c33522953c5a75067774dc4d58733e89a21",
- "bytes": 52894,
+ "sha256": "79167b55f78f31881937765298a3cd9db73f5302f64b63e1e040bb866e4b724f",
+ "bytes": 52576,
  "byte_budget": 98304,
  "requires": [
   "wafer",
@@ -33,7 +33,8 @@
   "sel",
   "redraw",
   "draw",
-  "panels"
+  "panels",
+  "refuse"
  ],
  "provides": [
   "layers"

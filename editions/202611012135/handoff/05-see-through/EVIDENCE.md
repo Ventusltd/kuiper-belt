@@ -166,7 +166,7 @@ optional). The hook table governs admission; the roadmap list is superseded, sta
 As found (kuiper-belt@2c87ba4 MOD:1, :3-5): line 1 "Apache-2.0 (kuiper-belt code)", line 3 "this file is Apache-2.0 …
 copies none of its code", lines 4-5 "the one block below marked CERN-OHL-S-2.0 restates See Through's star-key rule".
 That contradicts itself and ROADMAP.md:713-715 (a module carrying See Through code is CERN-OHL-S v2 and cannot be
-relicensed Apache-2.0). The block MOD:27-32 is See Through's rule (descent.js:19, :963, :965), the same expression as
+relicensed Apache-2.0). The block MOD:28-33 is See Through's rule (descent.js:19, :963, :965), the same expression as
 grid.js:38, and grid.js is itself CERN-OHL-S v2 (learn-the-kuiper NOTICE.md:7-10).
 
 Written by the evidence officer (OPUS-BRIEF.md:49-50 gives this role the header licence line), committed by the harness
@@ -202,11 +202,31 @@ record `"licence": "CERN-OHL-S-2.0"`; `data/layers.json` row; `LICENCES.md` row)
 9. For the tester: test.cjs's static check should require `CERN-OHL-S` in the header when the body carries the block
    (ROADMAP.md:713-715), not `Apache-2.0`; its preview manifest record's licence should be `CERN-OHL-S-2.0`.
 
-## 12. Review of the lead's HANDOFF comment
+## 12. Review of the lead's HANDOFF comment, and the evidence officer's verdict
 
-Not yet drafted at 22:52 UTC (no HANDOFF.md in this folder or in /tmp/nl010-opus/team-5/lead/posts/). Conditions for
-the evidence officer's PASS of the comment: (a) the module's sha256 equals `MODULE.sha256` and the one in this file (or
-this file re-keyed); (b) the data sha256 quoted equals the file and `data/layers.json`; (c) the licence stated as
-CERN-OHL-S-2.0 for the module, ODbL 1.0 for the data; (d) the deep-link landing reported NOT EVALUATED on the shipped
-site (scratch PASS only); (e) the Pixel 7 strip form reported as a FINDING for Q7, not hidden; (f) test.cjs PASS on
-Pixel 7 and Galaxy S24 with zero pageerror quoted from its JSON, not asserted; (g) no ACCEPT.
+State at 23:25 UTC: **no HANDOFF draft exists** (none in this folder, none in /tmp/nl010-opus/team-5/lead/posts/, which
+holds only req1-3 and find1). The tester has **REFUSED** the hand-off (TEST.md:3; run5 23:10 UTC: entry FAIL at 393 px
+under the 381 px rule; spark FAIL, `#card` `visibility:hidden` from the layers/line-card `.gm-open` conflict, FINDING
+issuecomment-6565202316). So no HANDOFF may be posted yet, and this officer has nothing to pass.
+
+Conditions for this officer's PASS of the HANDOFF comment when it is drafted:
+(a) the module sha256 quoted equals `MODULE.sha256` and the file (at 23:25: `87a88e48…873`, 26,000 bytes; if it moved,
+    §1-§11's `MOD:n` are re-read first);
+(b) the data sha256 quoted equals the file and `data/layers.json` (at 23:25 both `44095071…79a6`, 666,940 bytes; TEST.md's
+    run5 still names the superseded `87d5db35…`, so the passing run must be re-run on the current bytes);
+(c) licences stated as CERN-OHL-S-2.0 for the module (header MOD:1) and build script, ODbL 1.0 for data/see-through.json,
+    Apache-2.0 for test.cjs, and the modules.json record `"licence": "CERN-OHL-S-2.0"` requested of Opus 10;
+(d) the deep-link landing in See Through reported NOT EVALUATED on the shipped site (0 hash readers in 202610050609; the
+    patch's PASS is a scratch copy only);
+(e) the 434 px rule stated as team 1's (kuiper-shell.js:41) and as a change to Q7: a Pixel 7 shows the strip; 381 px
+    recorded as R7's figure; the run's `--title-min 434` named;
+(f) the spark step and the "without layers" preview run (PLAN.md 23:07 decision) named as such, with the with-layers run
+    and FINDING issuecomment-6565202316 kept in the report, not dropped;
+(g) every number quoted from test.cjs's report.json, both devices, `pageerror` 0, the CARTO request counted as the
+    sandbox's network refusal (NL-009 06 F4), and img/ holding the PNGs (empty at 23:25);
+(h) PROTOCOL envelope, the footer, no ACCEPT.
+
+**Verdict of the evidence officer (23:25 UTC):** EVIDENCE.md and LICENCE.txt complete for the module and data as keyed
+above. Module header licence line: **PASS** after the correction to CERN-OHL-S-2.0 (§10). Findings 1-4, 6 and 7 of §11 are
+fixed in the files; 5 is open by design (See Through untouchable), 8-9 are minor and open. HANDOFF comment: **NOT
+REVIEWED: not yet drafted**, and it must not be posted while TEST.md reads REFUSED.

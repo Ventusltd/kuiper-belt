@@ -12,11 +12,11 @@ Each item is also a REQUEST on issue #10. Keys: kuiper-belt@96736f5 editions/202
    (hook 14) stays. Their behaviours are in the module: the NL-009 03 band (open panels in the top half, the card, a
    re-aim on the next frame), 04 (tap = one pointer down on the canvas, up within 10 px, reach 24 px touch / 9 px mouse;
    rows role=button with Enter/Space; card aria; `.ct` button; stopImmediatePropagation), 05 (the whole LINES audit),
-   09 (the failure in the row, the heading and #refuse). NOT carried: `edKeep` (re-fly when the card resizes) and the
-   07 `keys-min.json` swap: the lines record names `keys.json` (tests 4 and 5 are written against it); to load the
-   compact file, send us a REQUEST and we change the record's `source.file` and rebuild its sha256.
-   modules.json record: `handoff/03-layers/MODULE.json` (requires = the module's REQUIRES, 27 names, all in KY.names).
-2. **Opus 1 (shell): stop requiring Edition 4's `#lines #lyAll #lyFocus #lyFind`** (kuiper-shell.js header C8 and
+   09 (the failure in the row, the heading and #refuse via KY.refuse), 07 (the lines record reads keys-min.json first and
+   keys.json only when the first did not load; a hash mismatch is refused, never fallen back from). NOT carried: `edKeep`
+   (re-fly when the card resizes after a fly).
+   modules.json record: `handoff/03-layers/MODULE.json` (requires = the module's REQUIRES, 28 names, all in KY.names).
+2. **Opus 1 (shell): STILL OPEN at the integrated base (kuiper-shell.js:57 REQUIRED lists #lines #lyAll #lyFocus #lyFind #lineslist). Stop requiring Edition 4's `#lines #lyAll #lyFocus #lyFind`** (kuiper-shell.js header C8 and
    fillPanels: `document.getElementById('lyFocus').closest('label')` throws once our patch lands). The layers module
    mounts `#layers` (7 original `input[data-ky-layer]`, the lines controls `#lyFocus #lyFind #lyClear #lycount
    #lineslist`) inside your `.gm-group[data-group="layers"]` when it exists (it is admitted after you). SCOPE's focus
@@ -27,9 +27,8 @@ Each item is also a REQUEST on issue #10. Keys: kuiper-belt@96736f5 editions/202
    module calls `KY.modules['line-card'].api.show(body, {index, of, onclose})` and `api.row(body, i, cls)` when your
    module is admitted (it is earlier in order), and falls back to the Edition 4 card otherwise. Your `row()` HTML is
    wrapped by us in `<div class="ln" data-i role=button tabindex=0>`; please do not emit your own `data-i`.
-4. **Opus 4 (hook table): `cam.atHome` setter.** Edition 4's edFly wrote `atHome = false` (IX:679) before `flyTo`; a
-   module cannot, so after a spark fly a resize re-homes the camera (IX:248). Requested: `KY.cam.atHome` set, or a
-   `flyTo` hook that clears it (IX:253, :245).
+4. **Opus 4 (hook table): DONE in rev 3.** The module uses `KY.refuse(text, 'layers')` for its line in the strip and sets
+   `KY.cam.atHome = false` before a spark fly (as Edition 4's edFly did, IX:679); `refuse` is in its requires.
 5. **Opus 9/10 (pointer law, step 9 9.2): forward `location.search + location.hash`** in `editions/index.html` (IX
    pointer :12 forwards only the hash). Our writer writes only the hash (R3), so `#layers=` survives the pointer
    today; `?layers=` through the pointer passes only after this fix. Test 6 measures both; the query spelling through

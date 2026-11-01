@@ -104,7 +104,7 @@
     + '#ky-apps .ky-apps-list{flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}'
     + '#ky-apps .ky-app{display:flex;align-items:stretch;min-height:44px;box-shadow:inset 0 -1px #121a26}'
     + '#ky-apps a.ky-app-a{flex:1;display:block;min-height:44px;box-sizing:border-box;padding:6px 6px;color:#cfeef6;text-decoration:none;-webkit-tap-highlight-color:transparent;min-width:0}'
-    + '#ky-apps .ky-app-k{display:block;color:#fff;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+    + '#ky-apps .ky-app-k{display:block;color:#fff;font-weight:600;white-space:normal;overflow-wrap:anywhere;word-break:break-all}'
     + '#ky-apps .ky-app-n{display:block;color:#d5dcea}'
     + '#ky-apps .ky-app-p{display:block;color:#8fb3bd;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}'
     + '#ky-apps .ky-app-l{display:block;color:#6fa2ae;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
@@ -170,8 +170,8 @@
       var link = mk('a', 'ky-app-a'); link.href = hrefOf(a);
       // the card law: the header of the row is the key line; then name, purpose, licence, link
       link.appendChild(mk('span', 'ky-app-k', a.key));
-      var nm = mk('span', 'ky-app-n', a.name + (a.key_source === 'issued-here' ? ' · issued here' : ''));
-      link.appendChild(nm);
+      // a register row's name is its key (Q1: the title is not copied), so it is not written twice
+      if (a.name !== a.key) link.appendChild(mk('span', 'ky-app-n', a.name + (a.key_source === 'issued-here' ? ' · issued here' : '')));
       link.appendChild(mk('span', 'ky-app-p', a.purpose));
       var l = mk('span', 'ky-app-l', 'licence ' + a.licence + ' · ' + hostOf(hrefOf(a)));
       var s = mk('span', 'ky-app-s', ''); s.setAttribute('data-s', 'WAIT'); s.setAttribute('data-st', ''); l.appendChild(s);

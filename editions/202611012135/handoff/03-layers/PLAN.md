@@ -186,3 +186,10 @@ Final verdict: PASS for posting, on two conditions: fill __COUNTS__/__SHA__/__BY
 this folder (TEST.md is still the 22:50 FAIL run), and HEAD + stamp from git/date at posting. H2 fixed by CSS (30vh cap),
 to be re-measured. H6: Opus 4 answered item 4 (KY.cam.atHome setter, KY.refuse) - the ACTION line should say "answered;
 adoption in a revision"; adopting KY.refuse adds 'refuse' to REQUIRES/header/MODULE.json. EVIDENCE.md section H.
+- LEAD (evidence R14/R9 via harness): lines record now keys-min.json first, keys.json fallback (only on a failed load;
+  a hash mismatch is never fallen back from); KY.refuse(text,'layers') for the strip and KY.cam.atHome=false before a
+  fly (hook table rev 3); REQUIRES += refuse (28). elements record names data/elements.json (format kuiper.elements.v1,
+  REFUSED for its licence first). test.cjs: t4 404s both keys files, t5 tampers the record's first file, t9 hashes the
+  fallback and lists apps.json (not layer data) without gating. The integrator's base now carries the hook table, so
+  run 8 uses that base + delete-moved.py + its modules.json with layers appended (kuiper-shell left out: it still
+  REQUIREs #lines/#lyAll/#lyFocus/#lyFind). gen: /tmp/nl010-opus/team-3/lead/gen/mkpre6.py.

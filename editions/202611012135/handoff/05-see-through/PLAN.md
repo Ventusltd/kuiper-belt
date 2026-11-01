@@ -123,3 +123,4 @@ See Through itself (see-through/) is untouchable this edition: its hash reader s
   code: run the hand-off set as preview WITHOUT the layers module (shell, line-card, file, see-through), where our module
   draws and registers on its own (registered 'own'); keep the with-layers run in the report as a cross-team record.
   Devices Pixel 7 @393 and Galaxy S24. Write img/ (entry strip, entry title if a wide run exists, spark card, landing).
+- 23:26 UTC evidence officer: EVIDENCE.md re-keyed to MOD sha256 87a88e48…873 (26,000 B, 369 lines) and data 44095071…79a6 (= layers.json). Verdict in EVIDENCE.md §12: header licence PASS (CERN-OHL-S-2.0); HANDOFF not yet drafted, so not reviewed; not to be posted while TEST.md reads REFUSED. If the module changes again, tell me (or re-read §9's lines) before quoting keys.

@@ -117,7 +117,7 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   periodic-table graph becomes a REDACTED copy (both sha256 recorded: source and copy). LEAD: please run
   `python3 -B -c "import sys,io;sys.path.insert(0,'tools');from check_proof import leaks;print(leaks(io.open('editions/202611012135/data/apps.json').read()))"`
   from the kuiper-belt root and redact apps.json the same way (element_keys.redact() is importable).
-- 23:27 LEAD: SECTIONS A, B, D and install are in (node --check OK); `tools/apps_registry.py` + `data/apps.json` written,
+- 23:25 LEAD (date -u read 23:25 when written; first written as 23:27, a stamp ahead of the clock, corrected): SECTIONS A, B, D and install are in (node --check OK); `tools/apps_registry.py` + `data/apps.json` written,
   `--check` (A1 by script) RESULT: PASS (34 records; 33 unique keys: solar-design-studio and energy-transition-simulator
   share homepage_v134.html's href and now name each other in `same_as`, tester's FINDING fixed). Measured on Galaxy S24
   (lead scratch site 8470, modules shell, line-card, layers, file, apps; all admitted, refused []): FILE > Open an app
@@ -135,3 +135,30 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   Readout line: `periodic table: 221 elements placed, 23 counted, not placed · <N> in the live register, 244 catalogued ·
   layer REFUSED · licence unsettled (…)`. BUILDER: please add `counts.live_register` (measured 606 from stars@cbca125
   blocks/blocks.json, number of blocks) to data/elements.json; the module reads it and never hard-codes 606.
+- 23:27 BUILDER DONE (OPUS-7 builder). Everything measured on this machine:
+  * `data/elements.json` (sha256 781dc0d9…a620, 165,383 B; the record layers.json now carries) by
+    `python3 -B tools/element_keys.py --elements /home/user/estate/elements --roots /home/user/estate,/home/user,/tmp/nl010-opus/team-7/builder/clones --out editions/202611012135/data/elements.json --check 3 --keypy-root /home/user/estate`
+    (72 s): 244 total, 221 placed (every walk of the 26 distinct files[0] commits landed on its wafer row's lines,
+    e.g. globalgrid2050@d3898fa 33,106,402), 23 named, not placed (constant 12, engine 4, layer 6, cartridge 1),
+    `readout` "221 elements placed, 23 counted, not placed". Reverse check (key -> wafer row -> walk -> path:1) OK on
+    block:Gc, block:x174, block:x466; `tools/key.py` itself (unmodified, ROOTS set to /home/user/estate at import) exit 0
+    and naming the recorded repo / sha12 / path:1 on block:x776 38,104,477,612 (grid-distance-maths src/geodesy.mjs),
+    block:x126 45,103,705,422 (cvaa tools/selftest.mjs), block:Gc 47,018,556,351 (ventus-grid-engine engine/geo-core.js);
+    all in the file's `checks` / `checks_keypy`. One record K1-redacted (block:x618 path and github), key untouched.
+    The file carries built_utc and seconds, so every rebuild changes its sha256: re-record it after a rebuild.
+  * `data/graphs/overview.json` byte for byte (124aa35e…df09, 6,125 B); `data/graphs/periodic-table.json` K1-redacted
+    copy (b8482044…3a0e, 509,639 B; source 72349730…749e, 509,649 B; 2 tokens -> `not-public`) by
+    `python3 -B tools/element_keys.py --copy-graph <source> <copy>`. EVIDENCE: record both digests.
+  * SECTION C in the module (node --check OK; unit test outside the browser,
+    /tmp/nl010-opus/team-7/builder/test_sectionC.cjs, real files + Node webcrypto): registers `elements` (load ->
+    {placed 221, total 244}; draw = sparks #c9d3e6, the card's element magenta; a tap within 9 px mouse / 24 px finger of a
+    DRAWN spark calls openElement) and `spider` (sha256 + bytes checked before parse; load -> {placed 567, total 2,496}).
+    Readout line (st.said): "spider graphs: overview 15 of 15 edges drawn (15 as rings: both ends at one key), 0 of 16
+    nodes had no key · periodic-table 552 of 2,481 edges drawn, 412 of 663 nodes had no key". With data/graphs/ absent:
+    "spider graphs: FAIL · data/graphs/overview.json HTTP 404 · the wafer draws on", layer row FAIL. Waits up to 30 s for
+    layers.js to hold both records before registering; without the layers module both still load for inspect().
+    Periodic-table graph keyed nodes: 206 by element key, 45 repositories by first-commit k0; unkeyed 412 = 377 auto
+    blocks not in the 244 catalogue or not placed, 12 categories, 23 unplaced elements.
+  * NOT run: Playwright (machine load ~50 on 4 cores; brief says avoid unless the lead asks). Tester: A4 tap needs the
+    elements layer DRAWN, which layers.js refuses while its licence reads UNSETTLED (Q1) — the launcher's keys view and
+    `KY.modules.apps.api.openElement('block:Gc')` still open the card.

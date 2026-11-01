@@ -68,7 +68,9 @@ const BODIES = KEYS.bodies || KEYS;
 const FILTER_EXPECT = BODIES.filter(b => b.on_wafer && b.verified && Number.isFinite(b.key) && b.key >= 0 && b.key < META.address_space && (b.repo + ' ' + b.path + ' ' + b.title).toLowerCase().includes('gridatlas')).length;
 const PLACED_KEYS = BODIES.filter(b => b.on_wafer && b.verified && Number.isFinite(b.key) && b.key >= 0 && b.key < META.address_space).map(b => b.key);
 // one byte changed, the length kept, the JSON still valid: only the sha256 can catch it
-const TAMPERED = (() => { const s = KEYS_BYTES.toString('latin1'); const t = s.indexOf('"title"'); let i = s.indexOf('"', s.indexOf(':', t) + 1) + 1;
+const FIRST_KEYS = (() => { try { const r = JSON.parse(fs.readFileSync(path.join(ED_DIR, 'data/layers.json'), 'utf8')).layers.find(x => x.id === 'lines'); return r && r.source && r.source.file || 'keys.json'; } catch (e) { return 'keys.json'; } })();   // lead: the record's first file
+const FIRST_BYTES = fs.readFileSync(path.join(ED_DIR, FIRST_KEYS));
+const TAMPERED = (() => { const KEYS_BYTES = FIRST_BYTES; const s = KEYS_BYTES.toString('latin1'); const t = s.indexOf('"title"'); let i = s.indexOf('"', s.indexOf(':', t) + 1) + 1;
   while (!/[A-Za-z]/.test(s[i])) i++; const c = s[i], d = c === c.toLowerCase() ? c.toUpperCase() : c.toLowerCase();
   const buf = Buffer.from(KEYS_BYTES); buf[i] = d.charCodeAt(0); return { buf, offset: i, from: c, to: d, sha: sha256(buf), shaOriginal: sha256(KEYS_BYTES) }; })();
 
@@ -203,7 +205,7 @@ async function runDevice(browser, deviceName, shots) {
     S.close = async () => { report.scenarios[scenario] = { url, loadMs: S.loadMs, consoleErrors: errors.slice(), allowedErrors: allowed.slice(), requests }; await context.close(); };
     return S;
   }
-  const keysRe = new RegExp('/editions/' + STAMP + '/keys\\.json(\\?.*)?$'), waferRe = /\/cosmos\/wafer\.tsv(\?.*)?$/;
+  const keysRe = new RegExp('/editions/' + STAMP + '/keys(-min)?\\.json(\\?.*)?$')   /* lead: keys-min.json first, keys.json the fallback; both held / refused */, waferRe = /\/cosmos\/wafer\.tsv(\?.*)?$/;
   const errFree = (S, extra) => ({ consoleErrors: S.errors.slice(0, 8), allowed: S.allowed.length, ...(extra || {}) });
 
   try {
@@ -359,7 +361,7 @@ async function runDevice(browser, deviceName, shots) {
 
     // ============================================================ F: keys.json served as HTTP 404
     {
-      const F = await open('F-keys-404', ED_URL, { routes: [[keysRe, r => r.fulfill({ status: 404, contentType: 'text/plain', body: 'not found' })]], allow: [/keys\.json/] });
+      const F = await open('F-keys-404', ED_URL, { routes: [[keysRe, r => r.fulfill({ status: 404, contentType: 'text/plain', body: 'not found' })]], allow: [/keys(-min)?\.json/] });
       p = await F.until(F.settled, STATE_MAX); await sleep(FIXED_WAIT); p = await F.probe();
       const lr = F.row(p, 'lines');
       const png = await engineShot(F); const disc = png ? await waferDisc(F.page, png, p.bar ? p.bar.bottom : 0) : { error: 'screenshot failed' }; const cover = await alertCover(F.page);
@@ -438,11 +440,13 @@ function staticChecks() {
   rec('t9-records', 'test 9: data/layers.json kuiper.layers.v1: seven records, order periods..spider, key layer:<id>, label, group, colour from PALETTE.md with its meaning, licence, source', !!schemaOk,
     { error: manErr, schema: man && man.schema, order: man && man.order, records: L.map(r => ({ id: r.id, key: r.key, group: r.group, colour: r.colour, licence: !!r.licence, source: r.source })), palette },
     schemaOk ? '' : (manErr || 'records: ' + JSON.stringify(L.map(r => [r.id, r.key, r.colour, !!r.licence, !!r.meaning]))));
+  const NOT_LAYER_DATA = ['apps.json'];
   const hashes = []; let hashOk = L.length > 0;
-  for (const r of L) { const f = r.source && r.source.file; if (!f) continue; const fp = path.resolve(ED_DIR, f); let b = null; try { b = fs.readFileSync(fp); } catch (e) {}
-    const h = b && sha256(b), ok = !!b && h === r.source.sha256 && (r.source.bytes == null || r.source.bytes === b.length); if (!ok) hashOk = false;
-    hashes.push({ id: r.id, file: f, exists: !!b, sha256: h, record: r.source.sha256, bytes: b && b.length, recordBytes: r.source.bytes, ok }); }
-  const dataFiles = fs.existsSync(path.join(ED_DIR, 'data')) ? fs.readdirSync(path.join(ED_DIR, 'data')).filter(f => f.endsWith('.json') && f !== 'layers.json') : [];
+  for (const r of L) for (const src of [r.source, r.source && r.source.fallback].filter(Boolean)) { const f = src.file; if (!f) continue; const fp = path.resolve(ED_DIR, f); let b = null; try { b = fs.readFileSync(fp); } catch (e) {}
+    const h = b && sha256(b), ok = !!b && h === src.sha256 && (src.bytes == null || src.bytes === b.length); if (!ok) hashOk = false;
+    hashes.push({ id: r.id, file: f, exists: !!b, sha256: h, record: src.sha256, bytes: b && b.length, recordBytes: src.bytes, ok }); }
+  const dataFiles = fs.existsSync(path.join(ED_DIR, 'data')) ? fs.readdirSync(path.join(ED_DIR, 'data')).filter(f => f.endsWith('.json') && f !== 'layers.json' && !NOT_LAYER_DATA.includes(f)) : [];
+  // lead: data files of other steps that are not layer sources (ROADMAP step 7 files: apps.json is the launcher registry)
   const unrecorded = dataFiles.filter(f => !L.some(r => r.source && r.source.file && path.resolve(ED_DIR, r.source.file) === path.join(ED_DIR, 'data', f)));
   rec('t9-hashes', 'test 9: every record with a source file hashes to its sha256 and bytes; every data/*.json (but layers.json) is some record\'s source', hashOk && unrecorded.length === 0, { hashes, dataFiles, unrecorded },
     why2(!hashOk && 'mismatch: ' + JSON.stringify(hashes.filter(h => !h.ok).map(h => [h.id, h.file, h.exists ? 'sha ' + String(h.sha256).slice(0, 12) + ' vs ' + String(h.record).slice(0, 12) + ', bytes ' + h.bytes + ' vs ' + h.recordBytes : 'missing'])), unrecorded.length && 'no record names data/' + unrecorded.join(', data/')));

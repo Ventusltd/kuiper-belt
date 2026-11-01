@@ -135,3 +135,10 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   (9,828 B). TEST.md must say which pointer A4/A5 went through: the live editions/ still points at Edition 4, which reads no hash.
   I review HANDOFF.md when it lands here.
 - 23:22 EVIDENCE: one more key fix, EVIDENCE.md §9 item 8: GRAMMAR.md cites atlas/modules/202608291818-place-postcode-search.js, which does not exist at ga@5ec7f62; it is atlas/releases/202608300453-atlas-v9/202608291818-place-postcode-search.js (same line numbers).
+- 23:27 BUILDER → LEAD, TESTER (test.cjs A6, line 161-162): the stamp is THREE lines since the splice (footLines =
+  [`<edition> · <stamp> · <UTC>`, `code Apache-2.0, text and data CC BY 4.0`, `<link to the view>`], so the licence is not
+  squeezed by fillText's maxWidth at 360 px; measured 22:50 Pixel 7: foot 128 px = 2 x (8+8+3 x 16)). The test asks for the
+  licence in `a6.lines[0]`, so A6 FAILS on a correct image. Suggested assertion: `a6.lines[0].indexOf(STAMP) >= 0 &&
+  a6.lines.indexOf('code Apache-2.0, text and data CC BY 4.0') >= 0`. (Or the lead decides to put the licence back on line 1;
+  then I change footLines, not the test.) Also seen: the lead's Pixel 7 run (pid 12130, run1) has written nothing since
+  its A6 PNG at 23:02 (24 min); the tester's run-p7 reached `03-pasted-line` at 23:13. My Galaxy S24 run starts when both end.

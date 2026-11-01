@@ -79,14 +79,19 @@ const PROBE_GEN = '202611012200';
 function patchedPage() {
   const baseFile = flag('--base') ? path.resolve(String(flag('--base'))) : path.join(EDITION_DIR, 'index.html');
   const original = fs.readFileSync(baseFile, 'utf8');
-  if (flag('--html')) { const f = path.resolve(String(flag('--html'))); return { html: fs.readFileSync(f, 'utf8'), how: 'html ' + f }; }
+  if (flag('--html')) { const f = path.resolve(String(flag('--html'))); return { html: fs.readFileSync(f, 'utf8'), base: flag('--base') ? original : null, patchText: '', how: 'html ' + f }; }
   let p = flag('--patch') ? path.resolve(String(flag('--patch'))) : null;
+  if (!p && !flag('--base') && /kuiper\.hooks\.v1/.test(original)) {   // the integrator has applied the patch: test the page as committed
+    const pf = path.join(HERE, 'index.html.patch'), rv = fs.existsSync(pf) ? cp.spawnSync('patch', ['-R', '--dry-run', '-s', '-o', '/dev/null', baseFile, pf], { encoding: 'utf8' }) : null;
+    return { html: original, integrated: { patch_sha256: fs.existsSync(pf) ? sha(fs.readFileSync(pf)) : null, reverses_cleanly: !!rv && rv.status === 0, out: rv ? (rv.stdout + rv.stderr).trim().slice(0, 300) : 'no index.html.patch' },
+      how: 'the edition page as committed, which carries the hook table (' + path.relative(REPO, baseFile) + ', sha256 ' + sha(original) + ')' };
+  }
   if (!p && fs.existsSync(path.join(HERE, 'index.html.patch'))) p = path.join(HERE, 'index.html.patch');
   if (p) {
     const o = path.join(SCRATCH, 'index.patched.html');
     const r = cp.spawnSync('patch', ['-s', '-o', o, baseFile, p], { encoding: 'utf8' });
     if (r.status !== 0) throw new Error('the patch does not apply: ' + p + ' (sha256 ' + sha(fs.readFileSync(p)) + ') on ' + baseFile + ' (sha256 ' + sha(original) + ')\n' + r.stdout + r.stderr);
-    return { html: fs.readFileSync(o, 'utf8'), how: 'patch ' + p + ' (sha256 ' + sha(fs.readFileSync(p)) + ') on ' + path.relative(REPO, baseFile) + ' (sha256 ' + sha(original) + ')' };
+    return { html: fs.readFileSync(o, 'utf8'), base: original, patchText: fs.readFileSync(p, 'utf8'), how: 'patch ' + p + ' (sha256 ' + sha(fs.readFileSync(p)) + ') on ' + path.relative(REPO, baseFile) + ' (sha256 ' + sha(original) + ')' };
   }
   if (/kuiper\.hooks\.v1/.test(original)) return { html: original, how: 'the edition page, which already carries the hook table' };
   throw new Error('no patch: expected ' + path.join(HERE, 'index.html.patch') + ' (or --patch / --html)');
@@ -97,7 +102,7 @@ function prepareScratch() {
   fs.mkdirSync(path.join(root, 'editions'), { recursive: true });
   fs.symlinkSync(path.join(REPO, 'cosmos'), path.join(root, 'cosmos'));
   fs.cpSync(EDITION_DIR, ed, { recursive: true, filter: s => s !== path.join(EDITION_DIR, 'handoff') && !s.startsWith(path.join(EDITION_DIR, 'handoff') + path.sep) });
-  const { html, how } = patchedPage();
+  const { html, how, base, patchText, integrated } = patchedPage();
   if (!/^<!doctype html>/i.test(html.trimStart()) || !/kuiper\.hooks\.v1/.test(html) || !/window\.KY\s*=/.test(html)) throw new Error('the patched page has no window.KY hook table');
   fs.writeFileSync(path.join(ed, 'index.html'), html);
   // the base: the committed manifest's records, then team 4's first record set (handoff/04-loader/modules.json)
@@ -113,7 +118,7 @@ function prepareScratch() {
   const manifest = { schema: 'kuiper.modules.v1', edition: STAMP, hooks: 'kuiper.hooks.v1', order, modules: recs,
     contracts: { module_sha256_required: true, order_explicit: true, engine_mutation_forbidden: true, stamp_in_name_equals_generation: true, hooks_frozen: true } };
   fs.writeFileSync(path.join(ed, 'modules.json'), JSON.stringify(manifest, null, 1));
-  return { root, ed, manifest, how, html, htmlSha: sha(html), bases };
+  return { root, ed, manifest, how, html, htmlSha: sha(html), bases, base, patchText, integrated };
 }
 const PROBE_REQ = { 'probe-a': ['keyPlace', 'cam', 'draw', 'redraw'], 'probe-b': ['probe-a', 'cam'], 'probe-c': ['fmt', 'draw'], 'probe-wafer': ['wafer', 'N'] };
 function probeRecord(id, p, bytes, requires) {
@@ -541,7 +546,7 @@ async function runDevice(browser, deviceName, S) {
       const distinct = [...new Set(z)];
       check('R4', '09-robust R4 prefers-reduced-motion: the camera lands in one step after e (one zoom value)', distinct.length === 1, { distinct: distinct.slice(0, 40), frames: z.length });
       errOk(h, 'R4'); await h.context.close(); }
-    { const h = await open('R5', { status: { 'keys.json': 404 }, expect404: [/keys\.json$/] }); const { page } = h; await sleep(FIXED_WAIT);
+    { const h = await open('R5', { status: { 'keys.json': 404, 'keys-min.json': 404 }, expect404: [/keys(-min)?\.json$/] }); const { page } = h; await sleep(FIXED_WAIT);
       await tapSel(page, '#bar .gm-title[data-panel="lines"]'); await sleep(1500);
       const t = await page.evaluate(() => ({ big: document.getElementById('big').textContent, lines: (document.getElementById('lineslist') || {}).textContent || '' }));
       check('R5', '09-robust R5 keys.json 404 is said in EDITION and LINES', /keys\.json did not load/i.test(t.big) && /keys\.json did not load/i.test(t.lines), t);
@@ -571,6 +576,14 @@ function handoffCheck(S) {
   if (ref) { const mark = /\/\/ =+ KUIPER HOOK TABLE AND LOADER kuiper\.hooks\.v1 · begin[^\n]*\n[\s\S]*?\/\/ =+ KUIPER HOOK TABLE AND LOADER kuiper\.hooks\.v1 · end/;
     const a = (fs.readFileSync(path.join(EDITION_DIR, 'modules', ref), 'utf8').match(mark) || [])[0], b = (S.html.match(mark) || [])[0];
     out.runs.push({ check: 'modules/' + ref + ' ≡ the patched page between the marker lines', bytes: a ? Buffer.byteLength(a) : null, ok: !!a && a === b }); }
+  // the patch keeps what the integrator added to the page since the skeleton: every line of the base page that is not in
+  // the skeleton's page must be in the patched page, unless the patch names it as a removed ('-') line (rev 3 lost 48)
+  if (S.base && S.patchText != null) { const first = cp.spawnSync('git', ['-C', REPO, 'log', '--diff-filter=A', '--format=%H', '--', path.relative(REPO, path.join(EDITION_DIR, 'index.html'))], { encoding: 'utf8' }).stdout.trim().split('\n').pop();
+    const skel = first ? cp.spawnSync('git', ['-C', REPO, 'show', first + ':' + path.relative(REPO, path.join(EDITION_DIR, 'index.html'))], { encoding: 'utf8', maxBuffer: 1 << 26 }).stdout : null;
+    if (skel) { const sk = new Set(skel.split('\n')), out_ = new Set(S.html.split('\n')), minus = new Set(S.patchText.split('\n').filter(l => l.startsWith('-') && !l.startsWith('---')).map(l => l.slice(1)));
+      const added = S.base.split('\n').filter(l => l.trim() && !sk.has(l)), lost = added.filter(l => !out_.has(l)), unnamed = lost.filter(l => !minus.has(l));
+      out.runs.push({ check: 'the integrator\'s ' + added.length + ' lines since ' + first.slice(0, 7) + ' kept in the patched page (removals only where the patch names them)', removed_by_patch: lost.map(l => l.trim().slice(0, 160)), removed_unnamed: unnamed.map(l => l.trim().slice(0, 160)), ok: unnamed.length === 0 }); } }
+  if (S.integrated) out.runs.push({ check: 'the committed page is index.html.patch applied (patch -R --dry-run is clean)', patch_sha256: S.integrated.patch_sha256, out: S.integrated.out, ok: S.integrated.reverses_cleanly });
   const hello = S.manifest.modules.find(m => m.id === 'hello'), hb = fs.readFileSync(path.join(S.ed, hello.path));
   out.runs.push({ check: hello.path + ' = its record (sha256, bytes, generation = file name)', ok: sha(hb) === hello.sha256 && hb.length === hello.bytes && path.basename(hello.path).startsWith(hello.generation + '-') });
   out.pass = out.runs.every(r => r.ok); return out;
