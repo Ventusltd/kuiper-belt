@@ -25,6 +25,12 @@ flies to the spark and the card shows the finding, the quote, the key, the commi
 GitHub at that commit. Tap any spark for the same. Everything else is the Kuiper as before: **n** new code, **r** a
 random line, **/** find, backspace the whole wafer.
 
+## Known limits
+
+- 344 of 346 lines are on the wafer; the two star-maker lines (commit f65c2f38) are not, because that commit is not on the wafer; they are named in `keys.json` and counted in the HUD.
+- Seven of the 346 register lines point one line above their quote (the quote sits on the next line); the keys follow the register line and `quote_key` in `keys.json` gives the line of the quote. This is an Edition 1 error, recorded here rather than silently corrected.
+- All 12 round trips through `python tools/key.py <key>` returned the same repository, commit, path, line and text (`proof/keys-summary.json`).
+
 ## What is in the folder
 
 | path | what |

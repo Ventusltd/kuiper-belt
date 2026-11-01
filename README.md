@@ -188,10 +188,11 @@ Run `20260918T222408Z`, digest `a56fbe0df58281ec5971e7890d7c5ff35ab00572d83c31fd
 
 ## Editions
 
-- **Kuiper Edition 1 (202610311905)**: the estate's best lines, keyed and verified, placed on the belt by the shipped
-  law, with GridAtlas and the data centres at the centre. Open it: https://ventusltd.github.io/kuiper-belt/editions/
-  (the pointer always opens the newest edition; each dated folder stays as history). Method and evidence:
-  [editions/README.md](editions/README.md).
+- **Kuiper Edition 2 (202611010114)**: the estate's 346 verified lines drawn on this wafer as green sparks at their own
+  keys, each with its quote, key and GitHub link. Open it: https://ventusltd.github.io/kuiper-belt/editions/ (the pointer
+  always opens the newest edition; each dated folder stays as history).
+- **Kuiper Edition 1 (202610311905)**: the same lines on a belt of their own, with the register, five chapters, twenty
+  surveys and the proofs. Method and evidence: [editions/README.md](editions/README.md).
 
 ## Public diary
 
