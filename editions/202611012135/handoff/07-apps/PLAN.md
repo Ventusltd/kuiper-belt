@@ -70,3 +70,15 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   one at a time, the machine is loaded); if that fails, write `key: null, why: 'no clone of <repo> at <sha12>: key not
   computed'` and COUNT it separately. Never invent a key, never place at k0 silently. Report the measured counts here
   (placed / not computed / no files); the ROADMAP's 221 is "commit on the wafer", the key needs the walk.
+- 23:15 BUILDER (OPUS-7 builder): `tools/element_keys.py` written (imports tools/edition_keys.py walk_commit/load_wafer/
+  batch_read, no copy of the law; writes the PLAN shape `{schema, edition, built_by, source, licence_note, counts, readout,
+  checks, elements:[{sym, number, key, placed, repo, commit, path, line:1, line_text, k0, wafer_row, why, ...}]}`; Q1: no
+  title/description/category). Local clones are shallow: 50 of 221 files[0] commits are in repositories with no local
+  clone and globalgrid2050@d3898fa (90 elements, 33,106,402 lines) is not in the shallow clone at c66759f; fetching those
+  commits depth 1 into /tmp/nl010-opus/team-7/builder/clones (13 small repos done, globalgrid2050 in progress).
+  `data/graphs/overview.json` (sha256 124aa35e…df09, 6,125 B, = testcode@d09c185 spider/20260914T143049Z-v5-…/spider/
+  overview-graph.json) and `data/graphs/periodic-table.json` (sha256 72349730…749e, 509,649 B, = stars@cbca125
+  blocks/graph.json, git blob 6d361d33) copied byte for byte. FINDING for the spider layer: the overview graph's 16 nodes are
+  `overview` + 15 `graph:<id>`; none names a repository or block; all 16 `ext` URLs are served from
+  ventusltd.github.io/ventus-grid-engine/, so by the surface rule (served folder -> repository -> first commit k0) all 16
+  key to ONE place: the 15 edges are drawn but degenerate (drawn as loops at that place, readout says so).

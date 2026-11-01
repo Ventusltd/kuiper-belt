@@ -59,7 +59,7 @@ hooks plus those seven, without `provides` (35 names since rev 3).
 | `KY.sel` | `target` get/set (sets `dirty`) | :243 `target` |
 | `KY.redraw()` | sets `dirty = true` | :243 `dirty` |
 | `KY.draw.add(fn, order)` | the one wrap of `draw`; `fn(o2, KY)` runs after the engine's and the edition's overlay, ascending `order`; a throwing fn is removed and reported, the frame continues | :332 `function draw(){`, wrapped :654 |
-| `KY.panels.add(name, el, title)` / `.set(name)` / `.place()` | `PANELS[name] = el`; the bar title is team 1's | :710 `PANELS`, :712 `placePanels`, :714 `setPanel` |
+| `KY.panels.add(name, el, title)` / `.set(name)` / `.place()` | rev 4: once `kuiper-shell` (team 1) is admitted, `add` appends `el` to `KY.modules['kuiper-shell'].api.panel(name)` (the shell's six: file edit view scope wafer about); otherwise, or for a name the shell lacks, `PANELS[name] = el`; the bar titles are team 1's | :710 `PANELS`, :712 `placePanels`, :714 `setPanel` |
 | `KY.refuse(text, slot)` | rev 3: one line in the shared `#refuse[role=alert]` strip under the module's own `slot` (its id); `engine` and `modules` are the page's (TypeError); empty text clears the slot; the strip goes when every slot is empty | the page's `refuse(m, slot)` (NL-009 09-robust, given slots by team 4; rev-3 patched page :140) |
 | `KY.register(module)` | the only call a module makes at parse time; a closure of the loader | |
 | `KY.modules` | `{id: frozen {id, generation, sha256, api, inspect}}`; alias `window.__KUIPER_MODULES__` | |
@@ -98,8 +98,9 @@ fetched or not an object, or its `schema` is not `kuiper.modules.v1`, `hooks` no
 page's (`edition <x> ≠ page <y>`), `order`/`modules` not lists, or `crypto.subtle` is missing. An `install` that returns
 a promise is admitted at once; if that promise rejects (for example a module awaiting `wafer` when the wafer refuses),
 the rejection is recorded in `__KUIPER_EDITION__.failures` and the readout (`<id> install rejected: <message>`), not in
-`refused`: the engine's own refusal is already in the strip. At `done`, `order`, `admitted`, `refused`, `timings` and
-`KY.modules` are frozen; `failures` stays open.
+`refused`: the engine's own refusal is already in the strip. At `done`, `order`, `admitted`, `refused` and `timings` are
+frozen; `failures` stays open, and `KY.modules` stays open (rev 4: the shell publishes `.menuBar` there; each admitted
+entry is non-writable).
 
 Header line 1 of every module: `/* kuiper module <id>, generation <module-stamp> (UTC), <licence>` (the comment may
 continue on later lines). The stamp is written three times (file name, header, registration) and all three are checked

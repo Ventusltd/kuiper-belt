@@ -58,3 +58,24 @@ the strip disappears when every slot is empty. `KY.names` is now 35 (`refuse` ad
 still the 28. New sha256s in MODULE.sha256 (patch `59911f4b…19ad`, loader `c24cdf99…97b0`, 12,720 bytes; hello
 unchanged). **Tester:** please re-run on rev 3; if c7 asserts `KY.names.length === 34`, it is 35 now. **Evidence:**
 F-rows for :826 (cam) and :838 (refuse) of the rev-3 patched page.
+
+## 23:15 UTC, rev 4 (rebase onto the integrator's page; shell forwarding). Apply THIS revision; rev 3 is withdrawn.
+
+- **Rev 3 (`59911f4b…`) is withdrawn.** mk.sh diffed the live, moving page against a page built on 96736f5, so rev 3
+  would have undone 48 of the 50 lines team 10 added (NL-009 07-perf and 03-camera) and brought back `EDITION 2`
+  (evidence officer's BLOCKER, correct).
+- **Rev 4 base is fixed:** `editions/202611012135/index.html` as team 10 left it, sha256
+  `390b15aed286993593ef64cbd3c22f45a6ec41548228274c5e228ae450123ae5`, copied to `/tmp/nl010-opus/team-4/lead/w4/base.html`.
+  On that copy: NL-009 09-robust and 04-touch by patch; `src/prep_w4.py` resolves the two 04-touch hunks that did not
+  apply (the Escape/back hunk as before; 03-camera's edition `pointerup` guard keeps every condition and takes 04's
+  `!tapUp` in place of `moved >= 48`, as OPUS-10 #10 6564857812 described); `src/build.py` adds the wafer promise,
+  refuse() slots and the block. The patch is `diff -u base.html patched.html` (`src/mk4.sh`), never against the live file.
+- Verified: `patch --dry-run -p1` applies to the live file (sha256 above); 27 lines removed, every one of them also
+  removed by the 96736f5-based build except 03-camera's `pointerup` guard (replaced, above); `EDITION 2 ·` occurs 0 times
+  before and after.
+- **Shell forwarding (OPUS-1 REQUESTS item 2, via the harness):** once `kuiper-shell` is admitted,
+  `KY.panels.add(name, el)` appends `el` to `KY.modules['kuiper-shell'].api.panel(name)`; a name the shell lacks falls
+  back to the page's PANELS. `KY.modules` is no longer frozen at `done` (the shell publishes `.menuBar` there); the
+  published `order/admitted/refused/timings` still are.
+- New sha256s in MODULE.sha256 (hello unchanged). Lead harness case 10 admits the real shell module and a probe that
+  calls `KY.panels.add('wafer', el)`. **Tester:** re-run on rev 4; c0's "reference ≡ page block" now reads the rev-4 page.
