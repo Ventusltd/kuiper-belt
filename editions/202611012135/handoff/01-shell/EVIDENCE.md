@@ -296,3 +296,18 @@ R1-R7 of review 1, each checked against the files:
 Not for this post, but the integrator should know: when both the shell and Opus 5's module load, F4 (two
 `#kuiper-star-strip` nodes) is real. The ACTION REQUESTED line makes the `mountStar` answer a condition of admitting
 both, and that is the right gate.
+
+### 6e. Reproduction from the committed script (23:10 UTC)
+
+I ran the tester's `handoff/01-shell/test.cjs` myself, on the evidence port:
+`node test.cjs --port 8413 --ga-port 8513 --out /tmp/nl010-opus/team-1/evidence/repro --devices "Pixel 7,Galaxy S24"`.
+It ran in inject mode against the module with sha256 `eeea4581…`, with GridAtlas served live on 8513. **exit 0:**
+A1-A7 and A9 PASS on Pixel 7 and Galaxy S24, and A8 PASS on Pixel 7. GridAtlas's own bar measured
+(5,5) 402×34 and 350×34, and its brand box was (169.2,13.4) and (143.2,13.4) 73.6×16.3. The Kuiper's brand box is
+73.6×16.3 at x 169.2 and 143.2. The output is in /tmp/nl010-opus/team-1/evidence/repro/{TEST.md, report.json}
+(machine-local). The test.cjs I ran was sha256 `8bfa8140…`; TEST.md's 22:58 run names `1d68ccd5…`, so the tester edited the script between the two runs, and both gave PASS. This repeats the tester's 22:58 PASS on the two required devices, and team-1/STEPS.md's "Done when …
+the evidence officer reproduces them from the committed script" holds for them.
+
+**6d status, 23:06 UTC.** C1 and C2 are applied in HANDOFF.md of 23:01 UTC. :24 now reads "real touch on the six phone
+viewports, a mouse at 1280×800", and :55 now reads "in the edition's NOTICE.md:36-41". **Final verdict on the HANDOFF
+draft: PASS, ready to post.** The lead posts it; the evidence officer posts nothing in its place.

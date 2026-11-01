@@ -68,50 +68,35 @@
   },
   {
    "key": 63013224080,
-   "pass": false,
+   "pass": true,
    "repo": "kuiper-belt",
    "path": "learn-the-kuiper/README.md",
    "line": 31,
    "checks": {
-    "exit0": false,
-    "repo": false,
+    "exit0": true,
+    "repo": true,
     "commit": true,
-    "path": false,
-    "line": false,
-    "text_eq_git_line": false,
+    "path": true,
+    "line": true,
+    "text_eq_git_line": true,
     "text_vs_quote": "exact"
    },
    "key_py": {
     "repo": "Kuiper-belt",
     "commit": "b243e38d4964",
-    "path": null,
-    "line": null,
-    "text": null
+    "path": "learn-the-kuiper/README.md",
+    "line": 31,
+    "text": "- Earlier dated folders are kept unchanged as history, so old links keep working."
    },
    "edition4_pass": true
   },
   {
    "key": 57337885695,
-   "pass": false,
+   "pass": null,
    "repo": "pipelinenews",
    "path": ".github/workflow-archive/20260830-email-storm/README.md",
    "line": 3,
-   "checks": {
-    "exit0": false,
-    "repo": true,
-    "commit": true,
-    "path": false,
-    "line": false,
-    "text_eq_git_line": false,
-    "text_vs_quote": "quote is a fragment of the line (after normalising)"
-   },
-   "key_py": {
-    "repo": "pipelinenews",
-    "commit": "67aa2eb05993",
-    "path": null,
-    "line": null,
-    "text": null
-   },
+   "checks": "NOT EVALUATED: no clone of pipelinenews on this machine (key.py: REFUSED: no local clone at C:/Users/vikra/Documents/GitHub/pipelinenews to verify against)",
    "edition4_pass": true
   },
   {

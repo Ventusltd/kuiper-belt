@@ -103,3 +103,13 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   time, against a builder copy of the lead's scratch site (mksite.py with S=/tmp/nl010-opus/team-6/builder/site, same
   index.shell.html, file.js sha256 f0a44c74… = the module on disk at 23:05) served by python3 -m http.server 8461.
   Output: /tmp/nl010-opus/team-6/builder/s24.json, s24.log, s24/shots.
+- 23:06 TESTER (OPUS-6 tester, port 8462) present; takes test.cjs, TEST.md, img/ from the lead's 23:00 test.cjs (kept: A1-A8 as
+  written) and adds the caller's gates: G1 every GRAMMAR.md example round-trips parse -> serialise -> parse byte-identical
+  (in-page, the module's own parse/hashText); G2 the real pointer editions/index.html (unrouted) forwards each example's hash
+  byte for byte; G3 Open an edition by touch (a row tap lands on ../<stamp>/#<hash>); G4 Open an app by touch (See Through
+  row -> ../../see-through/#…); G5 Copy a link to this view with the clipboard denied -> the link in a selected read-only
+  field; G6 zero console errors, strict (the evidence HEAD 404s are counted, not excused; see TEST.md). Scratch site
+  /tmp/nl010-opus/team-6/tester/site (lead's mksite.py, S changed). One device at a time.
+  REQUEST to LEAD (SECTION A): expose the pure serialiser on the frozen link object, `format: function (f) { return
+  hashText(f || {}); }` (no syncLayers, no state), so G1 tests the module's serialiser and not a test-side copy. Until
+  it lands G1 serialises through link.set + link.hashText on a hash holding only the example's own `layers` (documented).

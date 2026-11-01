@@ -1,17 +1,19 @@
 # handoff/01-shell/TEST.md: step 1 "the shell contract", acceptance A1–A9
 
-Tester OPUS-1 (Opus team 1). Written by `test.cjs` at 2026-11-01 22:58 UTC; every cell below is a measurement from that run, never an estimate.
+Tester OPUS-1 (Opus team 1). Written by `test.cjs` at 2026-11-01 23:04 UTC; every cell below is a measurement from that run, never an estimate.
 
 **Verdict: PASS — the hand-off may go.**
+
+Loader preview: loader preview not run: team 4 index.html.patch did not apply: 1 out of 15 hunks FAILED -- saving rejects to file /tmp/nl010-opus/team-1/tester/run4/loader-preview/index.html.rej (the edition index.html moved under the patch; Opus 4 rebases it).
 
 | run | value |
 |---|---|
 | module | `modules/202611012143-kuiper-shell.js` |
 | module sha256 | `eeea45817821c84ab8bd78238fede7e82d5d9edeba02226fe1d1442a6fd9df66` (42397 bytes) |
 | how the module reached the page | `inject` (neither index.html nor modules.json names it yet; served with `<script defer src="modules/202611012143-kuiper-shell.js"></script>` before `</body>`, standing in for team 1's one script tag) |
-| test.cjs sha256 | `1d68ccd54e384d88a017df4adfcc7daf0942ae3e9e5f322e3b43fd079207ee0a` |
-| Kuiper | http://127.0.0.1:8410/editions/202611012135/ (kuiper-belt `934a4ca14fd4dc989b852e91e3b6b01bdecadb55`, branch `edition/202611012135`, working tree) — server already serving |
-| GridAtlas | http://127.0.0.1:8510/atlas/ (gridatlas `5ec7f62f213e2d20a02e86427daa182c0f38e4a4`) — server started by test.cjs (pid 10135); maplibre-gl@3.6.2 from `see-through/202610050513/vendor/`, Carto style = one background layer, all other external requests aborted (team-1/STEPS.md:20-29) |
+| test.cjs sha256 | `8bfa814001f3876af5e3ca186d0ebba290b9a75f7d0a37bdd245fd3c4dcf6f14` |
+| Kuiper | http://127.0.0.1:8412/editions/202611012135/ (kuiper-belt `934a4ca14fd4dc989b852e91e3b6b01bdecadb55`, branch `edition/202611012135`, working tree) — server started by test.cjs (pid 15282) |
+| GridAtlas | http://127.0.0.1:8512/atlas/ (gridatlas `5ec7f62f213e2d20a02e86427daa182c0f38e4a4`) — server started by test.cjs (pid 15296); maplibre-gl@3.6.2 from `see-through/202610050513/vendor/`, Carto style = one background layer, all other external requests aborted (team-1/STEPS.md:20-29) |
 | browser | Playwright Chromium 153.0.8010.12, `--use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist`, real touch (`touchscreen.tap`), 7 s settle |
 | devices | Pixel 7 412×839 touch · Galaxy S24 360×780 touch · Pixel 7 landscape 863×360 touch · 360x740 360×740 touch · Pixel 7 @393 393×851 touch · Pixel 7 @430 430×932 touch · 1280x800 1280×800 mouse |
 
@@ -375,6 +377,7 @@ None on any device.
 - A8 removes `#keys` after the engine has run (a module script right after the engine's, and at DOMContentLoaded), not from the HTML: removed from the HTML, the engine itself throws at `index.html:600` (`document.getElementById('keys').addEventListener`) before it creates Edition 4's `#bar`, so "Edition 4's bar still clickable" could never hold. Measured on the Edition 4 copy at kuiper-belt `editions/202611012135/index.html:600`.
 - The back gesture is `page.goBack()`: on Android Chrome the system back gesture is history back. A panel that pushes no history entry makes back leave the page; the test records that as FAIL (`stayedOnPage`), reloads and continues.
 - Box tolerance is 1 px on width and height, as ROADMAP step 1 A3 states; positions differ by design (GridAtlas's bar sits at (5,5) inside its 1 px bordered map container, the Kuiper's at (0,0) on the window), so centres are compared relative to each bar.
+- The module is read once when the run starts and served from those bytes for every device (a `page.route` on its URL), so the sha256 at the top of this file is the one every cell measured, even while the file is being edited; `node --check` runs on the same bytes.
 - Console errors from external hosts the sandbox proxy refuses are listed separately and not counted; every local 4xx/5xx and every page error is counted.
 - A3 centre, measured adjustment (builder FINDING and lead, PLAN.md 22:12; tester agreed and added the slot check): above 700 px GridAtlas's own wordmark sits +4.66 px right of its bar centre because the SYSTEM TIME flank (66 px) is wider than 2050 TARGET (57 px) (team-1 table: brand (599.7,12.3) 90×20.5 at 1280, centre 644.7 vs 640). "Centred within 1 px" and "box within 1 px of GridAtlas" cannot both hold there with the flanks copied, so A3 passes centreX when the wordmark is centred within 1 px OR sits at GridAtlas's live offset within 1 px, and additionally requires `.gm-brand-slot` centred within 1 px on every device.
 - A2b waits 300 ms after the 1.3× scale before measuring (a real font-scale change relayouts first; lead edit, kept). A5 `top ≥ bar bottom` is strict (0.5 px): the first run found the landscape panels at y=35 on the bar's 1 px rule (GridAtlas's `top:100%` does the same inside its own bar); the module now uses `top:calc(100% + 1px)`.

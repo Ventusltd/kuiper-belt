@@ -421,6 +421,7 @@ async function runDevice(browser, deviceName, served) {
       if (b.top > 0 && b.bottom < innerHeight && e.contains(document.elementFromPoint(x, y))) return { i: +e.dataset.i, key: window.__T.placed[+e.dataset.i].key, x, y }; } return null; });
     if (row) await tapAt(row.x, row.y);
     const pk = await pickCheck('D4', 'touch a LINES row: B1 header = line_text, B2 key second, B3 ≤ 34 % and the spark in the clear space', row ? row.key : -1);
+    if (!pk.c.open) { await closeOpen(rvL); await page.keyboard.press('e'); await settle(); pk.c = await cardNow(); }   // keep measuring the rest on a card opened with e
     // D5 details by touch
     const ctSel = await mark("return document.querySelector('#card button[aria-expanded]')", 'data-t-details');
     let d5 = { found: !!ctSel };
@@ -429,8 +430,9 @@ async function runDevice(browser, deviceName, served) {
       const detState = () => page.evaluate((s) => { const c = document.getElementById('card'), b = document.querySelector(s);
         const det = [...c.querySelectorAll('div,section,details,p')].filter(e => /(^|\s)(lc-d|cd|details)(\s|$)/.test(e.className || ''));
         const r = c.getBoundingClientRect(); return { expanded: b.getAttribute('aria-expanded'), shown: det.some(e => getComputedStyle(e).display !== 'none' && e.getBoundingClientRect().height > 0), height: r.height, bottom: r.bottom, ih: innerHeight, open: getComputedStyle(c).display !== 'none' }; }, ctSel);
-      await tapRect(await rectOf(ctSel)); await sleep(900); const s1 = await detState(); d5.screenshot = await shot('details-open');
-      await tapRect(await rectOf(ctSel)); await sleep(900); const s2 = await detState();
+      const rD = await rectOf(ctSel); if (!rD) throw new Error('details button not on screen (card closed?)');
+      await tapRect(rD); await sleep(900); const s1 = await detState(); d5.screenshot = await shot('details-open');
+      const rD2 = await rectOf(ctSel); if (rD2) await tapRect(rD2); await sleep(900); const s2 = await detState();
       d5 = { ...d5, heightBefore: h0, open: s1, closed: s2, capPx: +(CAP * s1.ih).toFixed(1) };
       d5.ok = s1.expanded === 'true' && s1.shown && s1.height <= CAP * s1.ih + 1 && s1.bottom <= s1.ih + 1 && s2.expanded === 'false' && !s2.shown && s2.open && d5.target[1] >= 44;
     }

@@ -107,3 +107,12 @@ See Through itself (see-through/) is untouchable this edition: its hash reader s
   keeps `gm-open` on #layers; line-card.js:165 hides the card while any `.gm-open` exists), so the row cannot be
   touched. FINDING posted: issuecomment-6565202316. Errors: 0 same-origin; See Through's basemaps.cartocdn.com style is
   refused by this sandbox's egress (recorded as externalUnreachable, not counted).
+- 23:04 UTC lead: (1) OPUS-1's request (via harness): the module no longer creates any #kuiper-star-strip of its own;
+  the entry is mounted ONLY through the shell's api.mountStar (title from 434 px, the shell's bottom-left strip narrower,
+  so Pixel 7 at 393/412 px shows the strip: a change to owner question Q7, stated in the HANDOFF). Without a shell the
+  entry is the first title of Edition 4's #bar (form 'title-fallback'), never a strip. inspect().form reads the shell's.
+  (2) see-through-hash-reader.patch fixed and re-published: the STAR KEY row was inside the one-line card (st-edge,
+  max-height 24 px, plain.css:28) so it was clipped and a tap hit MAP below; it is now its own 44 px <a> above the card,
+  made once and re-labelled. Measured (scratch, Pixel 7): row 396x44 at y 635, elementFromPoint = the row, a real tap
+  lands on ../../editions/ -> 202611012027/#key=3744984642 (the pointer at this HEAD), 0 pageerror. The patch applies
+  with patch -p1 to a byte copy of 202610050609/ and equals the tested copy byte for byte.

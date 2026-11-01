@@ -398,6 +398,7 @@ Root cause, measured: `/tmp/nl010-opus/team-4/lead/src/mk.sh:11` diffs the WORKI
 tests passed on a page without 03-camera and 07-perf. Two consistent fixes: pin the `a` side to
 `git show 96736f5:editions/202611012135/index.html` (then HEAD 96736f5 is true and team 10 merges onto its base), or
 build on a72c175 and keep its lines. Either way the HANDOFF's HEAD line and the tested page must name the same base.
+B1 was posted as a REVIEW on #10 at 23:03:21Z (comment 6565216493) so team 10 does not apply rev 3.
 
 HANDOFF.md as it stands (22:33 UTC) is **out of date against rev 3** and not postable:
 1. `HEAD: kuiper-belt@96736f5 … (the base the patch applies to)` and "Files … against kuiper-belt@96736f5" are now

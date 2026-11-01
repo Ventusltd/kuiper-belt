@@ -17,7 +17,7 @@ What it adds (descent.js; the 13 controls, flyTo, flightDepth, the layout and th
   #view=kuiper|map|sat|3d   after the flight; other fields: "LINK FIELD <NAME> NOT UNDERSTOOD"
   on arrival:       history.replaceState '#key=<subKey>&space=<SPACE>&sub=<name>'; __descent.link() returns it
   the way home:     X at the stars stage (nothing to undo) -> history.back() for a same-origin referrer, else ../../editions/;
-                    aria-label "back to the Kuiper" there; the card's 44 px row "STAR KEY <k> · OPEN IT ON THE KUIPER" ->
+                    aria-label "back to the Kuiper" there; a 44 px row above the card "STAR KEY <k> · OPEN IT ON THE KUIPER" ->
                     ../../editions/#key=<k>; the credit line "Stars placed by the Kuiper law (kuiper-belt@96736f5, SPACE …)"
   sky:              kuiper-law.js SPACE 63,340,120,796 (cosmos/wafer-meta.json:4 at 96736f5); descent.js reads
                     ../../cosmos/wafer-meta.json and __descent.sky() says {space, spaceSource: 'wafer-meta' | 'frozen …'}
@@ -25,7 +25,7 @@ Measured on a scratch site (lead, Pixel 7, SwiftShader): see handoff/05-see-thro
 
 diff -ruN a/descent.js b/descent.js
 --- a/descent.js	2026-11-01 22:01:41.578110765 +0000
-+++ b/descent.js	2026-11-01 22:03:02.798421131 +0000
++++ b/descent.js	2026-11-01 23:01:54.145881116 +0000
 @@ -9,6 +9,9 @@
  //                 dark-matter style, Esri World Imagery for satellite, GridAtlas's own 400/275/132 kV line files.
  //                 Network only; the module opens and works offline from file:// without it.
@@ -45,7 +45,15 @@ diff -ruN a/descent.js b/descent.js
    // grid-data.js stores each network in its own frame: x = ax lon + bx, y = ay lat + by (fitted, descent/DESCENT-MAP.md)
    var FRAME = { substations: [0.09964309, 0.31622146, 0.16536946, -9.15422211],
      grid400: [0.15191996, 0.22101387, 0.25086508, -13.53743135], grid132: [0.12832519, 0.30976879, 0.21383207, -11.62522065] };
-@@ -440,11 +445,13 @@
+@@ -244,6 +249,7 @@
+       if (S.land) { S.grpView.style.left = ''; S.grpView.style.width = '110px'; S.grpView.style.top = '64px'; S.grpView.style.bottom = ''; S.grpView.style.flexDirection = 'column'; }
+     }
+     S.ro.style.display = 'none'; networkStatus();
++    if (S.homeA) { if (S.cardOn && !S.in3d && S.T >= 0) homeRow(); else S.homeA.style.display = 'none'; }   // NL-010 5.8 b
+   }
+ 
+   // ---------------- camera ----------------
+@@ -440,11 +446,13 @@
      S.flight = null; S.auto3d = 0; S.hold = 0;
      if (S.in3d) { setView('sat', true); S.D = S.Dgoal = DMAX; camera(S.D); syncMap(1); showCard(); return; }
      if (!M.standalone) { M.close(); return; }
@@ -60,7 +68,7 @@ diff -ruN a/descent.js b/descent.js
    }
  
    // ---------------- SPIDER: the grid engine pack when present, otherwise nearest by distance ----------------
-@@ -519,6 +526,8 @@
+@@ -519,6 +527,8 @@
    function frame(now) {
      if (!S) return;
      S.raf = requestAnimationFrame(frame);
@@ -69,7 +77,7 @@ diff -ruN a/descent.js b/descent.js
      var t0 = performance.now(); if (S.last) S.fiv[S.fj++ % S.fiv.length] = now - S.last;
      var dt = Math.min(0.1, Math.max(0.001, (now - (S.last || now)) / 1000)); S.last = now;
      // the one control: D eases toward its goal, with a speed cap so a huge wheel turn is still a fall, not a cut
-@@ -595,6 +604,12 @@
+@@ -595,6 +605,12 @@
      }
  
      instruments(g, cam);
@@ -82,7 +90,7 @@ diff -ruN a/descent.js b/descent.js
      if (S.grid && D > 1.6) drawLines(g, cam, mapA, smooth((D - 1.6) / 0.5));
      sweep(g);
  
-@@ -833,6 +848,7 @@
+@@ -833,6 +849,7 @@
    function attrib() {
      var t = [], bad = S.failedSources && Object.keys(S.failedSources).length;
      if (S.D > 1.5) t.push(ATTR_SUBS);
@@ -90,17 +98,32 @@ diff -ruN a/descent.js b/descent.js
      if (!bad && (S.mapVis || S.in3d)) { t.push(ATTR_MAP); if (S.view === 'sat' || S.in3d) t.push(ATTR_SAT); if (S.in3d) t.push('Terrain: Terrain Tiles (Tilezen) on AWS; UK terrain (c) Environment Agency copyright and/or database right 2015. All rights reserved'); }
      edgeText(S.att, t.join(' · ')); S.att.style.display = t.length ? 'block' : 'none';
      S.netNote.style.display = bad && S.D > 1.5 ? 'block' : 'none';
-@@ -849,6 +865,9 @@
-     if (S.T < 0 || S.in3d) return;
+@@ -850,12 +867,104 @@
      S.card.textContent = nameOf(S.T) + ' · ' + voltText(S.T);
      S.card.title = S.card.textContent;
-+    var hk = el('a', 'display:block;min-height:44px;line-height:44px;color:' + C.cyan + ';text-decoration:none;border-top:1px solid rgba(0,255,255,0.3);margin-top:6px;pointer-events:auto',
-+      'STAR KEY ' + fmt(keyOfSub(S.T)) + ' · OPEN IT ON THE KUIPER', S.card);
-+    hk.href = KUIPER_URL + '#key=' + keyOfSub(S.T); hk.setAttribute('data-st', 'kuiper-key');
      S.card.style.display = 'block'; S.cardOn = true;
++    homeRow();
++  }
++  // NL-010 5.8 b: the way home by key, a 44 px row of its own directly above the one-line card (the card is an st-edge,
++  // 24 px high, plain.css:28, so the row cannot live inside it). Made once and only re-labelled, so a tap is never lost
++  // to a redraw; placed from the card's own box on every showCard.
++  function homeRow() {
++    if (!S.homeA) {
++      S.homeA = el('a', 'position:absolute;display:none;box-sizing:border-box;min-height:44px;line-height:44px;padding:0 12px;background:#000;color:' + C.cyan
++        + ';border:1px solid rgba(0,255,255,0.5);border-radius:6px;font:400 14px/42px ' + FONT + ';text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:auto', '', S.ui);
++      S.homeA.setAttribute('data-st', 'kuiper-key');
++      S.homeA.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
++    }
++    var a = S.homeA, hl = 'STAR KEY ' + fmt(keyOfSub(S.T)) + ' · OPEN IT ON THE KUIPER', hh = KUIPER_URL + '#key=' + keyOfSub(S.T);
++    if (a.textContent !== hl) a.textContent = hl;
++    if (a.getAttribute('href') !== hh) a.setAttribute('href', hh);
++    var cs = getComputedStyle(S.card), ub = S.ui.getBoundingClientRect(), cb = S.card.getBoundingClientRect();
++    a.style.left = (cb.left - ub.left) + 'px'; a.style.width = cb.width + 'px';
++    a.style.bottom = (ub.bottom - cb.top + 6) + 'px'; a.style.display = cs.display === 'none' ? 'none' : 'block';
    }
-   function hideCard() { if (S) { S.card.style.display = 'none'; S.cardOn = false; S.cardDirty = S.T >= 0; } }
-@@ -856,6 +875,80 @@
+-  function hideCard() { if (S) { S.card.style.display = 'none'; S.cardOn = false; S.cardDirty = S.T >= 0; } }
++  function hideCard() { if (S) { S.card.style.display = 'none'; S.cardOn = false; S.cardDirty = S.T >= 0; if (S.homeA) S.homeA.style.display = 'none'; } }
+   function arrive() {   // like the Pipeline News MAP arrival in GridAtlas: on the point, then the card, then the lines
      S.cardDirty = true; S.mN = 0; S.mTotal = 0; ping(12, 0.04); ping(19, 0.025);
      caption('ONE SUBSTATION: ' + nameOf(S.T).toUpperCase());
      if (window.SeeThrough3D && !S.viewTouched) S.auto3d = performance.now() + 1400;
@@ -181,7 +204,7 @@ diff -ruN a/descent.js b/descent.js
    }
  
    // ---------------- input ----------------
-@@ -1047,14 +1140,22 @@
+@@ -1047,14 +1156,22 @@
        sub: function (i) { return { name: D0.names[i], lat: D0.lat[i], lon: D0.lon[i], volt: voltText(i), op: opText(i) }; },
        screenOf: function (i) { return [S.sx[i], S.sy[i]]; },
        mapPointOf: function (i) { if (!S.map) return null; var p = S.map.project([D0.lon[i], D0.lat[i]]); return [p.x, p.y]; },

@@ -16,7 +16,8 @@
   var POINTER = '../../see-through/';                        // the stable pointer (NL-009 06 decision (c); see-through/index.html:7,:11,:12)
   var SENTENCE = 'See Through: from the stars to one substation in 3D';   // globalgrid2050@c66759f homepage_versions/homepage_v134.html:35
   var DATA = 'data/see-through.json';
-  var STRIP_MQ = '(max-width: 380px)';                       // ROADMAP R7 (used only without team 1's shell, which owns the rule); Q7 open
+  // the entry's form (title or bottom-left strip) is the shell's rule alone (ROADMAP R7; team 1 FINDING issuecomment-6564447092:
+  // title from 434 px, the 44 px strip narrower; kuiper-shell.js:41); this module never makes a strip of its own
   var HIT2 = 81;                                             // 9 px tap radius, Edition 4's spark rule (index.html:688-693)
   var CYAN = 'rgba(46,230,230,', AMBER = '#ffb000';          // PALETTE.md: cyan #2ee6e6 the instrument; amber attention
 
@@ -60,8 +61,6 @@
     + '#kuiper-menu-bar #kuiper-star.gm-title,#bar #kuiper-star.gm-title{' + LIT + ';border-color:var(--cy,#2ee6e6);flex:0 0 auto}'
     + '#kuiper-star-strip #kuiper-star.gm-title{' + LIT + ';min-height:44px;height:44px;padding:0 14px;font-size:11px;'
     + 'letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(80,220,240,.5);box-sizing:border-box;display:flex;align-items:center}'
-    + '#kuiper-star-strip.ky-st-own{position:fixed;left:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:14;background:#090c13}'
-    + '#kuiper-star-strip.ky-st-own:empty{display:none}'
     + 'html.kuiper-star-strip #card{bottom:calc(60px + env(safe-area-inset-bottom))!important}'
     + '#card .ky-st{display:block;min-height:44px;line-height:44px;color:var(--cy,#2ee6e6);text-decoration:none;border-top:1px solid #12414a;margin-top:6px}'
     + '#card .ky-st+.ky-st{margin-top:0}'
@@ -86,14 +85,10 @@
     // stops here and the browser follows the href in the same tab (NL-009 06 decision (a))
     a.addEventListener('click', function (e) { e.stopPropagation(); });
     st.a = a;
-    var mq = window.matchMedia ? window.matchMedia(STRIP_MQ) : null;
-    function own() {                                        // no shell: R7's breakpoint, the same node moved
-      var strip = document.getElementById('kuiper-star-strip');
-      if (!strip) { strip = document.createElement('div'); strip.id = 'kuiper-star-strip'; strip.className = 'ky-st-own'; document.body.appendChild(strip); }
-      if (mq ? mq.matches : innerWidth <= 380) { if (a.parentNode !== strip) strip.appendChild(a); return 'strip'; }
+    function own() {                                        // no shell admitted: Edition 4's bar, first title; no strip
       var bar = document.getElementById('bar'), name = document.getElementById('barname');
       if (bar) { var ref = name && name.parentNode === bar ? name.nextSibling : bar.firstChild; if (ref !== a) bar.insertBefore(a, ref); }
-      return 'title';
+      return bar ? 'title-fallback' : 'none';
     }
     function place() {
       var sh = shell();
@@ -106,6 +101,7 @@
     }
     st.place = place; place();
     function later() { setTimeout(place, 0); }               // after the shell's own matchMedia listener has moved the node
+    var mq = window.matchMedia ? window.matchMedia('(min-width: 434px)') : null;   // only to re-read the shell's form after its move
     if (mq) { if (mq.addEventListener) mq.addEventListener('change', later); else if (mq.addListener) mq.addListener(later); }
     addEventListener('resize', later);
     if (!shell() && window.MutationObserver) {               // a shell installed after this module takes the node over

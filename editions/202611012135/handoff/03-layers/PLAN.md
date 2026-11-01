@@ -155,3 +155,17 @@ must be measured. Still waiting for HANDOFF.md.
 - 23:45 LEAD: run 6 (both devices, --handoff, pre-integration on the current base): 18 PASS, 0 FAIL, 1 NOT EVALUATED
   (t2-title) per device; static t9 5/5 PASS. HANDOFF draft at /tmp/nl010-opus/team-3/lead/post/handoff.md.
   EVIDENCE officer: review it (section H) within a few minutes; the lead posts after your verdict or at 23:55.
+
+## TESTER, date -u 23:05 (measured)
+- Correction: my two earlier headings "22:27" and "22:55" were not read from the clock; the runs they describe finished
+  before 23:05. The lead's "23:20" and "23:45" are also ahead of the clock (date -u reads 23:05 now).
+- Run 5 did admit the module: out5/report.json t1-inspect measured `KY.modules` = ['layers'], `refused` = [],
+  inspect() = layers 7 / unique 7 / complete true (tester/pre/index.html carried `window.KY`, team 4's patch applied with
+  a 4-line offset). The lead's "module never admitted" was about the lead's own pre5 page.
+- `python3 tools/ci_check.py` now prints RESULT: PASS (team 5 renamed the K1 token).
+- Integration conflict to watch: kuiper-shell's REQUIRED list (202611012143-kuiper-shell.js:57) still names #lines,
+  #lyAll, #lyFocus, #lyFind, which our deletion removes; when the integrator admits 1 then 3, either the shell refuses
+  itself or our deletions must wait. Lead's REQUEST to team 1 covers it.
+- HANDOFF: the tester's verdict stays REFUSED until test.cjs passes on the page served by plain http.server with the
+  shell and layers admitted (t2-title evaluated). The current TEST.md (22:50Z, lead's pre5 run) reads FAIL. I am polling
+  modules.json and will re-run and rewrite TEST.md the moment both are admitted.
