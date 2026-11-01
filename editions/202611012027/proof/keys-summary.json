@@ -1,0 +1,372 @@
+{
+ "edition": "Kuiper Edition 4 (202611012027), keys unchanged from Edition 2",
+ "bodies": 346,
+ "on_wafer": 344,
+ "verified": 344,
+ "not_on_wafer": [
+  {
+   "id": "164372f7931538ecf1ea97b0d8358179bde6ab0f:115",
+   "repo": "star-maker",
+   "commit": "f65c2f381d91eeb1eba75a97ae6765c24e32197d",
+   "reason": "commit not on the wafer"
+  },
+  {
+   "id": "4152a7a6a16dae322e483db7854dd0e191780958:86",
+   "repo": "star-maker",
+   "commit": "f65c2f381d91eeb1eba75a97ae6765c24e32197d",
+   "reason": "commit not on the wafer"
+  }
+ ],
+ "roundtrip_key_py": [
+  {
+   "key": 62884788882,
+   "pass": true,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/01-data.js",
+   "line": 4,
+   "checks": {
+    "exit0": true,
+    "repo": true,
+    "commit": true,
+    "path": true,
+    "line": true,
+    "text_eq_git_line": true,
+    "text_vs_quote": "exact"
+   },
+   "key_py": {
+    "repo": "gridatlas",
+    "commit": "cacb69a7c4ab",
+    "path": "tools/offtakers/src/01-data.js",
+    "line": 4,
+    "text": "GEN='@@GEN@@',TMO=15000,TOE='timeout after 15 s',R40=40,NR=15,"
+   }
+  },
+  {
+   "key": 62818258531,
+   "pass": true,
+   "repo": "data-grid-gb",
+   "path": "derived/build_connection_points.py",
+   "line": 41,
+   "checks": {
+    "exit0": true,
+    "repo": true,
+    "commit": true,
+    "path": true,
+    "line": true,
+    "text_eq_git_line": true,
+    "text_vs_quote": "exact"
+   },
+   "key_py": {
+    "repo": "data-grid-gb",
+    "commit": "b57c94d4e964",
+    "path": "derived/build_connection_points.py",
+    "line": 41,
+    "text": "NOISE = re.compile("
+   }
+  },
+  {
+   "key": 63013224080,
+   "pass": true,
+   "repo": "kuiper-belt",
+   "path": "learn-the-kuiper/README.md",
+   "line": 31,
+   "checks": {
+    "exit0": true,
+    "repo": true,
+    "commit": true,
+    "path": true,
+    "line": true,
+    "text_eq_git_line": true,
+    "text_vs_quote": "exact"
+   },
+   "key_py": {
+    "repo": "Kuiper-belt",
+    "commit": "b243e38d4964",
+    "path": "learn-the-kuiper/README.md",
+    "line": 31,
+    "text": "- Earlier dated folders are kept unchanged as history, so old links keep working."
+   }
+  },
+  {
+   "key": 57337885695,
+   "pass": true,
+   "repo": "pipelinenews",
+   "path": ".github/workflow-archive/20260830-email-storm/README.md",
+   "line": 3,
+   "checks": {
+    "exit0": true,
+    "repo": true,
+    "commit": true,
+    "path": true,
+    "line": true,
+    "text_eq_git_line": true,
+    "text_vs_quote": "quote is a fragment of the line (after normalising)"
+   },
+   "key_py": {
+    "repo": "pipelinenews",
+    "commit": "67aa2eb05993",
+    "path": ".github/workflow-archive/20260830-email-storm/README.md",
+    "line": 3,
+    "text": "These timestamped, one-use repair, authorisation and Atlas-successor workflows were archived after they generated duplicate push/schedule runs and misleading failure-email bursts."
+   }
+  },
+  {
+   "key": 62731463779,
+   "pass": true,
+   "repo": "globalgrid2050",
+   "path": "kuiper-grid/i0097/cartridges/009700000000-kuiper-programs.js",
+   "line": 3991,
+   "checks": {
+    "exit0": true,
+    "repo": true,
+    "commit": true,
+    "path": true,
+    "line": true,
+    "text_eq_git_line": true,
+    "text_vs_quote": "exact after trimming whitespace"
+   },
+   "key_py": {
+    "repo": "globalgrid2050",
+    "commit": "c66759f0d7ac",
+    "path": "kuiper-grid/i0097/cartridges/009700000000-kuiper-programs.js",
+    "line": 3991,
+    "text": "    /* `!(x <= limit)` NOT `x > limit`. On every finite number the two agree -"
+   }
+  },
+  {
+   "key": 36064706712,
+   "pass": true,
+   "repo": "data-centres-gb",
+   "path": "build/python/202608271727-build-data-centres-intelligence.py",
+   "line": 208,
+   "checks": {
+    "exit0": true,
+    "repo": true,
+    "commit": true,
+    "path": true,
+    "line": true,
+    "text_eq_git_line": true,
+    "text_vs_quote": "exact after trimming whitespace"
+   },
+   "key_py": {
+    "repo": "data-centres-gb",
+    "commit": "f9f47286fae6",
+    "path": "build/python/202608271727-build-data-centres-intelligence.py",
+    "line": 208,
+    "text": "    for receipt in hashed_source_files:"
+   }
+  },
+  {
+   "key": 63013283775,
+   "pass": true,
+   "repo": "particle-physics-drawing-engine",
+   "path": "measurements/exactness-result.txt",
+   "line": 18,
+   "checks": {
+    "exit0": true,
+    "repo": true,
+    "commit": true,
+    "path": true,
+    "line": true,
+    "text_eq_git_line": true,
+    "text_vs_quote": "exact"
+   },
+   "key_py": {
+    "repo": "particle-physics-drawing-engine",
+    "commit": "eb52ad7ebab1",
+    "path": "measurements/exactness-result.txt",
+    "line": 18,
+    "text": "continued fraction of C32/2^32: 34 terms: [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,4,1,1,25,3,1,1,1,1,12]"
+   }
+  },
+  {
+   "key": 63027329739,
+   "pass": true,
+   "repo": "ventus-grid-engine",
+   "path": "engine/firm-capacity.js",
+   "line": 200,
+   "checks": {
+    "exit0": true,
+    "repo": true,
+    "commit": true,
+    "path": true,
+    "line": true,
+    "text_eq_git_line": true,
+    "text_vs_quote": "exact"
+   },
+   "key_py": {
+    "repo": "ventus-grid-engine",
+    "commit": "96a800eb0182",
+    "path": "engine/firm-capacity.js",
+    "line": 200,
+    "text": "export const NOT_COMPUTED = Object.freeze({"
+   }
+  },
+  {
+   "key": 42864278840,
+   "pass": true,
+   "repo": "gridmachine1",
+   "path": "CABLE-ENGINES.md",
+   "line": 32,
+   "checks": {
+    "exit0": true,
+    "repo": true,
+    "commit": true,
+    "path": true,
+    "line": true,
+    "text_eq_git_line": true,
+    "text_vs_quote": "exact"
+   },
+   "key_py": {
+    "repo": "gridmachine1",
+    "commit": "c6cbf9686eea",
+    "path": "CABLE-ENGINES.md",
+    "line": 32,
+    "text": "> **A cable engine selects the question. It never decides whether a question is answered.**"
+   }
+  },
+  {
+   "key": 63025960892,
+   "pass": true,
+   "repo": "time-stone",
+   "path": "tools/watch.py",
+   "line": 33,
+   "checks": {
+    "exit0": true,
+    "repo": true,
+    "commit": true,
+    "path": true,
+    "line": true,
+    "text_eq_git_line": true,
+    "text_vs_quote": "exact"
+   },
+   "key_py": {
+    "repo": "time-stone",
+    "commit": "a1703b1bb017",
+    "path": "tools/watch.py",
+    "line": 33,
+    "text": "sys.path.insert(0, os.environ.get('KB_TOOLS', os.path.join(ROOT, 'kb', 'tools')))"
+   }
+  },
+  {
+   "key": 60072442585,
+   "pass": true,
+   "repo": "maths",
+   "path": "10-kuiper-placement-law.md",
+   "line": 169,
+   "checks": {
+    "exit0": true,
+    "repo": true,
+    "commit": true,
+    "path": true,
+    "line": true,
+    "text_eq_git_line": true,
+    "text_vs_quote": "equal after dropping quote marks and collapsing whitespace"
+   },
+   "key_py": {
+    "repo": "maths",
+    "commit": "b898a5ee39aa",
+    "path": "10-kuiper-placement-law.md",
+    "line": 169,
+    "text": "1. Key 9: radius 3? Area inside it $\\pi\times 9 = 28.274334$?"
+   }
+  },
+  {
+   "key": 55832512077,
+   "pass": true,
+   "repo": "worlds-",
+   "path": "src/worlds.py",
+   "line": 66,
+   "checks": {
+    "exit0": true,
+    "repo": true,
+    "commit": true,
+    "path": true,
+    "line": true,
+    "text_eq_git_line": true,
+    "text_vs_quote": "exact"
+   },
+   "key_py": {
+    "repo": "worlds-",
+    "commit": "b5f15716486c",
+    "path": "src/worlds.py",
+    "line": 66,
+    "text": "double nb = floor(%(MAXV).1f / (v * (1.0 + b / 100.0 * (tm - 25.0))));"
+   }
+  }
+ ],
+ "quote_not_at_line": [
+  {
+   "id": "17a03321087e6bf2c195ab1d15cd6a85a5019d33:89",
+   "repo": "globalgrid2050",
+   "path": "diary-notes-log/260522-0115-v7-rollback-and-working-method.md",
+   "line": 89,
+   "key": 62728320318,
+   "quote_line": 90,
+   "quote_key": 62728320319,
+   "check": "quote first line not at line 89; found at line 90"
+  },
+  {
+   "id": "264ecc4e24175f257e9a185eba9bddc8fc20f2d4:15",
+   "repo": "gridatlas",
+   "path": "tools/release/acceptance.mjs",
+   "line": 15,
+   "key": 62884836484,
+   "quote_line": 16,
+   "quote_key": 62884836485,
+   "check": "quote first line not at line 15; found at line 16"
+  },
+  {
+   "id": "467930a93d75a23062efcb2724e82ebc159a9bf7:33",
+   "repo": "kuiper-belt",
+   "path": "README.md",
+   "line": 33,
+   "key": 63013108974,
+   "quote_line": 34,
+   "quote_key": 63013108975,
+   "check": "quote first line not at line 33; found at line 34"
+  },
+  {
+   "id": "664673a4787729101b5eaac45849da9e1d7fa6bf:8",
+   "repo": "data-centres-gb",
+   "path": "README.md",
+   "line": 8,
+   "key": 36064706321,
+   "quote_line": 9,
+   "quote_key": 36064706322,
+   "check": "quote first line not at line 8; found at line 9"
+  },
+  {
+   "id": "772200ea08728fe7083962255e799dba6b60aacb:17",
+   "repo": "maths",
+   "path": "08a-which-way-the-golden-turn-goes.md",
+   "line": 17,
+   "key": 60072442240,
+   "quote_line": 18,
+   "quote_key": 60072442241,
+   "check": "quote first line not at line 17; found at line 18"
+  },
+  {
+   "id": "c0c9103f9198d2e8c76221fdc5138ad1e1f1da73:67",
+   "repo": "ventus-grid-engine",
+   "path": "deeplink/contract.js",
+   "line": 67,
+   "key": 63027326240,
+   "quote_line": 68,
+   "quote_key": 63027326241,
+   "check": "quote first line not at line 67; found at line 68"
+  },
+  {
+   "id": "d9f16001c179c3f82a0379812e645c5b47a8dcad:6",
+   "repo": "kuiper-belt",
+   "path": "learn-the-kuiper/202610050144/NOTICE.md",
+   "line": 6,
+   "key": 63013178579,
+   "quote_line": 7,
+   "quote_key": 63013178580,
+   "check": "quote first line not at line 6; found at line 7"
+  }
+ ],
+ "render": "headless Chromium (SwiftShader) at 1280x800 and 393x852: 344 sparks, 0 page errors; card height 111 px of 852 on the phone with the spark centred in the clear space above it; files render-*.png in this folder",
+ "note": "A line whose commit is not on the wafer is counted and named, never placed (seventh law). Seven quotes sit one line below the register line (an Edition 1 error, recorded, keys follow the register line)."
+}
