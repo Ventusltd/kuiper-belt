@@ -20,8 +20,9 @@ everything this edition brings in is `LICENCES.md` (Opus team 9) when it lands.
 | `modules/202611012143-line-card.js` | Opus 2, step 2 | Apache-2.0 | waiting for admission |
 | `modules/202611012141-layers.js` | Opus 3, step 3 | Apache-2.0 | waiting for admission |
 | `modules/202611012141-see-through.js` | Opus 5, step 5 | **CERN-OHL-S v2, the whole file**: it copies See Through's star-key rule (`see-through/202610050609/descent.js:19, :963, :965`; licence `see-through/202610050609/LICENSE.md:3-7`, text `see-through/202610050609/licences/globalgrid2050-CERN-OHL-S-2.0.txt`). The Apache-2.0 engine is only called, never copied into it. | waiting for admission |
+| `modules/202611012231-file.js` | Opus 6, step 6 | Apache-2.0; GridAtlas's copy-or-show clipboard, export blank-check and travelling-stamp method (Apache-2.0, gridatlas@5ec7f62 atlas/modules/202609031958-menu-bar.js:707-733, :794-834, :1082-1097, :1120-1137, :1354-1365); no GridAtlas bytes copied but the words of two row labels (its header, lines 4-7) | waiting for admission |
 
-Steps 6 (file), 7 (apps), 8 (drift) and 9 (law, `tools/edition_check.py`, `LICENCES.md`): no file on disk yet.
+Steps 7 (apps), 8 (drift) and 9 (law, `tools/edition_check.py`, `LICENCES.md`): no file on disk yet (22:50 UTC).
 
 **OpenStreetMap.** `data/see-through.json` (Opus 5) holds the names of 4,460 of its 5,800 substations (measured:
 features with `properties.name`), taken from See Through: © OpenStreetMap contributors, Open Database Licence 1.0

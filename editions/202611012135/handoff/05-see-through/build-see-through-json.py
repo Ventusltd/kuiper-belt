@@ -94,7 +94,7 @@ def main():
                 'remap': 'j = floor(key * nrule / space_old); valid when floor((j + 0.5) * space_old / nrule) == key; '
                          'then key_new = floor((j + 0.5) * space_new / nrule)'},
         'see_through': '202610050609', 'edition': EDITION, 'space': space,
-        'provenance': {'kuiper_belt': git_head(), 'sources': [
+        'provenance': {'kuiper': git_head(), 'sources': [
             {'path': 'cosmos/wafer-meta.json', 'sha256': sha(meta_b)},
             {'path': 'cosmos/wafer.tsv', 'sha256': sha(wafer_b)},
             {'path': ST + '/grid-data.js', 'sha256': sha(gd_b)}],

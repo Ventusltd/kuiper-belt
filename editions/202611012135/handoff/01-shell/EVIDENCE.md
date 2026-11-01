@@ -142,15 +142,15 @@ editions/202611012135/handoff/04-loader/HOOKS.md), or (c) the engine's own liste
 | 06-seethrough | F1 BLOCKER See Through unreachable from Edition 4; F2 MAJOR the fifth entry's budget | FIXES/NL-009/round1/06-seethrough.md:11, :24 |
 | 08-type | F1 MAJOR every phone text 11 px; F2 MAJOR COMMANDS panel shows no text on a phone; F3 MAJOR EDITION panel 88 words | FIXES/NL-009/round1/08-type.md:13, :22, :32 |
 
-## 4. The header's licence line (checked against the module at 22:05 UTC, 554 lines)
+## 4. The header's licence line (checked at 22:05 UTC; line numbers below are those of the final module, sha256 `eeea4581…`, 563 lines, whose lines 1-30 did not change)
 
 | check | the rule | the module | verdict |
 |---|---|---|---|
 | line 1 parses | `/* kuiper module <name>, generation <module-stamp> (UTC), <licence> */` (ROADMAP step 4, 4.3; HOOKS.md); the loader reads it with `/^\/\* kuiper module ([a-z0-9-]+), generation (\d{12}) \(UTC\),/` (editions/202611012135/modules/202611012145-loader.js:79) | `/* kuiper module kuiper-shell, generation 202611012143 (UTC), Apache-2.0 (kuiper-belt).` (kuiper-shell.js:1) | PASS: name `kuiper-shell`, stamp `202611012143` = file name = `GEN` (:33); the licence field reads `Apache-2.0 (kuiper-belt)` as in hello.js:1 and line-card.js:1. Cosmetic: line 1 ends in `.` and the comment closes at :30, not on line 1; the regex does not need the close. |
-| the licence is right | kuiper-belt code is Apache-2.0 (kuiper-belt@96736f5 LICENSE:1-3; README.md:156-157); CERN-OHL-S v2 only where See Through code is copied (OPUS-BRIEF) | Apache-2.0; no See Through code in the file (the star entry is a link to `../../see-through/`, the default of NL-009 06, :315-321) | PASS |
+| the licence is right | kuiper-belt code is Apache-2.0 (kuiper-belt@96736f5 LICENSE:1-3; README.md:156-157); CERN-OHL-S v2 only where See Through code is copied (OPUS-BRIEF) | Apache-2.0; no See Through code in the file (the star entry is a link to `../../see-through/`, the default of NL-009 06, :318-324) | PASS |
 | the NOTICE line (Apache-2.0 s.4(d)) | the GridAtlas NOTICE line in the module header (ROADMAP step 1 licence note) | :2-3 "copied from GridAtlas, Copyright 2026 Ventus Ltd, Apache-2.0 (gridatlas@5ec7f62 LICENSE:1-4, NOTICE:1-12), atlas/modules/202609031958-menu-bar.js" | PASS (LICENSE:1 is blank, :2-4 the title; NOTICE:1-12 "gridatlas / Copyright 2026 Ventus Ltd … Licensed under the Apache License, Version 2.0": both re-read) |
 | the mark | Q8 wording "The VENTUS mark is used by Ventus Ltd, its owner. The Apache-2.0 licence of this code does not license the mark." | :4-5 "\"Ventus\" and \"Cables & Connectivity(R)\" are the mark of Ventus Ltd, used by its owner's instruction of 1 Nov 2026; the Apache-2.0 licence of this code does not license the mark (LICENSE:139, s.6)"; the ABOUT panel says the same in the page (:481-484) | PASS in substance (gridatlas LICENSE:139-142 is s.6 Trademarks, re-read). The words are not yet Q8's; Q8 is the owner's to confirm and NOTICE.md is Opus 10's. |
-| requires list in the header | the header names the hooks (OPUS-BRIEF "requires list") | :7-11 DOM ids + `safeBox card hud big sub cv gbox gin redraw`; `KY.register` `requires` at the registration (:530-535) is the same nine names, each on Opus 4's admissible list (HOOKS.md: 28 hooks + `cam lit sel redraw draw panels`) | PASS. Note: `redraw` is `KY.redraw`, not a `KY.hooks` member; `missing()` checks the eight in `KY.hooks` only, which is right. |
+| requires list in the header | the header names the hooks (OPUS-BRIEF "requires list") | :7-11 DOM ids + `safeBox card hud big sub cv gbox gin redraw`; `KY.register` `requires` at the registration (:542-546) is the same nine names, each on Opus 4's admissible list (HOOKS.md: 28 hooks + `cam lit sel redraw draw panels`) | PASS. Note: `redraw` is `KY.redraw`, not a `KY.hooks` member; `missing()` checks the eight in `KY.hooks` only, which is right. |
 
 The manifest record (Opus 10's `modules.json`) must carry `"licence": "Apache-2.0"`: the loader refuses an empty licence
 (loader.js:71 `no licence`).
@@ -209,6 +209,14 @@ Two facts the acceptance text must absorb (both found independently by the build
 | :410 | `PALETTE.md:8-13` | kuiper-belt@96736f5 PALETTE.md:9-13 (:8 is the table rule) |
 | :551 | `index.html:697-703` | :698-704 (`const bar` :698 … `appendChild(bar)` :704) |
 
+**Status 22:56 UTC: all 14 RESOLVED.** Re-read in the module of 22:32 UTC (sha256 `eeea45817821c84a…`, 563 lines,
+42,397 bytes; `node --check` OK): :94 M:174-176/177-178/179-180, :119 M:206-211/219/220-227, :142 index.html:64-70,
+:155 M:1521-1552 with the cartridge twin from :5870, :166 cartridge :6011-6016, :173 M:372-382, :196 shell :23-34,
+:209 M:544, :214 ventus-corev8engine.js:602-608, :362 IX:614-618, :376 M:245-247, :410 PALETTE.md:9-13, :444
+IX:604-613, :551 index.html:698-704; the 1 px panel departure is now named in the module (:120). One residue, minor: the
+module's `IX`/`index.html:` keys are Edition 4 copy line numbers, true at `96736f5`; at `934a4ca` every one from :628
+down is 4 lower (§0). The comment at :357 could say `@96736f5`.
+
 Correct as cited: M:166-172, M:181-183, M:192-205, ventusv8.css:4,6-8, M:220-225 (row), M:228-233, M:554-583, M:1662-1669,
 :1556-1558; IX:600-601, :602, :615-618, :685-689, :692, :729-734, :726, :262-268.
 
@@ -226,7 +234,7 @@ Correct as cited: M:166-172, M:181-183, M:192-205, ventusv8.css:4,6-8, M:220-225
 - F3 **The probe**: the shell writes `window.__KUIPER_MODULES__.menuBar` (:52); under the loader
   `__KUIPER_MODULES__ === KY.modules`, "the one object the loader fills" (HOOKS.md). REQUESTS.md item 2 asks Opus 4 to
   leave it unfrozen; the test also accepts `KY.modules[...].inspect()` (test.cjs header). Keep both.
-- F4 **Two `#kuiper-star-strip` ids**: the shell creates `#kuiper-star-strip` (:35, :212) and Opus 5's module creates
+- F4 **Two `#kuiper-star-strip` ids**: the shell creates `#kuiper-star-strip` (:35, :213) and Opus 5's module creates
   its own `#kuiper-star-strip` and places `a#kuiper-star` into `.gm-side-left` at `max-width:380px` / title above
   (202611012141-see-through.js:59, :78, :85). With both loaded: duplicate ids and, between 381 and 433 px, a second
   SEE THROUGH title that overflows the bar. REQUESTS.md item 3 (mount through `api.mountStar`) is the fix; it must be
@@ -238,6 +246,53 @@ Correct as cited: M:166-172, M:181-183, M:192-205, ventusv8.css:4,6-8, M:220-225
   `text-size-adjust:100%`, `.gm-menu{display:flex}` and `.gm-title{display:flex}` (so the `a.gm-title` star aligns). The
   `!important`s of M:195-198 are dropped because no rule competes on the Kuiper page. None changes a measured number.
 
-### 6c. The HANDOFF draft
+### 6c. The HANDOFF draft: review 1 (handoff/01-shell/HANDOFF.md of 22:44 UTC, 47 lines, sha256 of the module at that time `eeea4581…`, 563 lines, 42,397 bytes)
 
-(pending: handoff/01-shell/HANDOFF.md not yet on disk at 22:05 UTC)
+**Verdict: NOT YET TO BE POSTED. The content is right; the post is not finished.** Every claim in it that I could
+check holds against a key or a measurement (EVIDENCE §1, §2, §5), and the departures and REQUESTS it names are the ones
+found here (6b F1-F5). It may be posted when R1-R4 are done; R5-R7 are corrections to the text.
+
+| # | line of HANDOFF.md | what is wrong or missing | the key |
+|---|---|---|---|
+| R1 | :1, :6, :8, :23 | placeholders `__UTC__`, `__RESULT__`, `__SHA__`, `__BYTES__`, `__TABLE__`. STATUS may read PASS only when TEST.md does: at 22:31 its verdict is "FAIL — HAND-OFF REFUSED by the tester" (1280×800: `touchscreen.tap: hasTouch must be enabled`, a harness error, every device assertion PASS). The tester's refusal stands until a run reads PASS. | handoff/01-shell/TEST.md:5 and its A1-A9 table |
+| R2 | :5, :8 | `MODULE.sha256` is named but not on disk; the sha256 in the post must equal it and equal the bytes the tester's PASS run hashed (TEST.md "module sha256"). Cut it after the 6a key fixes, which change the bytes. | OPUS-BRIEF hand-off list |
+| R3 | :4, :38 | HEAD says `kuiper-belt@96736f5 (working tree)`; the branch head is now `934a4ca14fd4dc989b852e91e3b6b01bdecadb55` (harness commits) and Opus 10 has moved index.html lines (§0). Write the head at posting time and say the keys are at `96736f5`; ":726's safeBox wrap" is `@96736f5 :726` = `@934a4ca :730`. (:33's `index.html:614` is the same at both.) | `git log -1`; `git show <rev>:editions/202611012135/index.html` |
+| R4 | :9 | "every CSS value … keyed in the module" is true of the values but 14 of the in-module line keys are off (6a). Fix them, or write "keyed in EVIDENCE.md §1". | EVIDENCE.md 6a |
+| R5 | :22-27 | the acceptance was changed during the run and the post should say so: the lead edited the tester's A3 to accept GridAtlas's live offset ±1 px above 700 px (both shells +4.66 px), A2b to wait 300 ms, and A2's star rule is 434 px, not ROADMAP's 381 (test.cjs:60-61, :540). The evidence officer's independent run agrees with each (EVIDENCE §5). | PLAN.md "LEAD status (22:12 UTC)" (b), (c); test.cjs:61 |
+| R6 | missing | one licence line: module Apache-2.0 (line 1); GridAtlas's NOTICE line in the header and in NOTICE.md (Apache-2.0 §4(d)); the mark used by the owner's instruction, Q8's sentence pending the owner (NOTICE.md:39-41); no See Through code (the star is a link). | LICENCE.txt; EVIDENCE §4 |
+| R7 | :1-6 | PROTOCOL.md:21 asks for a `DETAILS:` field before the body, and `TYPE:` on its own line (PROTOCOL.md:15). | neural-link PROTOCOL.md:15-22 |
+
+Checked and right in the draft: 34/36 px and the phone rule (M:166-172, :372); the wordmark as text, not a link
+(shell index.html:29-32; measured `closest('a')` null); 73.6×16.3 and 90×20.5 (§5, team-1/EVIDENCE.md A9); 11 moved
+nodes (builder, PLAN.md 22:2x; I measured 10 before the "the laws" link was added); the 434 px breakpoint (§5); the four
+departures; C8 met by DOM inventory plus KY names (6b F1; index.html:102); the OPUS-5 duplicate `#kuiper-star-strip`
+(6b F4; see-through.js:78 vs kuiper-shell.js:213); `writes` for E7 (6b F2); `index.html:614` (the keydown that ignores
+keys while `#goto` shows; unchanged at `934a4ca`).
+
+### 6d. The HANDOFF draft: review 2 (handoff/01-shell/HANDOFF.md of 23:00 UTC, 69 lines)
+
+**Verdict: PASS. It may be posted**, with the one-word correction C1 below. It does not block, but the lead should make
+it so the post claims nothing it did not measure.
+
+R1-R7 of review 1, each checked against the files:
+- R1 done. No placeholders remain. STATUS PASS matches TEST.md:5 "Verdict: PASS — the hand-off may go" (run of 22:58 UTC,
+  seven devices, A1-A9 and A8 PASS, 0 console and 0 page errors).
+- R2 done. MODULE.sha256 = `eeea45817821c84ab8bd78238fede7e82d5d9edeba02226fe1d1442a6fd9df66  modules/202611012143-kuiper-shell.js`.
+  `sha256sum -c` from the edition folder gives OK. It is the sha256 TEST.md's PASS run hashed (42,397 bytes), and it is the
+  bytes committed at `a72c175` (`git show a72c175:…/202611012143-kuiper-shell.js | sha256sum` gives the same).
+- R3 done. HEAD `a72c175eb1bbab81263b60230aefe31d83cbbf90`, and the post says the keys are at `@96736f5`. Re-read at
+  `a72c175`: the safeBox wrap is at :763 (as the post says), the keydown that ignores keys while `#goto` shows is still
+  :614, and index.html does not name the shell yet, so inject mode is right.
+- R4 done. The 14 keys are corrected (6a status), and the post says so.
+- R5 done. The three changes to the acceptance are named. My §5 agrees with each.
+- R6 done. A licence block is present, and it matches LICENCE.txt and the header (§4).
+- R7 done. `TYPE:` is on its own line, and `DETAILS:` is present.
+
+| # | line | correction | key |
+|---|---|---|---|
+| C1 | :24 | "with real touch" is not true of 1280×800, which ran with a mouse. Write "real touch on the six phone viewports, a mouse at 1280×800". | TEST.md devices row: "1280x800 1280×800 mouse" |
+| C2 (optional) | :55 | "belongs in the edition's NOTICE.md" understates it: the line is already there, Opus 10's working tree NOTICE.md:36-41. | editions/202611012135/NOTICE.md:36-41 |
+
+Not for this post, but the integrator should know: when both the shell and Opus 5's module load, F4 (two
+`#kuiper-star-strip` nodes) is real. The ACTION REQUESTED line makes the `mountStar` answer a condition of admitting
+both, and that is the right gate.

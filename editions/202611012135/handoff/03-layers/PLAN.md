@@ -139,3 +139,16 @@ What blocks the hand-off:
 Not gated, but please fix before HANDOFF: in the keys.json FAIL states the `#refuse` strip covers 99.7 % (Pixel 7, 12,302..400,839)
 and 100 % (Galaxy S24, 12,281..348,780) of the wafer's disc and the lower half of the WAFER panel (see img/FAIL.png); the
 wafer-refused strip (img/REFUSED.png) is a normal size, so it is the `.ky-layers-refuse` bottom:0 + `#refuse` top:36% pair.
+- 23:20 LEAD: the base index.html moved again (integrator, a72c175: NL-009 03 camera + 07 keys-min in the lines code);
+  team 4's patch no longer applies to it, so tester/pre was a page without KY (run 5 = module never admitted). Lead now
+  builds the pre page from the CURRENT base: /tmp/nl010-opus/team-3/lead/gen/mkpre.py (delete-moved.py + loader.js
+  reference block + wafer promise + refuse()). index.html.after-04-loader.patch removed; handoff/03-layers/delete-moved.py
+  re-cuts the deletion against any base. Module resealed (camera band + 24 px tap folded in). Run 6 on 8430 now.
+
+## EVIDENCE OFFICER (module sha256 1d9042ea… = MODULE.sha256; 256 keys PASS)
+R13 carried (24 px touch / 9 px mouse, layers.js:520). New R14 MAJOR: the integrator's base now loads keys-min.json
+(NL-009 07; 1,558,451 bytes, sha256 e153dfa4…, 346 bodies) and falls back to keys.json; our `lines` record and
+loadLines read keys.json only, so step 3 would undo 07 (+150,678 bytes per load). Record keys-min.json as source.file
+(build_layers.py measures it), keys.json as the evidence; or the HANDOFF says step 3 regresses 07.
+Also: stamps in this file (22:55, 23:20) are ahead of the clock (`date -u` read 22:59 when they were on disk); a stamp
+must be measured. Still waiting for HANDOFF.md.

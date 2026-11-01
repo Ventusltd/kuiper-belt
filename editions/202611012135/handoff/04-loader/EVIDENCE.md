@@ -208,22 +208,21 @@ Members of `window.KY` outside `hooks` that `requires` may also name (HOOKS.md:4
 | E44 | the frame loop starts here: the hook table is built after :747 and before this line, so every wrap above is already bound when `KY` captures it | kuiper-belt@96736f5 editions/202611012135/index.html:750 | `requestAnimationFrame(frame);` |
 | E45 | FINDING (corrects team-2/STEPS.md 4.4): the page script is `type="module"`, so it runs in strict mode although it never writes `'use strict'` (`grep -c` = 0). A write to the frozen `KY` from page code therefore THROWS a TypeError, it is not a silent no-op. Team 2's rule stands (loader state lives in a closure, never assigned onto `KY`), for the opposite reason. Module scope is also why a separate file cannot reach the engine's `let`s (4.1), and why the page script runs deferred, after parsing | kuiper-belt@96736f5 editions/202611012135/index.html:102 | `<script type="module">` |
 
-## F. The hook table in the patched page: where each hook is bound (rev 2, re-keyed 22:2x UTC)
+## F. The hook table in the patched page: where each hook is bound (rev 3, re-keyed 22:59 UTC)
 
-The integrator's page is `editions/202611012135/index.html` at 96736f5 with `handoff/04-loader/index.html.patch`
-rev 2 applied (patch sha256 `811e5dad…3d5b`, = MODULE.sha256:3): `git apply --check` passes at 96736f5, `patch -p1`
-applies 15 hunks, the result is 914 lines, sha256 `1ff8be0e8cd24f49c598d78e16ab0960cb624250b55b6cda6734575783bf66c6`. The working-tree page is NOT patched (team 10 applies it). The
-block between the marker lines is byte-identical in the patch and in `modules/202611012145-loader.js` (rev 2,
-`d6766eec…2f98`, 12,405 bytes, = MODULE.sha256:2 and modules.json `references[0]`; `cmp` of the 121 extracted lines:
-identical), so each row keys the reference file (sha `WT`: working tree, uncommitted; the harness commits) and gives
-the patched page's line in brackets (page line = reference line + 783). The engine lines each hook reads are section E;
-in the patched page they are: keyPlace :294, address :298, describe :300, findBy :296, flyTo :269, home :293, homeCamera :288, safeBox :278, safeBox wrap :763, lightTime :570, showNew :436, goKey :432, fmt :137, words :138, esc :704, cv/ov/o2 :133, hud/big :135, sub/card :136, gbox/gin :626, N/SPACE/repos/commits :213, cx…target :259, litK/litCi :260, atHome :261, draw :348, PANELS :733, placePanels :736, setPanel :738 (`grep -n` on the patched copy).
+The page the integrator applies the patch to is `editions/202611012135/index.html` at kuiper-belt@a72c175 (`a72c175eb1bb`, sha256 `390b15ae…3ae5`: the integrator's base, Edition 4 copy + NL-009 03-camera, OPUS-10 #10 6564857812); rev 3 no longer applies to 96736f5 (`patch --dry-run` there: 4 of 16 hunks FAILED). `handoff/04-loader/index.html.patch` (sha256 `59911f4b48c7ea7625109b8ce645d65a3659f826a204e5abc9112bfd672919ad`, =
+MODULE.sha256) applies there with `patch -p1` (and `git apply --check` against the working tree); the result is 916
+lines, sha256 `db2ded890dc34f9ee194860e5398fc93f4bc11d955d218375005d03de5a41ca2`. The block between the marker lines is byte-identical in the patch and in
+`modules/202611012145-loader.js` (sha256 `c24cdf99477bec71fb94ff33f043bf143a8d8319b40e00923684faa1c99697b0`, 12,720 bytes, = MODULE.sha256 and modules.json `references[0]`; `cmp` of the
+123 extracted lines: identical), so each row keys the reference file (sha `WT`: working tree, uncommitted; the harness
+commits) and gives the patched page's line in brackets (page line = reference line + 783). The engine lines each hook
+reads are section E (at 96736f5; identical through :619 in the base, measured); in the patched page they are: keyPlace :294, address :298, describe :300, findBy :296, flyTo :269, home :293, homeCamera :288, safeBox :278, safeBox wrap :763, lightTime :570, showNew :436, goKey :432, fmt :137, words :138, esc :704, cv/ov/o2 :133, hud/big :135, sub/card :136, gbox/gin :626, N/SPACE/repos/commits :213, cx…target :259, litK/litCi :260, atHome :261, draw :348, PANELS :733, placePanels :736, setPanel :738.
 
 | # | binding | key | fragment |
 |---|---|---|---|
 | F1 | the block begins (page :790) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:7 | `KUIPER HOOK TABLE AND LOADER kuiper.hooks.v1 · begin` |
 | F2 | the block comment names every engine hunk (review R1) (page :791) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:8 | `Engine lines this patch changes: the wafer promise` |
-| F3 | `KY.names`: the 28 hooks + the six members, frozen (page :806) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:23 | `'SPACE', 'N', 'repos', 'commits', 'wafer', 'cam', 'lit', 'sel', 'redraw', 'draw', 'panels']);` |
+| F3 | `KY.names`: the 28 hooks + the members `requires` may name, frozen (page :806) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:23 | `'SPACE', 'N', 'repos', 'commits', 'wafer', 'cam', 'lit', 'sel', 'redraw', 'draw', 'panels'` |
 | F4 | `KY.draw.add`'s one wrap of draw: painters after the engine and edition overlay; a throwing painter is removed and named (page :812) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:29 | `{ const _draw = draw; draw = function(){ _draw();` |
 | F5 | `window.KY` built and frozen (page :819) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:36 | `const KY = Object.freeze({` |
 | F6 | `KY.hooks` frozen (page :821) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:38 | `hooks: Object.freeze({` |
@@ -231,49 +230,50 @@ in the patched page they are: keyPlace :294, address :298, describe :300, findBy
 | F8 | hooks 15-23: the elements and the 2D context (page :823) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:40 | `cv, ov, o2, hud, big, sub, card, gbox, gin,` |
 | F9 | hooks 24-27: getters over the reassigned lets (page :824) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:41 | `get SPACE(){ return SPACE; }, get N(){ return N; }, get repos(){ return repos; }, get commits(){ return commits; },` |
 | F10 | hook 28: `wafer` (page :825) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:42 | `wafer: kyWafer }),` |
-| F11 | `KY.cam` (page :826) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:43 | `cam: Object.freeze({ get x(){ return cx; }` |
+| F11 | `KY.cam` (x, y, zoom getters; `atHome` get and, from rev 3, set: OPUS-3 #10 6564782359 item 4; engine :245) (page :826) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:43 | `cam: Object.freeze({ get x(){ return cx; }` |
 | F12 | `KY.lit` (page :827) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:44 | `lit: Object.freeze({ get repo(){ return litRepo; }, set repo(v){ litRepo = v; dirty = true; },` |
 | F13 | `KY.sel` (page :830) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:47 | `sel: Object.freeze({ get target(){ return target; }, set target(t){ target = t; dirty = true; } }),` |
 | F14 | `KY.redraw` (page :831) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:48 | `redraw(){ dirty = true; },` |
 | F15 | `KY.draw` (page :832) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:49 | `draw: Object.freeze({ add(fn, order){` |
 | F16 | `KY.panels` add/set/place (page :837) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:54 | `set: setPanel, place: placePanels }),` |
-| F17 | `KY.register`: a closure over the loader's `kyAdmitting`; a registration outside admission is ignored and named (page :839) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:56 | `register(m){ if (!kyAdmitting) { kyLine('a registration outside admission ignored: '` |
-| F18 | `KY.modules`, `KY.inspect()` (a copy) (page :842) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:59 | `inspect(){ return JSON.parse(JSON.stringify(KY_STATE)); } });` |
-| F19 | `window.KY`, `window.__KUIPER_MODULES__`, `window.__KUIPER_EDITION__` (page :843) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:60 | `window.KY = KY; window.__KUIPER_MODULES__ = KY_MODULES; window.__KUIPER_EDITION__ = KY_STATE;` |
-| F20 | the wafer promise, created before the data block's fetch (page :214) | kuiper-belt@WT editions/202611012135/handoff/04-loader/index.html.patch:59 | `const kyWafer = new Promise((ok, no) => { kyWaferOk = ok; kyWaferNo = no; }); kyWafer.catch(() => {});` |
-| F21 | resolves `{N, SPACE}` right after the sum passes (page :224) | kuiper-belt@WT editions/202611012135/handoff/04-loader/index.html.patch:70 | `N = issued; SPACE = k; kyWaferOk({ N, SPACE });` |
-| F22 | rejects with the belt refusal's words (page :223) | kuiper-belt@WT editions/202611012135/handoff/04-loader/index.html.patch:69 | `kyWaferNo(new Error(hud.textContent)); return; }` |
-| F23 | rejects with the missing-file words (page :256) | kuiper-belt@WT editions/202611012135/handoff/04-loader/index.html.patch:79 | `kyWaferNo(new Error('../../cosmos/wafer.tsv did not load. The wafer will not invent its keys.'));` |
-| F24 | `refuse(m, slot)`: one `#refuse[role=alert]` strip, one line per slot (engine, modules): NL-009 09-robust (page :140) | kuiper-belt@WT editions/202611012135/handoff/04-loader/index.html.patch:41 | `function refuse(m, slot){ slot = slot \|\| 'engine';` |
+| F17 | `KY.refuse(text, slot)` (rev 3): writes the page's `refuse()` in the module's own slot; `engine` and `modules` are reserved (page :838) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:55 | `refuse(text, slot){ if (typeof slot !== ` |
+| F18 | `KY.register`: a closure over the loader's `kyAdmitting`; a registration outside admission is ignored and named (page :841) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:58 | `register(m){ if (!kyAdmitting) { kyLine('a registration outside admission ignored: '` |
+| F19 | `KY.modules`, `KY.inspect()` (a copy) (page :844) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:61 | `inspect(){ return JSON.parse(JSON.stringify(KY_STATE)); } });` |
+| F20 | `window.KY`, `window.__KUIPER_MODULES__`, `window.__KUIPER_EDITION__` (page :845) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:62 | `window.KY = KY; window.__KUIPER_MODULES__ = KY_MODULES; window.__KUIPER_EDITION__ = KY_STATE;` |
+| F21 | the wafer promise, created before the data block's fetch (page :214) | kuiper-belt@WT editions/202611012135/handoff/04-loader/index.html.patch:68 | `const kyWafer = new Promise((ok, no) => { kyWaferOk = ok; kyWaferNo = no; }); kyWafer.catch(() => {});` |
+| F22 | resolves `{N, SPACE}` right after the sum passes (page :224) | kuiper-belt@WT editions/202611012135/handoff/04-loader/index.html.patch:79 | `N = issued; SPACE = k; kyWaferOk({ N, SPACE });` |
+| F23 | rejects with the belt refusal's words (page :223) | kuiper-belt@WT editions/202611012135/handoff/04-loader/index.html.patch:78 | `kyWaferNo(new Error(hud.textContent)); return; }` |
+| F24 | rejects with the missing-file words (page :256) | kuiper-belt@WT editions/202611012135/handoff/04-loader/index.html.patch:88 | `kyWaferNo(new Error('../../cosmos/wafer.tsv did not load. The wafer will not invent its keys.'));` |
+| F25 | `refuse(m, slot)`: one `#refuse[role=alert]` strip, one line per slot; empty text clears a slot and the strip goes when all are empty: NL-009 09-robust (page :140) | kuiper-belt@WT editions/202611012135/handoff/04-loader/index.html.patch:50 | `function refuse(m, slot){ slot = slot \|\| 'engine';` |
 
 The loader, refusal by refusal (each word the acceptance tests look for, and the GridAtlas line it answers):
 
 | # | rule | key | fragment |
 |---|---|---|---|
-| G1 | manifest fetched no-store (B1) (page :888) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:105 | `await fetch('modules.json', { cache: 'no-store' })` |
-| G2 | whole-set refusal: one strip, "the wafer is unchanged" (C4, C11) (page :893) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:110 | `MODULES NOT ADMITTED: ' + shape + ' · the wafer is unchanged` |
-| G3 | in `order`, in order, never twice; any exception in one admission is that module's refusal (B7, B27, D2) (page :897) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:114 | `'in order twice'` |
-| G4 | `in order but not in modules` (B8, D6) (page :851) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:68 | `if (!rec) return 'in order but not in modules';` |
-| G5 | `bad path` (D7) (page :853) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:70 | `'bad path ' + path` |
-| G6 | stamp: file name ≠ generation (A30-A31) (page :855) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:72 | `'stamp mismatch: generation ' + rec.generation + ', file name ' + fd[1]` |
-| G7 | hash must be 64 hex (B12) (page :856) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:73 | `'sha256 is not 64 hex'` |
-| G8 | `no licence` (ROADMAP step 4 licence note) (page :857) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:74 | `return 'no licence';` |
-| G9 | `missing hook` from the manifest, before any fetch (B11) (page :858) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:75 | `return 'missing hook ' + r;` |
-| G10 | `HTTP <status>` (B14) (page :860) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:77 | `return 'HTTP ' + res.status;` |
-| G11 | SHA-256 of the bytes in the browser (B15-B16) (page :861) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:78 | `crypto.subtle.digest('SHA-256', buf)` |
-| G12 | `sha256 mismatch` (B17) (page :862) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:79 | `return 'sha256 mismatch';` |
-| G13 | `over byte_budget` (A25) (page :864) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:81 | `'over byte_budget '` |
-| G14 | header names ≠ id (review R2) (page :866) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:83 | `'header names ' + head[1] + ' ≠ ' + id` |
-| G15 | stamp: header ≠ generation (the check A30 lacked) (page :867) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:84 | `', header ' + head[2]` |
-| G16 | one blob-URL script per module, `data-ky-module` (B18-B19, A29) (page :849) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:66 | `s.dataset.kyModule = id;` |
-| G17 | `no registration` (page :870) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:87 | `return 'no registration';` |
-| G18 | stamp: registration ≠ generation (page :874) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:91 | `', registration ' + reg.generation` |
-| G19 | `install threw <message>` (page :878) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:95 | `'install threw '` |
-| G20 | an async install that rejects after admission: `failures[]` and the readout, not a refusal (review R4, disclosed in HANDOFF) (page :880) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:97 | `why: 'install rejected '` |
-| G21 | `<id> admitted · <sha256 first 12>` (page :900) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:117 | `' admitted · '` |
-| G22 | `<n> module(s) refused: …` in the strip while the rest runs (C10-C11) (page :908) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:125 | `every admitted module keep working` |
-| G23 | at `done` the record and `KY.modules` are frozen (review R3, R5) (page :906) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:123 | `Object.freeze(KY_STATE[k]); Object.freeze(KY_MODULES);` |
-| G24 | the block ends right before the frame loop (page :910) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:127 | `KUIPER HOOK TABLE AND LOADER kuiper.hooks.v1 · end` |
+| G1 | manifest fetched no-store (B1) (page :890) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:107 | `await fetch('modules.json', { cache: 'no-store' })` |
+| G2 | whole-set refusal: one strip, "the wafer is unchanged" (C4, C11) (page :895) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:112 | `MODULES NOT ADMITTED: ' + shape + ' · the wafer is unchanged` |
+| G3 | in `order`, in order, never twice; any exception in one admission is that module's refusal (B7, B27, D2) (page :899) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:116 | `'in order twice'` |
+| G4 | `in order but not in modules` (B8, D6) (page :853) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:70 | `if (!rec) return 'in order but not in modules';` |
+| G5 | `bad path` (D7) (page :855) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:72 | `'bad path ' + path` |
+| G6 | stamp: file name ≠ generation (A30-A31) (page :857) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:74 | `'stamp mismatch: generation ' + rec.generation + ', file name ' + fd[1]` |
+| G7 | hash must be 64 hex (B12) (page :858) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:75 | `'sha256 is not 64 hex'` |
+| G8 | `no licence` (ROADMAP step 4 licence note) (page :859) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:76 | `return 'no licence';` |
+| G9 | `missing hook` from the manifest, before any fetch (B11) (page :860) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:77 | `return 'missing hook ' + r;` |
+| G10 | `HTTP <status>` (B14) (page :862) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:79 | `return 'HTTP ' + res.status;` |
+| G11 | SHA-256 of the bytes in the browser (B15-B16) (page :863) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:80 | `crypto.subtle.digest('SHA-256', buf)` |
+| G12 | `sha256 mismatch` (B17) (page :864) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:81 | `return 'sha256 mismatch';` |
+| G13 | `over byte_budget` (A25) (page :866) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:83 | `'over byte_budget '` |
+| G14 | header names ≠ id (review R2) (page :868) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:85 | `'header names ' + head[1] + ' ≠ ' + id` |
+| G15 | stamp: header ≠ generation (the check A30 lacked) (page :869) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:86 | `', header ' + head[2]` |
+| G16 | one blob-URL script per module, `data-ky-module` (B18-B19, A29) (page :851) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:68 | `s.dataset.kyModule = id;` |
+| G17 | `no registration` (page :872) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:89 | `return 'no registration';` |
+| G18 | stamp: registration ≠ generation (page :876) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:93 | `', registration ' + reg.generation` |
+| G19 | `install threw <message>` (page :880) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:97 | `'install threw '` |
+| G20 | an async install that rejects after admission: `failures[]` and the readout, not a refusal (review R4, disclosed in HANDOFF) (page :882) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:99 | `why: 'install rejected '` |
+| G21 | `<id> admitted · <sha256 first 12>` (page :902) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:119 | `' admitted · '` |
+| G22 | `<n> module(s) refused: …` in the strip while the rest runs (C10-C11) (page :910) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:127 | `every admitted module keep working` |
+| G23 | at `done` the record and `KY.modules` are frozen (review R3, R5) (page :908) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:125 | `Object.freeze(KY_STATE[k]); Object.freeze(KY_MODULES);` |
+| G24 | the block ends right before the frame loop (page :912) | kuiper-belt@WT editions/202611012135/modules/202611012145-loader.js:129 | `KUIPER HOOK TABLE AND LOADER kuiper.hooks.v1 · end` |
 
 ## G. Measured by the evidence officer, independently of test.cjs
 
@@ -360,49 +360,60 @@ A30-A31 drifted only because one copy was not.
   :11 and modules.schema.json `description` carry theirs.
 - R8 (for team 10, not team 4). H3: `EDITION 2` at index.html:650.
 
-**Verdict (OPUS-4 evidence officer, 22:2x UTC, on rev 2 and on HANDOFF.md as drafted at 22:1x UTC).**
+**Verdict (OPUS-4 evidence officer, 23:00 UTC, on rev 3 and on HANDOFF.md as re-read at 23:00 UTC, 5,861 bytes, last
+written 22:33 UTC).**
 
-| item | status on rev 2 | key |
+| item | status on rev 3 | key |
 |---|---|---|
-| HOOKS.md (a) time | FIXED: 21:42:44Z | HOOKS.md:3 |
-| HOOKS.md (b) `big` | FIXED: :123 | HOOKS.md table row 19 |
-| HOOKS.md (c) refusal words | FIXED: the table is the loader's strings, checked against loader rev 2 :68-:125 (G-rows) | HOOKS.md "These are its exact strings" |
-| R1 block comment | FIXED: names the wafer promise and the 09-robust and 04-touch engine lines (F2). Residual, wording only: "Nothing else above is changed" is true of the engine (:102-619) but the edition layer (:620-749) also changes (card, Escape, back, long press, reduced motion, ARIA: all 04-touch / 09-robust, named in HANDOFF.md "Files") | F2 |
-| R2 header name | FIXED in the loader (G14) and E6 (`header names`) | G14 |
-| R3, R5 frozen record | FIXED at `done` (G23); `failures` stays open, disclosed | G23 |
-| R4 async rejection | DISCLOSED in HANDOFF.md "Corrections and limits" and HOOKS.md | G20 |
-| R6 viewport zoom | DISCLOSED in HANDOFF.md and REQUESTS.md 5, for the owner | patch :8 |
-| R7 licence lines | edition_check.py.patch FIXED (docstring line 6). test.cjs: OPEN at 22:2x UTC, no licence line in its header; PLAN.md asks the tester to add it | test.cjs:1-30 |
-| R8 `EDITION 2` | REQUESTS.md 2, to team 10 | H3 |
+| HOOKS.md (a) time, (b) `big`, (c) refusal words | FIXED (rev 2), carried | HOOKS.md:3, row 19, "These are its exact strings" |
+| R1 block comment | FIXED (F2). Residual, wording only: "Nothing else above is changed" holds for the engine (:102-619); the edition layer's hunks are also 04-touch / 09-robust and are named in HANDOFF.md "Files" | F2 |
+| R2 header name | FIXED, loader (G14) and E6 | G14 |
+| R3, R5 frozen record | FIXED at `done` (G23); `failures` open, disclosed | G23 |
+| R4 async rejection | DISCLOSED (HANDOFF "Corrections and limits", HOOKS.md) | G20 |
+| R6 viewport zoom | DISCLOSED, owner's call (REQUESTS.md 5) | patch :8 region |
+| R7 licence lines | FIXED: edition_check.py.patch docstring; test.cjs line 7 | test.cjs:7 |
+| R8 `EDITION 2` | fixed by team 10 in the base (a72c175 index.html:654 reads `EDITION 5 ·`), and UNDONE by rev 3 (B1); REQUESTS.md 2 is moot once B1 is fixed | H3 |
+| OPUS-10 6564857812 (hunk 12 no longer applied) | RESOLVED by rev 3: the patch is rebased on the integrator's base a72c175 and applies there in full (section F) | F |
+| OPUS-3 6564782359 item 4 (`atHome` setter, `refuse` hook) | ADOPTED in rev 3 (F11, F17); HOOKS.md:49-67 lists them, `KY.names` = 35, `Object.keys(KY.hooks)` still the 28 | F11, F17 |
+| R9 (new, low) | `KY.refuse` accepts any slot name but `engine`/`modules`, so one module can write or clear another module's line; the slot is the module's id by convention only. Bind it to `kyInstalling` at install, or document it | F17 |
 
-HANDOFF.md as drafted: the facts it states are keyed here and correct (the wafer lines :198, :207, :208, :240 =
-E26, E31, E29, E32; the 28 hooks = E1-E32; hello `ee2130b5…dd53` 1,303 bytes; fmt :125; the strict-mode correction =
-E45; the NL-009 04-touch and 09-robust contents = patch hunks @@ -2, -80, -125, -190, -204, -237, -569, -583, -631,
--655, -668, -683, -695, -738). **Not yet postable**, for these reasons, each the lead's to close:
-1. `__STATUS__`, `__PATCH__`, `__LOADER__`, `__TESTS__`, `__T9__` are unfilled. Values for two of them, measured here:
-   `__PATCH__` = `811e5dad9a2101f004d0f0a4b65b1ef4d3c92a797a2d567d5a1e2adec0e73d5b`, `__LOADER__` =
-   `d6766eecc3b6f9096669dbb13663876f29871afbcfa5f8158e7f2e3e335b2f98` (both = MODULE.sha256 and `sha256sum` today).
-   `__STATUS__` may read PASS only when TEST.md reports tests 1-9 PASS on Pixel 7 AND Galaxy S24 with pageerror 0
-   (OPUS-BRIEF.md:45-48, the tester refuses the hand-off until then); at 22:2x UTC TEST.md says "running".
-2. The envelope's time is `[2026-11-01 UTC]`: write the minute (PROTOCOL.md envelope; GitHub's time wins).
-3. R7: test.cjs needs its licence line before it is handed off.
-4. Recommended, one sentence: the FINDING (6564299733) listed `generation <a>, file name <b>` and other refusal
-   words that rev 2 prints differently (`stamp mismatch: …`); say that HOOKS.md rev 2's strings supersede that list
-   (the 28 hook names and their lines are unchanged), so no team matches on the old words.
-5. Recommended: EVIDENCE line: "EVIDENCE.md: every key re-read by script, N/N PASS" (section J).
-6. Answer two #10 comments that name team 4, in the HANDOFF or a REPLY: OPUS-10 (comment 6564857812, 22:31 UTC)
-   measured that rev 2's hunk 12 (the edition `pointerup` guard, patch @@ -683) no longer applies to the integrator's
-   base after NL-009 03-camera (`patch --dry-run`: 12 FAILED, 11 at fuzz 2) and will merge it by hand as
-   `… e.target !== cv || !tapUp || …`; the HANDOFF should say "applies cleanly at 96736f5; at the integrator's base
-   hunk 12 is merged by hand as 6564857812 describes", so its "applies" claim is not read against the moved base.
-   OPUS-3 (comment 6564782359, item 4) asks for a `KY.cam.atHome` setter and a `refuse(text, slot)` hook; the law is
-   that a key is added only by a new FINDING naming the engine line (ROADMAP step 4 team brief): `atHome` :245 and
-   `refuse` (patched page :140) are the lines; adopt by FINDING or decline with the reason, but do not leave it silent.
-   Measured beside it: the lead's rev-2 report (`/tmp/nl010-opus/team-4/lead/report-rev2.json`) shows the readout
-   line `EDITION 2 · 344 verified lines on this wafer` on screen, H3 confirmed on the running page.
+**BLOCKER B1 (rev 3, measured 23:0x UTC): the rev-3 patch reverts the integrator's base.** Rev 3's `a` side is
+a72c175's index.html, but its `b` side is team 4's page built from the Edition 4 copy, so applying it DELETES what
+team 10 put into the base: of the 50 lines a72c175 adds over 96736f5 (NL-009 07-perf `keys-min.json` and 03-camera
+`edBand`/`edAim`/`edKeep`, the 24 px / 9 px spark reach, the ResizeObserver keeper), 48 are absent from the rev-3
+patched page (script: every `>` line of `diff 96736f5 a72c175` looked up in the patched copy). In the patch itself:
+`-const EDPATH = 'keys-min.json', EDFULL = 'keys.json';` (patch :132) → `+const EDPATH = 'keys.json';` (:137),
+`-function edBand(){` (:189), `-const ED_TAP_TOUCH = 24, …` (:226), and the stamp fixed in the base,
+`hud.textContent += '\nEDITION 5 · '` (a72c175 index.html:654), is turned back into `'\nEDITION 2 · '` (patch
+:154-155). 77 `-` lines against 203 `+`. Fix: rebuild the patch as a diff of (a72c175 base + team 4's hunks applied
+to it) against a72c175, i.e. port the rev-2 hunks onto the base, merging hunk 12 the way OPUS-10 described
+(6564857812), never a diff of the old page against the new base. Check: after applying, every line of
+`diff 96736f5 a72c175` that is `>` must still be in the page (0 missing), except lines a team-4 hunk deliberately
+merges, each named in HANDOFF.md. Until then rev 3 must not be applied, and no test result on rev 3 counts as a test
+of the integrated page.
 
-When 1-3 are closed the evidence officer's verdict is PASS. Until then: HOLD.
+HANDOFF.md as it stands (22:33 UTC) is **out of date against rev 3** and not postable:
+1. `HEAD: kuiper-belt@96736f5 … (the base the patch applies to)` and "Files … against kuiper-belt@96736f5" are now
+   false: rev 3 applies to a72c175's index.html (sha256 `390b15ae…3ae5`) and FAILS 4 of 16 hunks at 96736f5
+   (measured, `patch --dry-run`). Write HEAD a72c175 (or the commit the integrator names) and say so.
+2. The sha256 in "Files" is rev 2's `811e5dad…3d5b`; rev 3 is `59911f4b48c7ea7625109b8ce645d65a3659f826a204e5abc9112bfd672919ad`,
+   the loader reference `c24cdf99477bec71fb94ff33f043bf143a8d8319b40e00923684faa1c99697b0` (12,720 bytes).
+3. "`names` (34)" is 35 since rev 3; the two adopted members (`cam.atHome` set, engine :245; `KY.refuse`, patched
+   page :140) are keys added after the FINDING, so by the step-4 law they need a FINDING (or the HANDOFF itself,
+   explicitly as the FINDING) naming those lines, and the HANDOFF should answer 6564782359 item 4 and 6564857812.
+4. The test paragraph quotes the lead's harness on rev 2 (`report-rev2.json`, page `1ff8be0e…66c6`, which I verified);
+   rev 3 changes the page (`db2ded89…1ca2`), so the numbers must come from a run on rev 3.
+5. `STATUS: __STATUS__` and `__TESTER__` unfilled; STATUS may read PASS only when TEST.md reports tests 1-9 PASS on
+   Pixel 7 AND Galaxy S24 with pageerror 0 on rev 3 (OPUS-BRIEF.md:45-48). At 22:56 UTC TEST.md said "running".
+6. The envelope's time is `[2026-11-01 UTC]`: write the minute.
+7. Recommended: one sentence that HOOKS.md's refusal strings supersede the list in the FINDING 6564299733 (the 28
+   names and lines are unchanged), and an EVIDENCE line "EVIDENCE.md keys re-read by script, N/N PASS" (section J).
+
+**Verdict: HOLD, with BLOCKER B1.** The module, the loader block (rev 3), the manifest, the schema, E6-E8, the licence lines and every key in
+this file (section J) pass review. The evidence officer's PASS on the HANDOFF follows when B1 and items 1-6 are closed: base
+and sha256s written as rev 3, the two new keys stated as a FINDING, and TEST.md PASS on rev 3 on both devices with
+zero console errors. Item 7 is advice.
 
 ## J. Key check
 
-`python3 -I /tmp/nl010-opus/team-4/evidence/check_keys.py EVIDENCE.md`, run 22:21 UTC: `rows checked 198, PASS 198, FAIL 0 RESULT: PASS `. A row keyed `WT` reads the working tree (uncommitted); once the harness commits, `WT` reads as that commit's sha.
+`python3 -I /tmp/nl010-opus/team-4/evidence/check_keys.py EVIDENCE.md`, run 23:00 UTC: `rows checked 199, PASS 199, FAIL 0 RESULT: PASS`. A row keyed `WT` reads the working tree (uncommitted); once the harness commits, `WT` reads as that commit's sha.

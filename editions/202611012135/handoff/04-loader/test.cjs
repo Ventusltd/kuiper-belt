@@ -33,6 +33,10 @@
 //    c8  test 8: tools/edition_check.py (from handoff/04-loader/edition_check.py.patch while the tool is not in the
 //        repository) E1-E8 PASS on a copy of the folder with team 4's records, FAIL (exit 1) on each mutation
 //    c9  test 9: load → last admitted (ms) and Σ bytes against Σ byte_budget, recorded, no threshold
+//    c10 the builder's five (loader rev 2, OPUS-4 builder's request; builder/proto-test.cjs): a module with a syntax
+//        error, a module that registers then throws at top level, requires as a string (in the record, and in the
+//        registration), a null record in modules, an id listed twice in order; each refused in words (or, for the
+//        null record, skipped) with the rest admitted and zero pageerrors
 //    T*  NL-009 round1 04-touch (04-touch.md TEST; 04-touch-harness.cjs): T1 T2 T2b T2c T3 T4 T5a T5b T5e T6a T6b T6d
 //        T6f T6g T7, on the page with the full manifest and the harness's probe appended to the served copy
 //    R*  NL-009 round1 09-robust (09-robust.md TEST 1-8): R1 R2 R3 R4 R5 R6 R7 R8
@@ -66,7 +70,7 @@ const LAUNCH = ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-sw
 // handoff/04-loader/HOOKS.md and team-2/STEPS.md 4.2: Object.keys(KY.hooks), in this order (28 names)
 const HOOK_NAMES = ['keyPlace', 'address', 'describe', 'findBy', 'flyTo', 'home', 'homeCamera', 'safeBox', 'lightTime', 'showNew', 'goKey', 'fmt',
   'words', 'esc', 'cv', 'ov', 'o2', 'hud', 'big', 'sub', 'card', 'gbox', 'gin', 'SPACE', 'N', 'repos', 'commits', 'wafer'];
-const KY_EXTRA = ['cam', 'lit', 'sel', 'redraw', 'draw', 'panels'];
+const KY_EXTRA = ['cam', 'lit', 'sel', 'redraw', 'draw', 'panels', 'refuse'];   // HOOKS.md: 35 names since rev 3
 const PROBE_GEN = '202611012200';
 
 // ------------------------------------------------------------------ 1. the scratch copy
@@ -359,8 +363,16 @@ async function runDevice(browser, deviceName, S) {
       keys: Object.keys(K.hooks), names_list: Array.from(K.names || []), alias: window.__KUIPER_MODULES__ === K.modules, schema: K.schema, edition: K.edition,
       writes_refused: (() => { try { K.hooks.flyTo = null; } catch (e) {} try { K.injected = 1; } catch (e) {} try { K.modules.x = 1; } catch (e) {} return typeof K.hooks.flyTo === 'function' && !('injected' in K); })() }; });
     check('c7.frozen', 'Object.isFrozen(window.KY) and of hooks, names, cam, lit, sel, draw, panels; writes do not land', ['KY', 'hooks', 'names', 'cam', 'lit', 'sel', 'draw', 'panels'].every(k => fr[k]) && fr.writes_refused, fr);
-    check('c7.hooks', 'Object.keys(KY.hooks) = the 28 names of HOOKS.md in order; KY.names = those + cam lit sel redraw draw panels', JSON.stringify(fr.keys) === JSON.stringify(HOOK_NAMES) && JSON.stringify(fr.names_list) === JSON.stringify([...HOOK_NAMES, ...KY_EXTRA]), { keys: fr.keys, names: fr.names_list });
+    check('c7.hooks', 'Object.keys(KY.hooks) = the 28 names of HOOKS.md in order; KY.names = those + cam lit sel redraw draw panels refuse (35)', JSON.stringify(fr.keys) === JSON.stringify(HOOK_NAMES) && JSON.stringify(fr.names_list) === JSON.stringify([...HOOK_NAMES, ...KY_EXTRA]), { keys: fr.keys, names: fr.names_list });
     check('c7.alias', "window.__KUIPER_MODULES__ === KY.modules; KY.schema 'kuiper.hooks.v1'; KY.edition = the stamp", fr.alias && fr.schema === 'kuiper.hooks.v1' && fr.edition === STAMP, { alias: fr.alias, schema: fr.schema, edition: fr.edition });
+    const kr = await h.page.evaluate(async () => { const K = window.KY, rf = () => { const d = document.getElementById('refuse'); return d && getComputedStyle(d).display !== 'none' && d.getBoundingClientRect().height > 0 ? d.textContent : null; };
+      const o = { has: typeof K.refuse === 'function' }; if (!o.has) return o;
+      K.refuse('probe words', 'probe-x'); await new Promise(r => setTimeout(r, 300)); o.shown = rf();
+      K.refuse('', 'probe-x'); await new Promise(r => setTimeout(r, 300)); o.cleared = rf();
+      for (const slot of ['engine', 'modules']) { try { K.refuse('x', slot); o[slot] = 'no throw'; } catch (e) { o[slot] = e instanceof TypeError ? 'TypeError' : String(e); } }
+      const z = K.cam.atHome; try { K.cam.atHome = false; o.atHomeSet = K.cam.atHome === false; K.cam.atHome = z; } catch (e) { o.atHomeSet = 'threw ' + e; }
+      return o; });
+    check('c7.refuse', 'rev 3: KY.refuse(text, slot) shows its line in #refuse and clears it with empty text; slots engine and modules throw TypeError; KY.cam.atHome is settable', kr.has && /probe words/.test(kr.shown || '') && kr.cleared === null && kr.engine === 'TypeError' && kr.modules === 'TypeError' && kr.atHomeSet === true, kr);
     const w = await wafer(h.page, s); check('c7.wafer', 'a whole wafer without modules: the wafer drawn, the bar present', waferOk(w) && s.bar && s.bar.visible, { wafer: w, bar: s.bar && s.bar.titles });
     await shot(h.page, 'c7-empty-manifest');
     errOk(h, 'c7'); await h.context.close();
@@ -378,6 +390,32 @@ async function runDevice(browser, deviceName, S) {
     check('c7b.words', "the page says the engine's words and KY.hooks.wafer rejects with them", pw.state === 'refused' && (pw.why || '').includes(words) && ((s.refuse && s.refuse.visible && s.refuse.text.includes(words)) || (s.hud || '').includes(words)), { probe_wafer: pw, refuse: s.refuse });
     check('c7b.rest', 'every module stays admitted', JSON.stringify(ids(s)) === JSON.stringify(M.order), { admitted: ids(s) });
     errOk(h, 'c7b'); await h.context.close();
+  }
+  // ---------------------------------------------------------------- c10 the builder's five
+  if (want('c10')) {
+    const pc = rec('probe-c'), head = '/* kuiper module probe-c, generation ' + PROBE_GEN + ' (UTC), Apache-2.0 (kuiper-belt) */\n';
+    const variant = (src, recPatch) => { const man = clone(M); Object.assign(man.modules.find(x => x.id === 'probe-c'), { sha256: sha(src), bytes: Buffer.byteLength(src) }, recPatch || {}); return { manifest: man, files: { [pc.path]: src } }; };
+    const cases = [
+      ['c10a', 'a module with a syntax error → refused "script error: …", never admitted', variant(head + "(function () { KY.register({ ;\n"), s => /^script error: .*SyntaxError|^script error: .*Unexpected/.test(why(s, 'probe-c') || '')],
+      ['c10b', 'a module that registers, then throws at top level → refused "script error: …", not admitted, no #ky-probe-c', variant(probeSource('probe-c').replace("inspect: function () { return st; } });", "inspect: function () { return st; } });\n  throw new Error('after');")), s => /^script error: .*after/.test(why(s, 'probe-c') || '') && !s.hosts.includes('ky-probe-c')],
+      ['c10c', 'requires as a string in the record → refused "requires is not a list"', (() => { const man = clone(M); man.modules.find(x => x.id === 'probe-c').requires = 'fmt'; return { manifest: man }; })(), s => why(s, 'probe-c') === 'requires is not a list'],
+      ['c10d', 'requires as a string in the registration → refused "registration requires is not a list"', variant(probeSource('probe-c').replace("requires: ['fmt','draw']", "requires: 'fmt'")), s => why(s, 'probe-c') === 'registration requires is not a list'],
+    ];
+    for (const [cid, name, o, ok] of cases) {
+      const h = await open(cid, o); await sleep(1500); const s = await state(h.page);
+      check(cid + '.refused', name, ok(s) && !ids(s).includes('probe-c') && !s.modules['probe-c'], { refused: s.ed && s.ed.refused, admitted: ids(s) });
+      check(cid + '.rest', 'every other module admitted; #refuse[role=alert] inside the viewport', JSON.stringify(ids(s)) === JSON.stringify(others(['probe-c'])) && inside(s), { admitted: ids(s), refuse: s.refuse });
+      errOk(h, cid); await h.context.close();
+    }
+    { const man = clone(M); man.modules.splice(2, 0, null);
+      const h = await open('c10e', { manifest: man }); await sleep(1500); const s = await state(h.page);
+      check('c10e.null', 'a null record in modules is skipped: every order entry admitted, refused [], no alert, the sums still computed', s.ed && s.ed.done && JSON.stringify(ids(s)) === JSON.stringify(M.order) && s.ed.refused.length === 0 && noAlert(s) && s.ed.bytes === M.modules.reduce((a, m) => a + m.bytes, 0), { admitted: ids(s), refused: s.ed && s.ed.refused, bytes: s.ed && s.ed.bytes });
+      errOk(h, 'c10e'); await h.context.close(); }
+    { const man = clone(M); man.order.splice(2, 0, 'probe-a');
+      const h = await open('c10f', { manifest: man }); await sleep(1500); const s = await state(h.page);
+      const fetched = h.requests.filter(u => u === BASE + rec('probe-a').path).length;
+      check('c10f.twice', "an id listed twice in order: admitted once, the second refused 'in order twice', fetched once, the rest admitted", JSON.stringify(ids(s)) === JSON.stringify(M.order) && s.ed.refused.length === 1 && why(s, 'probe-a') === 'in order twice' && fetched === 1 && inside(s), { admitted: ids(s), refused: s.ed && s.ed.refused, probe_a_fetches: fetched });
+      errOk(h, 'c10f'); await h.context.close(); }
   }
   if (!SKIP_PROBES && want('T')) await touchProbes();
   if (!SKIP_PROBES && want('R')) await robustProbes();
@@ -440,17 +478,18 @@ async function runDevice(browser, deviceName, S) {
         await page.touchscreen.tap(Math.round(W * 0.5), Math.round(H * 0.75)); await sleep(600);
         const g5 = await G(); check('T5e', '04-touch T5e a wafer tap with a panel open only dismisses the panel', !g5.openPanel && g5.card !== 'block', { openPanel: g5.openPanel, card: g5.card }); }
       { const back = async () => { await page.goBack({ waitUntil: 'commit' }).catch(() => {}); await sleep(900); return page.evaluate(() => !!window.__k).catch(() => false); };
+        const armed = async () => { const t0 = Date.now(); await page.waitForFunction(() => !!(history.state && history.state.kuiper), null, { timeout: 15000 }).catch(() => {}); return Date.now() - t0; };   // the entry is armed on the next drawn frame (04-touch.md LIMITS); under SwiftShader that can take seconds
         const recover = async () => { await page.goForward({ waitUntil: 'commit' }).catch(() => {}); await page.waitForFunction(() => window.__k && window.__k.get().edN > 0, null, { timeout: 120000 }).catch(() => {}); await sleep(6000); };
         await page.evaluate(() => { card.style.display = 'none'; }); await tapSel(page, '#bar .gm-title[data-panel="lines"]'); await sleep(400);
-        let al = await back(), g = al ? await G() : null;
-        check('T6a', '04-touch T6a back with a panel open closes the panel and stays on the page', al && !g.openPanel, { alive: al, openPanel: g && g.openPanel }); if (!al) await recover();
-        await page.evaluate(() => edCard(2)); await sleep(300); al = await back(); g = al ? await G() : null;
-        check('T6b', '04-touch T6b back with the card open closes the card', al && g.card !== 'block', { alive: al, card: g && g.card }); if (!al) await recover();
+        let wa = await armed(), al = await back(), g = al ? await G() : null;
+        check('T6a', '04-touch T6a back with a panel open closes the panel and stays on the page', al && !g.openPanel, { alive: al, openPanel: g && g.openPanel, armed_after_ms: wa }); if (!al) await recover();
+        await page.evaluate(() => edCard(2)); await sleep(300); wa = await armed(); al = await back(); g = al ? await G() : null;
+        check('T6b', '04-touch T6b back with the card open closes the card', al && g.card !== 'block', { alive: al, card: g && g.card, armed_after_ms: wa }); if (!al) await recover();
         await page.evaluate(() => edCard(4)); await sleep(200); await page.keyboard.press('Escape'); await sleep(300);
         g = await G(); check('T6d', '04-touch T6d Escape closes the card', g.card !== 'block', { card: g.card });
         await tapSel(page, '#bar .gm-title[data-panel="lines"]'); await sleep(400); await page.evaluate(() => { __k.key('Escape'); edCard(6); }); await sleep(1500);
         g = await G(); check('T6f', "04-touch T6f a panel closed and a card opened in one task: the card survives the page's own back()", g.card === 'block', { card: g.card, edSel: g.edSel });
-        al = await back(); g = al ? await G() : null; check('T6g', '04-touch T6g a user back after that race closes the card', al && g.card !== 'block', { alive: al, card: g && g.card }); if (!al) await recover(); }
+        wa = await armed(); al = await back(); g = al ? await G() : null; check('T6g', '04-touch T6g a user back after that race closes the card', al && g.card !== 'block', { alive: al, card: g && g.card }); if (!al) await recover(); }
       { await page.evaluate(() => { card.style.display = 'none'; }); await settle(); const x = Math.round(W * 0.5), y = Math.round(H * 0.65);
         await touch('touchStart', [[x, y]]); await sleep(900); await touch('touchEnd', []); await sleep(300);
         const c1 = await page.evaluate(() => ({ card: __k.get().card, selection: getSelection().toString().length }));

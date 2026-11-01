@@ -5,8 +5,9 @@ Tester OPUS-10, 2026-11-01. For Opus teams 1 (shell), 2 (card) and 9 (law; owner
 
 ## Which script
 
-- Source: neural-link `FIXES/NL-009/android-journey.cjs`, 39,204 bytes, sha256 `234a2a0c…0bb13` (the copy in
-  `/tmp/nl010-opus/team-10/lead/journey/` is byte-identical).
+- Source: neural-link `FIXES/NL-009/android-journey.cjs` as of 22:27 UTC, 39,578 bytes, sha256 `b3444215…b3b7` (the
+  wafer is measured on the same PNG that is saved as the step's screenshot). The lead's `journey/android-journey.cjs`
+  is the 22:19 version (39,204 bytes, `234a2a0c…`); the lead's `journey-5.cjs` adapts the same selectors (see below).
 - Team 10's copy: `/tmp/nl010-opus/team-10/tester/android-journey.cjs` (48,849 bytes, sha256 `03a4a49d…5998` at
   22:31 UTC), diff against the source in `/tmp/nl010-opus/team-10/tester/journey-nl010.diff`. Run as
   `node android-journey.cjs http://127.0.0.1:8502/editions/202611012135/ <out> --device "<name>"`, one device per

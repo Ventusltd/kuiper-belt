@@ -1,20 +1,21 @@
 # Opus team 5 EVIDENCE: See Through, the star player (ROADMAP step 5)
 
-Evidence officer: OPUS-5 evidence. Written 2026-11-01 22:10–22:25 UTC. Law: no claim without a key; every number
+Evidence officer: OPUS-5 evidence. Written 2026-11-01 22:10–22:25 UTC; re-keyed 22:52 UTC against the module and data as frozen by the lead. Law: no claim without a key; every number
 measured on the clones under /home/user/estate/ at these heads:
 
-- `kb@f6a2bcc` = kuiper-belt@f6a2bcc845ba97254730a06bb742302ff5dd9d78 (branch edition/202611012135, the harness commit
-  that carries the module as reviewed here). `see-through/`, `cosmos/`, `learn-the-kuiper/` and the root `index.html` are
+- `kb@f6a2bcc` = kuiper-belt@f6a2bcc845ba97254730a06bb742302ff5dd9d78 (branch edition/202611012135; first harness
+  commit carrying the corrected header). Module and data lines are read in the working tree at 22:52 UTC on top of
+  kuiper-belt@a72c175eb1bbab81263b60230aefe31d83cbbf90 (the bytes are pinned by the sha256 below, not by a commit). `see-through/`, `cosmos/`, `learn-the-kuiper/` and the root `index.html` are
   byte-identical to kuiper-belt@018b46a (`git diff 018b46a f6a2bcc --stat -- see-through cosmos learn-the-kuiper index.html`
   prints nothing), and `editions/202611012135/index.html` is identical to the hook table's base kuiper-belt@96736f5.
 - `gg@c66759f` = globalgrid2050@c66759f0d7ac3489df9158da6eaa1330a37c069f; `ga@5ec7f62` = gridatlas@5ec7f62f213e2d20a02e86427daa182c0f38e4a4.
 - `ST` = `see-through/202610050609/`; `MOD` = `editions/202611012135/modules/202611012141-see-through.js`;
   `ED` = `editions/202611012135/`.
 
-The module as reviewed: `MOD`, 23,827 bytes, 346 lines, sha256 `30541ae813782d922936105cb55b50d918502e65b603d4e122727526b4b4e9f0`,
-`node --check` OK. The lead writes `MODULE.sha256` after the last edit; if the bytes change, the code line numbers below
-must be re-read (header lines 1–12 changed in the evidence officer's licence edit; line count kept, so lines 13–346 are
-those of kuiper-belt@2c87ba4).
+The module as keyed: `MOD`, 26,331 bytes, 373 lines, sha256 `cd69ba51cd9d75958fbf6434b25e5ec2bdb6d2170da2a3e6dfde2a36f4449bdd`,
+`node --check` OK (22:50 UTC). The data as keyed: `ED data/see-through.json`, 666,940 bytes, sha256
+`440950711a148eb019b7309ea1a0610219c096742893ce8d7c1f81be18d479a6` (22:48:28 UTC build). If `MODULE.sha256` records other
+bytes, every `MOD:n` below must be re-read before the HANDOFF.
 
 ## 1. See Through's pointer and newest folder
 
@@ -24,8 +25,8 @@ those of kuiper-belt@2c87ba4).
 | Pointer fallback link to the same stamp | kb@f6a2bcc see-through/index.html:11 |
 | Pointer forwards the hash: `location.replace('202610050609/' + location.hash)` | kb@f6a2bcc see-through/index.html:12 |
 | Newest dated folder `202610050609` (siblings `202610050356`, `202610050513`) | kb@f6a2bcc see-through/ (`ls`) |
-| The module links to the pointer, never the dated folder: `var POINTER = '../../see-through/'` | kb@f6a2bcc MOD:16 |
-| The entry's `href = POINTER`, same tab (no `target`), click stopped before Edition 4's panel delegate | kb@f6a2bcc MOD:82, :87; the delegate ED index.html:721 |
+| The module links to the pointer, never the dated folder: `var POINTER = '../../see-through/'` | MOD:16 |
+| The entry's `href = POINTER`, same tab (no `target`), click stopped before Edition 4's panel delegate | MOD:82, :87; the delegate ED index.html:721 |
 | Measured absence: See Through reads no URL. `grep -c 'location.hash\|location.search\|URLSearchParams'` over every `ST*.js` = **0** (22:12 UTC). Every link the module writes (`#key=`, `#repo=`, `#sub=`) is forwarded by the pointer into a page that ignores it until a new See Through folder ships the reader (ROADMAP 5.5; `see-through/` is untouchable for this team, OPUS-BRIEF.md:17-19) | kb@f6a2bcc ST*.js (grep count 0) |
 
 ## 2. The placement law file and the SPACE constant
@@ -41,8 +42,8 @@ those of kuiper-belt@2c87ba4).
 | The wafer's sky today: `"address_space": 63340120796` | kb@f6a2bcc cosmos/wafer-meta.json:4 |
 | Re-sum of `cosmos/wafer.tsv` (`gap_before + lines` over 13,344 rows) = **63,340,120,796**, issued 45,735,836,396 (equal to wafer-meta.json:2, :4) | kb@f6a2bcc cosmos/wafer.tsv (Python re-sum, 22:13 UTC) |
 | Difference: 63,340,120,796 − 59,637,070,538 = **3,703,050,258** keys; Drax (j 1182) is star key 3,526,041,795 in See Through 202610050609 and 3,744,984,642 in this layer | computed from the two keys above |
-| The module takes the wafer's SPACE from the hook: `st.wafer = (w && w.SPACE) \|\| H.SPACE` | kb@f6a2bcc MOD:333-334 |
-| SPACE disagreement draws nothing and reads `FAIL · SPACE <a> ≠ wafer <b>` | kb@f6a2bcc MOD:156, :164, :186 |
+| The module takes the wafer's SPACE from the hook: `st.wafer = (w && w.SPACE) \|\| H.SPACE` | MOD:360-361 |
+| SPACE disagreement draws nothing and reads `FAIL · SPACE <a> ≠ wafer <b>` | MOD:152, :160, :193 |
 
 ## 3. The star-key rule (the one block of See Through code in the module)
 
@@ -54,8 +55,8 @@ those of kuiper-belt@2c87ba4).
 | `if (c === 0) S.subKey[p] = key;` (star j < 5,800 lands on substation j) | kb@f6a2bcc ST descent.js:965 |
 | Origin of the rule: `function keyOf(i, SPACE) { return Math.floor((i + 0.5) * SPACE / N); }` in Learn the Kuiper's grid.js | kb@f6a2bcc learn-the-kuiper/202610050609/modules/grid.js:36-38 |
 | grid.js keeps CERN-OHL-S v2 (adapted from globalgrid2050) | kb@f6a2bcc learn-the-kuiper/202610050609/NOTICE.md:7-10 |
-| The module's copy, marked `CERN-OHL-S-2.0`: `function starKey(j, space) { return Math.floor((j + 0.5) * space / NRULE); }` | kb@f6a2bcc MOD:27-32 |
-| The remap (5.6) built on it | kb@f6a2bcc MOD:34-42 |
+| The module's copy, marked `CERN-OHL-S-2.0`: `function starKey(j, space) { return Math.floor((j + 0.5) * space / NRULE); }` | MOD:27-32 |
+| The remap (5.6) built on it | MOD:34-42 |
 
 ## 4. Licence: CERN-OHL-S v2 and the NOTICE lines
 
@@ -78,10 +79,10 @@ those of kuiper-belt@2c87ba4).
 |---|---|
 | `data/substations-footprints.odbl.json` from globalgrid2050, ODbL 1.0 (data) | kb@f6a2bcc ST NOTICE.md:16 |
 | The file's own header: `"licence":"ODbL-1.0","attribution":"Footprints (c) OpenStreetMap contributors, ODbL 1.0"`, counts contains 5,550, near 62, none 188 | kb@f6a2bcc ST data/substations-footprints.odbl.json (first 400 bytes) |
-| The module does not read, copy or link the footprints file (`grep -c footprint MOD` = 0) | kb@f6a2bcc MOD |
+| The module does not read, copy or link the footprints file (`grep -c footprint MOD` = 0) | MOD |
 | grid-data.js attribution line: OSM-derived layers ODbL | kb@f6a2bcc ST grid-data.js:7 |
 | Substation object: `"attribution":"© OpenStreetMap contributors, Open Database Licence (ODbL); published at globalgrid2050.com"` | kb@f6a2bcc ST grid-data.js:8 (substations member) |
-| The names in `ED data/see-through.json` come from that object | kb@f6a2bcc ED handoff/05-see-through/build-see-through-json.py:15 |
+| The names in `ED data/see-through.json` come from that object | ED handoff/05-see-through/build-see-through-json.py:14 |
 
 ## 6. Substation data and count
 
@@ -89,12 +90,13 @@ those of kuiper-belt@2c87ba4).
 |---|---|
 | `var SUB = /*DATA-BEGIN*/{"n":5800, …` and `var NSUB = 5800;` | kb@f6a2bcc ST descent.js:15, :20 |
 | Header source: names from grid-data.js (OSM, ODbL) plus the table from `globalgrid2050.com/grid_substations.geojson` | kb@f6a2bcc ST descent.js:5-6 |
-| `ED data/see-through.json`: 666,922 bytes, sha256 `87069db330a59108ed8f532cd6f8a32b01a52a69725906291b978382513c8dbd` | kb@f6a2bcc ED data/see-through.json (`sha256sum`, 22:13 UTC) |
+| `ED data/see-through.json`: 666,940 bytes, sha256 `440950711a148eb019b7309ea1a0610219c096742893ce8d7c1f81be18d479a6` (builds before it: 666,922 B `87069db3…` at 21:46, 666,945 B `87d5db35…` at 22:33, both superseded) | ED data/see-through.json (`sha256sum`, 22:49 UTC) |
+| Its `licence`: "ODbL 1.0: a derived database of 4,460 OpenStreetMap substation names (c) OpenStreetMap contributors; …"; `attribution` "Substation names (c) OpenStreetMap contributors, ODbL 1.0 (…NOTICE.md:22-25; grid-data.js:7)" | same file, `licence`, `attribution` |
 | `format: code-feature-collection.v1`, `space: 63340120796`, `see_through: 202610050609`, **5,800** Point features, **4,460** named, 1,340 unnamed, min key 1,583,503, max key 18,367,051,527 (< SPACE) | same file, recounted in Python |
 | Every feature j: `properties.sub == j` and `geometry.key == floor((2j+1)·SPACE/40000)` = `floor((j+0.5)·SPACE/20000)`: **0 of 5,800** differ | same file, recomputed in Python |
 | j 0 → key 1,583,503 (no name); j 1182 → key 3,744,984,642, name `Drax` | same file, features[0], features[1182] |
-| The module admits only that shape: format, 5,800, `sub === i`, `key === starKey(i, space)`, key < wafer | kb@f6a2bcc MOD:159-178 |
-| Places each key with `keyPlace` and nothing else | kb@f6a2bcc MOD:175 |
+| The module admits only that shape: format, 5,800, `sub === i`, `key === starKey(i, space)`, key < wafer | MOD:155-174 |
+| Places each key with `keyPlace` and nothing else | MOD:171 |
 
 ## 7. The homepage row
 
@@ -103,7 +105,7 @@ those of kuiper-belt@2c87ba4).
 | Apps entry: "See Through: from the stars to one substation in 3D … About 5,800 mapped substations" | gg@c66759f homepage_versions/homepage_v134.html:18 |
 | Registry row `data-entity-id="see-through"`, the same sentence, Operative, build `20261005-0609`, link to the dated folder `https://ventusltd.github.io/kuiper-belt/see-through/202610050609/` (3 occurrences in the file) | gg@c66759f homepage_versions/homepage_v134.html:35 |
 | `homepage_v134.html` is the highest-numbered homepage version | gg@c66759f homepage_versions/ (`ls`) |
-| The module's `title` and `aria-label` are that sentence, byte for byte | kb@f6a2bcc MOD:17, :83 |
+| The module's `title` and `aria-label` are that sentence, byte for byte | MOD:17, :83 |
 
 ## 8. GridAtlas lessons the module uses
 
@@ -116,39 +118,48 @@ those of kuiper-belt@2c87ba4).
 
 ## 9. Every Kuiper hook the module uses, with its line
 
-Hook table `kuiper.hooks.v1` (kb@f6a2bcc ED handoff/04-loader/HOOKS.md); `KY` built at kb@f6a2bcc ED
-modules/202611012145-loader.js:36-60 (`hooks` :38-42); engine lines at kb@96736f5 ED index.html (unchanged at f6a2bcc).
-Requires list in the header MOD:9 and in the registration MOD:342-343: 19 names, identical, all used.
+Hook table `kuiper.hooks.v1` (ED handoff/04-loader/HOOKS.md); `KY` built at ED modules/202611012145-loader.js:36-60
+(`hooks` :38-42); engine lines at kb@96736f5 ED index.html (the hook table's base). Requires list in the header MOD:9
+and in the registration MOD:369-370: 19 names, identical, all used.
 
 | Hook | Module line(s) | Engine / loader line |
 |---|---|---|
-| `hooks.wafer` (promise `{N, SPACE}`) | MOD:333 | handoff/04-loader/index.html.patch:59, :70; loader.js:42 |
-| `hooks.SPACE` (getter) | MOD:334 | ED index.html:198, :208; loader.js:41 |
-| `hooks.keyPlace` | MOD:175, :315 | ED index.html:278; loader.js:39 |
-| `hooks.address` | MOD:232, :270 | ED index.html:282-283; loader.js:39 |
-| `hooks.describe` | MOD:239 | ED index.html:284; loader.js:39 |
-| `hooks.goKey` | MOD:316 | ED index.html:416; loader.js:39 |
-| `hooks.fmt` | MOD:155, :156, :206, :240, :312, :314 | ED index.html:125; loader.js:39 |
-| `hooks.esc` | MOD:266, :268, :273, :292, :293, :317 | ED index.html:681; loader.js:39 |
-| `hooks.cv` | MOD:223 | ED index.html:121; loader.js:40 |
-| `hooks.ov` | MOD:192, :198 | ED index.html:121; loader.js:40 |
-| `hooks.o2` | MOD:195 | ED index.html:121; loader.js:40 |
-| `hooks.hud` | MOD:212, :314 | ED index.html:123; loader.js:40 |
-| `hooks.card` | MOD:229, :250, :261, :281, :291, :317 | ED index.html:124; loader.js:40 |
-| `hooks.gin` | MOD:285, :287 | ED index.html:604; loader.js:40 |
-| `hooks.repos` (getter) | MOD:271, :272, :289 | ED index.html:198, :202; loader.js:41 |
-| `KY.cam` (`x y zoom`) | MOD:192, :198 | ED index.html:243; loader.js:43 |
-| `KY.sel.target` (set) | MOD:241 | ED index.html:243; loader.js:47 |
-| `KY.redraw()` | MOD:152, :243 | ED index.html:243 (`dirty`); loader.js:48 |
-| `KY.draw.add(fn, 50)` | MOD:331 | ED index.html:332 (`draw`); loader.js:29-32, :49 |
-| `KY.register` (once) | MOD:340-344 | loader.js:56 |
-| `KY.modules` (optional: kuiper-shell, layers, file/link) | MOD:73, :135, :307 | loader.js:58 |
-| `KY.layers` (optional; absent from frozen `KY`, so :135 always falls back to `KY.modules.layers.api`) | MOD:135, :138, :147-150 | layers api kb@f6a2bcc ED modules/202611012141-layers.js:77, :118, :667 |
+| `hooks.wafer` (promise `{N, SPACE}`) | MOD:360 | handoff/04-loader/index.html.patch:59, :70; loader.js:42 |
+| `hooks.SPACE` (getter) | MOD:361 | ED index.html:198, :208; loader.js:41 |
+| `hooks.keyPlace` | MOD:171, :342 | ED index.html:278; loader.js:39 |
+| `hooks.address` | MOD:256, :297 | ED index.html:282-283; loader.js:39 |
+| `hooks.describe` | MOD:263 | ED index.html:284; loader.js:39 |
+| `hooks.goKey` | MOD:343 | ED index.html:416; loader.js:39 |
+| `hooks.fmt` | MOD:150, :152, :193, :230, :264, :339, :341 | ED index.html:125; loader.js:39 |
+| `hooks.esc` | MOD:293, :295, :300, :319, :320, :344 | ED index.html:681; loader.js:39 |
+| `hooks.cv` | MOD:247 | ED index.html:121; loader.js:40 |
+| `hooks.ov` | MOD:216, :222 | ED index.html:121; loader.js:40 |
+| `hooks.o2` | MOD:219 | ED index.html:121; loader.js:40 |
+| `hooks.hud` | MOD:236, :341 | ED index.html:123; loader.js:40 |
+| `hooks.card` | MOD:253, :274, :288, :308, :318, :344 | ED index.html:124; loader.js:40 |
+| `hooks.gin` | MOD:312, :314 | ED index.html:604; loader.js:40 |
+| `hooks.repos` (getter) | MOD:298, :299, :316 | ED index.html:198, :202; loader.js:41 |
+| `KY.cam` (`x y zoom`) | MOD:216, :222 | ED index.html:243; loader.js:43 |
+| `KY.sel.target` (set) | MOD:265 | ED index.html:243; loader.js:47 |
+| `KY.redraw()` | MOD:145, :267 | ED index.html:243 (`dirty`); loader.js:48 |
+| `KY.draw.add(fn, 50)` | MOD:358 | ED index.html:332 (`draw`); loader.js:29-32, :49 |
+| `KY.register` (once) | MOD:367-371 | loader.js:56 |
+| `KY.modules` (optional: kuiper-shell, layers, file/link) | MOD:73, :137, :334 | loader.js:58 |
+| `KY.layers` (optional; absent from the frozen `KY`, so MOD:137 always falls back to `KY.modules.layers.api`) | MOD:137, :140, :180, :202-206 | ED modules/202611012141-layers.js:77 (`get`), :118-136 (`register`), :127 (REFUSED returns before load) |
 
-Divergence from ROADMAP step 5 "Module name" (ROADMAP.md:398-400: requires `keyPlace, address, o2, card, flyTo, safeBox,
+Divergence from ROADMAP step 5 "Module name" (ROADMAP.md:375-377: requires `keyPlace, address, o2, card, flyTo, safeBox,
 panels, draw, redraw, layers, menuBar`): the module does not require `flyTo`, `safeBox`, `panels`, `layers` or `menuBar`
 (it uses `goKey`, which calls `flyTo` at ED index.html:416; the shell's `mountStar` instead of `menuBar`; `layers` is
-optional). The hook table (HOOKS.md) governs admission; the roadmap list is superseded, stated here, not hidden.
+optional). The hook table governs admission; the roadmap list is superseded, stated here, not hidden.
+
+## 9a. The entry's form on the test phones (cross-team, for the owner's Q7)
+
+| Fact | Key |
+|---|---|
+| The shell's rule: `var STAR_TITLE_MQ = '(min-width: 434px)';` (title at 434 px and wider, the strip below) | ED modules/202611012143-kuiper-shell.js:41 |
+| ROADMAP R7/Q7 assumed 381 px ("A Pixel 7 (393 px) shows the title") | neural-link FIXES/NL-010/ROADMAP.md:1029-1033 (Q7) |
+| Playwright `devices['Pixel 7']` viewport 412×839, `devices['Galaxy S24']` 360×780 | playwright devices table (node, 22:24 UTC) |
+| So under the admitted shell both test phones show the bottom-left strip; the title appears at ≥ 434 px (landscape, desktop). The module mounts through `api.mountStar` (MOD:101) and follows the shell; its own 380 px rule (MOD:19) applies only without the shell | lead's decision PLAN.md 22:16 UTC |
 
 ## 10. The module header's licence line: verdict
 
@@ -166,35 +177,36 @@ correction was made to the one licence line of `handoff/05-see-through/build-see
 evaluates the same rule). **Verdict: PASS after the correction**, with the consequences in LICENCE.txt (modules.json
 record `"licence": "CERN-OHL-S-2.0"`; `data/layers.json` row; `LICENCES.md` row).
 
-## 11. Findings the lead must act on before the HANDOFF (each measured)
+## 11. Findings put to the lead, and their state at 22:52 UTC (re-measured in MOD and the data)
 
-1. **Wrong law sentence on the page.** MOD:128-129 (the family text) says "r = √key, θ = key × golden angle". That is the
-   teaching spiral labelled NOT THE REAL KUIPER (ST kuiper-law.js:22-28, :98-108). The Kuiper's sentence is
-   cosmos/wafer-meta.json:12 "r = sqrt(key), theta = 2 pi frac(key x 2654435769 / 2^32)" (the code adds 0.5 inside the
-   root, index.html:278). Replace with: `r = √(key + 0.5), θ = 2π · frac(key × 2654435769 / 2³²)`. The NL-009 06 README
-   block carries the same error (FIXES/NL-009/round1/06-seethrough.md, README addition); README-the-apps.md here is corrected.
-2. **No ODbL credit on screen.** Substation names are shown (MOD:265-266 "see this star fall to DRAX") but no credit is
-   drawn: the row (MOD:155) and the star card carry none. ROADMAP step 5 licence note: names "carried in the file's header
-   and shown on the row"; See Through's own wording is ST NOTICE.md:25. Add ` · names © OpenStreetMap contributors, ODbL`
-   to the OK row or to the star row's card.
-3. **data/see-through.json licence string.** It reads "Data CC BY 4.0 (kuiper-belt); substation names … ODbL 1.0"
-   (build-see-through-json.py:87-88). The file holds 4,460 OSM names extracted from an ODbL database (§6), so it is a
-   derivative database under ODbL 1.0 share-alike; recommended: `"licence": "ODbL 1.0 (4,460 OpenStreetMap substation
-   names with computed Kuiper star keys)"`. Whether 4,460 names is a "substantial" extract was not keyable from the clones
-   (NOT EVALUATED); the conservative string costs nothing. Rebuild through the script, then rehash.
-4. **The row pairs a folder with a sky it does not use.** `OK · … · See Through 202610050609 · SPACE 63,340,120,796`
-   (MOD:155): See Through 202610050609 draws its stars with SPACE 59,637,070,538 (§2). The layer is the wafer's re-lifted
-   sky; only a future See Through folder with the patch will draw the same keys. Say so on the row
-   (`See Through stars re-lifted to the wafer · SPACE …`) or in the HANDOFF.
-5. **Deep links are written, not yet read.** §1: 0 hash readers in ST; `see-through-hash-reader.patch` was not in the
-   folder at 22:17 UTC. The Opus table's acceptance "a deep link from a spark or a repository lands on the named
-   substation" (ROADMAP.md:977) cannot be measured in this edition: the HANDOFF must say NOT EVALUATED, not PASS.
-6. Minor: MOD:20 cites the 9 px rule at "index.html:688-693"; in this edition it is ED index.html:685-689 (`bd = 81` at
-   :687). MOD:12 lists four api functions; install returns five (`readHash`, MOD:337).
-7. For the tester: test.cjs:106 requires `Apache-2.0` in the header and passes only because MOD:1 says "never
-   Apache-2.0"; the rule for this module is `CERN-OHL-S` named in the header when the body carries the block
-   (ROADMAP.md:713-715). test.cjs:482's preview manifest record should carry `licence: 'CERN-OHL-S-2.0'`.
+1. Wrong law sentence in the family text: **fixed**. MOD:129 now reads `r = √(key + 0.5), θ = 2π · frac(key × 2654435769 /
+   2³²)` with keys (cosmos/wafer-meta.json:12; index.html:278). README-the-apps.md here carries the same correction of the
+   NL-009 06 block (whose "θ = key × golden angle" is the teaching spiral, ST kuiper-law.js:98-108).
+2. No ODbL credit on screen: **fixed**. The OK row ends ` · names © OpenStreetMap contributors, ODbL` (MOD:150-151).
+3. data/see-through.json licence: **fixed**. `licence` "ODbL 1.0: a derived database of 4,460 OpenStreetMap substation
+   names …" (§6). Whether 4,460 names is a "substantial" extract was not keyable from the clones (NOT EVALUATED); the
+   conservative label stands.
+4. The row's folder and sky: **fixed**. MOD:150 says "See Through 202610050609 (its sky 59,637,070,538 until the patch)".
+5. Deep links written, not read, by See Through 202610050609: **open by design**. 0 hash readers in ST (§1). The reader
+   is `see-through-hash-reader.patch` (22:30 UTC), measured by the lead on a scratch copy only (REQUEST
+   issuecomment-6564878115). In this edition the acceptance "a deep link lands on the named substation" is NOT
+   EVALUATED on the shipped site and must be reported so.
+6. startLayer() settling: **fixed**. A throwing `register` falls back to the module's own load (MOD:206-207); a registry
+   that never calls `load` (REFUSED, layers.js:127) settles after 6 s with a WAIT row (MOD:209).
+7. The data hash in `data/layers.json`: **fixed by Opus 3** (re-read 22:54 UTC). The `see-through` record's source now
+   holds `data/see-through.json`, bytes 666,940, features 5,800, sha256 `440950711a148eb019b7309ea1a0610219c096742893ce8d7c1f81be18d479a6`,
+   equal to the file (ED data/layers.json `see-through` source). Any further rebuild of the data must be re-recorded there,
+   or MOD:180-189 refuses it (`sha256 mismatch`, MOD:188). The HANDOFF must quote this sha256.
+8. Minor, open: MOD:20 cites the 9 px rule at "index.html:688-693"; in this edition it is ED index.html:685-689 (`bd = 81`
+   at :687). MOD:12 lists four api functions; install returns five (`readHash`, MOD:364).
+9. For the tester: test.cjs's static check should require `CERN-OHL-S` in the header when the body carries the block
+   (ROADMAP.md:713-715), not `Apache-2.0`; its preview manifest record's licence should be `CERN-OHL-S-2.0`.
 
 ## 12. Review of the lead's HANDOFF comment
 
-See the "HANDOFF review" section at the end of this file (appended when the lead's draft is read).
+Not yet drafted at 22:52 UTC (no HANDOFF.md in this folder or in /tmp/nl010-opus/team-5/lead/posts/). Conditions for
+the evidence officer's PASS of the comment: (a) the module's sha256 equals `MODULE.sha256` and the one in this file (or
+this file re-keyed); (b) the data sha256 quoted equals the file and `data/layers.json`; (c) the licence stated as
+CERN-OHL-S-2.0 for the module, ODbL 1.0 for the data; (d) the deep-link landing reported NOT EVALUATED on the shipped
+site (scratch PASS only); (e) the Pixel 7 strip form reported as a FINDING for Q7, not hidden; (f) test.cjs PASS on
+Pixel 7 and Galaxy S24 with zero pageerror quoted from its JSON, not asserted; (g) no ACCEPT.

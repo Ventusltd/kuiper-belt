@@ -3,8 +3,8 @@
  "file": "202611012141-layers.js",
  "generation": "202611012141",
  "path": "modules/202611012141-layers.js",
- "sha256": "1ec07e2348b895a8dac948b675a5b79c01003bb0e9e5d787118c2d3adacf75a2",
- "bytes": 51710,
+ "sha256": "1d9042eaf2166085df6a40323df3adaefbfa5173615047d4d77b13ac5b6fdd33",
+ "bytes": 52734,
  "byte_budget": 98304,
  "requires": [
   "wafer",

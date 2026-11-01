@@ -45,6 +45,15 @@
   function mk(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
   function shell() { try { var m = KY.modules['kuiper-shell']; return m && m.api ? m.api : (window.__KUIPER_SHELL__ || null); } catch (e) { return null; } }
   function closePanel() { var s = shell(); if (s && s.close) s.close(); }
+  // closeThen(fn): close the open panel and run fn after the shell's history.back() has landed (kuiper-shell.js closeAll);
+  // the page's own popstate (index.html ANDROID BACK) closes an open card, so a card must open after that popstate
+  function closeThen(fn) {
+    var s = shell(), open = s && s.inspect ? !!s.inspect().open : false;
+    if (!open) { fn(); return; }
+    var done = false, go = function () { if (done) return; done = true; removeEventListener('popstate', pop); setTimeout(fn, 30); };
+    var pop = function () { go(); };
+    addEventListener('popstate', pop); s.close(); setTimeout(go, 600);
+  }
   function layersApi() { var m = KY && KY.modules && KY.modules.layers; return m && m.api ? m.api : null; }
   function cardApi() { var m = KY && KY.modules && KY.modules['line-card']; return m && m.api ? m.api : null; }
   function fmt(n) { return H.fmt(n); }
@@ -97,9 +106,12 @@
     }
     r.target = 'kuiper'; return r;
   }
+  // values are encodeURIComponent'd, then ':' and ',' are written back as themselves (they are legal in a fragment,
+  // RFC 3986 3.5), so a written link reads as the grammar's examples do: #line=<40 hex>:5, #layers=lines,see-through
+  function enc(v) { return encodeURIComponent(v).replace(/%3A/gi, ':').replace(/%2C/gi, ','); }
   function hashText(f) {
     f = f || st.fields; var out = [];
-    WRITTEN.forEach(function (k) { if (f[k] != null && f[k] !== '') out.push(k + '=' + (k === 'layers' ? f[k] : encodeURIComponent(f[k]))); });
+    WRITTEN.forEach(function (k) { if (f[k] != null && f[k] !== '') out.push(k + '=' + enc(f[k])); });
     return out.join('&');
   }
   // `layers` belongs to Opus 3's registry, which writes it into the hash itself (layers.js writeURL): read it back from
@@ -112,9 +124,6 @@
   function writeSoon() { clearTimeout(wTimer); wTimer = setTimeout(writeNow, 400); }       // 400 ms (lesson.js:336)
   function writeNow() {
     clearTimeout(wTimer); wTimer = null;
-    // a panel open in the shell owns the current history entry (kuiper-shell.js openMenu pushState); writing into it would
-    // be undone by the back() that closes it, so the write waits for the panel to close
-    if (history.state && history.state.kmb) { st.deferred++; wTimer = setTimeout(writeNow, 250); return; }
     syncLayers();
     var h = hashText(), url = location.pathname + location.search + (h ? '#' + h : '');
     if (location.hash.replace(/^#/, '') === h) { st.last_written = h; return; }
@@ -183,7 +192,7 @@
     return path + (rest ? '#' + rest : '');
   }
   function restOf(f, drop) {
-    var o = []; FIELDS.forEach(function (k) { if (drop.indexOf(k) < 0 && f[k] != null) o.push(k + '=' + (k === 'layers' ? f[k] : encodeURIComponent(f[k]))); });
+    var o = []; FIELDS.forEach(function (k) { if (drop.indexOf(k) < 0 && f[k] != null) o.push(k + '=' + enc(f[k])); });
     return o.join('&');
   }
   function appLink(id, f) {
@@ -313,7 +322,20 @@
       else st.sub = raw.slice(0, 80);
     }, true);
   }
-  function wireHashchange() { addEventListener('hashchange', function () { var h = location.hash.replace(/^#/, ''); if (h === st.last_written) return; readLocation('hashchange'); }); }
+  // An open panel (kuiper-shell.js openMenu) or an open card (index.html ANDROID BACK, edSync) holds one pushed history
+  // entry; this writer writes into whichever entry is current, and the back() that closes the panel or the card returns to
+  // the entry below, whose hash is older. So after every history traversal the hash is written again from the fields,
+  // and the hashchange that traversal fires is not read as a new link (it is our own older text, not the person's).
+  var popAt = 0;
+  function wireHashchange() {
+    addEventListener('popstate', function () { popAt = Date.now(); st.deferred++; setTimeout(writeNow, 0); });
+    addEventListener('hashchange', function () {
+      var h = location.hash.replace(/^#/, '');
+      if (h === st.last_written) return;
+      if (Date.now() - popAt < 120) { setTimeout(writeNow, 0); return; }
+      readLocation('hashchange');
+    });
+  }
 
   var link = Object.freeze({
     schema: 'kuiper.link.v1', fields: FIELDS.slice(),
@@ -392,8 +414,10 @@
     }
     function utcStamp(now) { return now.toISOString().replace('T', ' ').slice(0, 16) + ' UTC'; }      // GridAtlas :813-816
     function editionName() {
-      var m = String(Hc.big && Hc.big.textContent || '').match(/Kuiper Edition \d+/i);
-      return (m ? m[0] : 'Kuiper edition') + ' · ' + KYc.edition;
+      // the page's own name when #big carries one ("Kuiper Edition 5 · …", index.html:638); layers.js writes
+      // "Kuiper edition <stamp>" instead, so a twelve-digit stamp is never read as an edition number
+      var m = String(Hc.big && Hc.big.textContent || '').match(/Kuiper Edition (\d{1,3})(?!\d)/i);
+      return m ? 'Kuiper Edition ' + m[1] + ' · ' + KYc.edition : 'Kuiper edition ' + KYc.edition;
     }
     function viewLink() {
       try { if (Lk && typeof Lk.hashText === 'function') { var h = Lk.hashText(); return location.origin + location.pathname + (h ? '#' + h : ''); } } catch (e) {}
@@ -603,7 +627,7 @@
       if (!/^\d{1,15}$/.test(d)) { why.textContent = v ? 'key ' + v + ' is not on this wafer (SPACE ' + H.SPACE + ')' : 'type a key: digits only'; return; }
       var k = +d;
       if (k >= H.SPACE) { why.textContent = 'key ' + d + ' is not on this wafer (SPACE ' + H.SPACE + ')'; st.refused.push(why.textContent); return; }
-      closePanel(); st.opened.push('key ' + d); openKey(k);
+      st.opened.push('key ' + d); closeThen(function () { openKey(k); });
     });
     group.appendChild(ok.el); refs.keyForm = ok;
     // its second line: the command that gives the bytes from a clone (GridAtlas's one runnable command, menu-bar.js:707-733)
@@ -616,7 +640,7 @@
       loadBodies().then(function () {
         var i = indexOfId(v);
         if (i < 0) { why.textContent = 'line ' + v + ' is not in this edition\'s keys.json'; return; }
-        why.textContent = ''; closePanel(); st.opened.push('line ' + v); openIndex(i);
+        why.textContent = ''; st.opened.push('line ' + v); closeThen(function () { openIndex(i); });
       }, function (e) { why.textContent = 'line ' + v + ': ' + (e && e.message || e); });
     });
     group.appendChild(ol.el); refs.lineForm = ol;
@@ -743,7 +767,15 @@
   function install(K) {
     KY = K; H = K.hooks;
     C.install(K, link);                                   // SECTION C first: its find-box link intercept runs before watchFind
-    installStyle(); build(); watchCard(); watchFind(); wireHashchange();
+    installStyle(); watchCard(); watchFind(); wireHashchange();
+    // the shell installs when the engine has built Edition 4's #bar (kuiper-shell.js whenEngine, 250 ms x 160): FILE waits
+    // for it on the same clock, then builds once; without a shell after 40 s, FILE is a panel of Edition 4's own
+    var tries = 0;
+    (function waitShell() {
+      var s = shell(); if (s && s.panel && s.panel('file')) { build(); return; }
+      if (++tries >= 160) { build(); return; }
+      setTimeout(waitShell, 250);
+    })();
     K.draw.add(readout, 40);
     st.installed = true;
     // arrival: after the wafer admitted its data (index.html:208, the wafer promise), the reader runs once

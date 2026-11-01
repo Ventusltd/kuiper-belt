@@ -227,7 +227,8 @@ function probeFn(sentence) {
     titles: titles.map(t => ({ text: t.textContent.trim(), star: t === el, rect: R(t) })),
     otherMaxWidth: others.length ? Math.max(...others.map(t => +t.getBoundingClientRect().width.toFixed(1))) : 0,
     otherMinLeft: others.length ? Math.min(...others.map(t => +t.getBoundingClientRect().left.toFixed(1))) : null,
-    openPanels: [...document.querySelectorAll('.gm-open')].map(p => p.id || p.className),
+    openPanels: [...document.querySelectorAll('.gm-open, [id^="kmb-panel-"]:not([hidden])')].filter(p => { const r = p.getBoundingClientRect();   // open = shown on screen, not a class
+      return r.width > 0 && r.height > 0 && (typeof p.checkVisibility !== 'function' || p.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })); }).map(p => p.id || p.className),
     card: (() => { const c = document.getElementById('card'); if (!c || getComputedStyle(c).display === 'none') return null; const m = c.textContent.match(/(\d[\d,]*)\s+of\s+(\d[\d,]*)/);
       const links = [...c.querySelectorAll('a')].filter(a => /see-through/.test(a.getAttribute('href') || '')).map(a => ({ text: a.textContent.trim(), hrefAttr: a.getAttribute('href'), hrefResolved: a.href, target: a.getAttribute('target'), rect: R(a) }));
       return { index: m ? +m[1].replace(/,/g, '') : null, total: m ? +m[2].replace(/,/g, '') : null, first: c.textContent.trim().slice(0, 100), links, rect: R(c) }; })(),

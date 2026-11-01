@@ -46,24 +46,25 @@ words, esc, cv, ov, o2, hud, big, sub, card, gbox, gin, SPACE, N, repos, commits
 
 ## The rest of `window.KY` (not in `hooks`, but admissible in `requires`)
 
-`requires` may name: `Object.keys(KY.hooks)` ∪ `['cam', 'lit', 'sel', 'redraw', 'draw', 'panels']` ∪ the `provides` of
+`requires` may name: `Object.keys(KY.hooks)` ∪ `['cam', 'lit', 'sel', 'redraw', 'draw', 'panels', 'refuse']` ∪ the `provides` of
 modules admitted earlier in `order` (a module's `id` is always in its `provides`). `KY.names` is the frozen list of the 28
-hooks plus those six, without `provides`.
+hooks plus those seven, without `provides` (35 names since rev 3).
 
 | member | shape | engine line |
 |---|---|---|
 | `KY.schema` | `'kuiper.hooks.v1'` | |
 | `KY.edition` | `'202611012135'` | |
-| `KY.cam` | getters `x y zoom atHome` | :243 `cx cy zoom`, :245 `atHome` |
+| `KY.cam` | getters `x y zoom atHome`; setter `atHome` (rev 3: a module that flies the camera sets it false first, so a resize does not re-home) | :243 `cx cy zoom`, :245 `atHome` (read by `resize` :248) |
 | `KY.lit` | `repo` get/set (sets `dirty`), `K` get, `Ci` get, `period` set (`lightTime` result or null clears) | :243 `litRepo`, :244 `litK litCi` |
 | `KY.sel` | `target` get/set (sets `dirty`) | :243 `target` |
 | `KY.redraw()` | sets `dirty = true` | :243 `dirty` |
 | `KY.draw.add(fn, order)` | the one wrap of `draw`; `fn(o2, KY)` runs after the engine's and the edition's overlay, ascending `order`; a throwing fn is removed and reported, the frame continues | :332 `function draw(){`, wrapped :654 |
 | `KY.panels.add(name, el, title)` / `.set(name)` / `.place()` | `PANELS[name] = el`; the bar title is team 1's | :710 `PANELS`, :712 `placePanels`, :714 `setPanel` |
+| `KY.refuse(text, slot)` | rev 3: one line in the shared `#refuse[role=alert]` strip under the module's own `slot` (its id); `engine` and `modules` are the page's (TypeError); empty text clears the slot; the strip goes when every slot is empty | the page's `refuse(m, slot)` (NL-009 09-robust, given slots by team 4; rev-3 patched page :140) |
 | `KY.register(module)` | the only call a module makes at parse time; a closure of the loader | |
 | `KY.modules` | `{id: frozen {id, generation, sha256, api, inspect}}`; alias `window.__KUIPER_MODULES__` | |
 | `KY.inspect()` | `{schema, edition, hooks, order, admitted, refused, timings}` = `window.__KUIPER_EDITION__` | |
-| `KY.names` | frozen array: the 28 hooks + `cam lit sel redraw draw panels` | |
+| `KY.names` | frozen array: the 28 hooks + `cam lit sel redraw draw panels refuse` (35) | |
 
 `Object.isFrozen(window.KY) === true`, and `KY.hooks`, `KY.names`, `KY.cam`, `KY.lit`, `KY.sel`, `KY.draw`, `KY.panels`
 are frozen too. `KY.modules` is the one object the loader fills (each entry frozen).

@@ -77,6 +77,18 @@ function staticChecks() {
   const rec = (id, name, pass, measured, note, info) => { S.push({ id, name, pass: !!pass, info: !!info, measured, note: note || '' }); process.stderr.write(`[static] ${info ? 'INFO' : pass ? 'PASS' : 'FAIL'} ${id} ${name}${note ? ' — ' + note : ''}\n`); };
   const keysSha = sha256(fs.readFileSync(path.join(EDITION, 'keys.json')));
   rec('S0', 'K0 keys.json byte-identical to Edition 2', keysSha === EDITION2_KEYS_SHA, { sha256: keysSha, edition2: EDITION2_KEYS_SHA });
+  // the page may load a compact copy first (keys-min.json, team 10 perf): the card shows what it loads, so every placed
+  // body's line_text, destination, repo, commit, path, line and key there must equal keys.json's, byte for byte
+  const minFile = path.join(EDITION, 'keys-min.json');
+  if (fs.existsSync(minFile)) {
+    const full = JSON.parse(fs.readFileSync(path.join(EDITION, 'keys.json'), 'utf8')), mini = JSON.parse(fs.readFileSync(minFile, 'utf8'));
+    const P = (j) => (j.bodies || j).filter(b => b.on_wafer && b.verified && Number.isFinite(b.key) && b.key >= 0);
+    const A = P(full), B = P(mini); const F = ['line_text', 'destination', 'repo', 'commit', 'path', 'line', 'key', 'title', 'quote'];
+    let diff = 0, first = null; for (let i = 0; i < Math.max(A.length, B.length); i++) { const a = A[i], b = B[i]; const bad = !a || !b ? ['missing'] : F.filter(f => a[f] !== b[f] && !(f === 'quote' && !(f in b)));
+      if (bad.length) { diff++; if (!first) first = { i, fields: bad }; } }
+    rec('S0b', 'keys-min.json (what the page loads first): every placed body\'s line_text, key, destination, repo, commit, path, line, title equal keys.json\'s', A.length === B.length && diff === 0,
+      { placedFull: A.length, placedMin: B.length, differing: diff, first, sha256: sha256(fs.readFileSync(minFile)) }, diff ? diff + ' bodies differ; first ' + JSON.stringify(first) : '');
+  }
   const mods = fs.readdirSync(path.join(EDITION, 'modules')).filter(f => /^\d{12}-line-card\.js$/.test(f));
   let modFile = null, modText = '', modSha = null;
   if (mods.length === 1) { modFile = mods[0]; const buf = fs.readFileSync(path.join(EDITION, 'modules', modFile)); modText = buf.toString('utf8'); modSha = sha256(buf); }
@@ -150,6 +162,19 @@ function buildServed(st) {
   const subs = [];
   if (NO_PATCH) return { html: null, manifest: null, subs: ['none (--no-patch): index.html and modules.json as committed'] };
   let html = fs.readFileSync(path.join(EDITION, 'index.html'), 'utf8');
+  const lpFile = path.join(EDITION, 'handoff', '04-loader', 'index.html.patch'), ipFile = path.join(HERE, 'index.patch');
+  const appliesTo = (text, files) => { const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'card-try-')), d = path.join(tmp, 'editions', STAMP); fs.mkdirSync(d, { recursive: true });
+    fs.writeFileSync(path.join(d, 'index.html'), text); spawnSync('git', ['init', '-q'], { cwd: tmp }); let ok = true;
+    for (const f of files) if (spawnSync('git', ['apply', '--include=editions/' + STAMP + '/index.html', f], { cwd: tmp }).status !== 0) { ok = false; break; }
+    fs.rmSync(tmp, { recursive: true, force: true }); return ok; };
+  if (!/window\.KY\s*=|kuiper\.hooks\.v1/.test(html) && fs.existsSync(lpFile) && fs.existsSync(ipFile) && !appliesTo(html, [lpFile, ipFile])) {
+    // the committed page moved on (the integrator's base edits) and the patches no longer apply: serve the newest committed
+    // revision of index.html they apply to, and say so (the rebase is Opus 4's and Opus 10's)
+    const revs = (spawnSync('git', ['log', '--format=%h', '--', 'editions/' + STAMP + '/index.html'], { cwd: REPO, encoding: 'utf8' }).stdout || '').trim().split('\n').filter(Boolean);
+    const cur = sha256(Buffer.from(html)).slice(0, 8); let used = null;
+    for (const r of revs) { const t = spawnSync('git', ['show', r + ':editions/' + STAMP + '/index.html'], { cwd: REPO, encoding: 'utf8', maxBuffer: 1 << 26 }).stdout; if (t && appliesTo(t, [lpFile, ipFile])) { html = t; used = r + ' (index.html sha256 ' + sha256(Buffer.from(t)).slice(0, 8) + ')'; break; } }
+    subs.push(used ? 'the patches do not apply to the committed index.html (sha256 ' + cur + '); served the newest committed revision they apply to: ' + used : 'the patches apply to no committed revision of index.html');
+  }
   const apply = (patchFile, why) => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'card-served-')), d = path.join(tmp, 'editions', STAMP); fs.mkdirSync(d, { recursive: true });
     fs.writeFileSync(path.join(d, 'index.html'), html); spawnSync('git', ['init', '-q'], { cwd: tmp });
@@ -500,7 +525,7 @@ async function runDevice(browser, deviceName, served) {
     // D11 B5 a body without line_text
     const page5 = await context.newPage(); watch(page5); page5.setDefaultTimeout(180000);
     const firstDest = await page.evaluate(() => window.__T.placed[0].destination);
-    await page5.route(u => u.origin === pageUrl.origin && u.pathname === pageUrl.pathname + 'keys.json', async r => { const resp = await r.fetch(); const j = await resp.json(); const b = (j.bodies || j).find(x => x.destination === firstDest); if (b) delete b.line_text; await r.fulfill({ response: resp, body: JSON.stringify(j) }); });
+    await page5.route(u => u.origin === pageUrl.origin && (u.pathname === pageUrl.pathname + 'keys.json' || u.pathname === pageUrl.pathname + 'keys-min.json'), async r => { const resp = await r.fetch(); const j = await resp.json(); const b = (j.bodies || j).find(x => x.destination === firstDest); if (b) delete b.line_text; await r.fulfill({ response: resp, body: JSON.stringify(j) }); });
     await page5.goto(URL0, { waitUntil: 'load', timeout: 120000 });
     await page5.waitForFunction(() => /verified lines lit/.test((document.getElementById('big') || {}).textContent || ''), null, { timeout: 120000 }).catch(() => {});
     if (!NO_PATCH) await page5.waitForFunction(() => window.KY && window.KY.modules && window.KY.modules['line-card'], null, { timeout: 120000 }).catch(() => {});

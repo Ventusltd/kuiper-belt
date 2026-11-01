@@ -1,5 +1,5 @@
---- a/editions/202611012135/index.html	2026-11-01 22:23:09.698947369 +0000
-+++ b/editions/202611012135/index.html	2026-11-01 22:23:10.374475014 +0000
+--- a/editions/202611012135/index.html	2026-11-01 22:49:29.521757247 +0000
++++ b/editions/202611012135/index.html	2026-11-01 22:49:29.783152938 +0000
 @@ -67,12 +67,6 @@
      z-index:11;background:#090c13f2;border:1px solid #1d6470;border-radius:0 0 6px 6px;padding:10px 12px;pointer-events:auto;text-align:left}
    #hud{right:0;left:auto;max-width:min(560px,96vw)} #foot{border-top:1px solid #1d6470}
@@ -22,7 +22,7 @@
    { const st = new URLSearchParams(location.search).get('selftest') || '', mt = st.match(/^(20\d\d)-(\d\d)$/);
      if (mt) setTimeout(() => { tween = null; const R = Math.sqrt(SPACE); cx = 0; cy = 0; zoom = (Math.min(cv.width, cv.height)/2)*0.80/R;
        const got = lightTime(+mt[1], +mt[2], 0); tween = null; cx = 0; cy = 0; zoom = (Math.min(cv.width, cv.height)/2)*0.80/R; draw();
-@@ -617,83 +611,7 @@
+@@ -617,116 +611,7 @@
    else if (e.key === '/') { e.preventDefault(); gbox.style.display = 'block'; gin.value = ''; gin.focus(); }
    else if (e.key === 'Backspace') { e.preventDefault(); target = null; litRepo = -1; newFrom = -1; flash = 0; pulse = -1; litK = [-1,-1]; litCi = null; card.style.display = 'none'; home(); } });
  
@@ -85,20 +85,53 @@
 -  if (e.target.closest('a')) { e.stopPropagation(); return; }
 -  e.stopPropagation();                                           // a tap on the card body keeps it open
 -}, true);
--// fly so that the spark lands in the clear space: under the bar, above the card
--function edFly(b){
--  const z = 14, s = safeBox(); const cardH = card.style.display === 'block' ? card.getBoundingClientRect().height + 12 : 0;
--  const mx = (s.x0 + s.x1)/2, my = (s.y0 + Math.max(s.y0 + 40, s.y1 - cardH))/2;
--  atHome = false; flyTo(b.x - (mx - innerWidth/2)/z, b.y + (my - innerHeight/2)/z, z);
+-// fly so that the spark lands in the clear band: under the bar and any open panel, above the card. The band is
+-// measured from the live rectangles, measured again on the next frame (the card has been laid out and painted by
+-// then) and whenever the card changes height (details, a long quote, a turned phone), so the spark never ends under
+-// the card or the bar. A panel that would cover the band is closed by the pick, as a LINES row already does.
+-const ED_Z = 14, ED_MARGIN = 8, ED_MINBAND = 96;
+-function edBand(){
+-  const s = safeBox(); let top = s.y0, bot = innerHeight - ED_MARGIN;
+-  for (const el of document.querySelectorAll('.gm-open')) { const r = el.getBoundingClientRect(); if (r.height > 0 && r.top < innerHeight/2) top = Math.max(top, r.bottom + ED_MARGIN); }
+-  if (card.style.display === 'block') { const r = card.getBoundingClientRect(); if (r.height > 0) bot = Math.min(bot, r.top - ED_MARGIN); }
+-  if (bot < top + 24) bot = top + 24;
+-  return { x0:s.x0, x1:s.x1, y0:top, y1:bot };
 -}
+-function edAim(b, z){ const a = edBand(), mx = (a.x0 + a.x1)/2, my = (a.y0 + a.y1)/2;
+-  return { x:b.x - (mx - innerWidth/2)/z, y:b.y + (my - innerHeight/2)/z, z }; }
+-let edFlown = null;
+-function edFly(b){
+-  const g = edBand(); if (openPanel && g.y1 - g.y0 < ED_MINBAND) setPanel(openPanel);
+-  const z = ED_Z, [sx, sy] = edScreen(b), far = Math.hypot(sx - innerWidth/2, sy - innerHeight/2) + Math.abs(Math.log2(z/zoom))*120;
+-  const t = edAim(b, z); atHome = false; edFlown = b; flyTo(t.x, t.y, z);
+-  tween.dur = matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : Math.max(300, Math.min(900, 300 + far*0.6));   // a short hop is quick, home to spark takes the full 900 ms
+-  requestAnimationFrame(() => { if (edFlown !== b || !tween) return; const u = edAim(b, z); tween.x1 = u.x; tween.y1 = u.y; });   // aim again once the card is laid out
+-}
+-// the card grew or shrank, or the phone was turned, after the fly: keep the spark inside the band
+-function edKeep(){ if (tween || edSel < 0 || !edFlown || card.style.display !== 'block' || document.querySelector('.gm-open')) return;
+-  const b = edPlaced[edSel]; if (!b) return; const a = edBand(), [sx, sy] = edScreen(b);
+-  if (sx >= a.x0 + 12 && sx <= a.x1 - 12 && sy >= a.y0 + 12 && sy <= a.y1 - 12) return;
+-  const t = edAim(b, zoom); flyTo(t.x, t.y, zoom); tween.dur = 350; }
+-if (typeof ResizeObserver === 'function') new ResizeObserver(() => edKeep()).observe(card);
+-addEventListener('resize', () => requestAnimationFrame(edKeep));
  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 -function edNext(step){ if (!edPlaced.length) return; edSel = (edSel + step + edPlaced.length) % edPlaced.length;
 -  const b = edPlaced[edSel]; edCard(edSel); edFly(b); }
--// a tap within 9 px of a spark opens that line (runs after the engine's own tap handler)
+-// a tap on the wafer opens the nearest spark within reach: 24 px for a finger (Android's touch target), 9 px for a
+-// mouse. A tap is one pointer that went down on the canvas and came up within 10 px of where it went down, however
+-// long it stayed (a finger's wobble is not a drag, a slow press is still a tap); a drag, a pinch, or a tap on the
+-// bar, the card or a panel never picks a spark, and sparks of a layer that is switched off are not hit. Runs after
+-// the engine's own tap handler.
+-const ED_TAP_TOUCH = 24, ED_TAP_MOUSE = 9, ED_SLOP = 10;
+-let edDown = null;
+-cv.addEventListener('pointerdown', e => { edDown = pts.size === 1 ? { id:e.pointerId, x:e.clientX, y:e.clientY } : null; });
+-addEventListener('pointercancel', () => { edDown = null; });
 -addEventListener('pointerup', e => {
--  if (!edPlaced.length || moved >= 4 || pts.size > 0) return;
--  let best = -1, bd = 81;
--  for (let i = 0; i < edPlaced.length; i++) { const [x, y] = edScreen(edPlaced[i]); const d = (x - e.clientX)**2 + (y - e.clientY)**2; if (d < bd) { bd = d; best = i; } }
+-  const d = edDown; edDown = null;
+-  if (!d || d.id !== e.pointerId || e.target !== cv || !edPlaced.length || pts.size > 0 || moved >= 48) return;
+-  if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > ED_SLOP) return;
+-  const R = e.pointerType === 'mouse' ? ED_TAP_MOUSE : ED_TAP_TOUCH; let best = -1, bd = R*R;
+-  for (let i = 0; i < edPlaced.length; i++) { if (!visibleLine(edPlaced[i])) continue; const [x, y] = edScreen(edPlaced[i]); const q = (x - e.clientX)**2 + (y - e.clientY)**2; if (q < bd) { bd = q; best = i; } }
 -  if (best >= 0) { edCard(best); edFly(edPlaced[best]); }
 -});
 -addEventListener('keydown', e => { if (gbox.style.display === 'block') return;
@@ -106,7 +139,7 @@
  
  // ============================================================ EDITION 3: the menu bar, panels at rest hidden
  // Borrowed in spirit from gridatlas atlas/modules/202609031958-menu-bar.js: one row of titles, every panel
-@@ -706,12 +624,7 @@
+@@ -739,12 +624,7 @@
    + '<button class="gm-title" data-panel="lines">lines</button>'
    + '<button class="gm-title" data-panel="foot">commands</button>';
  document.body.appendChild(bar);
@@ -120,7 +153,7 @@
  let openPanel = null;
  function placePanels(){ const h = bar.getBoundingClientRect().height; for (const el of Object.values(PANELS)) el.style.top = (h + 2) + 'px'; }
  addEventListener('resize', placePanels);
-@@ -719,7 +632,6 @@
+@@ -752,7 +632,6 @@
    openPanel = (openPanel === name) ? null : name;
    for (const [k, el] of Object.entries(PANELS)) el.classList.toggle('gm-open', k === openPanel);
    for (const b of bar.querySelectorAll('.gm-title')) b.classList.toggle('gm-on', b.dataset.panel === openPanel);
@@ -128,7 +161,7 @@
    dirty = true;
  }
  bar.addEventListener('click', e => { const b = e.target.closest('.gm-title'); if (b) { e.stopPropagation(); setPanel(b.dataset.panel); } });
-@@ -728,29 +640,6 @@
+@@ -761,29 +640,6 @@
  elTop.classList.add('open');                                   // the long subtitle is readable once the panel is open
  // the safe rectangle now starts under the bar, and the hidden panels take no room
  { const _safe = safeBox; safeBox = function(){ const s = _safe(); s.y0 = Math.max(s.y0, bar.getBoundingClientRect().bottom + 8); s.y1 = Math.max(s.y0 + 24, innerHeight - 8); return s; }; }

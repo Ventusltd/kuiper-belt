@@ -17,3 +17,29 @@ back gesture) · lines-open · lines-filter · lines-pick (card; header = line o
 card-details · card-close · key-e-1..3 · pinch-drag · spark-tap · whole-wafer · modules · see-through.
 Under the Opus 1 shell, EDITION = ABOUT, LINES = WAFER, COMMANDS = VIEW (JOURNEY.md).
 
+## Run 0: the base, nothing admitted (22:29–22:52 UTC)
+
+modules.json `order: []` (index.html sha256 `390b15ae…23ae5` at 22:29, measured = BASE.md "after B3": Edition 4 copy + NL-009 07-perf + 03-camera + the readout stamp). Load average 65.8 at start. Pixel 7 only
+(Galaxy S24 and landscape not run on the base: the lead's own base run `--all` was in progress on port 8500 with the
+NL-009 script, and the machine is shared). Report `runs/r0-base-pixel-7.json`; 14 PASS, 3 FAIL, 0 console errors.
+
+| step | Pixel 7 | measured |
+|---|---|---|
+| load | FAIL | bar two rows: title tops 6/6/6/39, bar 75.1 px (NL-009 01-bar BLOCKER, step 1's to fix); 0 console errors; wafer disc 322×323, lit 0.231; load 22.9 s |
+| edition-open | PASS | |
+| edition-close | PASS | |
+| panel-dismiss | FAIL | wafer tap at (406,549) on `#c` closed EDITION, no card: ok; back: opening pushed no history entry (history.length 2→2), so the back gesture would leave the page |
+| lines-open | PASS | |
+| lines-filter | PASS | |
+| lines-pick | PASS | Edition 4 card (no header check) |
+| card-details | PASS | |
+| card-close | PASS | |
+| key-e-1..3 | PASS | |
+| pinch-drag | PASS | pinch ratio 0.500, drag (−90,70) moved the spark (−90,70), page scroll 0, vv scale 1 |
+| spark-tap | PASS | tap (309.1,452.7) → card 323 = nearest by the law (1.7 px; second 29.4 px) |
+| whole-wafer | PASS | wafer 322×322 under the bar |
+| modules | PASS | order empty (note), no loader, 0 page errors |
+| see-through | FAIL | no SEE THROUGH control in the bar (NL-009 06, step 1/5's to add) |
+
+Red at base: load, panel-dismiss (back), see-through. These are the reference: an admission must not add a red step.
+

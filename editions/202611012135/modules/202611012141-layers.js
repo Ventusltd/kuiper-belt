@@ -477,12 +477,22 @@
       }, true); }
   }
   // fly so the spark lands in the clear space: under the bar, above the card (index.html:676-680)
+  // NL-009 03 camera, as the integrator's base gives it (index.html edBand/edAim at kuiper-belt@a72c175): the clear band is
+  // under the bar and any open panel in the top half, above the card; aimed again on the next frame, once the card is laid out
+  function band() {
+    var s = H.safeBox(), top = s.y0, bot = innerHeight - 8, card = H.card, open = document.querySelectorAll('.gm-open');
+    for (var i = 0; i < open.length; i++) { var r = open[i].getBoundingClientRect(); if (r.height > 0 && r.top < innerHeight / 2) top = Math.max(top, r.bottom + 8); }
+    if (card.style.display === 'block') { var c = card.getBoundingClientRect(); if (c.height > 0) bot = Math.min(bot, c.top - 8); }
+    if (bot < top + 24) bot = top + 24;
+    return { x0: s.x0, x1: s.x1, y0: top, y1: bot };
+  }
+  function aim(b, z) { var a = band(), mx = (a.x0 + a.x1) / 2, my = (a.y0 + a.y1) / 2; return [b.x - (mx - innerWidth / 2) / z, b.y + (my - innerHeight / 2) / z]; }
+  var flown = null;
   function fly(b) {
     if (!b) return;
-    var z = 14, s = H.safeBox(), card = H.card;
-    var cardH = card.style.display === 'block' ? card.getBoundingClientRect().height + 12 : 0;
-    var mx = (s.x0 + s.x1) / 2, my = (s.y0 + Math.max(s.y0 + 40, s.y1 - cardH)) / 2;
-    H.flyTo(b.x - (mx - innerWidth / 2) / z, b.y + (my - innerHeight / 2) / z, z);
+    var z = 14, t = aim(b, z); flown = b;
+    H.flyTo(t[0], t[1], z);
+    requestAnimationFrame(function () { if (flown !== b) return; var u = aim(b, z); H.flyTo(u[0], u[1], z); });
   }
   function step(dir) {
     var P = lines.placed, n = P.length; if (!n || !rt.lines.on) return;
@@ -504,9 +514,10 @@
     addEventListener('pointercancel', function (e) { delete down[e.pointerId]; }, true);
     addEventListener('pointerup', function (e) {
       var was = down[e.pointerId]; delete down[e.pointerId];
-      if (!was || e.target !== H.cv || moved >= 4 || Object.keys(down).length > 0) return;
+      // a tap: one pointer, down on the canvas, up within 10 px; reach 24 px for a finger, 9 px for a mouse (NL-009 04, base a72c175)
+      if (!was || e.target !== H.cv || moved > 10 || Object.keys(down).length > 0) return;
       var P = lines.placed; if (!P.length || !rt.lines.on) return;
-      var best = -1, bd = 81;
+      var R = e.pointerType === 'mouse' ? 9 : 24, best = -1, bd = R * R;
       for (var i = 0; i < P.length; i++) { if (!visibleLine(P[i])) continue; var p = edScreen(P[i]), d = (p[0] - e.clientX) * (p[0] - e.clientX) + (p[1] - e.clientY) * (p[1] - e.clientY); if (d < bd) { bd = d; best = i; } }
       if (best >= 0) { openLine(best); fly(P[best]); }
     });

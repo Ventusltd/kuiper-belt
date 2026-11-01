@@ -20,7 +20,7 @@
 const KY_EDITION = '202611012135';
 const KY_NAMES = Object.freeze(['keyPlace', 'address', 'describe', 'findBy', 'flyTo', 'home', 'homeCamera', 'safeBox',
   'lightTime', 'showNew', 'goKey', 'fmt', 'words', 'esc', 'cv', 'ov', 'o2', 'hud', 'big', 'sub', 'card', 'gbox', 'gin',
-  'SPACE', 'N', 'repos', 'commits', 'wafer', 'cam', 'lit', 'sel', 'redraw', 'draw', 'panels']);
+  'SPACE', 'N', 'repos', 'commits', 'wafer', 'cam', 'lit', 'sel', 'redraw', 'draw', 'panels', 'refuse']);
 const kyDraw = [], kyLines = [];
 let kyAdmitting = null, kyInstalling = null;
 function kyLine(t){ kyLines.push(t); if (!N) hud.textContent += '\n' + t; dirty = true; }
@@ -40,7 +40,7 @@ const KY = Object.freeze({
     cv, ov, o2, hud, big, sub, card, gbox, gin,
     get SPACE(){ return SPACE; }, get N(){ return N; }, get repos(){ return repos; }, get commits(){ return commits; },
     wafer: kyWafer }),
-  cam: Object.freeze({ get x(){ return cx; }, get y(){ return cy; }, get zoom(){ return zoom; }, get atHome(){ return atHome; } }),
+  cam: Object.freeze({ get x(){ return cx; }, get y(){ return cy; }, get zoom(){ return zoom; }, get atHome(){ return atHome; }, set atHome(v){ atHome = !!v; } }),
   lit: Object.freeze({ get repo(){ return litRepo; }, set repo(v){ litRepo = v; dirty = true; },
     get K(){ return litK; }, get Ci(){ return litCi; },
     set period(p){ if (p == null) { litK = [-1, -1]; litCi = null; dirty = true; } else lightTime(+p.y, +p.m || 0, +p.d || 0); } }),
@@ -52,6 +52,8 @@ const KY = Object.freeze({
       el.classList.add('gm-panel'); el.setAttribute('role', 'region'); el.setAttribute('aria-label', String(title || name));
       if (!el.isConnected) document.body.appendChild(el); PANELS[name] = el; placePanels(); return el; },
     set: setPanel, place: placePanels }),
+  refuse(text, slot){ if (typeof slot !== 'string' || !/^[a-z0-9-]+$/.test(slot) || slot === 'engine' || slot === 'modules')
+      throw new TypeError('KY.refuse(text, slot): slot is the module id; engine and modules are the page\'s'); refuse(String(text || ''), slot); },
   names: KY_NAMES,
   register(m){ if (!kyAdmitting) { kyLine('a registration outside admission ignored: ' + (m && m.id)); return false; }
     if (kyAdmitting.reg) { kyAdmitting.twice = true; return false; } kyAdmitting.reg = m; return true; },

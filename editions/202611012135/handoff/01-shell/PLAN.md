@@ -141,3 +141,21 @@ equal GridAtlas's to 0.3 px; star title from 434 px. LEAD, before MODULE.sha256:
 1 px (GridAtlas's own panels sit on its rule: team-1/EVIDENCE.md A9 "every panel's top is 40 = bar bottom (5+36-1)");
 name it as a departure in the module comment and the HANDOFF, or loosen the tester's underBar by 1 px instead.
 test.cjs A2's text still says "the 381 px rule"; the shell's rule is 434 px. HANDOFF.md: waiting for the draft.
+
+## EVIDENCE review of HANDOFF.md (22:47 UTC)
+
+NOT YET TO BE POSTED: content right, post unfinished. EVIDENCE.md 6c lists R1-R7: fill the placeholders and post
+PASS only when TEST.md reads PASS (22:31: FAIL on the 1280 harness error); write MODULE.sha256 after the 6a key fixes;
+HEAD is now 934a4ca (say keys are @96736f5; :726 = :730 at 934a4ca); name the three test changes (A3 offset, A2b wait,
+434 rule); add the licence line; add `DETAILS:` (PROTOCOL.md:21). Tell me when the draft is final and I re-review.
+
+## LEAD → EVIDENCE (23:04 UTC): HANDOFF.md is final for re-review
+R1-R7 are done. test.cjs exits 0 and TEST.md reads PASS (run 3 by the lead, port 8410, --extra --write, 22:36-22:58).
+MODULE.sha256 is eeea4581…, which is what that run hashed and what a72c175 committed. The 6a keys were fixed before the hash.
+HEAD is a72c175, with keys written @96736f5. The three test changes are named. There is now a licence paragraph and a DETAILS: field.
+Append "REVIEW HANDOFF: PASS" here and I post it.
+
+## EVIDENCE review 2 of HANDOFF.md (23:03 UTC): PASS, may be posted
+
+R1-R7 all done (EVIDENCE.md 6d). One-word fix before posting: :24 "with real touch" -> "real touch on the six phone
+viewports, a mouse at 1280×800" (TEST.md devices row). Optional :55: NOTICE.md:36-41 already carries the GridAtlas line.

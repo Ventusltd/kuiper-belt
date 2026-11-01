@@ -9,6 +9,15 @@
  <title>Kuiper Edition 5</title>
  <style>
    :root{--bg:#090c13;--ink:#d5dcea;--dim:#7d8799;--line:#1a2030;--hot:#e8b36a}
+@@ -71,7 +71,7 @@
+   #linesctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+   #linesctl label{color:#8fb3bd} #linesctl input[type=text],#linesctl #lyFind{flex:1 1 180px;background:var(--bg);color:var(--ink);border:1px solid #12414a;padding:5px 8px;font:inherit}
+   #linesctl button{background:#0b1a20;color:#8fb3bd;border:1px solid #12414a;padding:5px 9px;font:inherit;text-transform:uppercase;cursor:pointer}
+-  #lineslist .ln{padding:5px 6px;border-top:1px solid #121a26;cursor:pointer;color:var(--dim);content-visibility:auto;contain-intrinsic-size:auto 44px} /* EDITION 5 (perf): rows out of view are not laid out */ #lineslist .ln b{color:var(--ink);font-weight:600}
++  #lineslist .ln{padding:5px 6px;border-top:1px solid #121a26;cursor:pointer;color:var(--dim)} #lineslist .ln b{color:var(--ink);font-weight:600}
+   #lineslist .ln.focus b{color:var(--gn)} #lineslist .ln.sel{background:rgba(255,43,214,.12)} #lineslist .ln:hover{background:rgba(80,220,240,.10)}
+   #card{bottom:12px!important;z-index:13;max-height:30vh;overflow:auto;padding:8px 36px 8px 12px;position:fixed}
+   #card .cx{position:absolute;right:6px;top:4px;width:26px;height:26px;border:1px solid #12414a;color:#8fb3bd;background:transparent;font:inherit;cursor:pointer;touch-action:manipulation}
 @@ -80,11 +80,23 @@
    #card.open .cd{display:block}
    #card .ct{color:var(--cy);cursor:pointer;text-decoration:underline dotted}
@@ -38,9 +47,9 @@
  function words(n){ if (n >= 1e9) return (n/1e9).toFixed(2)+' billion'; if (n >= 1e6) return (n/1e6).toFixed(2)+' million';
    if (n >= 1e3) return (n/1e3).toFixed(1)+' thousand'; return n >= 10 ? n.toFixed(0) : n.toFixed(2); }
 -if (!gl) { hud.textContent = 'WebGL2 is not available. Refusing rather than drawing a fraction.'; throw 0; }
-+function refuse(m, slot){ slot = slot || 'engine'; if (slot === 'engine') hud.textContent = m; (refuse.said = refuse.said || {})[slot] = m;
-+  let d = document.getElementById('refuse');
-+  if (!d) { d = document.createElement('div'); d.id = 'refuse'; d.setAttribute('role', 'alert'); document.body.appendChild(d); } d.textContent = Object.values(refuse.said).join('\n'); }
++function refuse(m, slot){ slot = slot || 'engine'; if (slot === 'engine') hud.textContent = m; const said = refuse.said = refuse.said || {};
++  if (m) said[slot] = m; else delete said[slot]; let d = document.getElementById('refuse'); const t = Object.values(said).join('\n');
++  if (!t) { if (d) d.remove(); return; } if (!d) { d = document.createElement('div'); d.id = 'refuse'; d.setAttribute('role', 'alert'); document.body.appendChild(d); } d.textContent = t; }
 +if (!gl) { refuse('WebGL2 is not available in this browser. Refusing rather than drawing a fraction of the wafer. The verified lines are in keys.json and README.md in this folder.'); throw new Error('WebGL2 is not available'); }
  
  const VS_FULL = `#version 300 es
@@ -116,7 +125,20 @@
      if (r*r < SPACE) { let k = zoom >= POINTS_FROM ? keyAt(wx, wy) : -1; const exact = k >= 0; if (!exact) k = Math.floor(r*r);
        target = exact ? { x:keyPlace(k)[0], y:keyPlace(k)[1] } : null; show(address(k)); } }
    pointerGone(e); });
-@@ -631,7 +653,7 @@
+@@ -624,18 +646,14 @@
+ // spark here is a key that python tools/key.py would resolve to that very line. Lines whose commit is
+ // not on the wafer are counted and named, never placed: the seventh law.
+ let ED = [], edPlaced = [], edSel = -1, edMeta = null;
+-const EDPATH = 'keys-min.json', EDFULL = 'keys.json';
+-// EDITION 5 (perf, NL-009 07): the page draws 17 of the 36 fields of each record, so it loads keys-min.json
+-// (1,558,451 bytes, written from keys.json by tools/edition_min.py, which records the sha256 of its source). The
+-// card law keeps line_text whole, so 07's 233 kB is not reached: one record's line_text is 1,240,449 bytes.
+-// keys.json (1,709,129 bytes) stays in the folder as the evidence. Without the compact file the full one loads.
++const EDPATH = 'keys.json';
+ async function loadEdition(){
+-  try { let r = await fetch(EDPATH); if (!r.ok) r = await fetch(EDFULL); if (!r.ok) throw new Error(EDFULL); const j = await r.json();
++  try { const r = await fetch(EDPATH); if (!r.ok) throw new Error(EDPATH); const j = await r.json();
+     edMeta = j.summary || {}; ED = j.bodies || j; }
    catch (e) { ED = []; edMeta = { error: 'keys.json did not load' }; }
    edPlaced = ED.filter(b => b.on_wafer && b.verified && Number.isFinite(b.key) && b.key >= 0 && b.key < SPACE)
                 .map(b => { const p = keyPlace(b.key); return Object.assign({}, b, { x:p[0], y:p[1] }); });
@@ -125,7 +147,16 @@
    sub.textContent = 'Edition 1 verified ' + fmt(ED.length) + ' lines of the estate (354 keyed findings, 495 keys re-resolved; see ../202610311905/). '
      + 'Here each is a green spark at its own key on the one wafer: ' + sub.textContent;
    dirty = true;
-@@ -655,12 +677,13 @@
+@@ -651,7 +669,7 @@
+     o2.fillStyle = sel ? 'rgba(255,43,214,.95)' : (focus ? 'rgba(34,238,119,.95)' : 'rgba(34,238,119,.70)'); o2.fill();
+     if (sel) { o2.strokeStyle = 'rgba(255,43,214,.9)'; o2.lineWidth = 1.5; o2.beginPath(); o2.arc(x, y, 14, 0, 6.2832); o2.stroke(); } }
+   const notOn = ED.length - edPlaced.length;
+-  hud.textContent += '\nEDITION 5 · ' + fmt(edPlaced.length) + ' verified lines on this wafer, ' + fmt(onScreen) + ' in view'
++  hud.textContent += '\nEDITION 2 · ' + fmt(edPlaced.length) + ' verified lines on this wafer, ' + fmt(onScreen) + ' in view'
+     + (notOn ? ' · ' + fmt(notOn) + ' not on the wafer (named in keys.json), counted, not placed' : '')
+     + ' · bright green: gridatlas and the data-centre repositories · green: the rest of the estate';
+ }
+@@ -659,12 +677,13 @@
  function edCard(i){
    const b = edPlaced[i], a = address(b.key);
    card.style.display = 'block'; card.classList.remove('open');
@@ -140,7 +171,7 @@
      + '<div class="cd">' + (b.pattern ? 'pattern: ' + esc(b.pattern) + '\n' : '') + 'found by ' + esc(b.worker) + ' ' + esc(b.finding) + ', verified by a controller\n' + describe(a) + '</div>';
    if (a && !a.silent) litRepo = a.c.repo;
    target = { x:b.x, y:b.y }; edSel = i; dirty = true;
-@@ -668,9 +691,9 @@
+@@ -672,57 +691,24 @@
  // the card toggles its details, closes on ×, and never swallows the link
  card.addEventListener('click', e => {
    if (e.target.closest('.cx')) { card.style.display = 'none'; edSel = -1; target = null; dirty = true; e.stopPropagation(); return; }
@@ -150,18 +181,66 @@
 -  e.stopPropagation();                                           // a tap on the card body keeps it open
 +  e.stopImmediatePropagation();                                  // a tap on the card body keeps it open (also from the engine's own close-on-click)
  }, true);
- // fly so that the spark lands in the clear space: under the bar, above the card
+-// fly so that the spark lands in the clear band: under the bar and any open panel, above the card. The band is
+-// measured from the live rectangles, measured again on the next frame (the card has been laid out and painted by
+-// then) and whenever the card changes height (details, a long quote, a turned phone), so the spark never ends under
+-// the card or the bar. A panel that would cover the band is closed by the pick, as a LINES row already does.
+-const ED_Z = 14, ED_MARGIN = 8, ED_MINBAND = 96;
+-function edBand(){
+-  const s = safeBox(); let top = s.y0, bot = innerHeight - ED_MARGIN;
+-  for (const el of document.querySelectorAll('.gm-open')) { const r = el.getBoundingClientRect(); if (r.height > 0 && r.top < innerHeight/2) top = Math.max(top, r.bottom + ED_MARGIN); }
+-  if (card.style.display === 'block') { const r = card.getBoundingClientRect(); if (r.height > 0) bot = Math.min(bot, r.top - ED_MARGIN); }
+-  if (bot < top + 24) bot = top + 24;
+-  return { x0:s.x0, x1:s.x1, y0:top, y1:bot };
+-}
+-function edAim(b, z){ const a = edBand(), mx = (a.x0 + a.x1)/2, my = (a.y0 + a.y1)/2;
+-  return { x:b.x - (mx - innerWidth/2)/z, y:b.y + (my - innerHeight/2)/z, z }; }
+-let edFlown = null;
++// fly so that the spark lands in the clear space: under the bar, above the card
  function edFly(b){
-@@ -683,7 +706,7 @@
+-  const g = edBand(); if (openPanel && g.y1 - g.y0 < ED_MINBAND) setPanel(openPanel);
+-  const z = ED_Z, [sx, sy] = edScreen(b), far = Math.hypot(sx - innerWidth/2, sy - innerHeight/2) + Math.abs(Math.log2(z/zoom))*120;
+-  const t = edAim(b, z); atHome = false; edFlown = b; flyTo(t.x, t.y, z);
+-  tween.dur = matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : Math.max(300, Math.min(900, 300 + far*0.6));   // a short hop is quick, home to spark takes the full 900 ms
+-  requestAnimationFrame(() => { if (edFlown !== b || !tween) return; const u = edAim(b, z); tween.x1 = u.x; tween.y1 = u.y; });   // aim again once the card is laid out
+-}
+-// the card grew or shrank, or the phone was turned, after the fly: keep the spark inside the band
+-function edKeep(){ if (tween || edSel < 0 || !edFlown || card.style.display !== 'block' || document.querySelector('.gm-open')) return;
+-  const b = edPlaced[edSel]; if (!b) return; const a = edBand(), [sx, sy] = edScreen(b);
+-  if (sx >= a.x0 + 12 && sx <= a.x1 - 12 && sy >= a.y0 + 12 && sy <= a.y1 - 12) return;
+-  const t = edAim(b, zoom); flyTo(t.x, t.y, zoom); tween.dur = 350; }
+-if (typeof ResizeObserver === 'function') new ResizeObserver(() => edKeep()).observe(card);
+-addEventListener('resize', () => requestAnimationFrame(edKeep));
++  const z = 14, s = safeBox(); const cardH = card.style.display === 'block' ? card.getBoundingClientRect().height + 12 : 0;
++  const mx = (s.x0 + s.x1)/2, my = (s.y0 + Math.max(s.y0 + 40, s.y1 - cardH))/2;
++  atHome = false; flyTo(b.x - (mx - innerWidth/2)/z, b.y + (my - innerHeight/2)/z, z);
++}
+ function esc(v){ return String(v == null ? '' : v).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+ function edNext(step){ if (!edPlaced.length) return; edSel = (edSel + step + edPlaced.length) % edPlaced.length;
    const b = edPlaced[edSel]; edCard(edSel); edFly(b); }
- // a tap within 9 px of a spark opens that line (runs after the engine's own tap handler)
+-// a tap on the wafer opens the nearest spark within reach: 24 px for a finger (Android's touch target), 9 px for a
+-// mouse. A tap is one pointer that went down on the canvas and came up within 10 px of where it went down, however
+-// long it stayed (a finger's wobble is not a drag, a slow press is still a tap); a drag, a pinch, or a tap on the
+-// bar, the card or a panel never picks a spark, and sparks of a layer that is switched off are not hit. Runs after
+-// the engine's own tap handler.
+-const ED_TAP_TOUCH = 24, ED_TAP_MOUSE = 9, ED_SLOP = 10;
+-let edDown = null;
+-cv.addEventListener('pointerdown', e => { edDown = pts.size === 1 ? { id:e.pointerId, x:e.clientX, y:e.clientY } : null; });
+-addEventListener('pointercancel', () => { edDown = null; });
++// a tap within 9 px of a spark opens that line (runs after the engine's own tap handler)
  addEventListener('pointerup', e => {
--  if (!edPlaced.length || moved >= 4 || pts.size > 0) return;
+-  const d = edDown; edDown = null;
+-  if (!d || d.id !== e.pointerId || e.target !== cv || !edPlaced.length || pts.size > 0 || moved >= 48) return;
+-  if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > ED_SLOP) return;
+-  const R = e.pointerType === 'mouse' ? ED_TAP_MOUSE : ED_TAP_TOUCH; let best = -1, bd = R*R;
+-  for (let i = 0; i < edPlaced.length; i++) { if (!visibleLine(edPlaced[i])) continue; const [x, y] = edScreen(edPlaced[i]); const q = (x - e.clientX)**2 + (y - e.clientY)**2; if (q < bd) { bd = q; best = i; } }
 +  if (!edPlaced.length || !tapUp || pts.size > 0) return;          // tapUp: the press began on the canvas and was a tap
-   let best = -1, bd = 81;
-   for (let i = 0; i < edPlaced.length; i++) { const [x, y] = edScreen(edPlaced[i]); const d = (x - e.clientX)**2 + (y - e.clientY)**2; if (d < bd) { bd = d; best = i; } }
++  let best = -1, bd = 81;
++  for (let i = 0; i < edPlaced.length; i++) { const [x, y] = edScreen(edPlaced[i]); const d = (x - e.clientX)**2 + (y - e.clientY)**2; if (d < bd) { bd = d; best = i; } }
    if (best >= 0) { edCard(best); edFly(edPlaced[best]); }
-@@ -695,41 +718,58 @@
+ });
+ addEventListener('keydown', e => { if (gbox.style.display === 'block') return;
+@@ -732,41 +718,58 @@
  // Borrowed in spirit from gridatlas atlas/modules/202609031958-menu-bar.js: one row of titles, every panel
  // hidden until its title is tapped, one open at a time, closed by the same tap, by Escape, or by a tap on the
  // wafer. The wafer gets the whole screen; the readout, the commands and the edition's own text are layers.
@@ -231,7 +310,7 @@
  linesPanel.addEventListener('click', e => { const k = e.target.getAttribute('data-k'); if (k) { e.stopPropagation(); dispatchEvent(new KeyboardEvent('keydown', { key:k })); return; }
    const row = e.target.closest('[data-i]'); if (row) { e.stopPropagation(); const i = +row.dataset.i; const b = edPlaced[i]; if (openPanel) setPanel(openPanel); edCard(i); edFly(b); } });
  function visibleLine(b){ return lyOn && (!lyFocus || b.class === 'focus'); }
-@@ -738,8 +778,8 @@
+@@ -775,8 +778,8 @@
    const rows = [];
    edPlaced.forEach((b, i) => { if (!visibleLine(b)) return;
      const hay = (b.repo + ' ' + b.path + ' ' + b.title).toLowerCase(); if (lyQuery && !hay.includes(lyQuery)) return;
@@ -242,7 +321,7 @@
  }
  // the sparks obey the layer switches
  { const _drawEd = drawEdition; drawEdition = function(){ if (!lyOn) { hud.textContent += '\nEDITION 5 · verified lines layer off'; return; }
-@@ -747,6 +787,127 @@
+@@ -784,6 +787,129 @@
  { const _edNext = edNext; edNext = function(step){ if (!edPlaced.length) return; let i = edSel, n = edPlaced.length;
      for (let t = 0; t < n; t++) { i = (i + step + n) % n; if (visibleLine(edPlaced[i])) break; }
      edSel = i; const b = edPlaced[edSel]; edCard(edSel); edFly(b); }; }
@@ -262,7 +341,7 @@
 +const KY_EDITION = '202611012135';
 +const KY_NAMES = Object.freeze(['keyPlace', 'address', 'describe', 'findBy', 'flyTo', 'home', 'homeCamera', 'safeBox',
 +  'lightTime', 'showNew', 'goKey', 'fmt', 'words', 'esc', 'cv', 'ov', 'o2', 'hud', 'big', 'sub', 'card', 'gbox', 'gin',
-+  'SPACE', 'N', 'repos', 'commits', 'wafer', 'cam', 'lit', 'sel', 'redraw', 'draw', 'panels']);
++  'SPACE', 'N', 'repos', 'commits', 'wafer', 'cam', 'lit', 'sel', 'redraw', 'draw', 'panels', 'refuse']);
 +const kyDraw = [], kyLines = [];
 +let kyAdmitting = null, kyInstalling = null;
 +function kyLine(t){ kyLines.push(t); if (!N) hud.textContent += '\n' + t; dirty = true; }
@@ -282,7 +361,7 @@
 +    cv, ov, o2, hud, big, sub, card, gbox, gin,
 +    get SPACE(){ return SPACE; }, get N(){ return N; }, get repos(){ return repos; }, get commits(){ return commits; },
 +    wafer: kyWafer }),
-+  cam: Object.freeze({ get x(){ return cx; }, get y(){ return cy; }, get zoom(){ return zoom; }, get atHome(){ return atHome; } }),
++  cam: Object.freeze({ get x(){ return cx; }, get y(){ return cy; }, get zoom(){ return zoom; }, get atHome(){ return atHome; }, set atHome(v){ atHome = !!v; } }),
 +  lit: Object.freeze({ get repo(){ return litRepo; }, set repo(v){ litRepo = v; dirty = true; },
 +    get K(){ return litK; }, get Ci(){ return litCi; },
 +    set period(p){ if (p == null) { litK = [-1, -1]; litCi = null; dirty = true; } else lightTime(+p.y, +p.m || 0, +p.d || 0); } }),
@@ -294,6 +373,8 @@
 +      el.classList.add('gm-panel'); el.setAttribute('role', 'region'); el.setAttribute('aria-label', String(title || name));
 +      if (!el.isConnected) document.body.appendChild(el); PANELS[name] = el; placePanels(); return el; },
 +    set: setPanel, place: placePanels }),
++  refuse(text, slot){ if (typeof slot !== 'string' || !/^[a-z0-9-]+$/.test(slot) || slot === 'engine' || slot === 'modules')
++      throw new TypeError('KY.refuse(text, slot): slot is the module id; engine and modules are the page\'s'); refuse(String(text || ''), slot); },
 +  names: KY_NAMES,
 +  register(m){ if (!kyAdmitting) { kyLine('a registration outside admission ignored: ' + (m && m.id)); return false; }
 +    if (kyAdmitting.reg) { kyAdmitting.twice = true; return false; } kyAdmitting.reg = m; return true; },

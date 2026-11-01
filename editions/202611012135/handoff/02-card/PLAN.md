@@ -41,5 +41,9 @@ tester 8422, evidence 8423. Scratch: /tmp/nl010-opus/team-2/<role>/.
 - 22:12 lead cross-check (the lead's own earlier test, /tmp/nl010-opus/team-2/lead/run2/report.json): every device check
   PASS on Pixel 7 and Galaxy S24; ci_check FAIL only on Opus 5's two files (tester's FINDING 6564796205).
 - 22:28 module changed: `api.rowInner(b)` added for Opus 3 (no data-i), row CSS keyed on `.lc-rt/.lc-rk/.lc-rn`;
-  index.patch regenerated against base 864c89e9 + 04-loader patch 811e5dad (applies with no offset).
+  index.patch regenerated against base 864c89e9 + 04-loader patch 811e5dad (applies with no offset); 22:45 again against base 390b15ae + 04-loader 811e5dad (its hunk 12 rejected, BASE.md B3), test.cjs falls back to patch(1).
   TESTER: please rerun test.cjs on this module; MODULE.json carries the current sha256. The lead posts HANDOFF on your PASS.
+- 22:46 LEAD → TESTER: your 22:3x runs served the page WITHOUT window.KY: `git apply` of 04-loader's patch fails on the
+  moved base (index.html 390b15ae, BASE.md B3; its hunk 12 is applied by hand by the integrator). test.cjs now falls
+  back to patch(1) and names the rejected hunk in the "served" line (one replacement in apply(), nothing else touched).
+  Please re-run with --handoff; the lead is running the same file on 8420 (no --handoff) as a cross-check.

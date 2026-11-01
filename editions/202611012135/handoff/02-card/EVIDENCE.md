@@ -119,12 +119,12 @@ The page script is a module (`index.html:102`, `<script type="module">`), so `ed
 `fillLines` are module-scoped. A separate file cannot reach or wrap them, and ROADMAP 4.8 forbids wrapping an engine
 function anyway. The published hook table (`handoff/04-loader/HOOKS.md`, 28 names) has `describe`, `card`, `esc`,
 `fmt`, `address` and `gbox`, but not `edCard`, `edFly` or `fillLines`. The lead's design (PLAN.md) does not wrap them:
-the page delegates to `KY.modules['line-card'].api` through `handoff/02-card/index.patch`. That patch applies on top of
-`handoff/04-loader/index.html.patch` (sha256 `811e5dad…`), applied to the committed index.html (sha256 `864c89e9…`, the
-same at 4a4ee2d, 80c5037 and 934a4ca). Re-verified at 22:40 UTC in `/tmp/nl010-opus/team-2/evidence/apply2/`: both
-apply with `patch -p1` and no fuzz. The working-tree index.html at that time (sha256 `390b15ae…`, uncommitted, not team
-2's) has another team's rewrite of `edFly` (`edBand`/`edAim`). The 04-loader patch's hunk 12 does not apply to it; the
-owners of those two files must rebase. The E rows below are keyed at 96736f5, where they remain true. ROADMAP step 2's phrase "wrapping `edCard` and `fillLines` through the hook table" is met by
+the page delegates to `KY.modules['line-card'].api` through `handoff/02-card/index.patch`. That patch (sha256 `8395bd3f…`) was re-verified at 22:53 UTC in `/tmp/nl010-opus/team-2/evidence/apply4/`. The
+base was the index.html committed at a72c175, sha256 `390b15ae…`, which contains another team's rewrite of `edFly`
+(`edBand`/`edAim`). The rebased `handoff/04-loader/index.html.patch` (sha256 `59911f4b…`) applies with `patch -p1`, all
+hunks. `index.patch` then applies on top with no fuzz, at offsets −4 and −37. Both patches are still moving; the
+integrator must re-run this pair on the base it actually uses.
+The E rows below are keyed at 96736f5, where they remain true. ROADMAP step 2's phrase "wrapping `edCard` and `fillLines` through the hook table" is met by
 that delegation, not by a hook.
 
 | # | hook / engine line | key | fragment |
@@ -189,7 +189,7 @@ and the file contains exactly one `KY.register(`.
 | F13 | ROADMAP K1 names the header `<header class="ch">` | neural-link@b9b7d5d FIXES/NL-010/ROADMAP.md:139 | `<header class="ch"><code>` |
 | F14 | the shell's ABOUT slot carries the sentence first (B4) | kuiper-belt@WT editions/202611012135/modules/202611012143-kuiper-shell.js:460 | `var law = el('p', 'gm-prose', 'The line of code is the header.` |
 | F15 | the slot is owned by line-card | kuiper-belt@WT editions/202611012135/modules/202611012143-kuiper-shell.js:462 | `law.setAttribute('data-owner', 'line-card'); law.setAttribute('data-law', 'L11');` |
-| F16 | NL-009 02-card F3 (a tap on the card re-picks a spark) is closed by Opus 4's `tapUp`, which is true only for a press that began on the canvas, not by team 2's index.patch | kuiper-belt@WT editions/202611012135/handoff/04-loader/index.html.patch:160 | `if (!edPlaced.length \|\| !tapUp \|\| pts.size > 0) return;` |
+| F16 | NL-009 02-card F3 (a tap on the card re-picks a spark) is closed by Opus 4's `tapUp`, which is true only for a press that began on the canvas, not by team 2's index.patch | kuiper-belt@WT editions/202611012135/handoff/04-loader/index.html.patch:237 | `if (!edPlaced.length \|\| !tapUp \|\| pts.size > 0) return;` |
 | F17 | 02-card F3 as found | neural-link@b9b7d5d FIXES/NL-009/round1/02-card.md:33 | `a tap on the card where a spark lies beneath it re-picks that spark` |
 
 F-a, the three wordings are identical (B4). Compared byte for byte by a Python script in this session, these all equal

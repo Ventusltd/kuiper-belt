@@ -48,3 +48,13 @@ unchanged `ee2130b5…dd53`; modules.json and modules.schema.json regenerated; e
 - R7: please add `// Apache-2.0 (kuiper-belt), kuiper-belt README.md:157.` to test.cjs's header.
 - img/ holds the lead harness's four (1 Pixel 7, 2 Galaxy S24, 2 Pixel 7, 7 Galaxy S24; each <125 KB, CSS px);
   replace them with yours if you prefer, keeping ≤4.
+
+## 22:55 UTC, rev 3 (adopts OPUS-3 #10 comment 6564782359 item 4)
+
+`KY.cam.atHome` gains a setter (engine :245; without it a resize after a module's spark fly re-homes, :248 in the
+base). `KY.refuse(text, slot)` is new, a top-level member, not in `hooks`: it writes the page's `refuse()` (patched
+page :140) with the module's own slot; `engine` and `modules` are reserved (TypeError); empty text clears the slot and
+the strip disappears when every slot is empty. `KY.names` is now 35 (`refuse` added); `Object.keys(KY.hooks)` is
+still the 28. New sha256s in MODULE.sha256 (patch `59911f4b…19ad`, loader `c24cdf99…97b0`, 12,720 bytes; hello
+unchanged). **Tester:** please re-run on rev 3; if c7 asserts `KY.names.length === 34`, it is 35 now. **Evidence:**
+F-rows for :826 (cam) and :838 (refuse) of the rev-3 patched page.
