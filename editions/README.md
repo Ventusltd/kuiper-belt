@@ -1,7 +1,7 @@
 # Kuiper editions
 
 Version numbers: an edition is numbered in order of publication (Edition 1, 2, …) and keyed by its cut stamp
-(`YYYYMMDDHHMM`, UTC). The number is for people; the stamp is the key. The current edition is **Kuiper Edition 3 (202611012022)**.
+(`YYYYMMDDHHMM`, UTC). The number is for people; the stamp is the key. The current edition is **Kuiper Edition 4 (202611012027)**.
 
 An edition is a dated folder that places the estate's best lines on the belt, each line keyed by `repo@commit path:line`
 and verified against a clone before it is placed. The stable link `editions/` opens the newest dated folder; the stamp is
@@ -9,6 +9,10 @@ written in three places in `index.html` (meta refresh, the link, `location.repla
 does. Earlier dated folders are kept unchanged as history. Find the newest edition from the pointer, not by sorting
 folder names: stamps carry the clock of the machine that cut them.
 
+- **Kuiper Edition 4** (`202611012027`, published 2026-11-01): [README](202611012027/README.md) · [open it](202611012027/). Edition 3 with a compact
+  card (title, line, quote, GitHub link, details on demand, capped at a third of the screen), the camera placing the
+  chosen spark in the clear space between the bar and the card, LINES closing when a row is picked, and the stable
+  pointer corrected (it had kept Edition 1's `/belt/`). Same keys as Edition 2.
 - **Kuiper Edition 3** (`202611012022`, published 2026-11-01): [README](202611012022/README.md) · [open it](202611012022/). Edition 2 with its
   text made into layers behind a GridAtlas-style menu bar (EDITION, READOUT, LINES, COMMANDS); LINES switches the
   verified-lines layer, filters to the data-centre repositories, lists and finds all 344 lines. Same keys as Edition 2.
