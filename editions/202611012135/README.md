@@ -18,6 +18,61 @@ None yet.
 
 None yet.
 
+### Modules waiting for admission (on disk at 23:23 UTC, in the integration order)
+
+Each sha256 is of the file as it stood at 23:23 UTC; a module's bytes may still change until its row in
+`ADMISSIONS.md` admits it, and the admitted sha256 is the one in `modules.json`. Each paragraph moves to "Modules
+admitted" with its admitted sha256 when the row is written.
+
+**loader** · the hook table and loader in `index.html` (reference copy `modules/202611012145-loader.js`, sha256
+`25a16f1d3c3f`, listed under `references`, never fetched) and `hello` (`modules/202611012145-hello.js`, sha256 `ee2130b56e74`)
+· Opus 4 · step 4. What a person sees: the wafer as in Edition 4, plus one readout line per module, `<id> admitted ·
+<sha12>`; a module whose bytes, stamp, licence or hooks do not match is refused in words (one readout line and one
+strip) while the bar, the wafer and every other module keep running. `hello` draws one cyan ring at key 0 and leaves
+`order` before PR A. Folds in NL-009 04-touch and 09-robust (`handoff/04-loader/HANDOFF.md`).
+
+**kuiper-shell** · `modules/202611012143-kuiper-shell.js` · sha256 `eeea45817821` · Opus 1 · step 1. What a
+person sees: one bar across the top (36 px; 34 px at 700 px and narrower) with FILE EDIT VIEW on the left, the VENTUS
+wordmark with "Cables & Connectivity®" centred, and SCOPE WAFER ABOUT on the right, in GridAtlas's face; every title
+and command is a 44 px target; a panel opens under the bar, one at a time, and closes on the same title, Escape, a
+tap on the wafer or the back gesture. Edition 4's bar stays in the page, hidden. Folds in NL-009 01-bar,
+06-seethrough (the bar entry) and 08-type.
+
+**line-card** · `modules/202611012143-line-card.js` · sha256 `788256a97844` · Opus 2 · step 2. What a person
+sees: every card opens with the line of code itself, verbatim from the key; the key is the second row; the title,
+"n of 344", pattern and finder sit behind "details". On a phone (640 px and narrower) the card is a bottom sheet
+capped at 34 dvh with 44 px targets, closed by ×, Escape or a swipe down. Folds in NL-009 02-card. The law is "The
+card law" below.
+
+**layers** · `modules/202611012141-layers.js` (records `data/layers.json`) · sha256 `90ab25e24be1` · Opus 3 · step 3.
+What a person sees: the WAFER panel lists the 7 reference layers of `data/layers.json` (periods, repos, editions,
+lines, see-through, elements, spider), one row each with its live state (WAIT, LOAD, OK, EMPTY, FAIL, REFUSED) in the
+row; one switch per layer, which every other surface proxies; Edition 4's LINES panel becomes the verified-lines
+layer's control inside WAFER. Folds in NL-009 05-lines.
+
+**file** · `modules/202611012231-file.js` · sha256 `3a03a2abd812` · Opus 6 · step 6. What a person sees: the FILE
+panel opens a key, a line, an edition (`data/editions.json`) or an app, copies a link (or shows it selectable where
+the clipboard is refused), exports the wafer as a PNG and prints; it lists the edition's seven evidence files with
+their bytes measured when FILE opens ("missing · HTTP 404" when absent). The page's hash (key, line, repo, period,
+layers) is the link: kept current as you move, and the same view when pasted into EDIT or opened through the pointer.
+
+**see-through** · `modules/202611012141-see-through.js` (data `data/see-through.json`) · sha256 `87a88e488fdf` · Opus 5
+· step 5 · CERN-OHL-S v2 (the whole file). What a person sees: a SEE THROUGH entry that opens `../../see-through/`
+in the same tab: a title on the left of the bar at 434 px and wider (the shell's measured rule, `STAR_TITLE_MQ` in
+`modules/202611012143-kuiper-shell.js`), the 44 px chip at the bottom left on narrower screens, so on both Pixel 7
+(412 px) and Galaxy S24 (360 px); the WAFER layer "See Through stars", 5,800 stars at their keys; a card offers "see
+this line among the stars". Folds in NL-009 06-seethrough.
+
+**apps** · `modules/202611012309-apps.js` (data `data/apps.json`, `data/elements.json`, `data/graphs/*.json`) · sha256
+`432b0aae925d` · Opus 7 · step 7. What a person sees: FILE > "Open an app" opens the launcher under the bar, one
+44 px row per app of the registry (34 rows), the key as each row's header; an app opens in the same tab, one at a
+time, and the back gesture is the way home (no window manager). The periodic table is a WAFER layer (221 of 244
+elements keyed on the wafer, 23 named but not placed; the row reads "REFUSED · licence unsettled" until the owner
+answers Q1) and an app; the spider sandbox is an app row and a graph layer (the two DISCLOSED graphs, Q5).
+
+Not on disk at 23:23 UTC: Opus 8 (the drift, step 8) and Opus 9 (the law, `tools/edition_check.py`, `LICENCES.md`,
+step 9).
+
 ### NL-009 round-1 findings folded in
 
 | finding | folded in by | where | state |

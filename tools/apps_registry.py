@@ -210,6 +210,14 @@ def build(roots, edition):
               'wafer_why': 'the catalogue is a register of blocks; its 244 elements are the layer, data/elements.json',
               'same_as': [], 'copied': 'linked; keys only copied (data/elements.json, Q1)'})
     rows.append(r)
+    # rows whose stable link is the same address cross-reference each other (7.1: same_as, never merged)
+    by_link = {}
+    for r in rows:
+        by_link.setdefault(r['link'], []).append(r['id'])
+    for r in rows:
+        for other in by_link[r['link']]:
+            if other != r['id'] and other not in r['same_as']:
+                r['same_as'].append(other)
     out = {'schema': 'kuiper.apps.v1', 'edition': os.path.basename(os.path.normpath(edition)),
            'built_by': 'tools/apps_registry.py', 'licence': 'CC BY 4.0 (kuiper-belt data); each row carries its target\'s own licence',
            'provenance': {'sources': [
@@ -236,7 +244,11 @@ def check(edition, roots):
     for f in ('key', 'id', 'name', 'purpose', 'link', 'licence', 'source', 'key_source', 'copied'):
         ok(all(isinstance(a.get(f), str) and a[f] for a in A), 'A1 every record has a non-empty %s' % f)
     ok(all(KEY_RE.match(a['key']) for a in A), 'A1 every key matches ^(block:[A-Za-z0-9]+|surface:https://)')
-    ok(len(set(a['key'] for a in A)) == 34 or True, 'A1 keys listed (duplicates allowed only for same link: %d unique)' % len(set(a['key'] for a in A)))
+    dup = {}
+    for a in A:
+        dup.setdefault(a['key'], []).append(a)
+    ok(all(all(set(x['id'] for x in g) - {y['id']} <= set(y['same_as']) for y in g) for g in dup.values()),
+       'A1 %d unique keys; rows that share a key name each other in same_as' % len(dup))
     ok(len(set(a['id'] for a in A)) == 34, 'A1 34 unique ids')
     el = find_clone(roots, 'elements'); hp = find_clone(roots, 'globalgrid2050')
     md = show(el, SRC['elements']['commit'], 'APPS.md').decode('utf-8').split('\n')

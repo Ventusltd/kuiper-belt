@@ -30,6 +30,7 @@ import hashlib
 import io
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -37,6 +38,44 @@ import time
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import edition_keys as EK                                   # noqa: E402  the walk, the cache, the wafer: one law
+from check_proof import NOT_PUBLIC                          # noqa: E402  K1's digests (tools/ci_check.py K1)
+
+TOKEN = re.compile(r'[A-Za-z0-9_][A-Za-z0-9_.-]*')          # check_proof.leaks()'s own token rule
+REDACTED = 'not-public'
+
+
+def private(tok):
+    return any(hashlib.sha256(t.lower().encode()).hexdigest()[:24] in NOT_PUBLIC
+               for t in {tok, tok.rstrip('.'), tok.split('/')[-1]})
+
+
+def redact(text):
+    """K1: a token whose digest names a repository that is not public is replaced, never written. A folder can
+    carry such a name inside a public repository; its key is still computed from the real path, and only the
+    written text is redacted. Returns (text, how many tokens were replaced)."""
+    n = [0]
+
+    def sub(m):
+        t = m.group(0)
+        if private(t):
+            n[0] += 1
+            return REDACTED + ('.' if t.endswith('.') else '')
+        return t
+    return TOKEN.sub(sub, text), n[0]
+
+
+def copy_graph(src, dst):
+    """a spider graph into the edition: byte for byte, unless K1 finds a non-public name in it; then that token
+    alone is replaced (bytes otherwise identical) and both digests are printed for the record"""
+    raw = open(src, 'rb').read()
+    text, n = redact(raw.decode('utf-8'))
+    out = text.encode('utf-8')
+    json.loads(text)
+    with open(dst, 'wb') as f:
+        f.write(out)
+    return {'source': src, 'source_sha256': hashlib.sha256(raw).hexdigest(), 'source_bytes': len(raw),
+            'copy': dst, 'copy_sha256': hashlib.sha256(out).hexdigest(), 'copy_bytes': len(out),
+            'redacted_tokens': n, 'byte_for_byte': n == 0}
 
 COSMOS = os.path.join(HERE, '..', 'cosmos')
 
@@ -90,6 +129,12 @@ def load_rows():
 
 
 def main():
+    if len(sys.argv) > 1 and sys.argv[1] == '--copy-graph':
+        if len(sys.argv) != 4:
+            print('usage: element_keys.py --copy-graph <source graph.json> <edition data/graphs/x.json>')
+            return 2
+        print(json.dumps(copy_graph(sys.argv[2], sys.argv[3]), indent=1))
+        return 0
     ap = argparse.ArgumentParser()
     ap.add_argument('--elements', required=True, help='the elements clone (reads catalogue/elements.json)')
     ap.add_argument('--roots', required=True, help='comma separated directories holding the clones')
@@ -241,6 +286,18 @@ def main():
             print('  key.py %s %d -> exit %d %s' % (r['sym'], r['key'], pr.returncode, 'OK' if ok else 'REFUSED'),
                   file=sys.stderr)
 
+    # K1 before a byte is written: path, github and line_text are redacted token by token; keys are untouched
+    for r in out:
+        hit = []
+        for f in ('path', 'github', 'line_text'):
+            if isinstance(r.get(f), str):
+                r[f], n = redact(r[f])
+                if n:
+                    hit.append(f)
+        if hit:
+            r['redacted'] = hit
+            r['redacted_why'] = 'K1: a token naming a repository that is not public, replaced by `%s`' % REDACTED
+
     from collections import Counter
     unplaced = [r for r in out if not r['placed']]
     no_files = [r for r in unplaced if r['files_listed'] == 0]
@@ -254,6 +311,7 @@ def main():
         'no_files': len(no_files),
         'by_kind_unplaced': dict(Counter(kinds[r['sym']] for r in unplaced)),
         'distinct_commits_walked': len(walks),
+        'redacted_records': sum(1 for r in out if r.get('redacted')),
     }
     readout = '%d elements placed, %d counted, not placed' % (counts['placed'], counts['named'])
     doc = {

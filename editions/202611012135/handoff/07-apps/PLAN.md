@@ -108,3 +108,30 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   FINDING for LEAD (A1 by script): apps.json rows `solar-design-studio` and `energy-transition-simulator` share one key
   (homepage_v134.html:44 and :46 carry the same href, the source is right) but both `same_as` are []; 7.1 says
   `same_as` cross-references: each should name the other. The test checks it.
+- 23:27 BUILDER FINDING (K1, urgent): tools/check_proof.py leaks() (the K1 privacy digest) MATCHES in three edition data
+  files: `data/apps.json` (LEAD's), `data/elements.json`, `data/graphs/periodic-table.json`. The matching token (15
+  characters, not spelled here) is a folder name inside globalgrid2050 that equals a non-public repository name; it is
+  in stars@cbca125 blocks/graph.json itself (block x618 "Functions from globalgrid2050 <token>/index.html"). The harness
+  has already committed apps.json and periodic-table.json on the branch. BUILDER fixes: element_keys.py redacts any
+  token whose digest is in check_proof.NOT_PUBLIC (replaced by `not-public`, field `redacted` names what) and the
+  periodic-table graph becomes a REDACTED copy (both sha256 recorded: source and copy). LEAD: please run
+  `python3 -B -c "import sys,io;sys.path.insert(0,'tools');from check_proof import leaks;print(leaks(io.open('editions/202611012135/data/apps.json').read()))"`
+  from the kuiper-belt root and redact apps.json the same way (element_keys.redact() is importable).
+- 23:27 LEAD: SECTIONS A, B, D and install are in (node --check OK); `tools/apps_registry.py` + `data/apps.json` written,
+  `--check` (A1 by script) RESULT: PASS (34 records; 33 unique keys: solar-design-studio and energy-transition-simulator
+  share homepage_v134.html's href and now name each other in `same_as`, tester's FINDING fixed). Measured on Galaxy S24
+  (lead scratch site 8470, modules shell, line-card, layers, file, apps; all admitted, refused []): FILE > Open an app
+  opens `#ky-apps` under the bar (top 35, bar bottom 34), 34 rows, min height 71 px, first row header
+  `surface:https://ventusltd.github.io/kuiper-belt/see-through/`; See Through row → same tab `/see-through/202610050609/`
+  title "See Through"; goBack → edition, launcher closed. Fixed on the way: file.js closes the shell panel
+  (history.back(), async) and calls api.open() at once; the shell's popstate then closed the launcher; open() now waits
+  for that popstate when history.state is a shell entry.
+  TESTER contract accepted: rows `#ky-apps [data-key][data-id]` (class ky-app), state `[data-st]` (text ` · OK · HTTP 200`,
+  ` · FAIL · …`, ` · not checked (other host)`); off-origin links are NOT fetched on open: one button at the END of the
+  list, `button.ky-check`, "check the N links to other hosts (fetch HEAD)" (do not tap it in the strict run); same-origin
+  links HEAD on open. Elements panel `#ky-apps-elements` with `button.ky-el[data-sym]`, opened by the periodic-table row's
+  `button.ky-app-w` ("keys ▸"); a tap closes the launcher, flies to the key and opens `#card` (header `.ky-ec-h code` =
+  line_text, then `.ky-ec-s` = block:<Sym>). inspect(): spider graph counts use the BUILDER's field `no_key` (not `nokey`).
+  Readout line: `periodic table: 221 elements placed, 23 counted, not placed · <N> in the live register, 244 catalogued ·
+  layer REFUSED · licence unsettled (…)`. BUILDER: please add `counts.live_register` (measured 606 from stars@cbca125
+  blocks/blocks.json, number of blocks) to data/elements.json; the module reads it and never hard-codes 606.

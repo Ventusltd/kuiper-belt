@@ -231,7 +231,7 @@
    "link": "https://ventusltd.github.io/kuiper-belt/what-is-kuiper.html",
    "local": "../../what-is-kuiper.html",
    "licence": "Apache-2.0",
-   "licence_key": "kuiper-belt@2e4afb0 LICENSE:1",
+   "licence_key": "kuiper-belt@38ed53c LICENSE:1",
    "licence_line": "Apache License",
    "source": "globalgrid2050@c66759f homepage_versions/homepage_v134.html:33",
    "wafer": null,
@@ -250,7 +250,7 @@
    "source_href": "https://ventusltd.github.io/kuiper-belt/learn-the-kuiper/202610050609/",
    "local": "../../learn-the-kuiper/",
    "licence": "Apache-2.0",
-   "licence_key": "kuiper-belt@2e4afb0 learn-the-kuiper/202610050609/NOTICE.md:7",
+   "licence_key": "kuiper-belt@38ed53c learn-the-kuiper/202610050609/NOTICE.md:7",
    "licence_line": "Code in this folder is Apache-2.0, as the kuiper-belt repository (see its `LICENSE`); documentation and generated data",
    "source": "globalgrid2050@c66759f homepage_versions/homepage_v134.html:34",
    "wafer": null,
@@ -269,7 +269,7 @@
    "source_href": "https://ventusltd.github.io/kuiper-belt/see-through/202610050609/",
    "local": "../../see-through/",
    "licence": "CERN-OHL-S-2.0",
-   "licence_key": "kuiper-belt@2e4afb0 see-through/202610050609/LICENSE.md:5",
+   "licence_key": "kuiper-belt@38ed53c see-through/202610050609/LICENSE.md:5",
    "licence_line": "That code is licensed CERN-OHL-S v2 (strongly reciprocal). See Through is a separate app built on that code and is",
    "source": "globalgrid2050@c66759f homepage_versions/homepage_v134.html:35",
    "wafer": null,
@@ -287,7 +287,7 @@
    "link": "https://ventusltd.github.io/kuiper-belt/diary/20261005.html",
    "local": "../../diary/20261005.html",
    "licence": "Apache-2.0",
-   "licence_key": "kuiper-belt@2e4afb0 LICENSE:1",
+   "licence_key": "kuiper-belt@38ed53c LICENSE:1",
    "licence_line": "Apache License",
    "source": "globalgrid2050@c66759f homepage_versions/homepage_v134.html:36",
    "wafer": null,
@@ -429,7 +429,9 @@
    "source": "globalgrid2050@c66759f homepage_versions/homepage_v134.html:44",
    "wafer": null,
    "wafer_why": "a homepage entity is a served page with a version; no register file names it",
-   "same_as": [],
+   "same_as": [
+    "energy-transition-simulator"
+   ],
    "copied": "linked"
   },
   {
@@ -463,7 +465,9 @@
    "source": "globalgrid2050@c66759f homepage_versions/homepage_v134.html:46",
    "wafer": null,
    "wafer_why": "a homepage entity is a served page with a version; no register file names it",
-   "same_as": [],
+   "same_as": [
+    "solar-design-studio"
+   ],
    "copied": "linked"
   },
   {

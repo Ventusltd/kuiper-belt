@@ -81,7 +81,8 @@
     var E = st.elements;
     if (E.status !== 'OK') return 'periodic table · ' + E.status + (E.why ? ' · ' + E.why : '');
     return fmt(E.placed) + ' elements placed, ' + fmt(E.named) + ' counted, not placed'
-      + (E.not_computed ? ', ' + fmt(E.not_computed) + ' not computed (no clone)' : '');
+      + (E.not_computed ? ', ' + fmt(E.not_computed) + ' not computed (no clone)' : '')
+      + (EL && EL.counts && Number.isFinite(EL.counts.live_register) ? ' · ' + fmt(EL.counts.live_register) + ' in the live register, ' + fmt(E.total) + ' catalogued' : ' · ' + fmt(E.total) + ' catalogued, the live register not counted');
   }
   function layerTag(id) {
     var L = mod('layers'); if (!L || !L.get) return '';
@@ -137,7 +138,7 @@
     var x = mk('button', 'ky-x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'close the launcher');
     h.appendChild(back); h.appendChild(headEl); h.appendChild(x); panel.appendChild(h);
     list = mk('div', 'ky-apps-list'); panel.appendChild(list);
-    elsBox = mk('div', 'ky-apps-list'); elsBox.hidden = true; panel.appendChild(elsBox);
+    elsBox = mk('div', 'ky-apps-list'); elsBox.id = 'ky-apps-elements'; elsBox.hidden = true; panel.appendChild(elsBox);
     x.addEventListener('click', function (e) { e.stopPropagation(); close(); });
     back.addEventListener('click', function (e) { e.stopPropagation(); showView('apps'); });
     panel.__back = back;
@@ -164,7 +165,7 @@
     var rows = REG.apps.slice();
     rows.sort(function (a, b) { return (b.id === 'see-through' ? 1 : 0) - (a.id === 'see-through' ? 1 : 0); });   // the star player first
     rows.forEach(function (a) {
-      var row = mk('div', 'ky-app'); row.setAttribute('data-app', a.id);
+      var row = mk('div', 'ky-app'); row.setAttribute('data-app', a.id); row.setAttribute('data-id', a.id); row.setAttribute('data-key', a.key);
       if (a.id === 'see-through') row.setAttribute('data-star', '');
       var link = mk('a', 'ky-app-a'); link.href = hrefOf(a);
       // the card law: the header of the row is the key line; then name, purpose, licence, link
@@ -173,7 +174,7 @@
       link.appendChild(nm);
       link.appendChild(mk('span', 'ky-app-p', a.purpose));
       var l = mk('span', 'ky-app-l', 'licence ' + a.licence + ' · ' + hostOf(hrefOf(a)));
-      var s = mk('span', 'ky-app-s', ''); s.setAttribute('data-s', 'WAIT'); l.appendChild(s);
+      var s = mk('span', 'ky-app-s', ''); s.setAttribute('data-s', 'WAIT'); s.setAttribute('data-st', ''); l.appendChild(s);
       link.appendChild(l);
       link.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); navigate(a); });
       row.appendChild(link);
@@ -194,7 +195,7 @@
     var others = rows.filter(function (a) { return !sameOrigin(hrefOf(a)); });
     var chk = mk('button', 'ky-el ky-check', 'check the ' + fmt(others.length) + ' links to other hosts (fetch HEAD)'); chk.type = 'button';
     chk.addEventListener('click', function (e) { e.stopPropagation(); chk.disabled = true; chk.textContent = 'checking ' + fmt(others.length) + ' links to other hosts…'; st.checked_others = true; checkLinks(others); });
-    list.insertBefore(chk, list.firstChild);
+    list.appendChild(chk);
     rows.forEach(function (a) { if (!sameOrigin(hrefOf(a)) && !st.heads[a.id] && a.__state) { a.__state.setAttribute('data-s', 'OFF'); a.__state.textContent = ' · not checked (other host)'; } });
     checkLinks(rows.filter(function (a) { return sameOrigin(hrefOf(a)); }));
   }
@@ -362,13 +363,16 @@
   //                                (`ext`, elements README.md:15 the surface grammar) -> that repository's first k0
   //    an edge is a chord between two keyed nodes (galaxies-wafers README.md:13-16, a LineString of keys); an edge
   //    whose two ends share one key is drawn as a ring at that place and counted as such.
-  var GRAPHS = [   // sha256sum at copy time, 2026-11-01 23:14 UTC (handoff/07-apps/PLAN.md status 23:15)
+  var GRAPHS = [   // sha256 of the edition copies, 2026-11-01 23:29 UTC (handoff/07-apps/PLAN.md, builder status)
     { id: 'overview', file: 'data/graphs/overview.json', bytes: 6125,
       sha256: '124aa35e3eabafe15f3c90f82d1a38b7132fb7cdf23aba836a9757a84202df09',
       source: 'testcode@d09c185 spider/20260914T143049Z-v5-linkify-frontdoor-brandfaithful/spider/overview-graph.json' },
-    { id: 'periodic-table', file: 'data/graphs/periodic-table.json', bytes: 509649,
-      sha256: '72349730a0207a689061f88b7e83d25a843b37512b708fe1e949123ff709749e',
-      source: 'stars@cbca125 blocks/graph.json' }];
+    // K1: the source holds one folder name (2 occurrences) that equals a repository that is not public; the copy
+    // replaces that token alone by `not-public` (tools/element_keys.py --copy-graph), every other byte the source's.
+    // source sha256 72349730a0207a689061f88b7e83d25a843b37512b708fe1e949123ff709749e, 509,649 bytes
+    { id: 'periodic-table', file: 'data/graphs/periodic-table.json', bytes: 509639,
+      sha256: 'b84820447a0f8d18687f48f409e2a5442bc66c7f8b71d7ff1a171ecc7dc53a0e',
+      source: 'stars@cbca125 blocks/graph.json (K1-redacted copy: 2 tokens)' }];
   var C = { elDrawn: false, spots: [], bySym: {}, firstK0: null, graphsP: null, segs: [], rings: [], dots: [], reg: {} };
   function cAdmissible(k) { return typeof k === 'number' && isFinite(k) && k >= 0 && k < H.SPACE; }
   function cScr(x, y) { var c = KY.cam, o = H.o2.canvas; return [(x - c.x) * c.zoom + o.width / 2, o.height / 2 - (y - c.y) * c.zoom]; }

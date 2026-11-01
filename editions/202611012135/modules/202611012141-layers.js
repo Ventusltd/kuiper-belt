@@ -13,7 +13,7 @@
    :419-432, :1451-1462); the live state in the label (:91-98); install-then-inventory (:107-139); the whole row is the
    hit target (:1414-1425); galaxies-wafers@fff6fc6 layers-panel.mjs:117-118 (states), :325-330 (refuse on the row).
    requires: wafer, keyPlace, address, describe, findBy, flyTo, safeBox, fmt, esc, cv, o2, hud, big, sub, card, gbox,
-             repos, commits, N, SPACE, lightTime, cam, lit, sel, redraw, draw, panels
+             repos, commits, N, SPACE, lightTime, cam, lit, sel, redraw, draw, panels, refuse
    optional (used when admitted earlier, never required): line-card (api.show), see-through/apps (api via register)
    provides: layers */
 (function () {
@@ -21,7 +21,7 @@
   var ID = 'layers', GEN = '202611012141';
   var SCHEMA = 'kuiper.layers.v1', MANIFEST = 'data/layers.json', TIMEOUT_MS = 60000;
   var REQUIRES = ['wafer', 'keyPlace', 'address', 'describe', 'findBy', 'flyTo', 'safeBox', 'fmt', 'esc', 'cv', 'o2',
-    'hud', 'big', 'sub', 'card', 'gbox', 'repos', 'commits', 'N', 'SPACE', 'lightTime', 'cam', 'lit', 'sel', 'redraw', 'draw', 'panels'];
+    'hud', 'big', 'sub', 'card', 'gbox', 'repos', 'commits', 'N', 'SPACE', 'lightTime', 'cam', 'lit', 'sel', 'redraw', 'draw', 'panels', 'refuse'];
   var STATES = ['WAIT', 'LOAD', 'OK', 'EMPTY', 'FAIL', 'REFUSED'];
   // kuiper-belt PALETTE.md:9-14, one colour one meaning; a layer may not invent a sixth (PALETTE.md:19)
   var PALETTE = { '#c9d3e6': 'the record', '#ffffff': 'the record', '#2ee6e6': 'the instrument', '#22ee77': 'energised',
@@ -31,7 +31,7 @@
   var KY = null, H = null;
   var M = null;                 // the manifest, data/layers.json
   var rt = {};                  // id -> runtime { rec, on, value, status, why, placed, total, loaded_sha256, draw, ... }
-  var panel = null, panelName = '', refuseLine = null, manifestWhy = 'WAIT · data/layers.json';
+  var panel = null, panelName = '', manifestWhy = 'WAIT · data/layers.json';
   var lines = { ED: [], placed: [], sel: -1, meta: null, focus: false, query: '', folded: {} };
   var lastRepo = -1, lastK0 = -1, booting = true;
 
@@ -155,8 +155,19 @@
   // that no root module verifies): a record without a 64-hex sha256, or a browser without crypto.subtle (an insecure
   // origin), is FAIL before a byte is fetched, never an unchecked admission. The digest is compared first, so one
   // changed byte reads "sha256 mismatch" whatever the length; then bytes; then the parse. (builder)
+  // A record may name a fallback (the lines record: keys-min.json, NL-009 07 perf, then keys.json, as the base page
+  // loads them, index.html loadEdition at kuiper-belt@a72c175). The fallback is tried only when the first file did not
+  // load (HTTP, network); a file that loaded and hashed wrong is refused, never replaced by another.
   function verified(id) {
-    var r = rt[id], src = r.rec.source, file = src.file, want = String(src.sha256 || '').toLowerCase();
+    var r = rt[id], src = r.rec.source;
+    return verifiedOne(id, src).catch(function (e) {
+      if (!src.fallback || e.http === undefined) throw e;
+      return verifiedOne(id, src.fallback).catch(function (e2) { var x = new Error(e2.message + ' (' + e.message + ')'); x.http = e2.http; throw x; });
+    });
+  }
+  function verifiedOne(id, src) {
+    var r = rt[id], file = src.file, want = String(src.sha256 || '').toLowerCase();
+    r.lastFile = file;
     setState(id, 'LOAD', file);
     if (!/^[0-9a-f]{64}$/.test(want)) return Promise.reject(new Error('record has no sha256 for ' + file + ', unhashed data refused'));
     if (!(window.crypto && crypto.subtle && typeof crypto.subtle.digest === 'function'))
@@ -199,22 +210,13 @@
   }
   // a preload layer that fails says so in the row, the heading and an alert (09-robust.md:25-29); the wafer draws on
   function loud(id) {
-    var r = rt[id], file = r.rec.source && r.rec.source.file ? r.rec.source.file : r.rec.label;
+    var r = rt[id], file = r.lastFile || (r.rec.source && r.rec.source.file) || r.rec.label;
     var http = r.status === 'FAIL' && /HTTP \d+|did not load|timed out/.test(r.why);   // a refusal is not a failed load
     H.big.textContent = String(file).toUpperCase() + (http ? ' DID NOT LOAD' : ' REFUSED') + ' · ' + r.status + ' · ' + r.why;
     alertLine(r.rec.label + ' layer ' + r.status + ' · ' + r.why + ' · the wafer still draws; nothing of this layer is placed');
   }
-  function alertLine(text) {
-    var box = document.getElementById('refuse');
-    if (!box) { box = document.createElement('div'); box.id = 'refuse'; box.setAttribute('role', 'alert'); box.className = 'ky-layers-refuse'; document.body.appendChild(box); }
-    if (!box.getAttribute('role')) box.setAttribute('role', 'alert');
-    if (!refuseLine) { refuseLine = document.createElement('div'); refuseLine.setAttribute('data-ky-from', ID); box.appendChild(refuseLine); }
-    refuseLine.textContent = 'LAYERS · ' + text;
-    if (!refuseLine.isConnected) box.appendChild(refuseLine);
-    box.hidden = false; box.style.display = 'block';
-    if (!box.__kyLayersWatch) { box.__kyLayersWatch = true;           // the page's refuse() rewrites textContent; keep our line
-      new MutationObserver(function () { if (refuseLine && !refuseLine.isConnected) box.appendChild(refuseLine); }).observe(box, { childList: true }); }
-  }
+  // the shared #refuse[role=alert] strip, one line under our own slot (KY.refuse, hook table rev 3, HOOKS.md)
+  function alertLine(text) { KY.refuse('LAYERS · ' + text, ID); }
 
   // ======================================================================== SECTION 3: the WAFER panel
   var CSS = ''
@@ -264,9 +266,6 @@
     + '#lineslist .ln code{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;color:#ffffff;white-space:pre-wrap;font:inherit;font-weight:600}'
     + '#lineslist .ln b{color:#d5dcea;font-weight:600}#lineslist .ln.focus b{color:#22ee77}#lineslist .ln.sel{background:rgba(255,43,214,.12)}'
     + '#lineslist .ln .t{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}'
-    // the strip sits at the bottom and stays short, so the wafer it says still draws stays visible (evidence H2)
-    + '#refuse.ky-layers-refuse{position:fixed;left:0;right:0;top:auto;bottom:0;max-height:30vh;overflow:auto;z-index:30;background:#090c13f2;color:#ffb000;border-top:2px solid #ffb000;padding:8px 12px;'
-    + 'font:12px/1.5 ui-monospace,Consolas,monospace;white-space:pre-wrap}';
 
   function buildPanel() {
     panel = document.createElement('div'); panel.id = 'layers'; panel.className = 'gm-panel ky-layers';
@@ -492,6 +491,7 @@
   function fly(b) {
     if (!b) return;
     var z = 14, t = aim(b, z); flown = b;
+    KY.cam.atHome = false;                                          // a resize must not re-home after a spark fly (IX:248, :679)
     H.flyTo(t[0], t[1], z);
     requestAnimationFrame(function () { if (flown !== b) return; var u = aim(b, z); H.flyTo(u[0], u[1], z); });
   }

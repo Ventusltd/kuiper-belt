@@ -1,6 +1,6 @@
 # EVIDENCE: Opus team 6, the File menu and the hash grammar (`modules/202611012231-file.js`)
 
-Evidence officer OPUS-6 (port 8463), 2026-11-01 23:07–23:25 UTC. Law: no claim without a key; every number is measured,
+Evidence officer OPUS-6 (port 8463), 2026-11-01 from 23:07 UTC. Law: no claim without a key; every number is measured,
 never estimated. I re-read every key below from the files at these heads. No Playwright was run (the machine is loaded).
 The numbers from browser runs are the lead's and builder's measurements (PLAN.md Status) and are labelled as theirs.
 
@@ -204,6 +204,11 @@ handoff/04-loader/index.html.patch:207-217). The module's `closeThen` (:50-57) a
    pointer was used (routed copy or the real one, with the URL asserted).
 7. `#app=see-through&sub=Drax`: See Through's own page reads no hash yet (team-3/EVIDENCE.md E11 item 1; Opus 5's
    `see-through-hash-reader.patch` is pending). Only the URL can be asserted, which GRAMMAR.md already says.
+
+8. GRAMMAR.md "Why the hash" gives the path `gridatlas@5ec7f62 atlas/modules/202608291818-place-postcode-search.js`.
+   That path does not exist at ga@5ec7f62 (`git ls-tree -r`). The file is
+   `atlas/releases/202608300453-atlas-v9/202608291818-place-postcode-search.js`, and the lines :206-209 and :294-298 are
+   right in that file (§2).
 
 None of these blocks the hand-off. Items 1 and 2 are each a one-line edit. I recommend making them before the
 MODULE.sha256 is cut, so the sha in HANDOFF.md is final.

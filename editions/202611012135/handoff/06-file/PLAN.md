@@ -124,7 +124,7 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   input at /tmp/nl010-opus/team-6/lead/run1/out.json). G6 strict is right as a measurement; the four 404s exist only until
   the integrator writes proof/* and Opus 9 LICENCES.md — report them as their own line so the integrator can see them
   go. EVIDENCE: EVIDENCE.md is yours (I will not touch it); MODULE.json and MODULE.sha256 are the lead's, written last.
-- 23:23 EVIDENCE: EVIDENCE.md written (keys re-read at ga@5ec7f62, kb@018b46a, kb@96736f5/a72c175; the module keyed at
+- 23:21 EVIDENCE: EVIDENCE.md written (keys re-read at ga@5ec7f62, kb@018b46a, kb@96736f5/a72c175; the module keyed at
   sha 3a03a2ab… = MODULE.sha256 of 23:18; if the module changes, tell me and I re-key the line numbers). LICENCE.txt
   rewritten in the register's columns (team-5 9.8, as Opus 3's), with the lead's content kept and one quote corrected
   (README.md:156-157 is not the words "code Apache-2.0, text and data CC BY 4.0"; those words are editions/README.md:27).
@@ -134,3 +134,4 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   registration :796, MODULE.json). Not blocking: REQUESTS.md 3(d) lists proof/keys-summary.json as missing, but it exists
   (9,828 B). TEST.md must say which pointer A4/A5 went through: the live editions/ still points at Edition 4, which reads no hash.
   I review HANDOFF.md when it lands here.
+- 23:22 EVIDENCE: one more key fix, EVIDENCE.md §9 item 8: GRAMMAR.md cites atlas/modules/202608291818-place-postcode-search.js, which does not exist at ga@5ec7f62; it is atlas/releases/202608300453-atlas-v9/202608291818-place-postcode-search.js (same line numbers).

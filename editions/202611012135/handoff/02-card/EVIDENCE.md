@@ -189,7 +189,7 @@ and the file contains exactly one `KY.register(`.
 | F13 | ROADMAP K1 names the header `<header class="ch">` | neural-link@b9b7d5d FIXES/NL-010/ROADMAP.md:139 | `<header class="ch"><code>` |
 | F14 | the shell's ABOUT slot carries the sentence first (B4) | kuiper-belt@WT editions/202611012135/modules/202611012143-kuiper-shell.js:460 | `var law = el('p', 'gm-prose', 'The line of code is the header.` |
 | F15 | the slot is owned by line-card | kuiper-belt@WT editions/202611012135/modules/202611012143-kuiper-shell.js:462 | `law.setAttribute('data-owner', 'line-card'); law.setAttribute('data-law', 'L11');` |
-| F16 | NL-009 02-card F3 (a tap on the card re-picks a spark) is closed by Opus 4's `tapUp`, which is true only for a press that began on the canvas, not by team 2's index.patch | kuiper-belt@WT editions/202611012135/handoff/04-loader/index.html.patch:237 | `if (!edPlaced.length \|\| !tapUp \|\| pts.size > 0) return;` |
+| F16 | NL-009 02-card F3 (a tap on the card re-picks a spark) is closed by Opus 4's loader patch: the spark picker returns unless the target is the canvas and tapUp holds. Team 2's index.patch does not do it | kuiper-belt@WT editions/202611012135/handoff/04-loader/index.html.patch:160 | `e.target !== cv \|\| !tapUp` |
 | F17 | 02-card F3 as found | neural-link@b9b7d5d FIXES/NL-009/round1/02-card.md:33 | `a tap on the card where a spark lies beneath it re-picks that spark` |
 
 F-a, the three wordings are identical (B4). Compared byte for byte by a Python script in this session, these all equal
@@ -256,4 +256,42 @@ two rows, or mark the example "details abridged".
 
 `python3 -I /tmp/nl010-opus/team-2/evidence/check_keys.py EVIDENCE.md` (run from this folder):
 
-RESULT_PLACEHOLDER
+```
+rows 70 PASS 70 FAIL 0
+```
+Run at 23:22 UTC. The module at that time: 14,495 bytes, sha256
+`788256a97844c184ec5bdd0c7784e2dc217ffbbd48ca535fbbbeba44f468e5ed`, equal to `MODULE.sha256` and `MODULE.json`.
+`node --check` passes, the file has one `KY.register(`, and line 1 matches the loader's header pattern.
+
+## H. Evidence officer's review of the hand-off (verdict)
+
+`HANDOFF.md` / the HANDOFF comment had not been written when this review closed (23:22 UTC). The materials it will
+rest on were reviewed:
+
+| item | verdict | evidence |
+|---|---|---|
+| module header (name, stamp, licence line, requires) | PASS | F1, F2, F5: Apache-2.0 (kuiper-belt) is right; no CERN-OHL-S or GridAtlas code is copied (LICENCE.txt) |
+| three wordings identical (B4) | PASS | F-a: module, README section, edition README, LAWS-L11.patch and shell ABOUT, each 167 bytes, the same bytes |
+| 128 / 212 measurement | PASS, reproduced | C: 128 equal and 212 differ of 340 non-empty; 216 register-quote rows; 4 empty; 7 quote_key |
+| seven quote_not_at_line rows | PASS | D: all at line + 1; key.py confirms the line at both keys |
+| Kuiper hooks | PASS with a note | E: `describe`, `card`, `esc`, `fmt`, `address`, `gbox`, `sel`, `lit`, `redraw` are in kuiper.hooks.v1. `edCard`, `edFly`, `fillLines` are not hooks; they are reached by index.patch delegation, which is what the ROADMAP's "wrapping" means here |
+| MODULE.sha256 / MODULE.json = file | PASS | G |
+| test.cjs | Pixel 7 PASS 16/16 and 10/11 static, 0 console errors (tester `run-after/report.json`, 23:19 UTC). **Galaxy S24 not finished at review time.** Static S3m FAIL is the integrator's modules.json, not team 2's |
+| B5 (`key.py` round trip) | NOTE | C5: key.py prints 200 characters; B5 must compare `line_text[:200]`. The test reads key text through the page, so state this in the HANDOFF |
+
+Conditions on the HANDOFF comment before it is posted:
+1. Post only after test.cjs passes on **both** Pixel 7 and Galaxy S24 with zero console errors (OPUS-BRIEF, Tester).
+2. Quote the module sha256 `788256a9…` and re-hash at the moment of posting. The file changed four times during this
+   review.
+3. Name NL-009 02-card as folded in, F1-F10, and say that F3 is closed by Opus 4's tapUp, not by index.patch
+   (F16). PLAN.md's design paragraph still says index.patch.
+4. State the `.lc-h` deviation from ROADMAP K1's `.ch` and the reason (F-b).
+5. State the long-line handling (`LONG = 2000`, unwrapped, verbatim) with the measured cost and the load average
+   (F-c). The 201 ms in the module comment was not reproduced under load 86-95: 1.4-3.6 s.
+6. Name the open REQUESTs: Opus 10 (index.patch after the 04-loader patch, the modules.json record, README kept,
+   LAWS-L11 in PR B); Opus 1 (ABOUT slot bytes kept); Opus 3 (`api.show` / `api.rowInner`).
+7. Either fix the README example (F-e: details abridged) or label it abridged.
+
+**Verdict: PASS WITH CONDITIONS.** The keys, the licence and the wordings are sound. The HANDOFF may be posted once
+conditions 1-2 hold, and it should carry 3-7. The HANDOFF text itself was not reviewed because it did not exist yet:
+NOT EVALUATED.

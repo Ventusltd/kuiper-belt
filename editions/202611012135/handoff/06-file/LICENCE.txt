@@ -1,5 +1,5 @@
 LICENCE row for editions/202611012135/LICENCES.md (Opus team 9's register, ROADMAP step 9, 9.8), from Opus team 6,
-step 6 "the File menu and the hash grammar". The lead drafted it at 23:02. The evidence officer rewrote it at 23:22
+step 6 "the File menu and the hash grammar". The lead drafted it at 23:02. The evidence officer rewrote it at 23:20
 in the register's columns (team-5/STEPS.md 9.8): brought in | what the edition takes | licence as the files state it |
 key | note for the edition. Every key was re-read at the heads (handoff/06-file/EVIDENCE.md §1, §6).
 
