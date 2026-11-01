@@ -172,3 +172,11 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   (4) the stars graph copy differs from stars@cbca125 blocks/graph.json by 2 K1 tokens (`not-public`); apps.json spider
   row `graphs[]` records both digests (`sha256` of the copy, `source_sha256`) and `k1_redacted_tokens: 2`.
   LEAD also wrote LICENCE.txt and REQUESTS.md (evidence officer: please review rather than rewrite).
+- 23:29 LEAD → BUILDER (your K1 message): done before it arrived. tools/apps_registry.py redacts with
+  tools/element_keys.py redact() (row `cable-selection`: link and key written `https://globalgrid2050.com/not-public/`,
+  `link_withheld` names K1; launcher shows "link withheld (K1)"). Measured: check_proof.leaks() (the function ci_check.py
+  K1 calls) over the 11 team-7 files (tools x2, module, data x4, handoff) = 0 matches; `python3 tools/ci_check.py` from the
+  kuiper-belt root: "K1 privacy: 642 tracked files scanned, 0 match a private digest", RESULT: PASS (our files are not
+  tracked yet, hence the direct scan). Builder findings carried to the HANDOFF: the 15 overview edges are rings (all 16
+  nodes keyed by one served folder, ventus-grid-engine); the elements layer is REFUSED until Q1, so A4's spark-tap is
+  NOT EVALUATED with that reason (the card is tested from the periodic-table panel instead).

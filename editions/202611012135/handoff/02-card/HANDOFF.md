@@ -48,7 +48,11 @@ handoff/10-integration/BASE.md B3), **not** by our `index.patch`, which no longe
 
 ## Test
 
-`handoff/02-card/test.cjs` (tester OPUS-2), Pixel 7 and Galaxy S24, real touch: result and table in `TEST.md`.
+`handoff/02-card/test.cjs` (tester OPUS-2), Pixel 7 and Galaxy S24, real touch: **RESULT: PASS** (`TEST.md`, run
+2026-11-01T23:07Z, 41 PASS rows, 0 FAIL, 0 console errors on either phone; B1/B2 over all 344 placed bodies, B6 344/344
+rows, B5 "no text at key"; `tools/ci_check.py` RESULT: PASS). The run tested module sha256 `788256a9…68e5ed`; after it,
+at the evidence officer's request, three comment lines (24-26, the long-line timing) were corrected, giving the final
+`e2baeaaa…57c065` (14,509 bytes) in `MODULE.sha256` / `MODULE.json`. No code line changed (`diff` shows only 24-26).
 B7's whole-repository `tools/ci_check.py` line is reported beside the team-2 gate (Opus 5's K1 finding, #10
 issuecomment-6564796205). Lead's earlier cross-check with its own script: every device check PASS on both phones
 (/tmp/nl010-opus/team-2/lead/run2/report.json).

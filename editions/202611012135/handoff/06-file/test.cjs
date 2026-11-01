@@ -71,6 +71,13 @@ fs.mkdirSync(OUT, { recursive: true });
       return p;
     }
     async function ready(p) {
+      try { await readyInner(p); } catch (e) {
+        const snap = await p.evaluate(() => { try { const s = window.__KUIPER_EDITION__ || {}; const L = window.KY && KY.modules.layers && KY.modules.layers.api;
+          return { url: location.href, admitted: (s.admitted || []).map(a => a.id), refused: s.refused, lines: L ? L.get('lines').status + ' ' + (L.get('lines').why || '') : null, kyfile: !!document.getElementById('ky-file') }; } catch (x) { return String(x); } }).catch(x => String(x));
+        throw new Error('not ready: ' + e.message.split('\n')[0] + ' · ' + JSON.stringify(snap));
+      }
+    }
+    async function readyInner(p) {
       await p.waitForFunction(() => { const s = window.__KUIPER_EDITION__; return s && s.admitted && s.admitted.some(a => a.id === 'file') && window.KY && KY.hooks.N > 0; }, null, { timeout: 240000, polling: 500 });
       await p.waitForFunction(() => { try { return KY.modules.layers.api.get('lines').status === 'OK' && document.getElementById('ky-file') && document.querySelector('#ky-file > .gm-layer-group'); } catch (e) { return false; } }, null, { timeout: 240000, polling: 500 });
       await p.waitForTimeout(6500);
@@ -106,7 +113,7 @@ fs.mkdirSync(OUT, { recursive: true });
       const order = a1.items.map(i => i.t), orderOk = ROWS.every((w, i) => (order[i] || '').startsWith(w));
       const edList = a1.sub.filter(s => s.ed).map(s => s.ed), apps = a1.sub.filter(s => s.app);
       step('A1 one panel under the bar, rows >= 44 px, 6.1 order, four headings', a1.panelTop >= a1.barBottom - 0.5 && rowsOk && orderOk
-        && a1.items.filter(i => i.heading).map(i => i.t).join() === 'Open,Link,Evidence,Export', { panelTop: a1.panelTop, barBottom: a1.barBottom, order, heights: a1.items.map(i => i.h) });
+        && a1.items.filter(i => i.heading).map(i => i.t).join() === 'Open,Link,Evidence,Export', { panelTop: a1.panelTop, barBottom: a1.barBottom, order, heights: a1.items.map(i => i.h), sub_rows: a1.sub, under_44: a1.items.filter(i => !i.heading && i.h < 44).concat(a1.sub.filter(x => x.h < 44)) });
       step('A1 editions: every stamp newest first, the pointer last, this one inert', JSON.stringify(edList) === JSON.stringify(eds.slice().sort().reverse().concat(['pointer']))
         && a1.sub.find(s => s.ed === STAMP).inert, { edList });
       step('A1 apps: See Through first and lit', apps.length > 0 && apps[0].app === 'see-through' && apps[0].lit, { apps });
@@ -159,7 +166,7 @@ fs.mkdirSync(OUT, { recursive: true });
         return { w: bmp.width, h: bmp.height, expectW: Math.round(innerWidth * Math.min(devicePixelRatio, 2)), colours: colours.size, foot, ref, lines: rec.foot };
       }, { b64: png.toString('base64') });
       step('A6 Save an image: PNG, not one colour, innerWidth x min(dpr,2) wide, the stamp strip within 5 %', isPng && a6.colours > 1 && a6.w === a6.expectW && a6.ref > 0 && Math.abs(a6.foot - a6.ref) / a6.ref <= 0.05
-        && /Apache-2\.0, text and data CC BY 4\.0/.test(a6.lines[0]) && a6.lines[0].indexOf(STAMP) >= 0, Object.assign({ file: path.basename(fp), bytes: png.length }, a6));
+        && /Apache-2\.0, text and data CC BY 4\.0/.test(a6.lines.join('\n')) && a6.lines[0].indexOf(STAMP) >= 0, Object.assign({ file: path.basename(fp), bytes: png.length }, a6));
       await p.evaluate(() => { KY.draw.add(() => { if (!window.__blank) return; const gl = KY.hooks.cv.getContext('webgl2'); gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT); }, 1e8); window.__blank = 1; });
       let got = false; const onDl = () => { got = true; }; p.on('download', onDl);
       await openMenu(p, 'file'); await tapSel(p, '#kuiper-export-image'); await p.waitForTimeout(7000); p.off('download', onDl);
@@ -207,19 +214,22 @@ fs.mkdirSync(OUT, { recursive: true });
       const pr = await q.evaluate(() => { const r = KY.hooks.repos[KY.lit.repo]; return { repo: r && r.name, K: KY.lit.K }; });
       step('A4 pointer #repo&period: gridatlas lit, July 2026 lit', pr.repo === 'gridatlas' && pr.K && pr.K[0] >= 0, pr); await q.context().close();
       q = await viaPointer('#layers=lines,see-through&key=63035688574');
-      const py = await q.evaluate(() => ({ on: KY.modules.layers.api.inspect().on, zoom: KY.cam.zoom, hash: location.hash, states: KY.modules.layers.api.inspect().states }));
+      const py = await q.evaluate(() => ({ on: KY.modules.layers.api.inspect().on, zoom: KY.cam.zoom, hash: location.hash, states: KY.modules.layers.api.inspect().states, lit_repo: KY.lit.repo }));
       const stAdmitted = await q.evaluate(() => !!KY.modules['see-through']);
-      step('A4 pointer #layers=lines,see-through&key=…: layers on as asked, camera at the key', JSON.stringify(py.on) === JSON.stringify(stAdmitted ? ['lines', 'see-through'] : ['lines']) && Math.abs(py.zoom - 14) < 0.01,
-        Object.assign({ see_through_admitted: stAdmitted, note: stAdmitted ? '' : 'see-through is not admitted on this page: its layer cannot be on (REFUSED/WAIT), so only lines is expected' }, py));
+      const asked = ['lines', 'see-through'], extras = py.on.filter(x => asked.indexOf(x) < 0);
+      // extras allowed: `repos`, mirrored on by layers.js:539 when the key's repository is lit (Opus 3's rule); nothing else
+      step('A4 pointer #layers=lines,see-through&key=…: the asked layers on, no other layer but a mirrored repos, camera at the key',
+        asked.every(x => py.on.indexOf(x) >= 0) && extras.every(x => x === 'repos' && py.lit_repo >= 0) && Math.abs(py.zoom - 14) < 0.01,
+        Object.assign({ see_through_admitted: stAdmitted, extras }, py));
       await q.context().close();
-      q = await viaPointer('#edition=202611010114&key=' + KEY0, /202611010114/);
+      q = await viaPointer('#edition=202611010114&key=' + KEY0, u => /\/editions\/202611010114\/$/.test(u.pathname));
       step('A4 pointer #edition=…&key=…: the URL is that edition with the rest of the hash', /editions\/202611010114\/#key=36064705400$/.test(q.url()), { url: q.url() }); await q.context().close();
-      q = await viaPointer('#app=see-through&sub=Drax', /see-through/);
+      q = await viaPointer('#app=see-through&sub=Drax', u => /\/see-through\//.test(u.pathname));
       step('A4 pointer #app=see-through&sub=Drax: the URL is See Through with #sub=Drax', /\/see-through\/(\d{12}\/)?#sub=Drax$/.test(q.url()), { url: q.url() }); await q.context().close();
       step('G2 the routed pointer lands on this edition with the hash byte for byte', forwarded.length === 4 && forwarded.every(f => f.ok), { forwarded });
       // A5 the round trip: e, then two random verified lines
       const picks = ['e', Math.floor(Math.random() * P.length), Math.floor(Math.random() * P.length)];
-      for (const pick of picks) {
+      for (const pick of picks) { try {
         p = await newPage(); await p.goto(URL0, { timeout: 180000 }); await ready(p);
         if (pick === 'e') { await openMenu(p, 'view'); await tapSel(p, '#kuiper-menu-bar [data-k="e"]'); }
         else await p.evaluate(i => KY.modules.layers.api.open(i), pick);
@@ -259,7 +269,7 @@ fs.mkdirSync(OUT, { recursive: true });
         q = await viaPointer(hash); const s1 = await sel(q); await q.context().close();
         step('A5 round trip (' + (pick === 'e' ? 'e' : 'edPlaced[' + pick + ']') + ')', s0.index >= 0 && s1.index === s0.index && s1.header === s0.header && /line=[0-9a-f]{40}:\d+/.test(hash) && /key=\d+/.test(hash),
           { link, before: s0.index, after: s1.index, header_equal: s1.header === s0.header });
-      }
+      } catch (e) { step('A5 round trip (' + pick + ') harness', false, String(e && e.stack || e).slice(0, 1500)); await p.context().close().catch(() => {}); if (q) await q.context().close().catch(() => {}); } }
 
       // ------------------------------------------------------------------ clipboard refused, A8 history
       p = await newPage({ clip: false }); await p.goto('about:blank'); await p.goto(URL0, { timeout: 180000 }); await ready(p);

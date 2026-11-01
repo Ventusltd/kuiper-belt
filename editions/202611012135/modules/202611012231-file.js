@@ -126,8 +126,8 @@
     clearTimeout(wTimer); wTimer = null;
     syncLayers();
     var h = hashText(), url = location.pathname + location.search + (h ? '#' + h : '');
-    if (location.hash.replace(/^#/, '') === h) { st.last_written = h; return; }
-    try { history.replaceState(history.state, '', url); st.writes++; st.last_written = h; }
+    if (location.hash.replace(/^#/, '') === h) { st.last_written = h; mine(h); return; }
+    try { history.replaceState(history.state, '', url); st.writes++; st.last_written = h; mine(h); lastSeen = h; }
     catch (e) { say('link: the browser refused to write the hash (' + (e && e.message || e) + ')'); }
   }
   function setField(k, v) { if (v == null || v === '') delete st.fields[k]; else st.fields[k] = String(v); }
@@ -326,15 +326,23 @@
   // entry; this writer writes into whichever entry is current, and the back() that closes the panel or the card returns to
   // the entry below, whose hash is older. So after every history traversal the hash is written again from the fields,
   // and the hashchange that traversal fires is not read as a new link (it is our own older text, not the person's).
-  var popAt = 0;
+  // Which hash is ours: every text this writer wrote (the last 64) and the hash the page arrived with. A traversal that
+  // lands on one of them is our own older text and is written over; any other hash is a new link (typed, pasted, or a
+  // location.hash assignment, which Chrome also reports as a popstate) and is read.
+  var written = [], lastSeen = location.hash.replace(/^#/, '');
+  function mine(h) { if (written.indexOf(h) < 0) { written.push(h); if (written.length > 64) written.shift(); } }
   function wireHashchange() {
-    addEventListener('popstate', function () { popAt = Date.now(); st.deferred++; setTimeout(writeNow, 0); });
-    addEventListener('hashchange', function () {
+    mine(location.hash.replace(/^#/, ''));
+    function seen() {
       var h = location.hash.replace(/^#/, '');
+      if (h === lastSeen) return;                                     // popstate and hashchange both report one change
+      lastSeen = h;
       if (h === st.last_written) return;
-      if (Date.now() - popAt < 120) { setTimeout(writeNow, 0); return; }
-      readLocation('hashchange');
-    });
+      if (written.indexOf(h) >= 0) { st.deferred++; setTimeout(writeNow, 0); return; }
+      mine(h); readLocation('hashchange');
+    }
+    addEventListener('popstate', seen);
+    addEventListener('hashchange', seen);
   }
 
   var link = Object.freeze({
@@ -693,7 +701,8 @@
       list.forEach(function (e) {
         var label = 'Kuiper Edition ' + e.number + ' · ' + e.stamp;
         if (e.stamp === KY.edition) {
-          var cur = mk('div', 'gm-row', label + ' · this edition'); cur.setAttribute('aria-disabled', 'true'); cur.setAttribute('aria-current', 'page');
+          var cur = mk('button', 'gm-row', label + ' · this edition'); cur.type = 'button'; cur.disabled = true;   // inert, 44 px like its neighbours
+          cur.setAttribute('aria-disabled', 'true'); cur.setAttribute('aria-current', 'page');
           cur.setAttribute('data-ky-edition', e.stamp); box.appendChild(cur); return;
         }
         var a = mk('a', 'gm-row', label); a.setAttribute('data-ky-edition', e.stamp); a.href = editionTarget(e.stamp, '');

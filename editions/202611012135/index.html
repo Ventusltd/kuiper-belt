@@ -680,6 +680,9 @@ function drawEdition(){
 { const _draw = draw; draw = function(){ _draw(); drawEdition(); }; }
 function edCard(i){
   const b = edPlaced[i], a = address(b.key);
+  // EDITION 5, the card law (Opus 2, step 2): the line-card module renders the card; the line of code is the header
+  const LC = window.KY && KY.modules && KY.modules['line-card'];
+  if (LC) { edSel = i; LC.api.show(b, { index:i, of:edPlaced.length, onclose: () => { edSel = -1; dirty = true; } }); return; }
   card.style.display = 'block'; card.classList.remove('open');
   card.setAttribute('role', 'region'); card.setAttribute('aria-label', 'verified line'); card.setAttribute('aria-live', 'polite');
   card.innerHTML = '<button class="cx" aria-label="close">×</button>'
@@ -812,9 +815,10 @@ linesPanel.addEventListener('click', e => { const k = e.target.getAttribute('dat
 function visibleLine(b){ return lyOn && (!lyFocus || b.class === 'focus'); }
 function fillLines(){
   const list = document.getElementById('lineslist'); if (!list) return;
-  const rows = [];
+  const rows = [], LC = window.KY && KY.modules && KY.modules['line-card'];   // EDITION 5: a row reads line, key, title (step 2 K6)
   edPlaced.forEach((b, i) => { if (!visibleLine(b)) return;
     const hay = (b.repo + ' ' + b.path + ' ' + b.title).toLowerCase(); if (lyQuery && !hay.includes(lyQuery)) return;
+    if (LC) { rows.push(LC.api.row(b, i, (i === edSel ? 'sel' : '') + (b.class === 'focus' ? ' focus' : ''))); return; }
     rows.push('<div class="ln' + (i === edSel ? ' sel' : '') + (b.class === 'focus' ? ' focus' : '') + '" data-i="' + i + '" role="button" tabindex="0"><b>' + esc(b.repo) + '</b> ' + esc(b.path) + ':' + b.line + '<br>' + esc(b.title) + '</div>'); });
   list.innerHTML = rows.join('') || '<div class="ln">' + (edMeta && edMeta.error ? esc(edMeta.error) : 'no line matches') + '</div>';
 }

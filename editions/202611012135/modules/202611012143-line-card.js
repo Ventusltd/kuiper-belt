@@ -21,9 +21,9 @@
   var LAW = 'The line of code is the header. Every card opens with the line itself, verbatim from the key; the key is the second row; every name a person gave the line comes after.';
   var STAMP = '202611012143';
   // a line longer than this is laid out unwrapped and scrolls sideways inside the header; every byte stays in it.
-  // Measured for the 1,240,449-character line (kuiper-belt estate-network.json:1, key 63,013,167,769), Pixel 7
-  // emulation, one container: wrapped 9,313 ms, unwrapped 201 ms (lead, 21:59 UTC); unwrapped 1.4-3.6 s at load
-  // average 86-95 (evidence officer, handoff/02-card/EVIDENCE.md F-c). Not phone numbers.
+  // Measured for the 1,240,449-character line (kuiper-belt estate-network.json:1, key 63,013,167,769), Pixel 7 and
+  // Galaxy S24 emulation in one container: wrapped 9,313 ms (lead, once); unwrapped 1.4-3.6 s to show and lay out at
+  // load average 86-95 (evidence officer, handoff/02-card/EVIDENCE.md F-c). Not phone numbers.
   var LONG = 2000;
   if (!window.KY || typeof window.KY.register !== 'function') return;   // no hook table: the page keeps its own card
 

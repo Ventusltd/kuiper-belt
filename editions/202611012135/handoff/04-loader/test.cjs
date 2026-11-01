@@ -3,15 +3,15 @@
 // Opus team 4 tester (ROADMAP.md step 4; team-2/STEPS.md step 4 "Acceptance test on Android"; OPUS-BRIEF.md "Testing").
 //
 //   node test.cjs [--devices "Pixel 7,Galaxy S24"] [--patch FILE | --html FILE] [--port 8442]
-//                 [--scratch DIR] [--out DIR] [--only c1,c2,...] [--skip-probes] [--base FILE]
+//                 [--scratch DIR] [--out DIR] [--only c1,c2,...] [--skip-probes] [--base FILE] [--with-committed]
 // Apache-2.0 (kuiper-belt), kuiper-belt README.md:157.
 //
 // 1. A scratch copy, never the repository: <scratch>/root/editions/<stamp>/ is a copy of the edition folder (handoff/
 //    left out), ../../cosmos is a symlink to the repository's cosmos/, its index.html is the edition page with
 //    handoff/04-loader/index.html.patch applied (--html takes an already patched page; an edition page that already
 //    carries the hook table is used as is), its modules/ adds four test modules (probe-a, probe-b, probe-c,
-//    probe-wafer), and its modules.json lists the committed records, team 4's first record set (hello) and the probes,
-//    in that order. The scratch root is served with python3 -m http.server on 127.0.0.1:<port> (team 4 tester: 8442).
+//    probe-wafer), and its modules.json lists team 4's first record set (hello) and the probes, in that order
+//    (--with-committed puts the committed manifest's records first: an integration run, reported apart). The scratch root is served with python3 -m http.server on 127.0.0.1:<port> (team 4 tester: 8442).
 // 2. Cases, each in a fresh context on each device (Pixel 7 412 px, Galaxy S24 360 px; real touch through
 //    page.touchscreen.tap and CDP Input.dispatchTouchEvent; mutations are served through page.route, nothing written):
 //    c0  MODULE.sha256 matches the files; the loader reference ≡ the patched page between its marker lines
@@ -105,9 +105,10 @@ function prepareScratch() {
   const { html, how, base, patchText, integrated } = patchedPage();
   if (!/^<!doctype html>/i.test(html.trimStart()) || !/kuiper\.hooks\.v1/.test(html) || !/window\.KY\s*=/.test(html)) throw new Error('the patched page has no window.KY hook table');
   fs.writeFileSync(path.join(ed, 'index.html'), html);
-  // the base: the committed manifest's records, then team 4's first record set (handoff/04-loader/modules.json)
+  // the base: team 4's first record set (handoff/04-loader/modules.json); with --with-committed, the committed
+  // manifest's records first (the integrator's order: other teams' modules, whose UI the NL-009 probes do not know)
   const recs = [], order = [], bases = [];
-  for (const f of [path.join(EDITION_DIR, 'modules.json'), path.join(HERE, 'modules.json')]) {
+  for (const f of [...(flag('--with-committed') ? [path.join(EDITION_DIR, 'modules.json')] : []), path.join(HERE, 'modules.json')]) {
     if (!fs.existsSync(f)) continue; const m = JSON.parse(fs.readFileSync(f, 'utf8')); bases.push({ file: path.relative(REPO, f), order: m.order || [] });
     for (const id of m.order || []) { const r = (m.modules || []).find(x => x.id === id); if (r && !order.includes(id)) { recs.push(r); order.push(id); } } }
   if (!order.includes('hello')) throw new Error('no hello record in modules.json or handoff/04-loader/modules.json');

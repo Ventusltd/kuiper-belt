@@ -148,3 +148,35 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   and it broke "one device at a time"); the TESTER's runs are the test of record. TESTER: please take the builder's A6
   assertion (licence on its own foot line: `a6.lines.indexOf('code Apache-2.0, text and data CC BY 4.0') >= 0`); the
   three-line foot stays.
+- 23:31 EVIDENCE: re-keyed EVIDENCE.md to module sha256 3d0eadc7… (kb@513c2f1; no lines moved). The lead's fixes are checked: SECTION C now cites :817-820, `fmt` is in the header, the registration and MODULE.json (27 names), GRAMMAR.md path is right, REQUESTS 3(d) is right, MODULE.json bytes 56,448 = the file. Header line 1 passes the loader regex. EVIDENCE.md and LICENCE.txt are done; waiting for HANDOFF.md to review.
+- 23:32 LEAD: the lead's run1 (Pixel 7, 23:00 test) finished before it was stopped: /tmp/nl010-opus/team-6/lead/run1/report.json.
+  PASS: M, A1 editions, A1 apps, A3 present files, A2 x3 (open key: header = bodies[0].line_text, zoom 14.0, spark y 367.6
+  between bar 34 and card 701.2; SPACE refused in words, camera unchanged; key.py copy in the clipboard), A6 blank refusal,
+  A7 x3 (pasted Kuiper link -> line 0; Backspace -> `#layers=…` only; See Through paste -> /see-through/202610050609/#sub=Drax),
+  A4 pointer key, line, repo&period; A5 e and edPlaced[143]. Module fixes made from it (sha256 now d8c236c0…, MODULE.sha256):
+  (1) A1 failed only on the inert current-edition row (a div, 24 px): now a disabled 44 px button; (2) A4 direct failed:
+  a `location.hash = …` assignment is ALSO a popstate in Chrome and the 23:18 traversal rule wrote the old view over it.
+  Now a traversal is "ours" only when it lands on a hash this page wrote or already read (the last 64), and popstate +
+  hashchange of one change are handled once. Scratch page: `let edSel = -1;` shim added to index.shell.html, because the
+  base's ANDROID BACK and Escape handlers (index.html, NL-009 04) still name `edSel` after Opus 3's deletion -> pageerror
+  `ReferenceError: edSel is not defined` on any back/Escape with a card open (not this module; REQUESTS 1(d)).
+  TESTER, test fixes needed (test bugs, not module bugs): (a) A4 #edition and #app: `waitForURL(/202611010114/)` and
+  `/see-through/` match the CURRENT url's hash at once (`…/202611012135/#edition=202611010114…`), so the URL was read
+  before navigation: match the path only, e.g. `u => /\/editions\/202611010114\/$/.test(u.pathname)` and
+  `u => /\/see-through\//.test(u.pathname)`; (b) A4 layers: the gate is "every asked layer is on and the camera at the
+  key"; `repos` is also on because layers.js:539 mirrors REPOS on when the line's repository is lit (Opus 3's rule),
+  and `see-through` is on even when its module is not admitted: report extras, do not fail on them; (c) A6: the
+  builder's licence-line assertion. Rebuild your site with mksite.py (new module + shim) and re-run Pixel 7; BUILDER runs
+  Galaxy S24 after it. When both read PASS (bar NOT EVALUATED for the files team 10 writes), write TEST.md and img/.
+- 23:36 TESTER: run-p7 (module f0a44c74, before format/parse) measured: G2 routed pointer PASS (4/4 byte for byte), G3 Open
+  an edition by touch PASS, A2 x3, A3, A6 negative, A7 x3, A4 pointer key/line/repo&period PASS. Real failures for the LEAD:
+  (1) A1: the inert current-edition row `Kuiper Edition 5 · 202611012135 · this edition` is ~29 px (screenshot), < 44 px
+  (the measured sub-row heights are now in the report); (2) A4 direct `location.hash = '#repo=…'` was overwritten (popstate
+  precedes hashchange on a fragment navigation) - the lead's 23:3x fix answers it, re-measured now. Test fixes (a) (b) (c)
+  done as the lead asked, plus: A5 picks each in their own try, ready() says what it waited for. Re-running Pixel 7 on
+  module d8c236c0 (site rebuilt 23:35, lead's shim included), out /tmp/nl010-opus/team-6/tester/run-p7b. BUILDER: S24 after it.
+- 23:34 LEAD → BUILDER: your Galaxy S24 run started 23:29 runs beside the tester's Pixel 7 (two browsers at load ~60)
+  and on module 3d0eadc7 with the 23:02 index.shell.html (no `edSel` shim, no A1/A4 fixes): its A1, A4-direct and
+  pageerror results are already known to fail. Please stop it and start S24 when run-p7b ends, on a site rebuilt from
+  the lead's current /tmp/nl010-opus/team-6/lead/index.shell.html and the module on disk (d8c236c0…), with the tester's
+  current test.cjs. Integration REQUEST posted: issuecomment-6565553299 (layers patch hunk 3, shell vs #lines, edSel).

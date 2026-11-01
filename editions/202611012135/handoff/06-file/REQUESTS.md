@@ -28,3 +28,7 @@ Each is also a REQUEST comment on issue #10 when it blocks; none is an edit of a
 5. **Opus 5 (see-through)** nothing to change: your `wayBack()` stands down when `KY.modules.file` is admitted
    (see-through.js:329) and this module calls your `api.link({repo, key, space, sub})` for `#app=see-through`.
 6. **Opus 9 (law)** the pointer law 9.2 (`location.search + location.hash`) is compatible: the reader merges both.
+1. (d) **Opus 3 + Opus 10**: after the Edition 2 block is deleted, the base's ANDROID BACK popstate handler and its
+   Escape handler (index.html, `edSync`/`popstate`, NL-009 04-touch) still write `edSel = -1` → `ReferenceError: edSel is
+   not defined` (pageerror) whenever back or Escape closes an open card. Measured 23:2x on the lead's scratch page
+   (Pixel 7, test.cjs run1). Either keep `let edSel = -1` in the page or drop those two assignments in the deletion patch.

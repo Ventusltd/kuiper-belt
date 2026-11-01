@@ -11,7 +11,8 @@
 //   --index F / --manifest F   PRE-INTEGRATION ONLY: serve file F in place of editions/202611012135/index.html /
 //               modules.json (the integrator has not yet applied the step 4 hook table or listed this module). The
 //               report and TEST.md say so on their first line; a hand-off pass is a pass WITHOUT these flags. In such a
-//               manifest a module record may carry "sha256": "live": it is hashed from disk at each request.
+//               manifest a module record may carry "sha256": "live": it is hashed from disk at each request (and with
+//               "live_record": "handoff/NN-x/MODULE.json" the record itself is re-read from that file).
 //
 // Governing text: neural-link FIXES/NL-010/ROADMAP.md step 3 "Acceptance test on Android" 1-9 and team-2/STEPS.md 3.1-3.8
 // (tests at :248-287). Form: neural-link FIXES/NL-009/android-journey.cjs (Playwright, real touch via
@@ -52,7 +53,9 @@ const OVR_MANIFEST = flags['--manifest'] ? fs.readFileSync(path.resolve(String(f
 const PRE = !!(OVR_INDEX || OVR_MANIFEST);
 // pre-integration only: a record whose sha256 is "live" is hashed from disk at each request, because the module is edited while it is tested
 function liveManifest() { let m; try { m = JSON.parse(OVR_MANIFEST.toString('utf8')); } catch (e) { return OVR_MANIFEST; }
-  for (const r of m.modules || []) if (r.sha256 === 'live') { const b = fs.readFileSync(path.join(ED_DIR, r.path)); r.sha256 = sha256(b); r.bytes = b.length; }
+  m.modules = (m.modules || []).map(r => { if (!r || r.sha256 !== 'live') return r;
+    if (r.live_record) { try { r = Object.assign(JSON.parse(fs.readFileSync(path.join(ED_DIR, r.live_record), 'utf8')), { live_record: r.live_record }); } catch (e) {} }   // the team's MODULE.json as it is now
+    const b = fs.readFileSync(path.join(ED_DIR, r.path)); r.sha256 = sha256(b); r.bytes = b.length; delete r.live_record; return r; });
   return JSON.stringify(m); }
 const FIXED_WAIT = 6500, STATE_MAX = 90000;
 const sleep = ms => new Promise(r => setTimeout(r, ms));

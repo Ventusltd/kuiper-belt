@@ -9,11 +9,12 @@ The numbers from browser runs are the lead's and builder's measurements (PLAN.md
 - `kb@96736f5` = kuiper-belt, Edition 5 skeleton (the HOOKS.md line numbers); `kb@a72c175` = the newest commit of
   `editions/202611012135/index.html` (`git log -- index.html`). Lines 1–623 are identical at the two commits
   (`git diff 96736f5 a72c175` changes only from :624). `ED5` = `editions/202611012135/` on branch edition/202611012135.
-- The module: `ED5 modules/202611012231-file.js`, 800 lines, 56,437 bytes, sha256
-  `3a03a2abd8121f54ac14e5d4bea8de1424afbf6d5a72da1bd963de04dcfdc095` (measured 23:20 UTC; equal to MODULE.sha256 and
-  MODULE.json `sha256`/`bytes` as the lead wrote them at 23:18). `node --check` OK. Every module line number below is
-  for this sha. The previous sha `f0a44c74…` (committed at kb@1a9505d) differs only by the two lines `link.format` and
-  `link.parse` (:345-346); every line from :345 on moved down by 2. If the module changes again, re-key it with
+- The module: `ED5 modules/202611012231-file.js`, 800 lines, 56,448 bytes, sha256
+  `3d0eadc7a90807969eb31b50cffa113ccf0ff0d9dcb370d28b189fa8fb807d92` (measured 23:30 UTC; committed at kb@513c2f1;
+  equal to MODULE.sha256 and to MODULE.json `sha256` and `bytes`). `node --check` OK. Every module line number below is
+  for this sha. History: `f0a44c74…` (kb@6db1319) → `3a03a2ab…` (kb@38ed53c, adds `link.format` and `link.parse` at
+  :345-346, so every line from :345 on moved down by 2) → `3d0eadc7…` (kb@513c2f1, my §9 fixes 1 and 2, made in place
+  with no line added or removed). If the module changes again, re-key it with
   `grep -n` on the names given.
 
 ## 1. GridAtlas's File menu: each item and the code behind it (ga@5ec7f62 `atlas/modules/202609031958-menu-bar.js`, 1,805 lines)
@@ -113,13 +114,14 @@ The Kuiper's own hash precedents, which the grammar copies:
 
 ## 5. The hook table: every name in `requires`, and what it is
 
-`requires` (module :9-10 header, :796-797 registration; the two lists are identical, 26 names). The admissible set is
+`requires` (module :9-10 header, :796-797 registration; the two lists are identical, 27 names since kb@513c2f1). The admissible set is
 the 28 hooks ∪ `cam lit sel redraw draw panels refuse` ∪ the `provides` of modules earlier in `order`
 (ED5 handoff/04-loader/HOOKS.md "The rest of window.KY"). Engine lines are kb@96736f5 = kb@a72c175 for :1-623.
 
 | name | kind | engine line (HOOKS.md row) | used by the module |
 |---|---|---|---|
 | keyPlace | hook 1 | :278 | not called directly (goKey and layers.js call it) |
+| fmt | hook 12 | :125 | `H.fmt` through `fmt()` :59, in `measureEvidence` :733 (added to `requires` at kb@513c2f1) |
 | address | hook 2 | :282 | not called directly |
 | describe | hook 3 | :284 | not called; its text is matched (:316) |
 | goKey | hook 11 | :416 | `H.goKey(k)` :284 |
@@ -142,9 +144,9 @@ the 28 hooks ∪ `cam lit sel redraw draw panels refuse` ∪ the `provides` of m
 | lit, sel | extras | :243 | `KY.lit.repo = r.i; KY.sel.target = null` :259 |
 | layers | `provides` of Opus 3 (`id: layers`), before `file` in `order` (integration order 4 < 5) | ED5 modules/202611012141-layers.js:686-693 | `api.open/placed/get/set/inspect` :144-181, :232-250 |
 
-Two findings for the lead (§9 items 1 and 2):
+Findings for the lead (§9 item 2):
 
-- Used but NOT in `requires`: `fmt` (hook 12, :125). It is called as `H.fmt` through `fmt()` (:59), in `measureEvidence`
+- RESOLVED at kb@513c2f1. Used but NOT in `requires`: `fmt` (hook 12, :125). It is called as `H.fmt` through `fmt()` (:59), in `measureEvidence`
   (:733). It is in the 28-hook table, so the loader always provides it, but the module's own law is that `requires`
   names what it uses.
 - In `requires` but never used: `keyPlace address describe flyTo safeBox N cam`. They are admissible and do no harm,
@@ -189,14 +191,14 @@ handoff/04-loader/index.html.patch:207-217). The module's `closeThen` (:50-57) a
 
 ## 9. Review findings for the lead (keys, not opinions)
 
-1. Wrong key in SECTION C: the comment at :356 and the `utcStamp` comment at :417 cite `exportStamp` as GridAtlas
+1. RESOLVED at kb@513c2f1 (both comments now read `:817-820`). Wrong key in SECTION C: the comment at :356 and the `utcStamp` comment at :417 cite `exportStamp` as GridAtlas
    `:813-816`. Those lines are the "credit must travel" comment. `function exportStamp()` is ga@5ec7f62 menu-bar.js
    :817-820 (LICENCE.txt already has it right). Change both to `:817-820`.
-2. `requires` should name `fmt` (§5). One word in the header (:9) and in the registration (:796).
+2. RESOLVED at kb@513c2f1 (header, registration, MODULE.json). `requires` should name `fmt` (§5). One word in the header (:9) and in the registration (:796).
 3. `requires`, header :9 and HOOKS.md: `refuse` (rev 3) is available. The module puts refusals in `#hud` (`say` :138)
    and does not call `KY.refuse`. That is allowed. I record it because 09-robust found that READOUT can be hidden (its
    finding 1); the FILE rows also say each refusal on the row itself.
-4. REQUESTS.md 3(d): `proof/keys-summary.json` exists now (9,828 B). Three files are still missing:
+4. RESOLVED (REQUESTS.md corrected 23:31). REQUESTS.md 3(d): `proof/keys-summary.json` exists now (9,828 B). Three files are still missing:
    `proof/edition-sha256.txt`, `LICENCES.md`, `proof/android-journey.json`.
 5. Edition 1: the module opens `../202610311905/belt/` (README :22), while data/editions.json gives `../202610311905/`.
    Both are served. The module's choice follows the roadmap and is correct. Opus 3 may want its record to agree.
@@ -205,10 +207,10 @@ handoff/04-loader/index.html.patch:207-217). The module's `closeThen` (:50-57) a
 7. `#app=see-through&sub=Drax`: See Through's own page reads no hash yet (team-3/EVIDENCE.md E11 item 1; Opus 5's
    `see-through-hash-reader.patch` is pending). Only the URL can be asserted, which GRAMMAR.md already says.
 
-8. GRAMMAR.md "Why the hash" gives the path `gridatlas@5ec7f62 atlas/modules/202608291818-place-postcode-search.js`.
+8. RESOLVED (GRAMMAR.md corrected 23:31). GRAMMAR.md "Why the hash" gave the path `gridatlas@5ec7f62 atlas/modules/202608291818-place-postcode-search.js`.
    That path does not exist at ga@5ec7f62 (`git ls-tree -r`). The file is
    `atlas/releases/202608300453-atlas-v9/202608291818-place-postcode-search.js`, and the lines :206-209 and :294-298 are
    right in that file (§2).
 
-None of these blocks the hand-off. Items 1 and 2 are each a one-line edit. I recommend making them before the
-MODULE.sha256 is cut, so the sha in HANDOFF.md is final.
+None of these blocks the hand-off. Items 1, 2, 4 and 8 are fixed. Items 3, 5, 6 and 7 are recorded: 3 and 5 for
+awareness, and 6 and 7 for TEST.md and HANDOFF.md to state honestly.
