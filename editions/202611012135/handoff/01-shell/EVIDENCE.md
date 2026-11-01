@@ -135,14 +135,102 @@ editions/202611012135/handoff/04-loader/HOOKS.md), or (c) the engine's own liste
 | 06-seethrough | F1 BLOCKER See Through unreachable from Edition 4; F2 MAJOR the fifth entry's budget | FIXES/NL-009/round1/06-seethrough.md:11, :24 |
 | 08-type | F1 MAJOR every phone text 11 px; F2 MAJOR COMMANDS panel shows no text on a phone; F3 MAJOR EDITION panel 88 words | FIXES/NL-009/round1/08-type.md:13, :22, :32 |
 
-## 4. The header's licence line (checked)
+## 4. The header's licence line (checked against the module at 22:05 UTC, 554 lines)
 
-See section 6 for the verdict against the module as it stands.
+| check | the rule | the module | verdict |
+|---|---|---|---|
+| line 1 parses | `/* kuiper module <name>, generation <module-stamp> (UTC), <licence> */` (ROADMAP step 4, 4.3; HOOKS.md); the loader reads it with `/^\/\* kuiper module ([a-z0-9-]+), generation (\d{12}) \(UTC\),/` (editions/202611012135/modules/202611012145-loader.js:79) | `/* kuiper module kuiper-shell, generation 202611012143 (UTC), Apache-2.0 (kuiper-belt).` (kuiper-shell.js:1) | PASS: name `kuiper-shell`, stamp `202611012143` = file name = `GEN` (:33); the licence field reads `Apache-2.0 (kuiper-belt)` as in hello.js:1 and line-card.js:1. Cosmetic: line 1 ends in `.` and the comment closes at :30, not on line 1; the regex does not need the close. |
+| the licence is right | kuiper-belt code is Apache-2.0 (kuiper-belt@96736f5 LICENSE:1-3; README.md:156-157); CERN-OHL-S v2 only where See Through code is copied (OPUS-BRIEF) | Apache-2.0; no See Through code in the file (the star entry is a link to `../../see-through/`, the default of NL-009 06, :~300) | PASS |
+| the NOTICE line (Apache-2.0 s.4(d)) | the GridAtlas NOTICE line in the module header (ROADMAP step 1 licence note) | :2-3 "copied from GridAtlas, Copyright 2026 Ventus Ltd, Apache-2.0 (gridatlas@5ec7f62 LICENSE:1-4, NOTICE:1-12), atlas/modules/202609031958-menu-bar.js" | PASS (LICENSE:1 is blank, :2-4 the title; NOTICE:1-12 "gridatlas / Copyright 2026 Ventus Ltd … Licensed under the Apache License, Version 2.0": both re-read) |
+| the mark | Q8 wording "The VENTUS mark is used by Ventus Ltd, its owner. The Apache-2.0 licence of this code does not license the mark." | :4-5 "\"Ventus\" and \"Cables & Connectivity(R)\" are the mark of Ventus Ltd, used by its owner's instruction of 1 Nov 2026; the Apache-2.0 licence of this code does not license the mark (LICENSE:139, s.6)"; the ABOUT panel says the same in the page (:472-475) | PASS in substance (gridatlas LICENSE:139-142 is s.6 Trademarks, re-read). The words are not yet Q8's; Q8 is the owner's to confirm and NOTICE.md is Opus 10's. |
+| requires list in the header | the header names the hooks (OPUS-BRIEF "requires list") | :7-11 DOM ids + `safeBox card hud big sub cv gbox gin redraw`; `KY.register` `requires` at the registration (:~525) is the same nine names, each on Opus 4's admissible list (HOOKS.md: 28 hooks + `cam lit sel redraw draw panels`) | PASS. Note: `redraw` is `KY.redraw`, not a `KY.hooks` member; `missing()` checks the eight in `KY.hooks` only, which is right. |
 
-## 5. Findings for the lead and the HANDOFF
+The manifest record (Opus 10's `modules.json`) must carry `"licence": "Apache-2.0"`: the loader refuses an empty licence
+(loader.js:71 `no licence`).
 
-See section 6.
+## 5. Measured by the evidence officer (independent run, not the tester's)
+
+`/tmp/nl010-opus/team-1/evidence/measure.cjs` (output `measure.json` beside it): kuiper-belt root served on 8413, the
+module injected with one `<script src>` before `</body>` by `page.route` (index.html on disk untouched), Playwright
+Chromium with the harness flags, 7 s settle, at 22:00 UTC against the 41,578-byte module of 21:54.
+
+| viewport | bar | titles (one row) | `.ventus-brand` box | `.ventus-main` | `.ventus-sub` | brand centre − viewport centre | star | errors |
+|---|---|---|---|---|---|---|---|---|
+| Galaxy S24 360×780 | 0,0 360×34 fixed; `rgba(4,10,13,.95)`; `1px solid rgba(80,220,240,.3)`; 11px mono | 6 at y 0; scroll 360 = 360 | 143.2,8.4 **73.6×16.3** | 55.5×11.5, 11px, 800, 1.54px, `rgb(255,255,255)`, uppercase, `-apple-system, sans-serif`, not in `a` | 73.6×4.7, 4.5px, 0.63px, `rgb(136,136,136)` | −0.01 | strip 8,728 104.9×44 | 0 |
+| 393×852 | 393×34 | 6 at y 0; 393 = 393 | 73.6×16.3 | 55.5×11.5 | 73.6×4.7 | −0.01 | strip | 0 |
+| Pixel 7 412×915 | 412×34 | 6 at y 0; 412 = 412 | 73.6×16.3 | 55.5×11.5 | 73.6×4.7 | −0.01 | strip | 0 |
+| 430×932 | 430×34 | 6 at y 0 | 73.6×16.3 | 55.5×11.5 | 73.6×4.7 | −0.01 | strip | 0 |
+| 434×932 | 434×34 | 7 at y 0 (SEE THROUGH 74.1 px first); left side 178.2 px holds 178 px | 73.6×16.3 | 55.5×11.5 | 73.6×4.7 | −0.01 | title | 0 |
+| Pixel 7 landscape 863×360 | 863×36 | 7 at y 0, 11px, .55px, padding 11px | 391.2,7.3 **90×20.5** | 75.7×14.7, 14px, 2.8px | 90×5.8, 5.5px, 0.77px | +4.66 | title | 0 |
+| 1280×800 | 1280×36 | 7 at y 0 | 599.7,7.3 **90×20.5** | 606.8,7.3 75.7×14.7 | 599.7,22 90×5.8 | +4.66 | title | 0 |
+
+Against GridAtlas (team-1/EVIDENCE.md A9, measured on gridatlas@5ec7f62 with its own admission rule): `.hud-header`
+73.6×16.3 at 360 and on Pixel 7, `.ventus-main` 55.5×11.5, `.ventus-sub` 73.6×4.7: **equal to 0.1 px**. At 1280×800
+GridAtlas's `.ventus-main` is at (607,12) 76×15 and `.ventus-sub` (600,27) 90×6 in a bar whose top is y 5, i.e. (607,7)
+and (600,22) relative to the bar: the Kuiper's (606.8,7.3) and (599.7,22) are **within 0.3 px**. GridAtlas's titles at
+1280: File 51 px, Scope 58 px; the Kuiper's 50.7 and 57.9. At 360: 34.6 and 40.2 in both.
+
+Two facts the acceptance text must absorb (both found independently by the builder, PLAN.md "BUILDER status"):
+1. **A3 "centred within 1 px" cannot hold above 700 px** with GridAtlas's flanks copied: SYSTEM TIME is wider than
+   2050 TARGET, so the brand sits +4.66 px right of the bar centre in the Kuiper and +5 px (rounded) in GridAtlas
+   (640 vs 645 at 1280, team-1/EVIDENCE.md A9). The `.hud-header` itself is centred (522.4 + 235.1/2 = 639.95). Read A3 as
+   "the brand box within 1 px of GridAtlas's box" (holds everywhere) and "centred within 1 px" at ≤700 px (holds: −0.01).
+2. **The star breakpoint is 434 px, not R7's 381 px**: with a centred brand each side gets (W − 77.6)/2, and FILE EDIT
+   VIEW + SEE THROUGH need 3×34.6 + 74.1 = 177.9 px, so W ≥ 433.4. Measured: at 430 the left side is 176.2 px (too
+   small), at 434 it is 178.2 px and holds the 178 px of content with scroll 434 = 434. The lead's FINDING
+   https://github.com/Ventusltd/neural-link-between-agents/issues/10#issuecomment-6564447092 posts it; ROADMAP Q7's sentence
+   "A Pixel 7 (393 px) shows the title" is therefore wrong for this shell: Pixel 7 (393 or 412) shows the strip.
 
 ## 6. Review of the module and of the HANDOFF draft
 
-(filled in below as the module grows)
+### 6a. Keys cited inside the module that are off (the values are right; the line numbers are not). For the lead, before MODULE.sha256 is cut.
+
+| module line | cites | the line that says it (re-read at gridatlas@5ec7f62 / kuiper-belt@96736f5) |
+|---|---|---|
+| :94 | titles `MB:174-177`, hover/open `MB:178-179`, focus `MB:180-181` | titles M:174-176, hover/open M:177-178, focus M:179-180 |
+| :119 | panels `MB:206-213`, right group `MB:218-224`, rows `MB:226-235` | panel M:206-211, right group M:219, rows M:220-227 (hover :226-227) |
+| :154 | `chipStaysOnMap cartridge :1521-1552` | :1521-1552 is the MODULE file (M); the cartridge's is L:5870 ff. |
+| :165 | `MB cartridge :6010-6016` | L:6011-6016 ("The search bar is NOT moved") |
+| :172 | `MB:372-383` | M:372-382 (:383 is `].join('')`) |
+| :195 | shell `index.html:23-33` | :23-34 (the `.hud-header` closes at :34) |
+| :208 | `MB:545` | M:544 |
+| :213 | `ventus-corev8engine.js:603-608` | :602-608 (`setInterval` at :602, target `Date.UTC(2050,0,1)` :604, days :607) |
+| :373 | `MB:244-246` | M:245-247 |
+| :141 | Edition 4 `index.html:66-71` | :64-70 (`#top,#hud,#foot,#lines{display:none}` :64 … `#lines{…}` :70) |
+| :359 | `IX:610-618` (the keydown table) | :614-618 (:605-613 is the `#gotoin` handler) |
+| :443 | `IX:603-613` | :604-613 |
+| :409 | `PALETTE.md:8-13` | kuiper-belt@96736f5 PALETTE.md:9-13 (:8 is the table rule) |
+| :542 | `index.html:697-703` | :698-704 (`const bar` :698 … `appendChild(bar)` :704) |
+
+Correct as cited: M:166-172, M:181-183, M:192-205, ventusv8.css:4,6-8, M:220-225 (row), M:228-233, M:554-583, M:1662-1669,
+:1556-1558; IX:600-601, :602, :615-618, :685-689, :692, :729-734, :726, :262-268.
+
+### 6b. Findings on the module (for the lead; none blocks, each is a sentence in the HANDOFF)
+
+- F1 **The step-1 hook list cannot be met literally** (ROADMAP step 1 C8: `safeBox, draw, edCard, edFly, edNext,
+  setPanel`): the engine is one `<script type="module">` (index.html:102), so those functions are not reachable from
+  another file, and Opus 4's table exposes `safeBox` and `draw.add`/`panels.set` but not `edCard`, `edFly`, `edNext`.
+  The module says so in its header (:9-11) and reaches them through their DOM controls and the keydown table
+  (IX:600-601, :614-618, :691-692). This is correct; the HANDOFF should say C8 was met by DOM inventory plus KY names.
+- F2 **Module-law tension, recorded, not a defect of this module**: ROADMAP step 4 (4.7/4.8) lets a module touch only
+  `KY.*` and its own host, but step 1 C8 orders the shell to move Edition 4's nodes (`#keys` ×5, `#hud`, `#top`, the
+  `#lyFocus` label, `#lines`, `#foot .long`: 10 nodes, measured `controls_moved: 10`) and to restyle `#goto` and `#bar`.
+  The manifest record's `writes` must list them, or Opus 4's E7 (`reads`/`writes` matched by literals) will fail.
+- F3 **The probe**: the shell writes `window.__KUIPER_MODULES__.menuBar` (:52); under the loader
+  `__KUIPER_MODULES__ === KY.modules`, "the one object the loader fills" (HOOKS.md). REQUESTS.md item 2 asks Opus 4 to
+  leave it unfrozen; the test also accepts `KY.modules[...].inspect()` (test.cjs header). Keep both.
+- F4 **Two `#kuiper-star-strip` ids**: the shell creates `#kuiper-star-strip` (:35, :212) and Opus 5's module creates
+  its own `#kuiper-star-strip` and places `a#kuiper-star` into `.gm-side-left` at `max-width:380px` / title above
+  (202611012141-see-through.js:59, :78, :85). With both loaded: duplicate ids and, between 381 and 433 px, a second
+  SEE THROUGH title that overflows the bar. REQUESTS.md item 3 (mount through `api.mountStar`) is the fix; it must be
+  answered before both are admitted.
+- F5 **The failure strip sits at `bottom:8px`** (:71), GridAtlas's at `top:8px` (M:1764). Departure justified: A8
+  requires Edition 4's bar, at the top, to stay clickable. Say so in the README.
+- F6 GridAtlas values carried with a stated departure: `position:fixed` (C1), `height:calc(36px + env(safe-area-inset-top))`
+  with `padding-top` (NL-009 01-bar F5), hover under `(hover:hover)` (01-bar F4), `::after` 44 px hit box (C4, 01-bar F2),
+  `text-size-adjust:100%`, `.gm-menu{display:flex}` and `.gm-title{display:flex}` (so the `a.gm-title` star aligns). The
+  `!important`s of M:195-198 are dropped because no rule competes on the Kuiper page. None changes a measured number.
+
+### 6c. The HANDOFF draft
+
+(pending: handoff/01-shell/HANDOFF.md not yet on disk at 22:05 UTC)

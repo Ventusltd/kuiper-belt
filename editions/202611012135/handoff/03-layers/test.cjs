@@ -71,7 +71,7 @@ function probeFn() {
   const q = s => document.querySelector(s);
   const norm = s => String(s || '').replace(/\s+/g, ' ').trim();
   const STATE = /\b(WAIT|LOAD|OK|EMPTY|FAIL|REFUSED)\b(?:\s*·\s*([^\n]*))?/;
-  const KY = window.KY, L = KY && KY.layers;
+  const KY = window.KY, L = (KY && KY.modules && KY.modules.layers && KY.modules.layers.api) || window.__KUIPER_LAYERS__ || (KY && KY.layers);
   let inspect = null, inspectErr = null; try { inspect = L && L.inspect ? JSON.parse(JSON.stringify(L.inspect())) : null; } catch (e) { inspectErr = String(e && e.message || e); }
   const get = id => { try { const g = L && L.get ? L.get(id) : null; return g ? { on: g.on, value: g.value, status: g.status, why: g.why, placed: g.placed, total: g.total, group: g.group || (g.record && g.record.group) || null } : null; } catch (e) { return { error: String(e && e.message || e) }; } };
   const panel = q('#layers');
@@ -329,7 +329,7 @@ async function runDevice(browser, deviceName, shots) {
       await E.page.evaluate(() => { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); });
       await E.page.keyboard.press('/'); await sleep(300); await E.page.keyboard.type('gridatlas', { delay: 25 }); await E.page.keyboard.press('Enter'); await sleep(2500);
       p = await E.probe(); const r1 = E.row(p, 'repos');
-      const setRes = await E.page.evaluate(() => { try { window.KY.layers.set('repos', true); return 'ok'; } catch (e) { return 'threw ' + e.message; } }); await sleep(2000);
+      const setRes = await E.page.evaluate(() => { try { ((window.KY.modules.layers && window.KY.modules.layers.api) || window.__KUIPER_LAYERS__).set('repos', true); return 'ok'; } catch (e) { return 'threw ' + e.message; } }); await sleep(2000);
       p = await E.probe(); const r2 = E.row(p, 'repos');
       const t7 = st0 && st0.PASS === true && r1 && /OK · gridatlas/.test(r1.text) && r1.get && r1.get.on === true && r1.get.value === 'gridatlas' && setRes === 'ok' && r2 && /OK · gridatlas/.test(r2.text) && p.selftest && p.selftest.PASS === true && E.errors.length === 0;
       const scope = await E.page.evaluate(() => { const el = document.querySelector('#scope, [data-panel-name="scope"]'); return el ? (el.textContent || '').replace(/\s+/g, ' ').slice(0, 200) : null; });

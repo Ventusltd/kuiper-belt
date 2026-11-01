@@ -386,7 +386,7 @@ async function runDevice(browser, name, ctx) {
     if (!p.card) why.push('the card did not open on "e"');
     else {
       const body = ctx.placed[(p.card.index || 0) - 1];
-      const link = p.card.links[0];
+      const link = p.card.links.find(l => /#key=/.test(l.hrefAttr || '')) || p.card.links[0];
       if (!body) why.push('card index ' + p.card.index + ' not in keys.json placed list');
       if (!link) why.push('the card has no <a> to see-through');
       if (body && link) {
