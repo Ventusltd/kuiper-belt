@@ -1,0 +1,9 @@
+--- a/editions/202611012135/index.html
++++ b/editions/202611012135/index.html
+@@ -749,5 +749,6 @@
+     edSel = i; const b = edPlaced[edSel]; edCard(edSel); edFly(b); }; }
+ requestAnimationFrame(frame);
+ </script>
++<script defer src="modules/202611012143-kuiper-shell.js"></script>
+ </body>
+ </html>

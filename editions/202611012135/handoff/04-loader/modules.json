@@ -1,0 +1,56 @@
+{
+ "schema": "kuiper.modules.v1",
+ "edition": "202611012135",
+ "hooks": "kuiper.hooks.v1",
+ "order": [
+  "hello"
+ ],
+ "modules": [
+  {
+   "id": "hello",
+   "generation": "202611012145",
+   "path": "modules/202611012145-hello.js",
+   "sha256": "ee2130b56e74ef3ec26a91aa2a177579c5fddcb8c48c17aa111f9fa8dbf7dd53",
+   "bytes": 1303,
+   "byte_budget": 4096,
+   "requires": [
+    "keyPlace",
+    "cam",
+    "draw",
+    "redraw"
+   ],
+   "provides": [
+    "hello"
+   ],
+   "reads": [],
+   "writes": [
+    "window.KY.modules.hello",
+    "#ky-hello"
+   ],
+   "creates_controls": "none",
+   "licence": "Apache-2.0",
+   "team": "04",
+   "step": 4,
+   "proof": "handoff/04-loader/"
+  }
+ ],
+ "references": [
+  {
+   "file": "modules/202611012145-loader.js",
+   "generation": "202611012145",
+   "sha256": "055ee887822465b9d2a8ae301001f9d45d0c69de079e58c7eaf6d49a1089afc5",
+   "bytes": 11043,
+   "role": "loader reference: the hook table and loader block of index.html, byte-identical between the marker lines; never fetched",
+   "licence": "Apache-2.0",
+   "team": "04",
+   "step": 4
+  }
+ ],
+ "contracts": {
+  "module_sha256_required": true,
+  "order_explicit": true,
+  "engine_mutation_forbidden": true,
+  "stamp_in_name_equals_generation": true,
+  "hooks_frozen": true
+ }
+}

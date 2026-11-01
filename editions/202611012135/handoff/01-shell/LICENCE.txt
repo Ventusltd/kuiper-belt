@@ -1,0 +1,27 @@
+LICENCE: Opus team 1, step 1 "the shell contract"
+Module: editions/202611012135/modules/<module-stamp>-kuiper-shell.js (schema kuiper.menu-bar.v1)
+Written by OPUS-1 evidence officer, 2026-11-01 UTC. Keys are repo@sha path:line.
+
+THE LICENCES.md ROW (for Opus team 9's register; one row, as step 9 (9.8) lays it out)
+
+| what | licence | copied or linked | key | notice carried |
+|---|---|---|---|---|
+| the shell module `<module-stamp>-kuiper-shell.js` (kuiper-belt code) | Apache-2.0 | new kuiper-belt code | kuiper-belt@96736f5 LICENSE:1-3; README.md:156-157 ("Code is licensed under Apache-2.0 ... documentation and generated data under CC BY 4.0"); Edition 4 NOTICE.md:3-5 | the module's header line 1: `/* kuiper module kuiper-shell, generation <module-stamp> (UTC), Apache-2.0 */` |
+| GridAtlas menu-bar CSS values and structure copied into it (bar, titles, three zones, brand slot, wordmark sizes, panel, panel rows, phone rule; the six names; the admission rule's shape) | Apache-2.0 | copied (values and structure, cited line by line in EVIDENCE.md) | gridatlas@5ec7f62 LICENSE:1-3 (Apache License 2.0); NOTICE:1-12 ("gridatlas / Copyright 2026 Ventus Ltd ... Licensed under the Apache License, Version 2.0"); source gridatlas@5ec7f62 atlas/modules/202609031958-menu-bar.js:31, :165-223, :372-382, :480-546, :1647-1656, :1752-1797 | Apache-2.0 s.4(d): the module header carries "Contains material from gridatlas (Copyright 2026 Ventus Ltd), Apache-2.0, atlas/modules/202609031958-menu-bar.js"; the edition NOTICE.md (Opus team 10) carries the same line |
+| the VENTUS wordmark: the words "Ventus" and "Cables & Connectivity(R)", set as text by CSS (no image file) | not licensed by Apache-2.0 | reproduced as text, by the owner's instruction | gridatlas@5ec7f62 LICENSE:139-142 (s.6 Trademarks: "This License does not grant permission to use the trade names, trademarks, service marks, or product names of the Licensor"); the text as GridAtlas renders it: atlas/releases/202608300453-atlas-v9/index.html:29-32 and ventusv8.css:7-8; owner's instruction of 1 Nov 2026, neural-link FIXES/NL-010/BRIEF.md:5-11 ("I want the ventus logo exactly like gridatlas on the top of Kuiper") | NOTICE.md (team 10), wording proposed in ROADMAP Q8 and not yet confirmed by the owner: "The VENTUS mark is used by Ventus Ltd, its owner. The Apache-2.0 licence of this code does not license the mark." |
+
+WHAT IS NOT IN THIS MODULE (so no other licence attaches)
+
+- No See Through code (see-through/202610050609/, CERN-OHL-S v2, NOTICE.md:3). The star slot is an empty, named group
+  owned by Opus team 5; See Through code, if any, stays in team 5's own module so the CERN-OHL-S reciprocity stops at that
+  file (ROADMAP step 9, 9.8). Linking to ../../see-through/ brings in no licence duty.
+- No image, font or logo file (none exists in gridatlas: `find -iname "*logo*"` empty outside node_modules; team-1
+  EVIDENCE.md A2 negative findings). The face stack is the system's (-apple-system, sans-serif; ui-monospace ...).
+- No MapLibre, CARTO, OpenStreetMap or ODbL data: the shell draws no map.
+- No GridAtlas third-party data (excluded by gridatlas NOTICE:25-32 in any case).
+
+OPEN, FOR THE OWNER
+
+- Q8 (ROADMAP "Open questions for the owner"): confirm the NOTICE wording for the mark above. Until confirmed the row
+  reads "wording proposed, owner's confirmation outstanding"; it does not block copying, because the mark is the owner's
+  own and is used on the owner's instruction, but agents do not mark Q8 answered.
