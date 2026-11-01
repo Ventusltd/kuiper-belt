@@ -141,7 +141,7 @@ async function runDevice(browser, name) {
   const settleSpark = async () => { let last = null; for (let t = 0; t < 40; t++) { await sleep(t ? 700 : 6500); const o = await page.evaluate(overlayProbe); if (o.magenta && last && Math.hypot(o.magenta.x - last.x, o.magenta.y - last.y) < 0.6) return o; last = o.magenta; } return page.evaluate(overlayProbe); };
   const clearSpace = async (label) => {
     const o = await settleSpark(), c = await page.evaluate(cardProbe);
-    const ok = c.open && !!o.magenta && o.magenta.y >= c.bar.bottom && o.magenta.y <= c.rect.top - 14 && c.rect.height <= 0.34 * c.vh + 0.5;
+    const ok = c.open && !c.behind && !!o.magenta && o.magenta.y >= c.bar.bottom && o.magenta.y <= c.rect.top - 14 && c.rect.height <= 0.34 * c.vh + 0.5;
     rec('B3 ' + label + ': capped and spark in clear space', ok, { spark: o.magenta, cardTop: c.rect && c.rect.top, cardH: c.rect && c.rect.height, share: c.rect && +(c.rect.height / c.vh).toFixed(3), barBottom: c.bar && c.bar.bottom });
     return { o, c };
   };
@@ -154,8 +154,12 @@ async function runDevice(browser, name) {
   rec('line-card admitted by the loader', (edition.admitted || []).some(a => a.id === 'line-card') && !(edition.refused || []).length, edition, 'served: ' + S.applied.join(' + ') + ' · ' + M.from);
 
   // ---- B3 by touch: "next verified line"
-  const okE = await reveal('#keys [data-k="e"]') && await tapEl('#keys [data-k="e"]');
-  rec('touch: next verified line tapped', okE);
+  const okE = await reveal('#keys [data-k="e"]') && await tapEl('#keys [data-k="e"]'); await sleep(600);
+  // Edition 4's COMMANDS panel stays open after a command (the shell's rows close theirs): the card waits behind it
+  // (02-card F4), so close the panel the way a person does, by tapping its open title
+  const stillOpen = await page.evaluate(() => { const t = document.querySelector('#bar .gm-on'); if (t) t.setAttribute('data-t2o', '1'); return !!t; });
+  const behindWhileOpen = (await page.evaluate(cardProbe)).behind; if (stillOpen) { await tapEl('[data-t2o="1"]'); await sleep(600); }
+  rec('touch: next verified line tapped', okE, { panelStayedOpen: stillOpen, cardBehindWhileOpen: behindWhileOpen });
   const e1 = await clearSpace('after next verified line');
   const shotAfter = await shot('after-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.png');
   // NL-009 02-card targets and type

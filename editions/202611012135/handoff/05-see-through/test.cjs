@@ -3,12 +3,13 @@
 // Written by OPUS-5 tester in the form of FIXES/NL-009/android-journey.cjs (Playwright, real touch, a JSON report,
 // exit 0 only when every step of every device passed).
 //
-//   node test.cjs [baseUrl] [outdir] [--devices "Pixel 7 @393,Galaxy S24"] [--all] [--mode auto|integrated|manifest|shim]
-//                 [--img <dir>] [--module <file>]
+//   node test.cjs [baseUrl] [outdir] [--devices "Pixel 7 @393,Galaxy S24"] [--all] [--mode auto|integrated|manifest|preview|shim]
+//                 [--with kuiper-shell,line-card,...] [--img <dir>] [--module <file>]
 //
 //   baseUrl  the kuiper-belt repository root as served (default http://127.0.0.1:8452/, team 5 tester's port)
 //   outdir   screenshots and report.json (default /tmp/nl010-opus/team-5/tester/run)
 //   --img    also write the four hand-off screenshots (each PNG < 300 KB) into this folder (handoff/05-see-through/img)
+//   --title-min <px>  the width from which the entry must be a bar title (default 381, ROADMAP R7/Q7; team 1's shell uses 434)
 //   --all    adds Pixel 7 at its native 412 px, Pixel 7 at 430 px, Pixel 7 landscape and a 1280x800 desktop
 //
 // Devices (default): "Pixel 7 @393" = devices['Pixel 7'] with the viewport 393 x 839 (the 393 px class the roadmap names,
@@ -20,6 +21,11 @@
 //   manifest    the page carries the hook table and the loader, but modules.json does not list see-through yet: the test
 //               serves modules.json with one record appended (sha256 and bytes measured from the file on disk), so the
 //               edition's own loader admits the module.
+//   preview     (auto, when index.html has no hook table yet but handoff/04-loader/index.html.patch exists) the test builds,
+//               in <outdir>/preview only, index.html + team 4's loader patch (+ handoff/02-card/index.patch when line-card is
+//               included, + handoff/03-layers/index.html.after-04-loader.patch when layers is; each patch all hunks or none)
+//               and a modules.json of the modules on disk in the roadmap's integration order (kuiper-shell, line-card,
+//               layers, file, see-through, apps, drift; --with a,b narrows it), and serves those two files by route.
 //   shim        the page has no hook table yet (Edition 4 copy): the test serves index.html with a minimal hook table
 //               built from handoff/04-loader/HOOKS.md (kuiper.hooks.v1, the 28 hooks plus cam lit sel redraw draw panels)
 //               and a minimal loader that hashes, admits or refuses the module in words. Nothing on disk is changed.
@@ -71,6 +77,10 @@ let DEVICES = ['Pixel 7 @393', 'Galaxy S24'];
 if (flag('--all')) DEVICES = ['Pixel 7 @393', 'Galaxy S24', 'Pixel 7', 'Pixel 7 @430', 'Pixel 7 landscape', 'Desktop 1280x800'];
 if (flag('--devices')) DEVICES = String(flag('--devices')).split(',').map(s => s.trim()).filter(Boolean);
 const FIXED_WAIT = 6500, ADMIT_MAX = 90000;
+// the width from which the entry must be a bar title: ROADMAP.md R7 and Q7 (381 px; "A Pixel 7 (393 px) shows the title").
+// Team 1 measured 434 px for its shell (handoff/01-shell/EVIDENCE.md §5 item 2; FINDING issue #10 comment 6564447092);
+// the default stays the governing document's until the owner answers Q7 or the harness rules: --title-min 434 runs the other rule.
+const TITLE_MIN = +(flag('--title-min') || 381);
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const sha256 = b => crypto.createHash('sha256').update(b).digest('hex');
@@ -288,7 +298,7 @@ async function runDevice(browser, name, ctx) {
       [!p.ky ? 'no window.KY on the page' : (!p.ky.admitted ? 'see-through not admitted' + (p.ky.refused && p.ky.refused.length ? ' (refused: ' + JSON.stringify(p.ky.refused) + ')' : '') : ''), errors.length ? errors.length + ' console error(s): ' + errors[0].text : ''].filter(Boolean).join('; '));
 
     // 2 the entry: first and largest at >= 381 px, the chip at <= 380 px
-    p = await probe(); const e = p.entry; const wide = p.viewport.w >= 381;
+    p = await probe(); const e = p.entry; const wide = p.viewport.w >= TITLE_MIN;
     let why = [];
     if (p.count !== 1) why.push('#kuiper-star count ' + p.count + ' (want 1)');
     if (e) {
@@ -441,7 +451,8 @@ function buildPreview() {
   const applied = [];
   for (const key of ['', 'line-card', 'layers']) { if (key && !ids.includes(key)) continue; const pf = path.join(__dirname, '..', PATCHES[key]);
     if (!fs.existsSync(pf)) { applied.push({ patch: PATCHES[key], ok: false, why: 'missing' }); continue; }
-    try { cp.execFileSync('patch', ['-s', '--forward', '--no-backup-if-mismatch', '-r', '-', '-p3', '-d', dir, '-i', pf], { stdio: 'pipe' }); applied.push({ patch: PATCHES[key], ok: true }); }
+    try { const args = ['-s', '--forward', '--no-backup-if-mismatch', '-r', '-', '-p3', '-d', dir, '-i', pf];   // all hunks or none: a dry run first
+      cp.execFileSync('patch', ['--dry-run'].concat(args), { stdio: 'pipe' }); cp.execFileSync('patch', args, { stdio: 'pipe' }); applied.push({ patch: PATCHES[key], ok: true }); }
     catch (e) { applied.push({ patch: PATCHES[key], ok: false, why: String(e.stdout || '') + String(e.stderr || '') }); } }
   const modules = ids.map(id => { const f = latest[id], b = fs.readFileSync(path.join(modDir, f)); let reg = null;
     try { const sb = { window: {}, document: { readyState: 'loading', addEventListener() {}, getElementById() { return null; }, querySelector() { return null; }, createElement() { return { style: {}, setAttribute() {}, appendChild() {} }; } }, console: { log() {}, warn() {}, error() {} }, setTimeout() {}, addEventListener() {} };
@@ -475,7 +486,7 @@ function buildPreview() {
     ctx.record = { id: 'see-through', file: path.basename(modFile), generation: genStamp, path: ctx.modulePathFromEdition, sha256: st.module.sha256, bytes: st.module.bytes, byte_budget: Math.max(65536, st.module.bytes),
       requires: [], provides: ['see-through'], reads: ['data/see-through.json'], writes: [], creates_controls: ['#kuiper-star', '#kuiper-star-strip'], licence: 'Apache-2.0', team: 5, step: 5, proof: 'handoff/05-see-through/test.cjs' }; }
   if (mode === 'preview') { ctx.preview = buildPreview(); if (!ctx.preview.loaderPatched) { process.stderr.write('[mode] preview: the loader patch did not apply; falling back to shim\n'); mode = ctx.mode = 'shim'; } }
-  const out = { base: BASE, edition: EDURL, stamp: STAMP, mode, preview: ctx.preview ? { ids: ctx.preview.ids, patches: ctx.preview.applied, manifest: ctx.preview.manifest.modules.map(m => ({ id: m.id, path: m.path, sha256: m.sha256, requires: m.requires, provides: m.provides })) } : null, hasLoader, manifestListsSeeThrough: listed, outdir: OUT, generatedAt: new Date().toISOString(), static: { module: st.module, data: st.data }, devices: [] };
+  const out = { base: BASE, edition: EDURL, stamp: STAMP, titleMinPx: TITLE_MIN, mode, preview: ctx.preview ? { ids: ctx.preview.ids, patches: ctx.preview.applied, manifest: ctx.preview.manifest.modules.map(m => ({ id: m.id, path: m.path, sha256: m.sha256, requires: m.requires, provides: m.provides })) } : null, hasLoader, manifestListsSeeThrough: listed, outdir: OUT, generatedAt: new Date().toISOString(), static: { module: st.module, data: st.data }, devices: [] };
   for (const [k, v] of Object.entries({ module: st.module, data: st.data })) process.stderr.write(`[static] ${v && v.pass ? 'PASS' : 'FAIL'} ${k}${v && v.note ? ' — ' + v.note : ''}\n`);
   process.stderr.write(`[mode] ${mode}${mode === 'shim' ? ' (no hook table in index.html yet: the test serves a minimal one, nothing on disk changes)' : ''}${mode === 'preview' ? ' modules ' + ctx.preview.ids.join(',') + ' · patches ' + ctx.preview.applied.map(a => a.patch + (a.ok ? ' ok' : ' FAILED')).join(', ') : ''}\n`);
   if (!modFile) { out.pass = false; fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(out, null, 1)); console.log(JSON.stringify(out, null, 1)); process.exit(1); }
@@ -485,7 +496,7 @@ function buildPreview() {
   out.pass = !!(st.module.pass && st.data.pass && out.devices.length && out.devices.every(d => d.pass));
   out.summary = out.devices.map(d => ({ device: d.device, viewport: d.viewport, passed: d.passed, failed: d.failed, failedSteps: d.steps.filter(s => !s.pass).map(s => s.id), consoleErrors: d.consoleErrors.length, form: (d.steps.find(s => s.id === 'entry') || {}).measured ? d.steps.find(s => s.id === 'entry').measured.form : null }));
   if (IMG) {   // the hand-off's four screenshots: the entry as a title (>= 381 px), the entry as the chip (<= 380 px), the landing, the deep-link landing
-    fs.mkdirSync(IMG, { recursive: true }); const pick = []; const wideD = out.devices.find(d => d.viewport.width >= 381), narrowD = out.devices.find(d => d.viewport.width <= 380);
+    fs.mkdirSync(IMG, { recursive: true }); const pick = []; const wideD = out.devices.find(d => d.viewport.width >= TITLE_MIN), narrowD = out.devices.find(d => d.viewport.width < TITLE_MIN);
     if (wideD && wideD.shots.entry) pick.push([wideD.shots.entry, '01-entry-title-' + slug(wideD.device) + '.png']);
     if (narrowD && narrowD.shots.entry) pick.push([narrowD.shots.entry, '02-entry-chip-' + slug(narrowD.device) + '.png']);
     const any = wideD || narrowD; if (any && any.shots.landing) pick.push([any.shots.landing, '03-landing-see-through-' + slug(any.device) + '.png']);

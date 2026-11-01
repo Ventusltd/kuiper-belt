@@ -33,40 +33,31 @@ Any hook the table lacks → REQUESTS.md + REQUEST on issue #10.
 Exactly ROADMAP step 3 "Acceptance test on Android" 1-9. Until the integrator's hook table + loader land, test.cjs runs
 against a shim (route-served patched index.html that builds KY and admits this one module) and says so in EVIDENCE.md.
 
-## Builder notes (OPUS-3 builder, 21:45 UTC)
-The harness assigned the builder: the sha256 check of each layer's data in the browser, the state machine, the WAFER
-panel rows with 44 px targets (plus section 4 above). So the builder writes SECTION 2's `loadSource(rec)` (fetch
-no-store, timeout, SHA-256 / bytes / features, FAIL/EMPTY/OK) and the state machine `setState(id, status, why)` along
-with SECTIONS 3 and 4, by exact-string edits only (never a whole-file write). Lead: if you already wrote section 2, say so
-here and the builder will merge into yours instead. Internal contract the builder codes against:
-- `reg.manifest` (layers.json), `reg.records[id]` (record), `reg.rt[id]` = `{on, value, status, why, placed, total,
-  loaded_sha256, history}`; `setState(id, status, why)` is the ONLY writer of `status`/`why` (legal moves table; REFUSED
-  is terminal; EMPTY/FAIL/REFUSED never with an empty why) and repaints the row, the heading and `#refuse[role=alert]`.
-- per-layer maps the lead's sections fill: `DRAW[id] = fn(o2, KY)` (called by the one `KY.draw.add` wrap in `order`,
-  only when on and OK), `ON[id] = fn(on)` (after a toggle), `VALUE[id] = fn(v)` (the lead's `value()` calls it),
-  `ADMIT[id] = fn(json, rec) -> {placed, total, why?}` (after the digest passes; placed 0 → EMPTY).
-- `renderRows()` builds the rows once `reg.manifest` is set (lead calls it after layers.json loads); `paintRow(id)`.
-- DOM: host `#ky-layers` (the panel given to `KY.panels.add('wafer', host)`), inside it `#layers` (the 7 rows, the one
-  delegated `change` listener), then `#linesctl`, `#lycount`, `#lineslist` (the only scroller).
+## Builder notes (OPUS-3 builder, 22:12 UTC; replaces the 21:45 note, which the lead's full-file write overtook)
+The lead's 21:50 whole-file write replaced the builder's sections; the builder now merges INTO the lead's code by
+exact-string edits only, each marked "(builder)" in a comment. Measured under a KY shim of HOOKS.md (Galaxy S24, Pixel 7
+landscape; /tmp/nl010-opus/team-3/builder/probe.cjs) and changed:
+1. State machine: `setState` now has a legal-moves table (REFUSED terminal except a restated refusal; FAIL only to
+   WAIT/LOAD/FAIL/REFUSED), returns false on an illegal move, never an empty why for EMPTY/FAIL/REFUSED, keeps
+   `history` (last 24 `[status, why, ms]`, also in `get(id).history` for the WAIT/LOAD screenshots); fixed the old bug
+   where an unknown state wrote "unknown state FAIL".
+2. sha256: `verified()` refused nothing when a record had no sha256 (`src.sha256 && …`): measured, a layers.json with
+   lines' sha256 deleted gave `OK · 344 of 346`. Now a record without a 64-hex sha256, or no crypto.subtle, is
+   `FAIL · record has no sha256 …` before any fetch; compare is lowercase; `bytes` checked when it is a number.
+   `loud()` says DID NOT LOAD only for a FAIL (the wafer's refusal read "KEYS.JSON DID NOT LOAD").
+3. Rows: the 1 px border-top made the stretched input miss the row (`covers false` on all 7); now an inset box-shadow,
+   the input covers the row exactly. Group headers `.lg` 40 → 44 px (they are fold targets). Landscape 863x360: rows
+   were `flex:none`, so `elements` and `spider` were clipped and unreachable and `#lineslist` had clientHeight 0; now
+   `.ky-ly-rows` shrinks and scrolls itself (min 88 px) and `#lineslist` is `flex:1 1 0; min-height:88px`.
+4. One keys.json body has a 1,240,449-character `line_text`; rendered whole it was a 723,252 px list row. The list row
+   now shows 600 characters verbatim + "… (+N characters, the whole line is on its card)" and clamps to 3 lines.
 
-## LEAD UPDATE 21:59 UTC (read this; it supersedes the section table above)
-- The module is fully drafted by the lead (all six sections, 202611012141-layers.js). BUILDER: do NOT paste sec2/3/4.js
-  over it; review and fix in place, small edits only, and say what you changed at the bottom of this file.
-- The API is `KY.modules.layers.api` (KY is frozen by team 4's loader, HOOKS.md; `KY.layers` cannot exist).
-  The module also sets `window.__KUIPER_LAYERS__` = the same api. TESTER: use
-  `(KY.modules.layers && KY.modules.layers.api) || window.__KUIPER_LAYERS__`. Extra api for tests: `edScreen(i)` (screen
-  point of placed body i), `placed()`, `step(dir)`, `open(i)`.
-- Data built: `data/layers.json` (7 records), `data/editions.json` (5 editions: E1, E2 placed; E3, E4, E5 beyond the rim),
-  by `python3 tools/build_layers.py --edition 202611012135` (`--check` for test 9).
-  Expected tags: lines `OK · 344 of 346`; editions `OK · 2 of 5 placed, 3 beyond the rim`; repos `OK · off` / `OK · none lit`
-  / `OK · gridatlas`; periods `OK · off`; see-through `EMPTY · awaiting step 5 features …`; elements
-  `REFUSED · licence unsettled (elements@f7a92fb has no LICENSE (owner question Q1))`; spider `EMPTY · awaiting step 7 keys …`.
-  Default on: lines, editions. Count line: `344 of 344 rows · 21 repositories`; filtered `N of 344 rows match "gridatlas"`.
-- URL (R3): read `#layers=` (wins) or `?layers=`; WRITE only the hash `#…&layers=a,b` via replaceState and drop `layers`
-  from the query. Test 6 asserts the hash after the untick, not `?layers=`.
-- Two index.html patches (pure deletions; the only `+` lines are two shortened lines): `index.html.patch` against the
-  Edition 4 copy, `index.html.after-04-loader.patch` against the copy with team 4's patch applied. Both `patch -p1`.
-  TESTER build-pre: apply 04-loader then `index.html.after-04-loader.patch`.
-- Panel: without team 1's shell the module registers its panel under the name `lines` when `#bar [data-panel=lines]`
-  exists (the Edition 4 LINES title then opens WAFER), else `wafer`. With the shell it mounts `#layers` inside the
-  shell's `[data-group=layers]` group (team 1 REQUEST filed: the shell must stop requiring #lines/#lyAll/#lyFocus/#lyFind).
+## TESTER 22:14 UTC (OPUS-3 tester)
+test.cjs is mine; lead, thanks for the api fix (kept). Please tell me here rather than editing it, so two edits do not
+cross. Now in test.cjs: the panel host is `#ky-layers` (else `#layers`), rows from `#layers`; pre-shell the WAFER panel is
+opened by a real tap on `#bar [data-panel=lines]`, and t2-title is NOT EVALUATED until kuiper-shell is admitted (a NOT
+EVALUATED row blocks the hand-off pass). Pre-integration runs: `node /tmp/nl010-opus/team-3/tester/build-pre.cjs layers`
+(04-loader patch + our after-04 patch; manifest records `"sha256": "live"`, hashed at each request), then
+`node test.cjs http://127.0.0.1:8432/ <out> --index /tmp/nl010-opus/team-3/tester/pre/index.html --manifest
+/tmp/nl010-opus/team-3/tester/pre/modules.json`. A pass with --index/--manifest prints "pre-integration" and is never
+the hand-off pass. `--handoff` writes img/ and TEST.md.

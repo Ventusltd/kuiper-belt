@@ -20,6 +20,10 @@
   'use strict';
   var LAW = 'The line of code is the header. Every card opens with the line itself, verbatim from the key; the key is the second row; every name a person gave the line comes after.';
   var STAMP = '202611012143';
+  // a line longer than this is laid out unwrapped and scrolls sideways inside the header: measured on Pixel 7
+  // (SwiftShader), the 1,240,449-character line of kuiper-belt estate-network.json:1 took 9,313 ms to lay out wrapped
+  // and 201 ms unwrapped; every byte is still in the header
+  var LONG = 2000;
   if (!window.KY || typeof window.KY.register !== 'function') return;   // no hook table: the page keeps its own card
 
   var CSS = [
@@ -31,7 +35,8 @@
     '#card.lc .lc-h{display:block;margin:0 0 4px;max-height:7.5em;overflow:auto;overscroll-behavior:contain}',
     '#card.lc .lc-h code{display:block;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;color:#fff;font-weight:600;',
     '  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:inherit;line-height:1.45;tab-size:4}',
-    '#card.lc .lc-h .lc-e,#card.lc .lc-h .lc-none{color:var(--dim);font-weight:400}',
+    '#card.lc .lc-h.lc-long code{white-space:pre;overflow-wrap:normal;word-break:normal}',
+    '#card.lc .lc-h .lc-e,#card.lc .lc-h .lc-none{display:block;color:var(--dim);font-weight:400}',
     '#card.lc .lc-h .lc-none{color:var(--am)}',
     /* row 2, the key */
     '#card.lc .lc-k{display:block;color:#cde;white-space:pre-wrap;overflow-wrap:anywhere;text-decoration:none;margin:0 0 2px}',
@@ -93,8 +98,9 @@
       // K1, in this order and no other
       function render(b, o) {
         var h = hasText(b)
-          ? '<header class="lc-h"><code>' + esc(b.line_text) + '</code>'
-            + (b.line_text === '' ? '<span class="lc-e">empty line at key</span>' : '') + '</header>'
+          ? '<header class="lc-h' + (b.line_text.length > LONG ? ' lc-long' : '') + '"><code>' + esc(b.line_text) + '</code>'
+            + (b.line_text === '' ? '<span class="lc-e">empty line at key</span>' : '')
+            + (b.line_text.length > LONG ? '<span class="lc-e">one line of ' + fmt(b.line_text.length) + ' characters, verbatim; it scrolls sideways</span>' : '') + '</header>'
           : '<header class="lc-h"><code></code><span class="lc-none">no text at key</span></header>';
         var k = '<a class="lc-k" href="' + esc(b.destination) + '" target="_blank" rel="noopener">' + esc(keyText(b)) + '</a>';
         var q = '';

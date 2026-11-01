@@ -1,6 +1,6 @@
 # Kuiper hook table `kuiper.hooks.v1`: the key list (Opus team 4, step 4)
 
-Published 2026-11-01 21:4x UTC by OPUS-4 lead, before any other team's module is cut. Every Opus team builds against
+Published 2026-11-01 21:42:44Z (GitHub's time of #10 comment 6564299733) by OPUS-4 lead, before any other team's module is cut. Every Opus team builds against
 this list. Keys are `repo@sha path:line` at kuiper-belt@96736f5 (`96736f55c2137defcf02c898f8f2b0d04374d74b`)
 `editions/202611012135/index.html` (the Edition 4 copy, unpatched line numbers). Source of the list:
 neural-link FIXES/NL-010/team-2/STEPS.md step 4.2; ROADMAP.md step 4, 4.2. A key is added only by a new FINDING on #10
@@ -33,7 +33,7 @@ words, esc, cv, ov, o2, hud, big, sub, card, gbox, gin, SPACE, N, repos, commits
 | 16 | `ov` | element (overlay canvas `#o`) | :121 |
 | 17 | `o2` | 2D context of `ov` | :121 |
 | 18 | `hud` | element `#hud` | :123 |
-| 19 | `big` | element `#big` | :123-124 |
+| 19 | `big` | element `#big` | :123 |
 | 20 | `sub` | element `#sub` | :124 |
 | 21 | `card` | element `#card` | :124 (`<div id="card">` :91) |
 | 22 | `gbox` | element `#goto` | :604 |
@@ -77,7 +77,33 @@ KY.register({ schema: 'kuiper.module.v1', id: '<id>', generation: '<module-stamp
   inspect(){ /* state */ } });
 ```
 
-The loader refuses in words, one readout line and one `#refuse[role=alert]` strip, while the rest runs:
-`HTTP <status>`, `sha256 mismatch`, `bytes <n> ≠ manifest <m>`, `over byte_budget`, `no licence`,
-`generation <a>, file name <b>`, `no registration`, `id <x> ≠ <id>`, `missing hook <name>`, `install threw <message>`,
-`in order but not in modules`, `bad path`, `registered twice`.
+The loader refuses in words, one readout line `<id> refused: <why>` and one `#refuse[role=alert]` strip, while the rest
+runs. These are its exact strings (rev 2, `modules/202611012145-loader.js`), in the order it checks them:
+
+| stage | `why` |
+|---|---|
+| order | `in order twice`, `in order but not in modules` |
+| record | `bad path <path>`, `generation <g> is not twelve digits`, `stamp mismatch: generation <g>, file name <digits>`, `sha256 is not 64 hex`, `no licence`, `requires is not a list` / `provides is not a list`, `missing hook <name>` |
+| fetch | `fetch failed <message>`, `HTTP <status>` |
+| bytes | `sha256 mismatch`, `bytes <n> ≠ manifest <m>`, `over byte_budget <n> > <budget>` |
+| header line 1 | `no header line`, `header names <name> ≠ <id>`, `stamp mismatch: generation <g>, header <digits>` |
+| script | `script did not load`, `script error: <message>` (a parse error or a top-level throw of the module itself) |
+| registration | `no registration`, `registered twice`, `schema <x>`, `id <x> ≠ <id>`, `registration requires is not a list` / `registration provides is not a list`, `stamp mismatch: generation <g>, registration <x>`, `requires <name> not in the manifest`, `missing hook <name>`, `no install` |
+| install | `install threw <message>` |
+| anything else | `loader error <message>` (that module only; the next one runs) |
+
+The whole set is refused, strip `MODULES NOT ADMITTED: <why> · the wafer is unchanged`, when `modules.json` is not
+fetched or not an object, or its `schema` is not `kuiper.modules.v1`, `hooks` not `kuiper.hooks.v1`, `edition` not the
+page's (`edition <x> ≠ page <y>`), `order`/`modules` not lists, or `crypto.subtle` is missing. An `install` that returns
+a promise is admitted at once; if that promise rejects (for example a module awaiting `wafer` when the wafer refuses),
+the rejection is recorded in `__KUIPER_EDITION__.failures` and the readout (`<id> install rejected: <message>`), not in
+`refused`: the engine's own refusal is already in the strip. At `done`, `order`, `admitted`, `refused`, `timings` and
+`KY.modules` are frozen; `failures` stays open.
+
+Header line 1 of every module: `/* kuiper module <id>, generation <module-stamp> (UTC), <licence>` (the comment may
+continue on later lines). The stamp is written three times (file name, header, registration) and all three are checked
+by the loader and by E6 (ROADMAP.md 4.3, 4.9; this departs from team-2/STEPS.md 4.3's two places on purpose).
+
+Correction to team-2/STEPS.md 4.4: the page script is `<script type="module">` (kuiper-belt@96736f5
+editions/202611012135/index.html:102), so it is strict: a write to the frozen table throws a TypeError, it is not a
+silent no-op. The rule (state in the loader's closure, never on `KY`) stands.

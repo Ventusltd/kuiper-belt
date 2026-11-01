@@ -40,12 +40,23 @@
 
   // ======================================================================== SECTION 1: the registry
   function rec(id) { return rt[id] ? rt[id].rec : null; }
+  // THE STATE MACHINE of a row (team-2/STEPS.md 3.4; the state is the label's suffix, menu-bar.js:91-98): the legal
+  // moves below and nothing else; REFUSED is terminal (only a later refusal, the wafer's, may restate its reason);
+  // EMPTY, FAIL and REFUSED never carry an empty why; each move is kept (last 24) so a test can prove the path
+  // WAIT -> LOAD -> OK | FAIL, not only the end. An illegal move changes nothing and returns false. (builder)
+  var MOVES = { WAIT: STATES, LOAD: STATES, OK: STATES, EMPTY: STATES,
+    FAIL: ['WAIT', 'LOAD', 'FAIL', 'REFUSED'], REFUSED: ['REFUSED'] };
   function setState(id, status, why) {
-    var r = rt[id]; if (!r) return;
-    if (STATES.indexOf(status) < 0) { status = 'FAIL'; why = 'unknown state ' + status; }
-    r.status = status; r.why = why || '';
+    var r = rt[id]; if (!r) return false;
+    if (STATES.indexOf(status) < 0) { why = 'unknown state ' + status; status = 'FAIL'; }
+    if (MOVES[r.status] && MOVES[r.status].indexOf(status) < 0) return false;
+    why = why == null ? '' : String(why);
+    if (!why && (status === 'EMPTY' || status === 'FAIL' || status === 'REFUSED')) why = 'no reason given';
+    r.status = status; r.why = why;
+    (r.history = r.history || []).push([status, why, Math.round(performance.now())]); if (r.history.length > 24) r.history.shift();
     paintRow(id);
     if (r.rec.preload && (status === 'FAIL' || status === 'REFUSED')) loud(id);
+    return true;
   }
   function tagText(id) {
     var r = rt[id]; if (!r) return '';
@@ -67,7 +78,7 @@
     var r = rt[id]; if (!r) return null;
     var out = JSON.parse(JSON.stringify(r.rec));
     out.on = r.on; out.value = r.value; out.status = r.status; out.why = r.why; out.placed = r.placed; out.total = r.total;
-    out.loaded_sha256 = r.loaded_sha256; out.tag = tagText(id);
+    out.loaded_sha256 = r.loaded_sha256; out.tag = tagText(id); out.history = (r.history || []).slice();
     return out;
   }
   function original(id) { return panel ? panel.querySelector('input[data-ky-layer="layer:' + id + '"]') : null; }
@@ -139,14 +150,21 @@
       .finally(function () { clearTimeout(t); });
   }
   // fetch, then hash, bytes and feature count against the record (gridatlas@5ec7f62 atlas/index.html:75-81 for data)
+  // A recorded hash nobody checks is decoration (team-2/STEPS.md 3.1, galaxies-wafers@fff6fc6: a sha256 per layer file
+  // that no root module verifies): a record without a 64-hex sha256, or a browser without crypto.subtle (an insecure
+  // origin), is FAIL before a byte is fetched, never an unchecked admission. The digest is compared first, so one
+  // changed byte reads "sha256 mismatch" whatever the length; then bytes; then the parse. (builder)
   function verified(id) {
-    var r = rt[id], src = r.rec.source, file = src.file;
+    var r = rt[id], src = r.rec.source, file = src.file, want = String(src.sha256 || '').toLowerCase();
     setState(id, 'LOAD', file);
+    if (!/^[0-9a-f]{64}$/.test(want)) return Promise.reject(new Error('record has no sha256 for ' + file + ', unhashed data refused'));
+    if (!(window.crypto && crypto.subtle && typeof crypto.subtle.digest === 'function'))
+      return Promise.reject(new Error('crypto.subtle unavailable (not a secure context), unhashed data refused'));
     return fetchBytes(file).then(function (buf) {
       return crypto.subtle.digest('SHA-256', buf).then(function (d) {
         var sha = hex(d); r.loaded_sha256 = sha;
-        if (src.sha256 && sha !== src.sha256) throw new Error('sha256 mismatch');
-        if (src.bytes && buf.byteLength !== src.bytes) throw new Error('bytes ' + buf.byteLength + ' ≠ record ' + src.bytes);
+        if (sha !== want) throw new Error('sha256 mismatch');
+        if (typeof src.bytes === 'number' && buf.byteLength !== src.bytes) throw new Error('bytes ' + buf.byteLength + ' ≠ record ' + src.bytes);
         var j; try { j = JSON.parse(new TextDecoder('utf-8').decode(buf)); } catch (e) { throw new Error(file + ' is not JSON'); }
         return j;
       });
@@ -181,7 +199,7 @@
   // a preload layer that fails says so in the row, the heading and an alert (09-robust.md:25-29); the wafer draws on
   function loud(id) {
     var r = rt[id], file = r.rec.source && r.rec.source.file ? r.rec.source.file : r.rec.label;
-    var http = /HTTP \d+|did not load|timed out/.test(r.why);
+    var http = r.status === 'FAIL' && /HTTP \d+|did not load|timed out/.test(r.why);   // a refusal is not a failed load
     H.big.textContent = String(file).toUpperCase() + (http ? ' DID NOT LOAD' : ' REFUSED') + ' · ' + r.status + ' · ' + r.why;
     alertLine(r.rec.label + ' layer ' + r.status + ' · ' + r.why + ' · the wafer still draws; nothing of this layer is placed');
   }
@@ -205,9 +223,9 @@
     + '#layers.gm-open{display:flex}'
     + '#layers.ky-in-shell{position:static;border:0;padding:0;background:transparent;max-height:none}#layers.ky-in-shell #lineslist{max-height:45vh}'
     + '@media (min-width:641px){#layers{right:auto;width:min(720px,96vw)}}'
-    + '#layers .ky-ly-rows{flex:none}'
+    + '#layers .ky-ly-rows{flex:0 1 auto;min-height:88px;overflow-y:auto;overscroll-behavior:contain}'
     + '#layers .ky-ly-g{color:#2ee6e6;letter-spacing:.12em;text-transform:uppercase;font-size:10px;padding:4px 2px 0;line-height:16px}'
-    + '#layers label.ky-ly{position:relative;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 4px;border-top:1px solid #121a26;'
+    + '#layers label.ky-ly{position:relative;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 4px;border:0;box-shadow:inset 0 1px #121a26;'
     + 'color:#8fb3bd;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}'
     + '#layers label.ky-ly input[data-ky-layer]{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;z-index:1}'
     + '#layers label.ky-ly .bx{flex:none;width:20px;height:20px;border:1px solid #12414a;border-radius:3px;background:#090c13}'
@@ -235,12 +253,12 @@
     + '#linesctl button:active{border-color:#2ee6e6;color:#2ee6e6}'
     + '#lyClear{display:none!important;font-size:20px;line-height:1;padding:0}#lyClear.on{display:inline-block!important}'
     + '#lycount{color:#7d8799;padding:2px 2px 0;line-height:1.4}'
-    + '#lineslist{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}'
-    + '#lineslist .lg{position:sticky;top:0;z-index:1;display:flex;align-items:center;gap:8px;min-height:40px;padding:4px 8px;background:#0b1a20;color:#2ee6e6;'
+    + '#lineslist{flex:1 1 0;min-height:88px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}'
+    + '#lineslist .lg{position:sticky;top:0;z-index:1;display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 8px;background:#0b1a20;color:#2ee6e6;'
     + 'border-top:1px solid #12414a;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;touch-action:manipulation;user-select:none}'
     + '#lineslist .lg .n{color:#7d8799;letter-spacing:0;text-transform:none}#lineslist .lg.focus{color:#22ee77}#lineslist .lg .ch{width:12px;color:#7d8799}'
     + '#lineslist .ln{min-height:44px;padding:5px 8px;border-top:1px solid #121a26;cursor:pointer;color:#7d8799;font-size:12px;overflow-wrap:anywhere}'
-    + '#lineslist .ln code{display:block;color:#ffffff;white-space:pre-wrap;font:inherit;font-weight:600}'
+    + '#lineslist .ln code{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;color:#ffffff;white-space:pre-wrap;font:inherit;font-weight:600}'
     + '#lineslist .ln b{color:#d5dcea;font-weight:600}#lineslist .ln.focus b{color:#22ee77}#lineslist .ln.sel{background:rgba(255,43,214,.12)}'
     + '#lineslist .ln .t{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}'
     + '.ky-layers-refuse{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#090c13f2;color:#ffb000;border-top:2px solid #ffb000;padding:8px 12px;'
@@ -350,6 +368,10 @@
       openLine(i); fly(lines.placed[i]);
     });
   }
+  // the list row shows the line's first 600 characters verbatim and says how many follow: one keys.json line is
+  // 1,240,449 characters (a minified JSON line), which rendered whole made a 723,252 px row on a Galaxy S24 and 1.2 MB of
+  // DOM text on every filter keystroke; the card keeps the whole line (builder, measured 22:05 UTC)
+  function clipLine(t) { t = t == null ? '' : String(t); return t.length > 600 ? t.slice(0, 600) + ' … (+' + fmt(t.length - 600) + ' characters, the whole line is on its card)' : t; }
   function visibleLine(b) { return rt.lines.on && (!lines.focus || b.class === 'focus'); }
   function fillLines(scrollSel) {
     var list = document.getElementById('lineslist'), cnt = document.getElementById('lycount'), clr = document.getElementById('lyClear');
@@ -371,7 +393,7 @@
       idx.forEach(function (i) { var b = P[i], cls = 'ln' + (i === lines.sel ? ' sel' : '') + (b.class === 'focus' ? ' focus' : '');
         if (card && typeof card.row === 'function') { html.push('<div class="' + cls + '" data-i="' + i + '" role="button" tabindex="0">' + card.row(b, i, cls) + '</div>'); return; }
         // the line of code is the header (ROADMAP law 2): line_text first, verbatim; the key follows; the names after
-        html.push('<div class="' + cls + '" data-i="' + i + '" role="button" tabindex="0"><code>' + esc(b.line_text != null ? b.line_text : '') + '</code><b>' + esc(b.path) + ':' + b.line + '</b> · key ' + fmt(b.key)
+        html.push('<div class="' + cls + '" data-i="' + i + '" role="button" tabindex="0"><code>' + esc(clipLine(b.line_text)) + '</code><b>' + esc(b.path) + ':' + b.line + '</b> · key ' + fmt(b.key)
           + '<div class="t">' + esc(b.title) + '</div></div>'); });
     });
     list.innerHTML = html.join('') || '<div class="ln">' + (rt.lines.on ? (total ? 'no line matches' : esc(tagText('lines'))) : 'layer off') + '</div>';

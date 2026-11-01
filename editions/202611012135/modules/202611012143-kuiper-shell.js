@@ -117,7 +117,8 @@
       'letter-spacing:.2em;text-transform:uppercase;margin:0}',
       B + ' .ventus-sub{font-family:-apple-system,sans-serif;font-size:5.5px;color:#888;letter-spacing:.14em;text-transform:uppercase}',
       // C7 panels: MB:206-213, right group MB:218-224, rows MB:226-235, headings MB:245-247
-      B + ' .gm-panel{position:absolute;top:100%;left:0;min-width:240px;max-width:min(92vw,420px);',
+      // top: one px below MB's 100% so the panel starts under the bar's 1 px rule, not on it (measured: 35 vs bar bottom 36)
+      B + ' .gm-panel{position:absolute;top:calc(100% + 1px);left:0;min-width:240px;max-width:min(92vw,420px);',
       'max-height:min(72dvh,620px);overflow:auto;overscroll-behavior:contain;padding:6px;background:rgba(4,10,13,.98);',
       'border:1px solid rgba(80,220,240,.32);border-top:0;box-shadow:0 12px 34px rgba(0,0,0,.68);box-sizing:border-box;',
       'text-align:left;color:#cfeef6;font:11px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;z-index:2}',
@@ -273,6 +274,8 @@
     // the back gesture
     addEventListener('popstate', function () { if (ignorePop) { ignorePop = false; return; } if (state.open) { historyDepth = 0; closeAll(true); } });
     addEventListener('resize', measure);
+    // a system font scale changes the titles' size without a resize: the overflow rule follows the measured widths
+    try { var ro = new ResizeObserver(function () { measure(); }); [].forEach.call(bar.querySelectorAll('.gm-title,.ventus-brand'), function (n) { ro.observe(n); }); } catch (e) {}
     // a tap on the bar, a panel or the strip never reaches Edition 4's window pointerup spark-picker (index.html:685-689)
     bar.addEventListener('pointerup', function (e) { e.stopPropagation(); });
     strip.addEventListener('pointerup', function (e) { e.stopPropagation(); });
@@ -462,6 +465,14 @@
     var long = document.querySelector('#foot .long');
     long.classList.add('gm-prose', 'gm-small'); moveNode(P.about, long);   // the law sentence, on a phone too (NL-009 08 F2)
     heading(P.about, 'Estate');
+    // its one inline link (IX:100 "the laws") is a 14 px target inside prose: the same node becomes a 44 px row here,
+    // and the sentence keeps the words
+    var laws = long.querySelector('a');
+    if (laws) {
+      long.replaceChild(document.createTextNode(laws.textContent), laws);
+      laws.className = 'gm-row'; laws.setAttribute('role', 'button'); laws.target = '_blank'; laws.rel = 'noopener';
+      laws.appendChild(el('span', 'gm-hint', '↗')); P.about.appendChild(laws); moved++;
+    }
     P.about.appendChild(link('See Through', '../../see-through/'));
     P.about.appendChild(link('Learn the Kuiper', '../../learn-the-kuiper/'));
     P.about.appendChild(link('the wafer', '../../'));

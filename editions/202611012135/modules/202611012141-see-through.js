@@ -1,8 +1,8 @@
-/* kuiper module see-through, generation 202611012141 (UTC), Apache-2.0 (kuiper-belt code)
+/* kuiper module see-through, generation 202611012141 (UTC), CERN-OHL-S-2.0 (the whole file; ROADMAP 9.8: never Apache-2.0)
    Opus team 5, NL-010 roadmap step 5 "See Through, the star player" (FIXES/NL-010/ROADMAP.md step 5; team-3/STEPS.md 5.1-5.8).
-   Licence: this file is Apache-2.0. It LINKS to See Through (CERN-OHL-S v2, see-through/202610050609/LICENSE.md:3-6) and
-   copies none of its code. The one block below marked "CERN-OHL-S-2.0" restates See Through's star-key rule (descent.js:19,
-   :963, :965) and is kept inside this module only, under CERN-OHL-S v2, so the reciprocal licence stays where it was taken.
+   Licence: CERN-OHL-S v2 for this whole file (see-through/202610050609/LICENSE.md:3-7, licences/globalgrid2050-CERN-OHL-S-2.0.txt).
+   The block marked "CERN-OHL-S-2.0" copies See Through's star-key rule (descent.js:19, :963, :965; from Learn the Kuiper grid.js:36-38,
+   CERN-OHL-S v2 by its NOTICE.md:8-10), so the module cannot be Apache-2.0; the Apache-2.0 kuiper-belt engine is only called.
    Substation names drawn from data/see-through.json are (c) OpenStreetMap contributors, ODbL 1.0.
    Folds in NL-009 round 1 06-seethrough (FIXES/NL-009/round1/06-seethrough.md): the SEE THROUGH entry in the bar's face,
    same tab, through the stable pointer ../../see-through/, and the "family" panel text (#edapps).

@@ -2,7 +2,7 @@
 // test.cjs — Opus team 1, roadmap step 1 "the shell contract": acceptance A1–A9, measured, never estimated.
 //
 //   node test.cjs [--port 8412] [--ga-port 8512] [--out DIR] [--write] [--module FILE] [--html FILE]
-//                 [--devices "Pixel 7,Galaxy S24,Pixel 7 landscape,360x740"] [--extra] [--no-ga] [--no-a8]
+//                 [--devices "Pixel 7,Galaxy S24,Pixel 7 landscape,360x740"] [--extra] [--no-ga] [--no-a8] [--loader]
 //
 // What it does, in the form of FIXES/NL-009/android-journey.cjs (Playwright Chromium, SwiftShader flags, real touch:
 // page.touchscreen.tap for every tap, the keyboard only for Escape):
@@ -23,6 +23,8 @@
 //   inject        neither does yet: the test serves index.html with one `<script defer src="modules/<file>">` before
 //                 </body>, standing in for the one script tag team 1 may add (ROADMAP "The ten Opus teams", row 1)
 //   --html FILE   serve FILE in place of index.html (for a loader-patched copy before team 10 lands it)
+//   --loader      loader-preview: team 4's handoff/04-loader/index.html.patch applied to a copy and modules.json served as
+//                 team 4's manifest plus a kuiper-shell record (sha256, bytes, requires read from the module's KY.register)
 //
 // Exit 0 when every assertion on every device passed (the hand-off may go), 1 otherwise, 2 on a harness error.
 // Element ids, classes and probes the test relies on (C1–C10 of team-1/STEPS.md:115-199):
@@ -216,6 +218,7 @@ async function openPage(browser, devName, kind, opts = {}) {
     html = opts.rewrite(html);
     return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: html });
   });
+  if (kind === 'kuiper' && opts.manifest) await page.route(KURL + 'modules.json', route => route.fulfill({ status: 200, contentType: 'application/json', headers: { 'cache-control': 'no-store' }, body: opts.manifest }));
   return { ctx, page, errors, sandboxNet };
 }
 async function until(page, fn, arg, ms = 5000, every = 150) { const t0 = Date.now(); let v; while (Date.now() - t0 < ms) { v = await page.evaluate(fn, arg); if (v) return v; await sleep(every); } return v; }
@@ -295,7 +298,8 @@ async function runKuiper(browser, devName, mod, ga) {
         mainText: m && /^ventus$/i.test(m.text.trim()), subText: s && /cables\s*&\s*connectivity®/i.test(s.text),
         mainSize: ms && ms['font-size'] === ref.mainFs, mainWeight: ms && ms['font-weight'] === '800', mainColour: ms && ms.color === 'rgb(255, 255, 255)', mainUpper: ms && ms['text-transform'] === 'uppercase',
         subSize: ss && ss['font-size'] === ref.subFs, subColour: ss && ss.color === 'rgb(136, 136, 136)', subUpper: ss && ss['text-transform'] === 'uppercase',
-        centreX: near(cx, vw / 2, 1), centreY: near(cy, barCy, 1), notLink: p.brandIsLink === false && p.brandOnClick === false,
+        // centred within 1 px, or (with the desktop flanks, where GridAtlas's own wordmark sits off centre) at GridAtlas's offset within 1 px
+        centreX: near(cx, vw / 2, 1) || !!(gb && gp.bar && near(cx - vw / 2, (gb.x + gb.w / 2) - (gp.bar.x + gp.bar.w / 2), 1)), centreY: near(cy, barCy, 1), slotCentred: !!(p.slot && near(p.slot.x + p.slot.w / 2, vw / 2, 1)), notLink: p.brandIsLink === false && p.brandOnClick === false,
         boxVsTable: b && near(b.w, ref.brandW, 1) && near(b.h, ref.brandH, 1),
         boxVsGridAtlasLive: !!(b && gb && near(b.w, gb.w, 1) && near(b.h, gb.h, 1)),
       };
@@ -407,8 +411,10 @@ async function runKuiper(browser, devName, mod, ga) {
     }
     // A2b: a 1.3x system font scale on the titles and the wordmark (01-bar's method) — one row still; scroll reaches the last title
     if (devName === '360x740' && p.bar && six.length) {
+      await page.evaluate(() => { const bar = document.getElementById('kuiper-menu-bar');
+        for (const el of bar.querySelectorAll('.gm-title, .ventus-main, .ventus-sub')) el.style.setProperty('font-size', (parseFloat(getComputedStyle(el).fontSize) * 1.3).toFixed(2) + 'px', 'important'); });
+      await sleep(300);                                            // a real font-scale change relayouts before the next frame; let it
       const r = await page.evaluate(() => { const bar = document.getElementById('kuiper-menu-bar');
-        for (const el of bar.querySelectorAll('.gm-title, .ventus-main, .ventus-sub')) el.style.setProperty('font-size', (parseFloat(getComputedStyle(el).fontSize) * 1.3).toFixed(2) + 'px', 'important');
         const ts = [...bar.querySelectorAll('.gm-title')]; return { rows: new Set(ts.map(t => Math.round(t.getBoundingClientRect().y))).size, barH: +bar.getBoundingClientRect().height.toFixed(1), scrollWidth: bar.scrollWidth, clientWidth: bar.clientWidth, overflowX: getComputedStyle(bar).overflowX }; });
       let reach = null;
       if (r.scrollWidth > r.clientWidth) { const last = six[six.length - 1];
@@ -579,6 +585,9 @@ const NOTES = [
   'The back gesture is `page.goBack()`: on Android Chrome the system back gesture is history back. A panel that pushes no history entry makes back leave the page; the test records that as FAIL (`stayedOnPage`), reloads and continues.',
   'Box tolerance is 1 px on width and height, as ROADMAP step 1 A3 states; positions differ by design (GridAtlas\'s bar sits at (5,5) inside its 1 px bordered map container, the Kuiper\'s at (0,0) on the window), so centres are compared relative to each bar.',
   'Console errors from external hosts the sandbox proxy refuses are listed separately and not counted; every local 4xx/5xx and every page error is counted.',
+  'A3 centre, measured adjustment (builder FINDING and lead, PLAN.md 22:12; tester agreed and added the slot check): above 700 px GridAtlas\'s own wordmark sits +4.66 px right of its bar centre because the SYSTEM TIME flank (66 px) is wider than 2050 TARGET (57 px) (team-1 table: brand (599.7,12.3) 90×20.5 at 1280, centre 644.7 vs 640). "Centred within 1 px" and "box within 1 px of GridAtlas" cannot both hold there with the flanks copied, so A3 passes centreX when the wordmark is centred within 1 px OR sits at GridAtlas\'s live offset within 1 px, and additionally requires `.gm-brand-slot` centred within 1 px on every device.',
+  'A2b waits 300 ms after the 1.3× scale before measuring (a real font-scale change relayouts first; lead edit, kept). A5 `top ≥ bar bottom` is strict (0.5 px): the first run found the landscape panels at y=35 on the bar\'s 1 px rule (GridAtlas\'s `top:100%` does the same inside its own bar); the module now uses `top:calc(100% + 1px)`.',
+  'A4 accepts the find box absent at rest (lead\'s measured decision, PLAN.md: Edition 4\'s keydown ignores every key while `#goto` is shown, index.html:613); if it is shown at rest it must sit at bar bottom + 36 px, right-aligned, 44 px tall on touch.',
   'Pixel 7 landscape is 863 px wide, over GridAtlas\'s 700 px phone rule, so both shells show the 36 px desktop bar and the full lockup there (team-1/STEPS.md:84-86); the expected box is 90.0×20.5.',
 ];
 
@@ -596,6 +605,20 @@ const NOTES = [
     else { mod.mode = 'inject'; mod.modeNote = `(neither index.html nor modules.json names it yet; served with \`<script defer src="modules/${name}"></script>\` before \`</body>\`, standing in for team 1's one script tag)`;
       mod.pageOpts = { ...(flag('--html') ? { htmlFile: String(flag('--html')) } : {}), rewrite: h => h.replace(/<\/body>/i, `<script defer src="modules/${name}"></script>\n</body>`) }; }
     if (flag('--html')) mod.modeNote += ' — index.html replaced by ' + flag('--html');
+    if (flag('--loader') && mod.mode !== 'page') {   // integration preview: team 4's loader patch applied, the shell admitted by the manifest
+      const L4 = path.join(EDITION_DIR, 'handoff', '04-loader'), tmp = path.join(OUT, 'loader-preview'); fs.mkdirSync(tmp, { recursive: true });
+      const out = path.join(tmp, 'index.html'); const pr = spawnSync('patch', ['-s', '-o', out, path.join(EDITION_DIR, 'index.html'), path.join(L4, 'index.html.patch')], { encoding: 'utf8' });
+      if (pr.status !== 0) throw new Error('team 4 index.html.patch did not apply: ' + pr.stdout + pr.stderr);
+      const man = JSON.parse(fs.readFileSync(path.join(L4, 'modules.json'), 'utf8')); const src = fs.readFileSync(modFile, 'utf8');
+      const reqs = ((src.match(/KY\.register\(\{[\s\S]*?requires:\s*\[([^\]]*)\]/) || [])[1] || '').split(',').map(x => x.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean);
+      const provs = ((src.match(/KY\.register\(\{[\s\S]*?provides:\s*\[([^\]]*)\]/) || [])[1] || '').split(',').map(x => x.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean).map(x => x === 'ID' ? 'kuiper-shell' : x);
+      man.order = man.order.filter(x => x !== 'kuiper-shell').concat(['kuiper-shell']);
+      man.modules = man.modules.filter(x => x.id !== 'kuiper-shell').concat([{ id: 'kuiper-shell', generation: name.slice(0, 12), path: 'modules/' + name, sha256: mod.sha256, bytes: mod.bytes, byte_budget: Math.ceil(mod.bytes / 4096) * 4096 + 4096,
+        requires: reqs, provides: provs, reads: [], writes: ['window.__KUIPER_MODULES__.menuBar', '#kuiper-menu-bar'], creates_controls: 'bar', licence: 'Apache-2.0', team: '01', step: 1, proof: 'handoff/01-shell/' }]);
+      fs.writeFileSync(path.join(tmp, 'modules.json'), JSON.stringify(man, null, 1));
+      mod.mode = 'loader-preview'; mod.modeNote = `(team 4's handoff/04-loader/index.html.patch applied to a copy, ${path.join(tmp, 'index.html')}; modules.json = team 4's plus a kuiper-shell record with this sha256, order ${JSON.stringify(man.order)}; requires ${JSON.stringify(reqs)})`;
+      mod.pageOpts = { htmlFile: out, rewrite: h => h, manifest: JSON.stringify(man) };
+    }
   } else mod.modeNote = '— no module file yet; every Kuiper assertion fails';
   log('module:', modFile || 'NONE', mod.mode);
   const browser = await chromium.launch({ args: ARGS });

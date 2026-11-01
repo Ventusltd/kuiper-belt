@@ -183,8 +183,8 @@ and the file contains exactly one `KY.register(`.
 | F11 | NL-009 02-card used `.ch` for the handle and hid it on a desktop… | neural-link@b9b7d5d FIXES/NL-009/round1/02-card.md:107 | `#card .ch{display:none}` |
 | F12 | …and squeezed it to 36×4 px on a phone | neural-link@b9b7d5d FIXES/NL-009/round1/02-card.md:120 | `#card .ch{display:block;width:36px;height:4px` |
 | F13 | ROADMAP K1 names the header `<header class="ch">` | neural-link@b9b7d5d FIXES/NL-010/ROADMAP.md:139 | `<header class="ch"><code>` |
-| F14 | the shell's ABOUT slot carries the sentence first (B4) | kuiper-belt@WT editions/202611012135/modules/202611012143-kuiper-shell.js:459 | `var law = el('p', 'gm-prose', 'The line of code is the header.` |
-| F15 | the slot is owned by line-card | kuiper-belt@WT editions/202611012135/modules/202611012143-kuiper-shell.js:461 | `law.setAttribute('data-owner', 'line-card'); law.setAttribute('data-law', 'L11');` |
+| F14 | the shell's ABOUT slot carries the sentence first (B4) | kuiper-belt@WT editions/202611012135/modules/202611012143-kuiper-shell.js:457 | `var law = el('p', 'gm-prose', 'The line of code is the header.` |
+| F15 | the slot is owned by line-card | kuiper-belt@WT editions/202611012135/modules/202611012143-kuiper-shell.js:459 | `law.setAttribute('data-owner', 'line-card'); law.setAttribute('data-law', 'L11');` |
 | F16 | NL-009 02-card F3 (a tap on the card re-picks a spark) is closed by Opus 4's `tapUp`, which is true only for a press that began on the canvas, not by team 2's index.patch | kuiper-belt@WT editions/202611012135/handoff/04-loader/index.html.patch:160 | `if (!edPlaced.length \|\| !tapUp \|\| pts.size > 0) return;` |
 | F17 | 02-card F3 as found | neural-link@b9b7d5d FIXES/NL-009/round1/02-card.md:33 | `a tap on the card where a spark lies beneath it re-picks that spark` |
 
@@ -194,7 +194,7 @@ the team-1 STEPS.md K3 text. That text is 167 bytes, ASCII, sha256 prefix `ebfba
 - `handoff/02-card/LAWS-L11.patch` (the added sentence line)
 - `handoff/02-card/README-card-law.md` line 3
 - the edition `README.md`
-- the shell's ABOUT paragraph (:459-460, concatenated)
+- the shell's ABOUT paragraph (kuiper-shell.js:457-458, concatenated; the shell file is still moving, so re-key at hand-off)
 - ROADMAP step 2 K3
 
 Two further checks, both with whitespace flattened:

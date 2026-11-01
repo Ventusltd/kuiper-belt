@@ -10,7 +10,8 @@
 //               TEST.md (one row per assertion, both devices) next to this file.
 //   --index F / --manifest F   PRE-INTEGRATION ONLY: serve file F in place of editions/202611012135/index.html /
 //               modules.json (the integrator has not yet applied the step 4 hook table or listed this module). The
-//               report and TEST.md say so on their first line; a hand-off pass is a pass WITHOUT these flags.
+//               report and TEST.md say so on their first line; a hand-off pass is a pass WITHOUT these flags. In such a
+//               manifest a module record may carry "sha256": "live": it is hashed from disk at each request.
 //
 // Governing text: neural-link FIXES/NL-010/ROADMAP.md step 3 "Acceptance test on Android" 1-9 and team-2/STEPS.md 3.1-3.8
 // (tests at :248-287). Form: neural-link FIXES/NL-009/android-journey.cjs (Playwright, real touch via
@@ -18,14 +19,16 @@
 // of every device passed, 1 otherwise, 2 on a harness error.
 //
 // What the script relies on (the contract with the module; keep it or update this list):
-//   window.KY.layers.{inspect,get,set,value} (team-2/STEPS.md 3.3); inspect() -> {layers, unique, complete, on, states}
-//   #layers: the WAFER panel; one ORIGINAL <input type=checkbox data-ky-layer="layer:<id>"> per record, inside its row
+//   the registry api: KY.modules.layers.api (KY is frozen by the step 4 loader), else window.__KUIPER_LAYERS__, else KY.layers;
+//     {inspect,get,set,value} (team-2/STEPS.md 3.3); inspect() -> {layers, unique, complete, on, states}
+//   #ky-layers (else #layers): the WAFER panel host; #layers: the rows, one ORIGINAL <input type=checkbox data-ky-layer="layer:<id>"> per record, inside its row
 //     (the row is input.closest('label'), else the input's parent); the row's text carries the state tag
 //     "<WAIT|LOAD|OK|EMPTY|FAIL|REFUSED>[ · <why>]"
-//   the lines list inside #layers: rows [data-i] (or #lineslist); a filter input (#lyFind, else input[type=search],
+//   the lines list inside the panel host: rows [data-i] (or #lineslist); a filter input (#lyFind, else input[type=search],
 //     else the first non-checkbox input in #layers); a clear control (button with aria-label or text "clear" / "×");
-//     a count line "<shown> of <total> rows"
-//   the WAFER title: a #bar button whose text is WAFER (team 1's shell), or #bar [data-panel=wafer|layers]
+//     a count line "<shown> of <total> rows[ …]"; "the largest label" compares text outside buttons and inputs
+//   the WAFER title: a #bar button whose text is WAFER (team 1's shell), or #bar [data-panel=wafer|layers]; before the shell
+//     is admitted the module takes over the Edition 4 LINES title (#bar [data-panel=lines]) and t2-title is NOT EVALUATED
 //   #refuse[role=alert] (the refusal strip), #big (the heading), #hud (the readout), #o (2d overlay, 1 canvas px = 1 CSS px)
 //   KY.cam {x, y, zoom} (step 4 hook table, handoff/04-loader/HOOKS.md), else the page's globals cx, cy, zoom
 //   the URL: the ticked layers as "layers=<id>,<id>" in the hash (R3, the hash wins) or the query (team-2 3.6)
@@ -47,6 +50,10 @@ const HERE = __dirname, ED_DIR = path.resolve(HERE, '../..'), REPO = path.resolv
 const OVR_INDEX = flags['--index'] ? fs.readFileSync(path.resolve(String(flags['--index']))) : null;
 const OVR_MANIFEST = flags['--manifest'] ? fs.readFileSync(path.resolve(String(flags['--manifest']))) : null;
 const PRE = !!(OVR_INDEX || OVR_MANIFEST);
+// pre-integration only: a record whose sha256 is "live" is hashed from disk at each request, because the module is edited while it is tested
+function liveManifest() { let m; try { m = JSON.parse(OVR_MANIFEST.toString('utf8')); } catch (e) { return OVR_MANIFEST; }
+  for (const r of m.modules || []) if (r.sha256 === 'live') { const b = fs.readFileSync(path.join(ED_DIR, r.path)); r.sha256 = sha256(b); r.bytes = b.length; }
+  return JSON.stringify(m); }
 const FIXED_WAIT = 6500, STATE_MAX = 90000;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -70,27 +77,28 @@ function probeFn() {
   const vis = el => { if (!el) return false; const cs = getComputedStyle(el); if (cs.display === 'none' || cs.visibility === 'hidden' || el.hidden) return false; const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
   const q = s => document.querySelector(s);
   const norm = s => String(s || '').replace(/\s+/g, ' ').trim();
-  const STATE = /\b(WAIT|LOAD|OK|EMPTY|FAIL|REFUSED)\b(?:\s*·\s*([^\n]*))?/;
+  const STATE = /(?<![A-Z])(WAIT|LOAD|OK|EMPTY|FAIL|REFUSED)\b(?:\s*·\s*([^\n]*))?/;
+  const textOf = el => { const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); const a = []; while (w.nextNode()) a.push(w.currentNode.textContent); return norm(a.join(' ')); };   // text nodes joined by a space: 'periods' + 'WAIT' never reads 'periodsWAIT'
   const KY = window.KY, L = (KY && KY.modules && KY.modules.layers && KY.modules.layers.api) || window.__KUIPER_LAYERS__ || (KY && KY.layers);
   let inspect = null, inspectErr = null; try { inspect = L && L.inspect ? JSON.parse(JSON.stringify(L.inspect())) : null; } catch (e) { inspectErr = String(e && e.message || e); }
   const get = id => { try { const g = L && L.get ? L.get(id) : null; return g ? { on: g.on, value: g.value, status: g.status, why: g.why, placed: g.placed, total: g.total, group: g.group || (g.record && g.record.group) || null } : null; } catch (e) { return { error: String(e && e.message || e) }; } };
-  const panel = q('#layers');
+  const rowsRoot = q('#layers'), panel = q('#ky-layers') || rowsRoot;   // #ky-layers: the panel host (rows, filter, count, list); #layers: the seven rows
   const fontPx = el => parseFloat(getComputedStyle(el).fontSize) || 0;
-  const maxFont = root => { let m = 0; if (!root) return 0; const all = [root, ...root.querySelectorAll('*')]; for (const el of all) { if (el.tagName === 'INPUT') continue; if ([...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) m = Math.max(m, fontPx(el)); } return m; };
+  const maxFont = root => { let m = 0; if (!root) return 0; const all = [root, ...root.querySelectorAll('*')]; for (const el of all) { if (el.tagName === 'INPUT' || el.closest('button, [role=button]')) continue; if ([...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) m = Math.max(m, fontPx(el)); } return m; };
   const inputs = [...document.querySelectorAll('input[data-ky-layer]')];
-  const rows = inputs.map(inp => { const row = inp.closest('label') || inp.parentElement; const text = norm(row.innerText || row.textContent); const m = text.match(STATE);
+  const rows = inputs.map(inp => { const row = inp.closest('label') || inp.parentElement; const text = textOf(row); const tag = row.querySelector('.st, [data-state]'); const m = (tag ? textOf(tag) : text).match(STATE) || text.match(STATE);
     const id = String(inp.getAttribute('data-ky-layer')).replace(/^layer:/, '');
-    return { id, key: inp.getAttribute('data-ky-layer'), inPanel: !!(panel && panel.contains(inp)), checked: inp.checked, disabled: inp.disabled, text: text.slice(0, 200), status: m ? m[1] : null, why: m && m[2] ? m[2].trim() : '', rect: R(row), inputRect: R(inp), visible: vis(row), maxFont: maxFont(row), get: get(id) }; });
+    return { id, key: inp.getAttribute('data-ky-layer'), inPanel: !!(rowsRoot && rowsRoot.contains(inp)), checked: inp.checked, disabled: inp.disabled, text: text.slice(0, 200), status: m ? m[1] : null, why: m && m[2] ? m[2].trim() : '', rect: R(row), inputRect: R(inp), visible: vis(row), maxFont: maxFont(row), get: get(id) }; });
   const panelVis = vis(panel);
   // the lines list, the filter, the clear control and the count line, all inside #layers
   let list = panel && (panel.querySelector('#lineslist') || (panel.querySelector('[data-i]') ? panel.querySelector('[data-i]').parentElement : null));
   const lineRows = panel ? panel.querySelectorAll('[data-i]').length : 0;
   const find = panel && (panel.querySelector('#lyFind') || panel.querySelector('input[type=search]') || [...panel.querySelectorAll('input')].find(i => i.type !== 'checkbox' && !i.hasAttribute('data-ky-layer')));
   const clear = panel && [...panel.querySelectorAll('button, [role=button]')].find(b => /clear/i.test(b.getAttribute('aria-label') || '') || /^(×|✕|clear)$/i.test(b.textContent.trim()));
-  let countLine = null; if (panel) { for (const el of panel.querySelectorAll('*')) { const own = [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join(''); const t = norm(el.children.length ? own : el.textContent); const m = t.match(/^([\d,]+) of ([\d,]+) rows?$/); if (m) { countLine = { text: t, shown: +m[1].replace(/,/g, ''), total: +m[2].replace(/,/g, '') }; break; } } }
+  let countLine = null; if (panel) { for (const el of panel.querySelectorAll('*')) { const own = [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join(''); const t = norm(el.children.length ? own : el.textContent); const m = t.match(/^([\d,]+) of ([\d,]+) rows?\b/); if (m) { countLine = { text: t, shown: +m[1].replace(/,/g, ''), total: +m[2].replace(/,/g, '') }; break; } } }
   const refuse = q('#refuse');
   const bar = q('#bar');
-  const titleEl = (() => { if (!bar) return null; const b = [...bar.querySelectorAll('button, a, [role=button]')].find(e => /^wafer$/i.test(norm(e.textContent))); return b || bar.querySelector('[data-panel="wafer"], [data-panel="layers"]'); })();
+  const titleEl = (() => { if (!bar) return null; const b = [...bar.querySelectorAll('button, a, [role=button]')].find(e => /^wafer$/i.test(norm(e.textContent))); return b || bar.querySelector('[data-panel="wafer"], [data-panel="layers"]') || bar.querySelector('[data-panel="lines"]'); })();   // pre-shell: the module takes over the Edition 4 LINES title
   const hp = new URLSearchParams(location.hash.replace(/^#/, '')), sp = new URLSearchParams(location.search);
   const layersParam = hp.has('layers') ? hp.get('layers') : (sp.has('layers') ? sp.get('layers') : null);
   let cam = null; try { cam = KY && KY.cam ? { x: KY.cam.x, y: KY.cam.y, zoom: KY.cam.zoom } : null; } catch (e) {}
@@ -163,7 +171,7 @@ async function runDevice(browser, deviceName, shots) {
     page.on('requestfailed', r => { const f = r.failure(); if (f && !/aborted|ERR_ABORTED/i.test(f.errorText)) errors.push({ kind: 'request', text: r.url().slice(0, 200) + ' ' + f.errorText }); });
     page.on('request', r => { const u = r.url().replace(ROOT, ''); requests[u] = (requests[u] || 0) + 1; });
     if (OVR_INDEX) await page.route(new RegExp('/editions/' + STAMP + '/(index\\.html)?(\\?[^#]*)?$'), r => r.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: OVR_INDEX }));
-    if (OVR_MANIFEST) await page.route(new RegExp('/editions/' + STAMP + '/modules\\.json(\\?.*)?$'), r => r.fulfill({ status: 200, contentType: 'application/json', body: OVR_MANIFEST }));
+    if (OVR_MANIFEST) await page.route(new RegExp('/editions/' + STAMP + '/modules\\.json(\\?.*)?$'), r => r.fulfill({ status: 200, contentType: 'application/json', body: liveManifest() }));
     for (const [re, fn] of (opts.routes || [])) await page.route(re, fn);
     await page.addInitScript(() => { window.__t3marker = String(Math.random()); });
     const t0 = Date.now(); await page.goto(url, { waitUntil: 'load', timeout: 120000 });
@@ -221,9 +229,9 @@ async function runDevice(browser, deviceName, shots) {
 
     // test 2: the WAFER panel under the bar, full width, rows >= 44 px with the input over the row, state tags, lines OK · 344 of 346
     op = await A.openPanel(); p = op.p;
-    const titleGate = p.modules.some(m => /shell/.test(m)) || !!p.title;
-    record('t2-title', 'test 2: the WAFER title is in #bar and a tap on it opens #layers', titleGate ? !!p.title && !!(p.panel && p.panel.visible) : null,
-      { title: p.title, panelOpenedBy: op.how, modules: p.modules }, titleGate ? (p.title ? '' : 'team 1 shell admitted but no WAFER title') : 'NOT EVALUATED: team 1 shell (kuiper-shell) not admitted, no WAFER title in #bar; opened through KY.panels.set');
+    const titleGate = p.modules.some(m => /shell/.test(m)) || !!(p.title && /^wafer$/i.test(p.title.text));
+    record('t2-title', 'test 2: the WAFER title is in #bar and a tap on it opens #layers', titleGate ? !!(p.title && /^wafer$/i.test(p.title.text)) && !!(p.panel && p.panel.visible) : null,
+      { title: p.title, panelOpenedBy: op.how, modules: p.modules }, titleGate ? (p.title ? '' : 'team 1 shell admitted but no WAFER title') : 'team 1 shell (kuiper-shell) not admitted; panel opened by ' + op.how);
     const pr = p.panel ? p.panel.rect : null;
     const rowsMeasured = p.rows.map(r => ({ id: r.id, h: r.rect && r.rect.height, covers: !!(r.inputRect && r.rect && r.inputRect.left <= r.rect.left + 1 && r.inputRect.top <= r.rect.top + 1 && r.inputRect.right >= r.rect.right - 1 && r.inputRect.bottom >= r.rect.bottom - 1), state: r.status, text: r.text }));
     const ln = A.row(p, 'lines'), edr = A.row(p, 'editions');
@@ -241,9 +249,9 @@ async function runDevice(browser, deviceName, shots) {
     const scrollIn = p.panel && p.list && Math.abs(p.panel.scrollHeight - p.panel.clientHeight) <= 1 && p.list.scrollHeight > p.list.clientHeight + 1;
     const count0 = p.countLine;
     let filtered = null, cleared = null;
-    if (p.find) { await A.page.evaluate(() => { const f = document.querySelector('#layers #lyFind') || document.querySelector('#layers input[type=search]'); if (f) f.scrollIntoView({ block: 'center' }); });
+    if (p.find) { await A.page.evaluate(() => { const f = document.getElementById('lyFind') || document.querySelector('#ky-layers input[type=search], #layers input[type=search]'); if (f) f.scrollIntoView({ block: 'center' }); });
       await sleep(200); let q = await A.probe(); await A.tap(q.find.rect); await sleep(300); await A.page.keyboard.type('gridatlas', { delay: 25 }); await sleep(800); q = await A.probe();
-      const all = await A.page.evaluate(() => [...document.querySelectorAll('#layers [data-i]')].every(r => /gridatlas/i.test(r.textContent)));
+      const all = await A.page.evaluate(() => [...document.querySelectorAll('#lineslist [data-i], #ky-layers [data-i]')].every(r => /gridatlas/i.test(r.textContent)));
       filtered = { value: q.find.value, countLine: q.countLine, rows: q.lineRows, allMatch: all };
       if (q.clear) { await A.tap(q.clear.rect); await sleep(700); q = await A.probe(); cleared = { value: q.find.value, countLine: q.countLine, rows: q.lineRows }; } }
     const t2b = !!scrollIn && count0 && count0.shown === 344 && count0.total === 344 && filtered && filtered.countLine && filtered.countLine.shown > 0 && filtered.countLine.shown < 344 && filtered.countLine.shown === filtered.rows && filtered.allMatch
@@ -253,7 +261,7 @@ async function runDevice(browser, deviceName, shots) {
       t2b ? '' : why(!p.list && 'no lines list ([data-i] rows) in #layers', p.list && !scrollIn && 'panel ' + p.panel.scrollHeight + '/' + p.panel.clientHeight + ', list ' + p.list.scrollHeight + '/' + p.list.clientHeight, !(count0 && count0.shown === 344 && count0.total === 344) && 'count line ' + JSON.stringify(count0), !p.find && 'no filter input', p.find && !p.clear && 'no clear control', filtered && !(filtered.countLine && filtered.countLine.shown === filtered.rows && filtered.allMatch) && 'filtered ' + JSON.stringify(filtered), cleared && !(cleared.value === '' && cleared.countLine && cleared.countLine.shown === 344) && 'cleared ' + JSON.stringify(cleared)));
 
     // test 3: a tap on the lines row turns the layer off (no green at edScreen(edPlaced[0])) and on again; repos with no value: OK · none lit
-    await A.page.evaluate(() => { const l = document.querySelector('#layers'); if (l) l.scrollTop = 0; const s = document.querySelector('#layers #lineslist'); if (s) s.scrollTop = 0; });
+    await A.page.evaluate(() => { const l = document.querySelector('#ky-layers') || document.querySelector('#layers'); if (l) l.scrollTop = 0; const s = document.getElementById('lineslist'); if (s) s.scrollTop = 0; });
     const before = await A.page.evaluate(sparksFn, PLACED_KEYS); const h0 = await A.probe();
     p = await A.tapRow('lines'); await sleep(1200); p = await A.probe();
     const off = await A.page.evaluate(sparksFn, PLACED_KEYS); const lOff = A.row(p, 'lines');

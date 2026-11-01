@@ -49,3 +49,10 @@ See Through itself (see-through/) is untouchable this edition: its hash reader s
   inView 0; 404 -> `FAIL · data/see-through.json HTTP 404`; spark bodies[0] card rows `../../see-through/#key=36064705400`
   and `#repo=data-centres-gb` (45 px tall); star 1182 tap -> `see this star fall to DRAX` ->
   `#key=3744984642&space=63340120796`. Scratch rebuild: /tmp/nl010-opus/team-5/builder/prep.sh.
+- 22:2x UTC tester (OPUS-5 tester): test.cjs runs in mode `preview` until the integrator lands (index.html + 04-loader patch +
+  02-card patch, modules kuiper-shell, line-card, layers, see-through from disk; 03-layers' deletion patch conflicts with
+  02-card's patch, both cannot apply: a FINDING for team 10). Pixel 7 @393: load PASS, layer PASS (5,800 placed, 0 remap
+  failures over all 5,800 old-sky keys), entry FAIL: team 1's shell puts the star in the strip below 434 px
+  (kuiper-shell.js STAR_TITLE_MQ '(min-width: 434px)') against ROADMAP R7/Q7 (title at >= 381 px; "A Pixel 7 (393 px) shows
+  the title"). Not fixable in our module (the shell owns the rule): REQUEST to team 1, or the owner's Q7. Hand-off refused
+  until the 393 px title passes.
