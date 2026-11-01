@@ -176,7 +176,8 @@
       var l = mk('span', 'ky-app-l', 'licence ' + a.licence + ' · ' + hostOf(hrefOf(a)));
       var s = mk('span', 'ky-app-s', ''); s.setAttribute('data-s', 'WAIT'); s.setAttribute('data-st', ''); l.appendChild(s);
       link.appendChild(l);
-      link.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); navigate(a); });
+      if (a.link_withheld) { link.removeAttribute('href'); link.setAttribute('aria-disabled', 'true'); s.setAttribute('data-s', 'WITHHELD'); s.textContent = ' · link withheld (K1)'; st.heads[a.id] = 'WITHHELD · K1'; }
+      link.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); if (!a.link_withheld) navigate(a); });
       row.appendChild(link);
       if (a.id === 'periodic-table') {
         var w = mk('button', 'ky-app-w', 'keys ▸'); w.type = 'button'; w.setAttribute('aria-label', 'the elements by key');
@@ -192,11 +193,11 @@
     });
     // same-origin links are checked when the launcher opens; links to other hosts only on this row's tap, so that
     // opening the launcher never sends a request off-origin (A6) and a phone offline is not filled with errors
-    var others = rows.filter(function (a) { return !sameOrigin(hrefOf(a)); });
+    var others = rows.filter(function (a) { return !sameOrigin(hrefOf(a)) && !a.link_withheld; });
     var chk = mk('button', 'ky-el ky-check', 'check the ' + fmt(others.length) + ' links to other hosts (fetch HEAD)'); chk.type = 'button';
     chk.addEventListener('click', function (e) { e.stopPropagation(); chk.disabled = true; chk.textContent = 'checking ' + fmt(others.length) + ' links to other hosts…'; st.checked_others = true; checkLinks(others); });
     list.appendChild(chk);
-    rows.forEach(function (a) { if (!sameOrigin(hrefOf(a)) && !st.heads[a.id] && a.__state) { a.__state.setAttribute('data-s', 'OFF'); a.__state.textContent = ' · not checked (other host)'; } });
+    rows.forEach(function (a) { if (!sameOrigin(hrefOf(a)) && !a.link_withheld && !st.heads[a.id] && a.__state) { a.__state.setAttribute('data-s', 'OFF'); a.__state.textContent = ' · not checked (other host)'; } });
     checkLinks(rows.filter(function (a) { return sameOrigin(hrefOf(a)); }));
   }
   // fetch(HEAD) when the launcher opens (never at load: A6); same origin reads the status, another origin is an

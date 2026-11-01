@@ -43,3 +43,25 @@ NL-009 script, and the machine is shared). Report `runs/r0-base-pixel-7.json`; 1
 
 Red at base: load, panel-dismiss (back), see-through. These are the reference: an admission must not add a red step.
 
+## Pre-admission run P1: shell + loader under the stub (22:53–23:20 UTC), not an admission
+
+Served by `handoff/00-stub/stub-serve.cjs 8502 --add modules/202611012143-kuiper-shell.js` (disk index.html + Opus 4's
+`index.html.patch` rev 2 in memory; manifest `order [hello, kuiper-shell]`), Pixel 7, script `03a4a49d…` (the first
+NL-010 version). Report `runs/pre-shell-pixel-7.json`. 12 PASS, 5 FAIL. What it taught:
+
+| step | Pixel 7 | cause |
+|---|---|---|
+| load | FAIL → script fixed | the bar is one row (tops 0×6, 34 px), 0 console errors, but the wafer-disc measure counted the shell's bottom-left SEE THROUGH strip (8,788 103×42) as lit wafer: bbox 359×535. The script now blanks `#kuiper-star-strip` before measuring (JOURNEY.md) |
+| panel-dismiss | FAIL → script fixed | ABOUT fills the phone (bottom 833 of 839), so no wafer to tap beside it; and the shell's own `pushState` re-used the forward entry left by the previous close (history.length 3→3), so a length test missed it. The script now tries every panel for the wafer tap and detects the entry by `history.state` |
+| lines-pick | **FAIL, real** | WAFER row tap: camera flew, no card, no selected spark. Same race as OPUS-2 tester's REQUEST on #10 (23:04 UTC, issuecomment on `kuiper-shell.js:241-275, :451-454` × `04-loader/index.html.patch:286-295`): the shell's `closeAll(false)` calls `history.back()`, the page's ANDROID BACK popstate listener (not told it is the shell's back) hides the card line-card/the engine has just opened |
+| card-details | FAIL (follows lines-pick) | no card to open details on |
+| whole-wafer | FAIL → script fixed | the same strip in the wafer bbox ([8,275,366,830]); VIEW › whole wafer closed the panel and the card |
+| see-through | PASS | strip `a` "See Through" (9,788 102.9×42) → same tab `/see-through/202610050609/` |
+| modules | PASS | admitted [hello, kuiper-shell], refused [], 0 page errors |
+| key-e-1..3, pinch-drag, spark-tap, edition-open/close, lines-open/filter | PASS | |
+
+Two console errors were recorded after the SEE THROUGH navigation (`basemaps.cartocdn.com … ERR_TUNNEL_CONNECTION_FAILED`
+on the See Through page: the sandbox has no route to CARTO). They belong to `see-through/`, not to the edition; the
+script now keeps them apart (`offPageErrors`) and adds a `console` step for the edition's own errors over the whole
+journey.
+

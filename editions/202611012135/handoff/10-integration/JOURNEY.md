@@ -8,8 +8,8 @@ Tester OPUS-10, 2026-11-01. For Opus teams 1 (shell), 2 (card) and 9 (law; owner
 - Source: neural-link `FIXES/NL-009/android-journey.cjs` as of 22:27 UTC, 39,578 bytes, sha256 `b3444215…b3b7` (the
   wafer is measured on the same PNG that is saved as the step's screenshot). The lead's `journey/android-journey.cjs`
   is the 22:19 version (39,204 bytes, `234a2a0c…`); the lead's `journey-5.cjs` adapts the same selectors (see below).
-- Team 10's copy: `/tmp/nl010-opus/team-10/tester/android-journey.cjs` (48,849 bytes, sha256 `03a4a49d…5998` at
-  22:31 UTC), diff against the source in `/tmp/nl010-opus/team-10/tester/journey-nl010.diff`. Run as
+- Team 10's copy: `handoff/10-integration/android-journey.cjs` (= `/tmp/nl010-opus/team-10/tester/android-journey.cjs`;
+  52,261 bytes, sha256 `ecde2f34…e911` at 23:23 UTC; the first NL-010 version was `03a4a49d…`). Run as
   `node android-journey.cjs http://127.0.0.1:8502/editions/202611012135/ <out> --device "<name>"`, one device per
   process, Pixel 7, Galaxy S24, Pixel 7 landscape, plain `python3 -m http.server 8502` from the repository root.
 - Team 9: no team-9 copy exists yet (`/tmp/nl010-opus/team-9/` absent at 22:31 UTC). When you start, please take
@@ -41,6 +41,16 @@ non-empty text node of the card.
 Teams 1 and 2: if you rename any id or class above, please write it here (or a REQUEST on #10) before the integrator
 admits the change, or the journey will read it as `SELECTOR` and the step goes red.
 
+## Measurement changes (no threshold changed)
+
+- The wafer-disc measure (load, whole-wafer) blanks the box of `#kuiper-star-strip` (the shell's bottom-left SEE
+  THROUGH strip below 434 px) before counting lit pixels; the blanked box is in `wafer.excluded`. Without this the
+  strip's text made the disc 359×535 on Pixel 7 (pre-admission run P1).
+- `vis()` also requires computed `visibility !== 'hidden'`: a card that is `display:block` but hidden (line-card's
+  `lc-behind`, OPUS-5's FINDING 23:02/23:06 UTC on `layers.js:277` × `line-card.js:165`) is not an open card.
+- Errors raised after the SEE THROUGH tap (on `see-through/`, another app) go to `offPageErrors`, not
+  `consoleErrors`.
+
 ## Steps added to the NL-009 journey
 
 - `panel-dismiss` (ROADMAP 9.4 (c); shell C7): open EDITION/ABOUT, tap the wafer beside the panel (a point where
@@ -48,8 +58,13 @@ admits the change, or the journey will read it as `SELECTOR` and the step goes r
   card opens; open again, `history.back()` (the Android back gesture) → the panel closes and the URL is unchanged. If
   opening pushed no history entry the back sub-check fails (the gesture would leave the page) and `history.back()` is
   not called.
+- `panel-dismiss` detail: the wafer tap is tried on EDITION/ABOUT first, then on every other title, on the first panel
+  that leaves wafer below it (ABOUT fills a phone: bottom 833 of 839); the history entry is detected by
+  `history.length` or `history.state` changing (the shell's `pushState` can re-use the forward entry its previous
+  close left, so the length alone stays 3→3).
+- `console`: zero console errors, page errors and failed requests on the edition over the whole journey.
 - `modules` (ROADMAP 9.4 (o)): every id in `modules.json` `order` is in `window.__KUIPER_EDITION__.admitted` (or
-  `KY.inspect()`), `refused` and `failures` empty, zero `pageerror`. With an empty `order` it passes with a note.
+  `KY.inspect()`, waited for `done` up to 60 s), `refused` and `failures` empty, `whole` null, zero `pageerror`. With an empty `order` it passes with a note.
 
 Not in the script (reported `NOT EVALUATED` in TEST.md): font scale 1.3 (team 1's test.cjs A2b covers the bar);
 the 4 px spark "hit or the page says what it hit" beyond `spark-tap`; the NL-009 06/09 BLOCKER/MAJOR items other

@@ -31,7 +31,8 @@
    "layer": 6,
    "cartridge": 1
   },
-  "distinct_commits_walked": 26
+  "distinct_commits_walked": 26,
+  "redacted_records": 1
  },
  "readout": "221 elements placed, 23 counted, not placed",
  "checks": [
@@ -119,8 +120,8 @@
  ],
  "checks_keypy_ok": true,
  "command": "python3 tools/element_keys.py --elements /home/user/estate/elements --roots /home/user/estate,/home/user,/tmp/nl010-opus/team-7/builder/clones --out editions/202611012135/data/elements.json --check 3 --keypy-root /home/user/estate",
- "built_utc": "2026-11-01T23:19:54Z",
- "seconds": 72.3,
+ "built_utc": "2026-11-01T23:24:39Z",
+ "seconds": 95.7,
  "elements": [
   {
    "sym": "block:At",
@@ -3869,7 +3870,7 @@
    "placed": true,
    "repo": "globalgrid2050",
    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f",
-   "path": "cable_selection/index.html",
+   "path": "not-public/index.html",
    "line": 1,
    "line_text": "<!DOCTYPE html>",
    "k0": 47019072901,
@@ -3879,8 +3880,13 @@
    "commit_lines_wafer": 33106402,
    "blob": "09abcd6e5cfbf30c23e631c109414d792259a33d",
    "files_listed": 1,
-   "github": "https://github.com/Ventusltd/globalgrid2050/blob/d3898fab970b56d50a64ee9cc4275ec86cd9416f/cable_selection/index.html",
-   "why": null
+   "github": "https://github.com/Ventusltd/globalgrid2050/blob/d3898fab970b56d50a64ee9cc4275ec86cd9416f/not-public/index.html",
+   "why": null,
+   "redacted": [
+    "path",
+    "github"
+   ],
+   "redacted_why": "K1: a token naming a repository that is not public, replaced by `not-public`"
   },
   {
    "sym": "block:x654",

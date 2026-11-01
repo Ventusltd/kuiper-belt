@@ -45,7 +45,8 @@
 const { chromium, devices } = require('playwright');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), cp = require('child_process');
 
-const argv = process.argv.slice(2), pos = argv.filter((a, i) => !a.startsWith('--') && !(i > 0 && argv[i - 1].startsWith('--') && !['--skip-keypy'].includes(argv[i - 1])));
+const argv = process.argv.slice(2), VALUED = ['--device', '--devices', '--shots', '--testmd', '--edition-dir', '--estate', '--roots'];
+const pos = argv.filter((a, i) => !a.startsWith('--') && !(i > 0 && VALUED.includes(argv[i - 1])));
 const flag = n => { const i = argv.indexOf(n); return i >= 0 ? (argv[i + 1] || true) : null; };
 if (pos.length < 2) { console.error('usage: node test.cjs <edition url> <outdir> [--device NAME] [--devices A,B] [--shots DIR] [--testmd FILE]'); process.exit(2); }
 const URL0 = pos[0].replace(/\/?$/, '/'), OUT = path.resolve(pos[1]);
@@ -408,6 +409,7 @@ function writeTestMd(file) {
 (async () => {
   try { await scriptChecks(); } catch (e) { sstep('script harness', false, String(e && e.stack || e).slice(0, 800)); }
   const browser = await chromium.launch({ args: ARGS }); report.browser = browser.version();
+  if (argv.includes('--script-only')) DEVICES = [];
   for (const DEV of DEVICES) { await runDevice(browser, DEV); fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(report, null, 1)); }
   await browser.close();
   report.finished = new Date().toISOString(); report.pass = allPass;

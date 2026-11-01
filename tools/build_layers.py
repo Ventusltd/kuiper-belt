@@ -107,6 +107,8 @@ def build_editions(edition, edition_dir):
 def features_of(fmt, data, path, SPACE, refuse):
     if fmt == "kuiper.editions.v1":
         return len(data["editions"])
+    if fmt == "kuiper.elements.v1":
+        return len(data.get("elements", []))
     if fmt == "edition-keys.v1":
         bodies = data.get("bodies", data) if isinstance(data, dict) else data
         for b in bodies:
@@ -125,6 +127,23 @@ def features_of(fmt, data, path, SPACE, refuse):
                     refuse("%s: geometry key %r outside SPACE %d" % (path, k, SPACE))
         return len(fs)
     return 0
+
+
+def measure(f, r, edir, etext, editions, SPACE, refuse):
+    """bytes, features and sha256 of one source file of record r (None when the record names no file)."""
+    if not f:
+        return None
+    if f == "data/editions.json":
+        raw, data = etext.encode("utf-8"), editions
+    else:
+        p = os.path.join(edir, f)
+        if not os.path.exists(p):
+            refuse("%s: source file %s does not exist" % (r["id"], f))
+            return None
+        raw = open(p, "rb").read()
+        data = json.loads(raw.decode("utf-8"))
+    return {"bytes": len(raw), "features": features_of(r["format"], data, f, SPACE, refuse),
+            "sha256": hashlib.sha256(raw).hexdigest()}
 
 
 def dump(obj):
@@ -164,7 +183,10 @@ def main():
         if not r.get("licence"):
             refuse("%s: empty licence" % rid)
         if r.get("format") not in FORMATS:
-            refuse("%s: format %r not admitted" % (rid, r.get("format")))
+            if str(r.get("licence", "")).upper().startswith("UNSETTLED"):
+                print("note  %-11s format %s not admitted; the record is REFUSED at run time for its licence first" % (rid, r.get("format")))
+            else:
+                refuse("%s: format %r not admitted" % (rid, r.get("format")))
         for f in ("label", "group", "meaning", "draws", "source", "requires", "module"):
             if f not in r:
                 refuse("%s: field %s missing" % (rid, f))
@@ -176,20 +198,10 @@ def main():
             if extra:
                 refuse("%s: requires %s not within module %s requires" % (rid, sorted(extra), mname))
         src = r.get("source", {})
-        f = src.get("file")
-        if f:
-            if f == "data/editions.json":
-                raw = etext.encode("utf-8")
-                data = editions
-            else:
-                p = os.path.join(edir, f)
-                if not os.path.exists(p):
-                    refuse("%s: source file %s does not exist" % (rid, f))
-                    continue
-                raw = open(p, "rb").read()
-                data = json.loads(raw.decode("utf-8"))
-            pending[rid] = {"bytes": len(raw), "features": features_of(r["format"], data, f, SPACE, refuse),
-                            "sha256": hashlib.sha256(raw).hexdigest()}
+        for key, part in (("", src), ("fallback", src.get("fallback") or {})):
+            m = measure(part.get("file"), r, edir, etext, editions, SPACE, refuse)
+            if m:
+                pending[(rid, key)] = m
 
     if reasons:
         for x in reasons:
@@ -198,11 +210,14 @@ def main():
         return 1
     changed = []
     for r in L["layers"]:
-        if r["id"] in pending:
-            for k, v in pending[r["id"]].items():
-                if r["source"].get(k) != v:
-                    changed.append("%s.source.%s %r -> %r" % (r["id"], k, r["source"].get(k), v))
-                    r["source"][k] = v
+        for key in ("", "fallback"):
+            if (r["id"], key) not in pending:
+                continue
+            tgt = r["source"] if not key else r["source"]["fallback"]
+            for k, v in pending[(r["id"], key)].items():
+                if tgt.get(k) != v:
+                    changed.append("%s.source%s.%s %r -> %r" % (r["id"], "." + key if key else "", k, tgt.get(k), v))
+                    tgt[k] = v
     ltext = dump(L)
     old_e = open(epath, encoding="utf-8").read() if os.path.exists(epath) else None
     old_l = open(lpath, encoding="utf-8").read()

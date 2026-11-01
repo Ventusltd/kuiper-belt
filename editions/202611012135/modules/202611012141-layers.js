@@ -265,7 +265,7 @@
     + '#lineslist .ln{min-height:44px;padding:5px 8px;border-top:1px solid #121a26;cursor:pointer;color:#7d8799;font-size:12px;overflow-wrap:anywhere}'
     + '#lineslist .ln code{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;color:#ffffff;white-space:pre-wrap;font:inherit;font-weight:600}'
     + '#lineslist .ln b{color:#d5dcea;font-weight:600}#lineslist .ln.focus b{color:#22ee77}#lineslist .ln.sel{background:rgba(255,43,214,.12)}'
-    + '#lineslist .ln .t{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}'
+    + '#lineslist .ln .t{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}';
 
   function buildPanel() {
     panel = document.createElement('div'); panel.id = 'layers'; panel.className = 'gm-panel ky-layers';

@@ -15,6 +15,9 @@ Nothing is fetched from the network. Apache-2.0 (kuiper-belt code); the output i
 """
 import argparse, hashlib, html, io, json, os, re, subprocess, sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from element_keys import redact   # noqa: E402  K1 (tools/ci_check.py): a non-public repository name is never written
+
 SRC = {
     'elements': {'repo': 'elements', 'commit': 'f7a92fb085c38dcbbd5cb469a66cd5ca61fb95bf'},
     'homepage': {'repo': 'globalgrid2050', 'commit': 'c66759f0d7ac3489df9158da6eaa1330a37c069f',
@@ -179,15 +182,19 @@ def build(roots, edition):
     graphs = []
     for g in GRAPHS:
         d = find_clone(roots, g['repo'])
-        b = show(d, g['commit'], g['path'])
+        raw = show(d, g['commit'], g['path'])
+        text, nred = redact(raw.decode('utf-8'))
+        b = text.encode('utf-8')
         j = json.loads(b)
         dst = os.path.join(edition, g['file'])
         here = open(dst, 'rb').read() if os.path.exists(dst) else None
         graphs.append({'file': g['file'], 'source': '%s@%s %s' % (g['repo'], g['commit'][:7], g['path']),
+                       'source_sha256': sha256(raw), 'source_bytes': len(raw), 'k1_redacted_tokens': nred,
                        'sha256': sha256(b), 'bytes': len(b), 'nodes': len(j.get('nodes', [])), 'edges': len(j.get('edges', [])),
-                       'copy_matches_source': here == b if here is not None else 'not copied yet',
+                       'copy_matches_source': (here == b) if here is not None else 'not copied yet',
                        'licence': licence_of(roots, 'https://ventusltd.github.io/%s/' % g['repo'])['licence'],
-                       'status': 'DISCLOSED (owner question Q5): copied byte for byte with its sha256 and source address'})
+                       'status': 'DISCLOSED (owner question Q5): copied with its sha256 and source address, byte for byte'
+                                 + ('' if not nred else ' except %d token(s) naming a non-public repository, replaced by not-public (K1)' % nred)})
     r = {'key': 'surface:' + link, 'id': 'spider-sandbox', 'key_source': 'issued-here', 'issued_by': 'data/apps.json',
          'name': il[0].lstrip('# ').strip(), 'kind': 'application',
          'purpose': re.split(r'\s*\|\s*', il[SRC['spider']['line'] - 1].strip('| '))[2],
@@ -210,6 +217,11 @@ def build(roots, edition):
               'wafer_why': 'the catalogue is a register of blocks; its 244 elements are the layer, data/elements.json',
               'same_as': [], 'copied': 'linked; keys only copied (data/elements.json, Q1)'})
     rows.append(r)
+    # K1: a link whose folder name equals a repository that is not public cannot be written; the row stays, its
+    # link reads not-public and says so (the homepage line in `source` still carries it)
+    for r in rows:
+        if redact(r['link'])[1]:
+            r['link_withheld'] = 'K1 (tools/ci_check.py): the folder name equals a repository that is not public; written as not-public, see the source line'
     # rows whose stable link is the same address cross-reference each other (7.1: same_as, never merged)
     by_link = {}
     for r in rows:
@@ -270,9 +282,12 @@ def check(edition, roots):
     for g in sp['graphs']:
         p = os.path.join(edition, g['file'])
         b = open(p, 'rb').read() if os.path.exists(p) else b''
-        ok(sha256(b) == g['sha256'] and len(b) == g['bytes'], 'Q5 %s is the byte copy of %s (sha256 %s)' % (g['file'], g['source'], g['sha256'][:12]))
+        ok(sha256(b) == g['sha256'] and len(b) == g['bytes'] and g['copy_matches_source'] is True,
+           'Q5 %s is the copy of %s (sha256 %s; source %s; K1 tokens replaced %d)' % (g['file'], g['source'], g['sha256'][:12], g['source_sha256'][:12], g['k1_redacted_tokens']))
     gfiles = sorted(os.listdir(os.path.join(edition, 'data', 'graphs')))
     ok(gfiles == ['overview.json', 'periodic-table.json'], 'Q5 data/graphs holds only the two DISCLOSED graphs %s' % gfiles)
+    txt = open(os.path.join(edition, 'data', 'apps.json'), encoding='utf-8').read()
+    ok(redact(txt)[1] == 0, 'K1 data/apps.json names no non-public repository')
     print('RESULT: %s' % ('PASS' if not fails else 'FAIL (%d)' % len(fails)))
     return 0 if not fails else 1
 
@@ -290,12 +305,14 @@ def main():
     if a.copy_graphs:
         os.makedirs(os.path.join(a.edition, 'data', 'graphs'), exist_ok=True)
         for g in GRAPHS:
-            b = show(find_clone(roots, g['repo']), g['commit'], g['path'])
+            b = redact(show(find_clone(roots, g['repo']), g['commit'], g['path']).decode('utf-8'))[0].encode('utf-8')
             open(os.path.join(a.edition, g['file']), 'wb').write(b)
             print('copied %s <- %s@%s %s (%d bytes, sha256 %s)' % (g['file'], g['repo'], g['commit'][:7], g['path'], len(b), sha256(b)))
     out, _, _ = build(roots, a.edition)
     p = os.path.join(a.edition, 'data', 'apps.json')
-    s = json.dumps(out, indent=1, ensure_ascii=False) + '\n'
+    s, nred = redact(json.dumps(out, indent=1, ensure_ascii=False) + '\n')
+    if nred:
+        print('K1: %d token(s) in the registry named a non-public repository; replaced by not-public' % nred)
     open(p, 'w', encoding='utf-8').write(s)
     print('wrote %s: %d records, %d bytes, sha256 %s' % (p, len(out['apps']), len(s.encode()), sha256(s.encode())))
 

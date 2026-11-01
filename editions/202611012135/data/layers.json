@@ -110,10 +110,17 @@
    "on": true,
    "format": "edition-keys.v1",
    "source": {
-    "file": "keys.json",
-    "bytes": 1709129,
+    "file": "keys-min.json",
+    "bytes": 1558451,
     "features": 346,
-    "sha256": "1c293c337b4c3c8442c12746ce3cd08d920c763344f18333f75e73aa9fc7242b"
+    "sha256": "e153dfa45d3028577462002d229000c4a313fb1a76052801edc29cf8ceceb10d",
+    "note": "NL-009 07 perf: 17 of the 36 fields, written from keys.json by tools/edition_min.py (the integrator's); line_text kept whole",
+    "fallback": {
+     "file": "keys.json",
+     "bytes": 1709129,
+     "features": 346,
+     "sha256": "1c293c337b4c3c8442c12746ce3cd08d920c763344f18333f75e73aa9fc7242b"
+    }
    },
    "licence": "CC BY 4.0 (kuiper-belt generated data, README.md:157); each quoted line keeps its repository's licence (editions/202611012027/NOTICE.md:7-10)",
    "requires": [
@@ -176,14 +183,14 @@
    "draws": "points",
    "preload": false,
    "on": false,
-   "format": "code-feature-collection.v1",
+   "format": "kuiper.elements.v1",
    "module_registers": true,
    "source": {
-    "file": null,
-    "bytes": 0,
-    "features": 0,
-    "sha256": "",
-    "owner": "Opus team 7 (step 7) writes data/elements.json"
+    "file": "data/elements.json",
+    "bytes": 165383,
+    "features": 244,
+    "sha256": "781dc0d96cf9bb452fdbc1618257a36fcfdb29522b5691b6ea74babb45d3a620",
+    "owner": "Opus team 7 (step 7) writes it with tools/element_keys.py"
    },
    "licence": "UNSETTLED: elements@f7a92fb has no LICENSE, owner question Q1",
    "requires": [
