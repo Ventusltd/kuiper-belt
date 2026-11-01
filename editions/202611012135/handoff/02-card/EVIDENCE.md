@@ -41,21 +41,21 @@ Edition 1's `bodies.json` by `rec = dict(b)`. The key fields are computed from g
 
 | # | field (used by) | key | fragment |
 |---|---|---|---|
-| B1 | register fields `repo commit path line title quote pattern worker finding destination class` are carried from bodies.json (module :90, :99, :105, :108-111; page :632) | kuiper-belt@018b46a tools/edition_keys.py:177 | `rec = dict(b)` |
+| B1 | register fields `repo commit path line title quote pattern worker finding destination class` are carried from bodies.json (module `keyText`, `render`; page :632) | kuiper-belt@018b46a tools/edition_keys.py:177 | `rec = dict(b)` |
 | B2 | every body starts with `line_text` None: a body that never reaches a line keeps `null` (the two star-maker bodies) | kuiper-belt@018b46a tools/edition_keys.py:181 | `'line_text': None` |
 | B3 | `on_wafer` (page filter :632) | kuiper-belt@018b46a tools/edition_keys.py:193 | `rec.update({'on_wafer': True` |
-| B4 | `key` = k0 + lines before path + (line − 1) (module key row :91, the describe() lookup :107) | kuiper-belt@018b46a tools/edition_keys.py:249 | `rec['key'] = c['k0'] + before + (line - 1)` |
+| B4 | `key` = k0 + lines before path + (line − 1) (module `keyText`, and the `H.address` lookup in `render`) | kuiper-belt@018b46a tools/edition_keys.py:249 | `rec['key'] = c['k0'] + before + (line - 1)` |
 | B5 | `line_text` = the line of the blob at the key, UTF-8 decoded with `replace`, `\r` stripped | kuiper-belt@018b46a tools/edition_keys.py:250 | `text = body.split(b'\n')[line - 1].decode('utf-8', 'replace').rstrip('\r')` |
-| B6 | `line_text` stored: this is the header (module :96, :88, :145) | kuiper-belt@018b46a tools/edition_keys.py:251 | `rec['line_text'] = text` |
+| B6 | `line_text` stored: this is the header (module `render`, `header`, `row`) | kuiper-belt@018b46a tools/edition_keys.py:251 | `rec['line_text'] = text` |
 | B7 | only the quote's first line is compared | kuiper-belt@018b46a tools/edition_keys.py:252 | `q = (b.get('quote') or '').split('\n')[0].rstrip('\r')` |
-| B8 | `quote_check` (shown in details, module :112) | kuiper-belt@018b46a tools/edition_keys.py:256 | `rec['quote_check'] = how` |
+| B8 | `quote_check` (shown in details, module `render`) | kuiper-belt@018b46a tools/edition_keys.py:256 | `rec['quote_check'] = how` |
 | B9 | the four levels of `quote_check` | kuiper-belt@018b46a tools/edition_keys.py:81-90 | `return 'exact after trimming whitespace'` |
 | B10 | `quote_line` when the quote is not at the line | kuiper-belt@018b46a tools/edition_keys.py:265 | `rec['quote_line'] = near` |
-| B11 | `quote_key` (module :102, "quoted one line below · key N") | kuiper-belt@018b46a tools/edition_keys.py:266 | `rec['quote_key'] = c['k0'] + before + (near - 1)` |
+| B11 | `quote_key` (module `render`, "quoted one line below · key N") | kuiper-belt@018b46a tools/edition_keys.py:266 | `rec['quote_key'] = c['k0'] + before + (near - 1)` |
 | B12 | `verified` (page filter :632) | kuiper-belt@018b46a tools/edition_keys.py:277 | `rec['verified'] = True` |
 | B13 | the summary list of the seven | kuiper-belt@018b46a tools/edition_keys.py:285 | `'quote_not_at_line': [` |
 | B14 | the page places only on_wafer, verified, finite-key bodies (344): the star-maker bodies never reach a card | kuiper-belt@96736f5 editions/202611012135/index.html:632 | `edPlaced = ED.filter(b => b.on_wafer && b.verified && Number.isFinite(b.key)` |
-| B15 | `x, y` on a placed body come from `keyPlace(key)` in the page, not from keys.json (module :131 sets the target from them) | kuiper-belt@96736f5 editions/202611012135/index.html:633 | `Object.assign({}, b, { x:p[0], y:p[1] })` |
+| B15 | `x, y` on a placed body come from `keyPlace(key)` in the page, not from keys.json (module `show` sets the target from them) | kuiper-belt@96736f5 editions/202611012135/index.html:633 | `Object.assign({}, b, { x:p[0], y:p[1] })` |
 | B16 | `tools/key.py` prints the first 200 characters of the line (relevant to B5 of the acceptance test, see C5) | kuiper-belt@018b46a tools/key.py:126 | `text[:200]` |
 
 ## C. The measurement: register `quote` against `line_text`, reproduced
@@ -130,14 +130,14 @@ that delegation, not by a hook.
 | E2 | `edCard(i)` today, Edition 4 | kuiper-belt@96736f5 editions/202611012135/index.html:655 | `function edCard(i){` |
 | E3 | today the header is the title… | kuiper-belt@96736f5 editions/202611012135/index.html:659 | `'<b>' + esc(b.title) + '</b>` |
 | E4 | …and the register quote is shown, never `line_text` | kuiper-belt@96736f5 editions/202611012135/index.html:661 | `(b.quote ? '<div class="cq">' + esc(b.quote) + '</div>' : '')` |
-| E5 | edCard sets the target ring and selection (the module keeps this: show() sets `KY.sel.target` and `KY.lit.repo`, module :130-131) | kuiper-belt@96736f5 editions/202611012135/index.html:666 | `target = { x:b.x, y:b.y }; edSel = i; dirty = true;` |
+| E5 | edCard sets the target ring and selection (the module keeps this: `show` sets `KY.sel.target` and `KY.lit.repo`) | kuiper-belt@96736f5 editions/202611012135/index.html:666 | `target = { x:b.x, y:b.y }; edSel = i; dirty = true;` |
 | E6 | `edFly(b)`: unchanged by step 2 | kuiper-belt@96736f5 editions/202611012135/index.html:676 | `function edFly(b){` |
-| E7 | edFly measures the card only while `display === 'block'` (show() sets display block before the caller's edFly, module :128, so B3's clear-space rule still holds) | kuiper-belt@96736f5 editions/202611012135/index.html:677 | `card.style.display === 'block' ? card.getBoundingClientRect().height + 12 : 0` |
+| E7 | edFly measures the card only while `display === 'block'` (`show` sets display block before the caller's edFly, so B3's clear-space rule still holds) | kuiper-belt@96736f5 editions/202611012135/index.html:677 | `card.style.display === 'block' ? card.getBoundingClientRect().height + 12 : 0` |
 | E8 | every caller is `edCard(i); edFly(b)`: e/E | kuiper-belt@96736f5 editions/202611012135/index.html:683 | `edCard(edSel); edFly(b); }` |
 | E9 | spark tap | kuiper-belt@96736f5 editions/202611012135/index.html:689 | `if (best >= 0) { edCard(best); edFly(edPlaced[best]); }` |
 | E10 | LINES row pick | kuiper-belt@96736f5 editions/202611012135/index.html:734 | `edCard(i); edFly(b);` |
 | E11 | the layer-aware next/previous | kuiper-belt@96736f5 editions/202611012135/index.html:749 | `edCard(edSel); edFly(b); }; }` |
-| E12 | `describe(a)`, the wafer position in the details (module :113 via `H.describe`) | kuiper-belt@96736f5 editions/202611012135/index.html:284 | `function describe(a){` |
+| E12 | `describe(a)`, the wafer position in the details (module `render` via `H.describe`) | kuiper-belt@96736f5 editions/202611012135/index.html:284 | `function describe(a){` |
 | E13 | describe ends | kuiper-belt@96736f5 editions/202611012135/index.html:292 | `}` |
 | E14 | `fillLines` (K6; ROADMAP writes `:737-744`, measured :736-743) | kuiper-belt@96736f5 editions/202611012135/index.html:736 | `function fillLines(){` |
 | E15 | today a LINES row is repo, path:line, title: no line text | kuiper-belt@96736f5 editions/202611012135/index.html:741 | `'"><b>' + esc(b.repo) + '</b> '` |
@@ -150,7 +150,7 @@ that delegation, not by a hook.
 | E22 | hook `fmt` | kuiper-belt@WT editions/202611012135/handoff/04-loader/HOOKS.md:29 | `` `fmt(n)` `` |
 | E23 | hook `esc` | kuiper-belt@WT editions/202611012135/handoff/04-loader/HOOKS.md:31 | `` `esc(v)` `` |
 | E24 | hook `card` | kuiper-belt@WT editions/202611012135/handoff/04-loader/HOOKS.md:38 | `` `card` \| element `#card` `` |
-| E25 | hook `gbox` (Escape must not close the card while the finder is open, module :178) | kuiper-belt@WT editions/202611012135/handoff/04-loader/HOOKS.md:39 | `` `gbox` `` |
+| E25 | hook `gbox` (Escape must not close the card while the finder is open, module keydown listener) | kuiper-belt@WT editions/202611012135/handoff/04-loader/HOOKS.md:39 | `` `gbox` `` |
 | E26 | `KY.lit` | kuiper-belt@WT editions/202611012135/handoff/04-loader/HOOKS.md:58 | `` `KY.lit` `` |
 | E27 | `KY.sel` | kuiper-belt@WT editions/202611012135/handoff/04-loader/HOOKS.md:59 | `` `KY.sel` `` |
 | E28 | `KY.redraw()` | kuiper-belt@WT editions/202611012135/handoff/04-loader/HOOKS.md:60 | `` `KY.redraw()` `` |
@@ -158,14 +158,15 @@ that delegation, not by a hook.
 | E30 | index.patch: delegation keeps the page's selection | kuiper-belt@WT editions/202611012135/handoff/02-card/index.patch:9 | `LC.api.show(b, { index:i, of:edPlaced.length, onclose:` |
 | E31 | index.patch: a LINES row comes from the module | kuiper-belt@WT editions/202611012135/handoff/02-card/index.patch:21 | `LC.api.row(b, i,` |
 
-`requires` in the registration (module :76) is `card esc fmt address describe sel lit redraw gbox`. A grep of the module
+`requires` in the registration (F5) is `card esc fmt address describe sel lit redraw gbox`. A grep of the module
 for `H.*` and `KY.*` finds exactly these nine names used and no others. All nine are in HOOKS.md's admissible set
 (hooks ∪ `cam lit sel redraw draw panels`).
 
 ## F. The module: header, licence line, wordings, findings
 
-Module checked: `editions/202611012135/modules/202611012143-line-card.js`, 13,431 bytes, sha256
-`27e1cf5abaf542d8ee0473cc8a92665124c25f77a5ffd78eb059c0f23b7e9c4c` when this review was made. `node --check` passes,
+Module checked: `editions/202611012135/modules/202611012143-line-card.js`. Its bytes and sha256 at the final check are
+in section G. The file changed three times during the review (27e1cf5a…, 77a4e60e…, 3f48b2a0…), so the rows below are
+re-keyed by `/tmp/nl010-opus/team-2/evidence/rekey.py` before G is run. `node --check` passes,
 and the file contains exactly one `KY.register(`.
 
 | # | claim | key | fragment |
@@ -174,17 +175,17 @@ and the file contains exactly one `KY.register(`.
 | F2 | requires list in the header = the registration's | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:2 | `// requires: card esc fmt address describe sel lit redraw gbox` |
 | F3 | the law as the head comment (team-1/STEPS.md K3: "and as a comment at the head of the card module") | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:6 | `// The line of code is the header. Every card opens with the line itself` |
 | F4 | the NL-009 02-card patch is named as folded in | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:16 | `NL-009 round 1 patch 02-card (FABLE-02) folded in` |
-| F5 | registration requires | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:76 | `requires: ['card', 'esc', 'fmt', 'address', 'describe', 'sel', 'lit', 'redraw', 'gbox'],` |
-| F6 | K0 handles a missing field and a `null` (B2): `typeof === 'string'`, not `'line_text' in b` | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:72 | `typeof b.line_text === 'string'` |
-| F7 | K1 row 1: the header is `line_text`, escaped | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:96 | `'<header class="lc-h"><code>' + esc(b.line_text) + '</code>'` |
-| F8 | the register quote row only when it differs (216 of 344, C) | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:101 | `b.quote !== b.line_text` |
-| F9 | K2 aria-label = the header | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:127 | `card.setAttribute('aria-label', header(b));` |
-| F10 | the NL-009 handle is `.lc-grip`, not `.ch` | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:52 | `#card.lc .lc-grip{display:none}` |
+| F5 | registration requires | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:81 | `requires: ['card', 'esc', 'fmt', 'address', 'describe', 'sel', 'lit', 'redraw', 'gbox'],` |
+| F6 | K0 handles a missing field and a `null` (B2): `typeof === 'string'`, not `'line_text' in b` | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:77 | `typeof b.line_text === 'string'` |
+| F7 | K1 row 1: the header is `line_text`, escaped | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:101 | `esc(b.line_text) + '</code>'` |
+| F8 | the register quote row only when it differs (216 of 344, C) | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:107 | `b.quote !== b.line_text` |
+| F9 | K2 aria-label = the header | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:133 | `card.setAttribute('aria-label', header(b));` |
+| F10 | the NL-009 handle is `.lc-grip`, not `.ch` | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:57 | `#card.lc .lc-grip{display:none}` |
 | F11 | NL-009 02-card used `.ch` for the handle and hid it on a desktop… | neural-link@b9b7d5d FIXES/NL-009/round1/02-card.md:107 | `#card .ch{display:none}` |
 | F12 | …and squeezed it to 36×4 px on a phone | neural-link@b9b7d5d FIXES/NL-009/round1/02-card.md:120 | `#card .ch{display:block;width:36px;height:4px` |
 | F13 | ROADMAP K1 names the header `<header class="ch">` | neural-link@b9b7d5d FIXES/NL-010/ROADMAP.md:139 | `<header class="ch"><code>` |
-| F14 | the shell's ABOUT slot carries the sentence first (B4) | kuiper-belt@WT editions/202611012135/modules/202611012143-kuiper-shell.js:457 | `var law = el('p', 'gm-prose', 'The line of code is the header.` |
-| F15 | the slot is owned by line-card | kuiper-belt@WT editions/202611012135/modules/202611012143-kuiper-shell.js:459 | `law.setAttribute('data-owner', 'line-card'); law.setAttribute('data-law', 'L11');` |
+| F14 | the shell's ABOUT slot carries the sentence first (B4) | kuiper-belt@WT editions/202611012135/modules/202611012143-kuiper-shell.js:460 | `var law = el('p', 'gm-prose', 'The line of code is the header.` |
+| F15 | the slot is owned by line-card | kuiper-belt@WT editions/202611012135/modules/202611012143-kuiper-shell.js:462 | `law.setAttribute('data-owner', 'line-card'); law.setAttribute('data-law', 'L11');` |
 | F16 | NL-009 02-card F3 (a tap on the card re-picks a spark) is closed by Opus 4's `tapUp`, which is true only for a press that began on the canvas, not by team 2's index.patch | kuiper-belt@WT editions/202611012135/handoff/04-loader/index.html.patch:160 | `if (!edPlaced.length \|\| !tapUp \|\| pts.size > 0) return;` |
 | F17 | 02-card F3 as found | neural-link@b9b7d5d FIXES/NL-009/round1/02-card.md:33 | `a tap on the card where a spark lies beneath it re-picks that spark` |
 
@@ -211,17 +212,38 @@ team-1/STEPS.md B1 reads "first element child is `header.ch`", so any test writt
 The module's first element child is `div.lc-in`, and the header is its first child. The ROADMAP's B1 wording ("first
 visible text node") holds.
 
-F-c, the 1,240,449-character header (C). The law shows the line verbatim, so one card puts 1.24 M characters into a
-`<code>` with `pre-wrap; overflow-wrap:anywhere`, inside a header capped at `max-height:7.5em; overflow:auto`
-(module :31). The cap keeps the card within 34 %. The cost of laying out that text on a Pixel 7 was NOT EVALUATED by
-the evidence officer; the tester's B1 loop over all 344 bodies passes through it. The lead should record its measured
-time in the hand-off. The header must not be truncated, because truncation would falsify L11.
+F-c, the 1,240,449-character header (C). The law shows the line verbatim. The lead's revision (module `LONG = 2000`,
+the `lc-long` class) lays a line longer than 2,000 characters out unwrapped (`white-space:pre`), scrolling sideways
+inside the header. It adds the dim words "one line of 1,240,449 characters, verbatim; it scrolls sideways" inside the
+header, after the code, so the key is still the next row. Every byte stays in the header: `code.textContent ===
+line_text` was true in every run below. Measured by the evidence officer with
+`/tmp/nl010-opus/team-2/evidence/t/bigline.cjs` (index.html served as Edition 5 + the 04-loader patch + index.patch,
+manifest order `line-card`, the module as on disk at 22:14 UTC), with `api.show(body)` followed by
+`getBoundingClientRect()`:
 
-F-d, NL-009 02-card folded in: F1 → module :42-43, :66 (44×48 ×). F2 → :46-47, :67 (44 px action row). F3 → Opus 4
-tapUp (F16), not index.patch, although PLAN.md says index.patch. F4 → :51, :154-155 (`.lc-behind` by
-MutationObserver, no `setPanel` wrap). F5 → :27, :61-63 (`34dvh`, safe-area). F6 → :61 (12 px). F7 → :64,
-:165-180 (grip, swipe, Escape). F9 → :28 (`overscroll-behavior:contain; touch-action:pan-y`). F10 → :140
-(close un-targets).
+| device | short card, key 36,064,705,400 (78 chars): show + layout | long card, key 63,013,167,769: show + layout, first / second | to the second frame, first | card share | header scrollWidth |
+|---|---|---|---|---|---|
+| Pixel 7 | 6.6 ms | 2,877 ms / 1,523 ms | 3,220 ms | 0.301 | 8,961,759 px (one line, 17 px tall) |
+| Galaxy S24 | 6.5 ms | 3,586 ms / 1,427 ms | 4,287 ms | 0.340 | 8,961,759 px |
+
+The container's load average was 86-95 during the run (`uptime` before and after), because other teams' browsers were
+running, so these are upper bounds for this container, not phone numbers. Two earlier runs under the same load gave
+15,258 ms (Pixel 7) and 16,528 ms (Galaxy S24) for the first show. The module comment states 9,313 ms wrapped and
+201 ms unwrapped. The evidence officer did not reproduce 201 ms: under this load the unwrapped first show costs
+1.4-3.6 s. The hand-off should give its own number together with the load average it was measured under. The card cap
+holds: 0.340 ≤ 0.34 on the Galaxy S24, exactly at the cap. Screenshot: `/tmp/nl010-opus/team-2/evidence/t/big-Galaxy-S24.png`
+(not in img/, which is the tester's). The header must not be truncated, because truncation would falsify L11.
+
+F-d, NL-009 02-card folded in, by the module's CSS and listeners:
+- F1 → `.lc-x` 44×44 (44×48 on a phone).
+- F2 → `.lc-a`, a 44 px action row on a phone.
+- F3 → Opus 4's tapUp (F16). PLAN.md says index.patch, but the guard is not in index.patch.
+- F4 → `.lc-behind`, set by a MutationObserver; there is no `setPanel` wrap.
+- F5 → `34dvh` and the safe-area padding.
+- F6 → 12 px type on a phone.
+- F7 → `.lc-grip`, the swipe-down close and the Escape close.
+- F9 → `overscroll-behavior:contain; touch-action:pan-y`.
+- F10 → `close` sets `KY.sel.target = null` (the close un-targets the spark).
 
 F-e, the README example (`README-card-law.md`, "A card, rendered") is abridged. In the module, the details also hold
 `quote check: exact` (:112) and the `describe()` wafer-position lines (:113). The example shows neither. Either add the

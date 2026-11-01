@@ -1,8 +1,9 @@
 --- /dev/null
 +++ b/tools/edition_check.py
-@@ -0,0 +1,233 @@
+@@ -0,0 +1,235 @@
 +#!/usr/bin/env python3
 +"""edition_check.py: the edition law's checks for one folder editions/<stamp>/ (NL-010; Opus team 9 owns this file).
++Apache-2.0 (kuiper-belt), kuiper-belt README.md:157.
 +
 +  python3 tools/edition_check.py [editions/<stamp>]     default: the newest editions/<12 digits>/
 +
@@ -189,6 +190,7 @@
 +            h = HEADER.match(read(q).split('\n', 1)[0])
 +            if not h: errs.append('%s: no header line `/* kuiper module <name>, generation <stamp> (UTC), <licence>`' % rid)
 +            elif h.group(2) != gen: errs.append('%s: stamp mismatch: generation %s, header %s' % (rid, gen, h.group(2)))
++            elif h.group(1) != rid: errs.append('%s: header names %s' % (rid, h.group(1)))
 +        if not str(r.get('licence', '')).strip(): errs.append('%s: no licence' % rid)
 +        for n in r.get('requires', []):
 +            if n not in admissible: errs.append('%s: missing hook %s' % (rid, n))

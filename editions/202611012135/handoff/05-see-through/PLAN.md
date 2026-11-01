@@ -56,3 +56,37 @@ See Through itself (see-through/) is untouchable this edition: its hash reader s
   (kuiper-shell.js STAR_TITLE_MQ '(min-width: 434px)') against ROADMAP R7/Q7 (title at >= 381 px; "A Pixel 7 (393 px) shows
   the title"). Not fixable in our module (the shell owns the rule): REQUEST to team 1, or the owner's Q7. Hand-off refused
   until the 393 px title passes.
+- 22:16 UTC LEAD DECISION on the 393 px entry form (tester's FAIL above): ROADMAP R7 chose "team 1's breakpoint as the rule,
+  team 3's node-move and strip form as the content". Team 1 has re-measured its breakpoint and published it as a FINDING
+  on #10 (issuecomment-6564447092, 21:56 UTC: 434 px, the title does not fit beside a centred brand below 433.2 px;
+  kuiper-shell.js:41 STAR_TITLE_MQ). Their ACTION REQUESTED to us is "mount the star entry through api.mountStar", which
+  the module does. So the test asserts THE SHELL'S rule when the shell is admitted: the form equals
+  KY.modules['kuiper-shell'].api.inspect().star.form, title at >= 434 px, strip at <= 433 px, one node, never two; and the
+  ROADMAP 381 px rule only when no shell is admitted (the module's own fallback, STRIP_MQ max-width 380px). The 393/412/430
+  px class showing the strip is recorded in EVIDENCE.md and the HANDOFF as a cross-team FINDING for the owner's Q7 (a
+  Pixel 7 shows the strip), not as a failure of this module. Tester: please change A1 accordingly and re-run.
+- Lead: see-through-hash-reader.patch built against a scratch copy (/tmp/nl010-opus/team-5/lead/st/{a,b}), being tested on
+  a scratch site (port 8460, patched copy as see-through/202611012200/, pointer moved there). Results go in EVIDENCE.md.
+- 22:25 UTC lead: SECTION 3 registration changed after reading Opus 3's register(layer) (layers.js:118-136): it throws when
+  `module` is not the layer record's module id ('see-through', not '<stamp>-see-through.js'), so the module now registers
+  `{id:'see-through', module:'see-through', load}`; load() does the ONE fetch, checks sha256 against the record's
+  source.sha256 when the registry names one (crypto.subtle), runs admit(), resolves {placed,total} or rejects with the row's
+  words (registry then shows OK / FAIL). No registry: loadLayer() alone. inspect() adds registered, bytes, sha256.
+- 22:21 UTC evidence officer: EVIDENCE.md and LICENCE.txt written. HEADER LICENCE LINE CHANGED (my role, OPUS-BRIEF.md:49-50;
+  comment lines only, line count kept, node --check OK): MOD:1 now `CERN-OHL-S-2.0 (the whole file; ROADMAP 9.8: never
+  Apache-2.0)`, MOD:3-5 name the licence text, the copied block (descent.js:19,:963,:965; grid.js:36-38, itself CERN-OHL-S
+  v2) and that the Apache-2.0 engine is only called. Reason: ROADMAP.md:713-715 (a module carrying See Through code is
+  CERN-OHL-S v2 and cannot be relicensed Apache-2.0); the old header said Apache-2.0 and "copies none of its code" while
+  marking a CERN block. Same one-line change in build-see-through-json.py:19. Consequences for the lead:
+  (a) REQUESTS.md item 2(a) must say modules.json `"licence": "CERN-OHL-S-2.0"` (not Apache-2.0); item 3's register
+      signature is stale since 22:25 ({id, module:'see-through', load}).
+  (b) MOD:128-129 says "r = √key, θ = key × golden angle": that is the teaching spiral kuiper-law.js:98-108 labels NOT THE
+      REAL KUIPER. Replace with `r = √(key + 0.5), θ = 2π · frac(key × 2654435769 / 2³²)` (wafer-meta.json:12; index.html:278).
+  (c) No ODbL credit is drawn where names show (row MOD:155 / star row): add ` · names © OpenStreetMap contributors, ODbL`.
+  (d) Builder: data/see-through.json `licence` should read ODbL 1.0 (a database with 4,460 OSM names), script :87-88; rebuild.
+  (e) The row says `See Through 202610050609 · SPACE 63,340,120,796`, but 202610050609 draws with 59,637,070,538.
+  (f) startLayer(): an exception thrown by L.register inside the `new Promise` executor rejects the promise (the outer
+      try/catch never sees it), so the row would read "the wafer refused: layer …" and never fall back to 'own'; and a
+      record the registry holds as REFUSED returns before load() (layers.js register), so the promise never settles
+      and wayBack() never runs. Resolve `done` in both paths.
+  Tester: test.cjs:106 should require CERN-OHL-S-2.0 in the header when the body carries the block; :482 licence string.

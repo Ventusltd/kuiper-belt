@@ -140,15 +140,6 @@
   }
   function setState(status, why) {
     st.status = status; st.why = why || '';
-    // registered once with the registry (team-2/STEPS.md 3.3 KY.layers.register), without a draw function: the stars are
-    // drawn by KY.draw.add(drawStars) alone, so a registry that also calls record.draw cannot draw them twice; the row's
-    // state is read from api.inspect().layer (status, why, row, placed, total)
-    var L = layersApi();
-    if (!st.registered && L && typeof L.register === 'function') {
-      st.registered = true;
-      try { L.register({ id: 'see-through', key: 'layer:see-through', module: GEN + '-see-through.js', drawn_by: ID,
-        inspect: function () { return inspect().layer; } }); } catch (e) { st.errors.push('layers.register: ' + e.message); }
-    }
     if (KY) KY.redraw();
   }
   function row() {
@@ -176,17 +167,45 @@
     st.keys = keys; st.names = names; st.xy = xy; st.placed = NSUB;
     return '';
   }
+  function hex(buf) { var b = new Uint8Array(buf), out = ''; for (var i = 0; i < b.length; i++) out += (b[i] < 16 ? '0' : '') + b[i].toString(16); return out; }
+  // one fetch; the bytes are hashed against the registry's record (data/layers.json source.sha256) when it names one,
+  // then the layer's own predicate (admit). Resolves {placed, total}; rejects with the words the row shows.
   function loadLayer() {
     setState('LOAD', DATA);
+    var L = layersApi(), rec = null; try { rec = L && L.get ? L.get('see-through') : null; } catch (e) {}
+    var want = rec && rec.source && /^[0-9a-f]{64}$/.test(rec.source.sha256 || '') ? rec.source.sha256 : '';
     return fetch(DATA, { cache: 'no-store' }).then(function (r) {
       if (!r.ok) throw new Error(DATA + ' HTTP ' + r.status);
-      return r.json();
+      return r.arrayBuffer();
+    }).then(function (buf) {
+      st.bytes = buf.byteLength;
+      var check = (want && window.crypto && crypto.subtle) ? crypto.subtle.digest('SHA-256', buf).then(function (d) {
+        st.sha256 = hex(d); if (st.sha256 !== want) throw new Error(DATA + ' sha256 mismatch');
+      }) : Promise.resolve();
+      return check.then(function () { return JSON.parse(new TextDecoder().decode(buf)); });
     }).then(function (j) {
       var why = admit(j);
-      if (why === null) { st.placed = 0; setState('FAIL', 'SPACE ' + st.space + ' ≠ wafer ' + st.wafer); }
-      else if (why) { st.placed = 0; setState('FAIL', why); }
-      else setState('OK', '');
-    }).catch(function (e) { st.placed = 0; setState('FAIL', e.message); });
+      if (why === null) throw new Error('SPACE ' + H.fmt(st.space) + ' \u2260 wafer ' + H.fmt(st.wafer));
+      if (why) throw new Error(why);
+      setState('OK', ''); return { placed: st.placed, total: st.total };
+    }).catch(function (e) { st.placed = 0; st.xy = null; setState('FAIL', e.message); throw e; });
+  }
+  // the registry (Opus 3, modules/202611012141-layers.js register(layer)) runs load() and shows its result in the WAFER
+  // row; the stars are drawn by KY.draw.add(drawStars) alone (no draw is handed over, so nothing is drawn twice)
+  function startLayer() {
+    var L = layersApi();
+    if (L && typeof L.register === 'function') {
+      return new Promise(function (done) {
+        var called = false;
+        function run() { called = true; var p = loadLayer(); p.then(done, done); return p; }
+        try { L.register({ id: 'see-through', module: ID, load: run }); st.registered = 'layers'; }
+        catch (e) { st.errors.push('layers.register: ' + e.message); st.registered = 'own'; run().catch(function () {}); }
+        // a registry that refuses the row (REFUSED is terminal there) never calls load: nothing is drawn, the link still reads
+        setTimeout(function () { if (!called) { st.errors.push('the layer registry did not call load'); setState('WAIT', 'the WAFER registry holds this layer'); done(); } }, 6000);
+      });
+    }
+    st.registered = 'own';
+    return loadLayer().catch(function () {});
   }
   function toScreen(x, y) {
     var c = KY.cam; return [(x - c.x) * c.zoom + H.ov.width / 2, H.ov.height / 2 - (y - c.y) * c.zoom];
@@ -323,7 +342,7 @@
     return { id: ID, generation: GEN, form: st.form, parent: a && a.parentNode ? (a.parentNode.id || a.parentNode.className) : null,
       entry: r ? { x: r.x, y: r.y, w: r.width, h: r.height } : null, href: a ? a.getAttribute('href') : null,
       layer: { status: st.status, why: st.why, row: H ? row() : '', placed: st.placed, total: st.total, space: st.space, wafer: st.wafer, inView: st.inView || 0, on: layerOn() },
-      mounted: st.mounted || null, linkRead: st.linkRead, linkKey: st.linkKey, note: st.note || '', rowsAdded: st.rowsAdded, starTap: st.starTap, errors: st.errors.slice() };
+      mounted: st.mounted || null, registered: st.registered || null, bytes: st.bytes || 0, sha256: st.sha256 || '', linkRead: st.linkRead, linkKey: st.linkKey, note: st.note || '', rowsAdded: st.rowsAdded, starTap: st.starTap, errors: st.errors.slice() };
   }
   function install(ky) {
     KY = ky; H = ky.hooks;
@@ -332,7 +351,7 @@
     mountCardRows(); mountFindFallback(); mountTap();
     H.wafer.then(function (w) {
       st.wafer = (w && w.SPACE) || H.SPACE;
-      return loadLayer();
+      return startLayer();
     }).then(function () { wayBack(); }, function (e) { setState('FAIL', 'the wafer refused: ' + (e && e.message || e)); });
     return { link: link, starKey: starKey, remap: remap, inspect: inspect, readHash: readHash };
   }

@@ -242,12 +242,15 @@
  }
  // the sparks obey the layer switches
  { const _drawEd = drawEdition; drawEdition = function(){ if (!lyOn) { hud.textContent += '\nEDITION 5 · verified lines layer off'; return; }
-@@ -747,6 +787,124 @@
+@@ -747,6 +787,127 @@
  { const _edNext = edNext; edNext = function(step){ if (!edPlaced.length) return; let i = edSel, n = edPlaced.length;
      for (let t = 0; t < n; t++) { i = (i + step + n) % n; if (visibleLine(edPlaced[i])) break; }
      edSel = i; const b = edPlaced[edSel]; edCard(edSel); edFly(b); }; }
 +// ======================================== KUIPER HOOK TABLE AND LOADER kuiper.hooks.v1 · begin (Opus team 4, step 4)
-+// The engine above is untouched but for the wafer promise (three statements in the data block). Everything a module
++// Engine lines this patch changes: the wafer promise (one line after `let N = 0`, and kyWaferOk/kyWaferNo at the belt
++// check, after `N = issued` and in the wafer.tsv catch), and the NL-009 round-1 fixes folded in by team 4: 09-robust
++// (refuse() for the WebGL, context-lost, belt and wafer.tsv refusals, given slots here) and 04-touch (viewport, tap slop
++// and tapUp). Nothing else above is changed. Everything a module
 +// may reach is in window.KY, built here after every wrap of the edition layer and frozen; the loader admits the
 +// modules of modules.json in `order`, each only when its bytes hash as recorded and every hook it requires exists,
 +// and refuses in words while the rest runs. Apache-2.0 (kuiper-belt). The same bytes, between the same two marker
@@ -300,9 +303,9 @@
 +// one strip, role=alert, for refused modules; the engine's own refusals keep their slot in the same strip
 +function kyRefuse(t){ refuse(t, 'modules'); }
 +const kyHex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
-+function kyInject(id, buf){ return new Promise(ok => { const s = document.createElement('script'), u = URL.createObjectURL(new Blob([buf], { type: 'text/javascript' }));
-+  s.dataset.kyModule = id; s.src = u; s.onload = () => { URL.revokeObjectURL(u); ok(true); }; s.onerror = () => { URL.revokeObjectURL(u); ok(false); };
-+  document.head.appendChild(s); }); }
++function kyInject(id, buf){ return new Promise(ok => { const s = document.createElement('script'), u = URL.createObjectURL(new Blob([buf], { type: 'text/javascript' })), st = { loaded: false, error: null };
++  const se = e => { if (e.filename === u) { st.error = st.error || String(e.message || 'error').replace(/^Uncaught /, ''); e.preventDefault(); } }, fin = l => { removeEventListener('error', se, true); URL.revokeObjectURL(u); st.loaded = l; ok(st); };
++  addEventListener('error', se, true); s.dataset.kyModule = id; s.src = u; s.onload = () => fin(true); s.onerror = () => fin(false); document.head.appendChild(s); }); }   // a module's own script error is its refusal, not the page's error
 +async function kyAdmit(id, rec, provided){
 +  if (!rec) return 'in order but not in modules';
 +  const path = String(rec.path || ''), file = path.split('/').pop();
@@ -310,23 +313,23 @@
 +  if (!/^\d{12}$/.test(rec.generation || '')) return 'generation ' + rec.generation + ' is not twelve digits';
 +  const fd = file.match(/^(\d{12})-/); if (fd && fd[1] !== rec.generation) return 'stamp mismatch: generation ' + rec.generation + ', file name ' + fd[1];
 +  if (!/^[0-9a-f]{64}$/.test(rec.sha256 || '')) return 'sha256 is not 64 hex';
-+  if (!String(rec.licence || '').trim()) return 'no licence';
++  if (!String(rec.licence || '').trim()) return 'no licence'; for (const f of ['requires', 'provides']) if (rec[f] != null && !Array.isArray(rec[f])) return f + ' is not a list';
 +  for (const r of rec.requires || []) if (!provided.has(r)) return 'missing hook ' + r;
 +  let res; try { res = await fetch(path, { cache: 'no-store' }); } catch (e) { return 'fetch failed ' + (e && e.message || e); }
 +  if (!res.ok) return 'HTTP ' + res.status;
 +  const buf = await res.arrayBuffer(), sha = kyHex(await crypto.subtle.digest('SHA-256', buf));
 +  if (sha !== rec.sha256) return 'sha256 mismatch';
-+  if (buf.byteLength !== rec.bytes) return 'bytes ' + buf.byteLength + ', manifest ' + rec.bytes;
++  if (buf.byteLength !== rec.bytes) return 'bytes ' + buf.byteLength + ' ≠ manifest ' + rec.bytes;
 +  if (rec.byte_budget && buf.byteLength > rec.byte_budget) return 'over byte_budget ' + buf.byteLength + ' > ' + rec.byte_budget;
 +  const head = new TextDecoder().decode(buf.slice(0, 200)).split('\n')[0].match(/^\/\* kuiper module ([a-z0-9-]+), generation (\d{12}) \(UTC\),/);
-+  if (!head) return 'no header line';
++  if (!head) return 'no header line'; if (head[1] !== id) return 'header names ' + head[1] + ' ≠ ' + id;
 +  if (head[2] !== rec.generation) return 'stamp mismatch: generation ' + rec.generation + ', header ' + head[2];
 +  kyAdmitting = { id }; let reg, twice;
-+  try { if (!(await kyInject(id, buf))) return 'script did not load'; } finally { reg = kyAdmitting.reg; twice = kyAdmitting.twice; kyAdmitting = null; }
++  let inj; try { inj = await kyInject(id, buf); } finally { reg = kyAdmitting.reg; twice = kyAdmitting.twice; kyAdmitting = null; } if (!inj.loaded) return 'script did not load'; if (inj.error) return 'script error: ' + inj.error;
 +  if (!reg) return 'no registration';
 +  if (twice) return 'registered twice';
 +  if (reg.schema !== 'kuiper.module.v1') return 'schema ' + reg.schema;
-+  if (reg.id !== id) return 'id ' + reg.id + ' ≠ ' + id;
++  if (reg.id !== id) return 'id ' + reg.id + ' ≠ ' + id; for (const f of ['requires', 'provides']) if (reg[f] != null && !Array.isArray(reg[f])) return 'registration ' + f + ' is not a list';
 +  if (reg.generation !== rec.generation) return 'stamp mismatch: generation ' + rec.generation + ', registration ' + reg.generation;
 +  for (const r of reg.requires || []) { if (!(rec.requires || []).includes(r)) return 'requires ' + r + ' not in the manifest'; if (!provided.has(r)) return 'missing hook ' + r; }
 +  if (typeof reg.install !== 'function') return 'no install';
@@ -341,7 +344,7 @@
 +}
 +(async function kyLoad(){
 +  let m;
-+  try { const r = await fetch('modules.json', { cache: 'no-store' }); if (!r.ok) throw new Error('modules.json HTTP ' + r.status); m = await r.json(); }
++  try { const r = await fetch('modules.json', { cache: 'no-store' }); if (!r.ok) throw new Error('modules.json HTTP ' + r.status); m = await r.json(); if (!m || typeof m !== 'object') throw new Error('modules.json is not an object'); }
 +  catch (e) { m = { error: e && e.message || String(e) }; }
 +  const shape = m.error ? m.error : m.schema !== 'kuiper.modules.v1' ? 'schema ' + m.schema : m.hooks !== 'kuiper.hooks.v1' ? 'hooks ' + m.hooks
 +    : m.edition !== KY_EDITION ? 'edition ' + m.edition + ' ≠ page ' + KY_EDITION : !Array.isArray(m.order) || !Array.isArray(m.modules) ? 'order and modules must be lists'
@@ -350,16 +353,16 @@
 +  KY_STATE.order = m.order.slice();
 +  const provided = new Set(KY_NAMES), seen = new Set();
 +  for (const id of m.order) {
-+    const why = seen.has(id) ? 'in order twice' : await kyAdmit(id, m.modules.find(x => x && x.id === id), provided);
++    let why; try { why = seen.has(id) ? 'in order twice' : await kyAdmit(id, m.modules.find(x => x && x.id === id), provided); } catch (e) { kyAdmitting = kyInstalling = null; why = 'loader error ' + (e && e.message || e); }
 +    const t = Math.round(performance.now()); seen.add(id);
 +    if (why) { KY_STATE.refused.push({ id, why, t_ms: t }); kyLine(id + ' refused: ' + why); }
 +    else { KY_STATE.admitted.push({ id, sha256: KY_MODULES[id].sha256, t_ms: t }); kyLine(id + ' admitted · ' + KY_MODULES[id].sha256.slice(0, 12)); }
 +  }
 +  KY_STATE.timings.last_admitted_ms = KY_STATE.admitted.length ? KY_STATE.admitted[KY_STATE.admitted.length - 1].t_ms : null;
 +  KY_STATE.timings.loader_end_ms = Math.round(performance.now());
-+  KY_STATE.bytes = m.modules.filter(x => KY_MODULES[x.id]).reduce((a, x) => a + (x.bytes || 0), 0);
-+  KY_STATE.byte_budget = m.modules.filter(x => KY_MODULES[x.id]).reduce((a, x) => a + (x.byte_budget || 0), 0);
-+  KY_STATE.done = true;
++  KY_STATE.bytes = m.modules.filter(x => x && KY_MODULES[x.id]).reduce((a, x) => a + (x.bytes || 0), 0);
++  KY_STATE.byte_budget = m.modules.filter(x => x && KY_MODULES[x.id]).reduce((a, x) => a + (x.byte_budget || 0), 0);
++  KY_STATE.done = true; for (const k of ['order', 'admitted', 'refused', 'timings']) Object.freeze(KY_STATE[k]); Object.freeze(KY_MODULES);
 +  if (KY_STATE.refused.length) kyRefuse(KY_STATE.refused.length + ' module' + (KY_STATE.refused.length > 1 ? 's' : '') + ' refused: '
 +    + KY_STATE.refused.map(x => x.id + ' (' + x.why + ')').join('; ') + ' · the wafer, the bar and every admitted module keep working');
 +})();

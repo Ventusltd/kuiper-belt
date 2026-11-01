@@ -71,7 +71,7 @@
   #linesctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
   #linesctl label{color:#8fb3bd} #linesctl input[type=text],#linesctl #lyFind{flex:1 1 180px;background:var(--bg);color:var(--ink);border:1px solid #12414a;padding:5px 8px;font:inherit}
   #linesctl button{background:#0b1a20;color:#8fb3bd;border:1px solid #12414a;padding:5px 9px;font:inherit;text-transform:uppercase;cursor:pointer}
-  #lineslist .ln{padding:5px 6px;border-top:1px solid #121a26;cursor:pointer;color:var(--dim)} #lineslist .ln b{color:var(--ink);font-weight:600}
+  #lineslist .ln{padding:5px 6px;border-top:1px solid #121a26;cursor:pointer;color:var(--dim);content-visibility:auto;contain-intrinsic-size:auto 44px} /* EDITION 5 (perf): rows out of view are not laid out */ #lineslist .ln b{color:var(--ink);font-weight:600}
   #lineslist .ln.focus b{color:var(--gn)} #lineslist .ln.sel{background:rgba(255,43,214,.12)} #lineslist .ln:hover{background:rgba(80,220,240,.10)}
   #card{bottom:12px!important;z-index:13;max-height:30vh;overflow:auto;padding:8px 36px 8px 12px;position:fixed}
   #card .cx{position:absolute;right:6px;top:4px;width:26px;height:26px;border:1px solid #12414a;color:#8fb3bd;background:transparent;font:inherit;cursor:pointer;touch-action:manipulation}
@@ -624,9 +624,13 @@ addEventListener('keydown', e => { if (gbox.style.display === 'block') return;
 // spark here is a key that python tools/key.py would resolve to that very line. Lines whose commit is
 // not on the wafer are counted and named, never placed: the seventh law.
 let ED = [], edPlaced = [], edSel = -1, edMeta = null;
-const EDPATH = 'keys.json';
+const EDPATH = 'keys-min.json', EDFULL = 'keys.json';
+// EDITION 5 (perf, NL-009 07): the page draws 17 of the 36 fields of each record, so it loads keys-min.json
+// (1,558,451 bytes, written from keys.json by tools/edition_min.py, which records the sha256 of its source). The
+// card law keeps line_text whole, so 07's 233 kB is not reached: one record's line_text is 1,240,449 bytes.
+// keys.json (1,709,129 bytes) stays in the folder as the evidence. Without the compact file the full one loads.
 async function loadEdition(){
-  try { const r = await fetch(EDPATH); if (!r.ok) throw new Error(EDPATH); const j = await r.json();
+  try { let r = await fetch(EDPATH); if (!r.ok) r = await fetch(EDFULL); if (!r.ok) throw new Error(EDFULL); const j = await r.json();
     edMeta = j.summary || {}; ED = j.bodies || j; }
   catch (e) { ED = []; edMeta = { error: 'keys.json did not load' }; }
   edPlaced = ED.filter(b => b.on_wafer && b.verified && Number.isFinite(b.key) && b.key >= 0 && b.key < SPACE)
@@ -647,7 +651,7 @@ function drawEdition(){
     o2.fillStyle = sel ? 'rgba(255,43,214,.95)' : (focus ? 'rgba(34,238,119,.95)' : 'rgba(34,238,119,.70)'); o2.fill();
     if (sel) { o2.strokeStyle = 'rgba(255,43,214,.9)'; o2.lineWidth = 1.5; o2.beginPath(); o2.arc(x, y, 14, 0, 6.2832); o2.stroke(); } }
   const notOn = ED.length - edPlaced.length;
-  hud.textContent += '\nEDITION 2 · ' + fmt(edPlaced.length) + ' verified lines on this wafer, ' + fmt(onScreen) + ' in view'
+  hud.textContent += '\nEDITION 5 · ' + fmt(edPlaced.length) + ' verified lines on this wafer, ' + fmt(onScreen) + ' in view'
     + (notOn ? ' · ' + fmt(notOn) + ' not on the wafer (named in keys.json), counted, not placed' : '')
     + ' · bright green: gridatlas and the data-centre repositories · green: the rest of the estate';
 }

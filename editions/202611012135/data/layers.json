@@ -28,7 +28,7 @@
    "source": {
     "engine": "../../cosmos/wafer.tsv"
    },
-   "licence": "Apache-2.0 (kuiper-belt)",
+   "licence": "CC BY 4.0 (kuiper-belt generated data, README.md:157)",
    "requires": [
     "wafer",
     "lightTime",
@@ -55,7 +55,7 @@
    "source": {
     "engine": "../../cosmos/repos.tsv"
    },
-   "licence": "Apache-2.0 (kuiper-belt); repository names only",
+   "licence": "CC BY 4.0 (kuiper-belt generated data, README.md:157); repository names only",
    "requires": [
     "wafer",
     "repos",
@@ -115,7 +115,7 @@
     "features": 346,
     "sha256": "1c293c337b4c3c8442c12746ce3cd08d920c763344f18333f75e73aa9fc7242b"
    },
-   "licence": "Apache-2.0 (kuiper-belt); each quoted line keeps its repository's licence",
+   "licence": "CC BY 4.0 (kuiper-belt generated data, README.md:157); each quoted line keeps its repository's licence (editions/202611012027/NOTICE.md:7-10)",
    "requires": [
     "wafer",
     "keyPlace",
@@ -145,16 +145,16 @@
    "format": "code-feature-collection.v1",
    "module_registers": true,
    "source": {
-    "file": null,
-    "bytes": 0,
-    "features": 0,
-    "sha256": "",
-    "owner": "Opus team 5 (step 5) writes data/see-through.json"
+    "file": "data/see-through.json",
+    "bytes": 666922,
+    "features": 5800,
+    "sha256": "87069db330a59108ed8f532cd6f8a32b01a52a69725906291b978382513c8dbd",
+    "owner": "Opus team 5 (step 5) writes it with handoff/05-see-through/build-see-through-json.py"
    },
-   "licence": "CERN-OHL-S-2.0 (see-through/202610050609/LICENSE.md:6); ODbL for the substations (grid-data.js:7)",
+   "licence": "ODbL-1.0 for the substation names (OpenStreetMap contributors, see-through/202610050609/NOTICE.md:22-25); keys CC BY 4.0; See Through itself (CERN-OHL-S-2.0, see-through/202610050609/LICENSE.md:6) is linked, not copied",
    "state": {
     "status": "EMPTY",
-    "why": "awaiting step 5 features (Opus team 5, data/see-through.json)"
+    "why": "awaiting step 5: the see-through module registers this layer (data/see-through.json recorded, not drawn until then)"
    },
    "requires": [
     "keyPlace",
@@ -215,7 +215,7 @@
     "sha256": "",
     "owner": "Opus team 7 (step 7) writes data/graphs/*.json"
    },
-   "licence": "Apache-2.0 (testcode@d09c185 LICENSE:1); each graph keeps the licence named in its manifest entry",
+   "licence": "Apache-2.0 for the spider code (testcode@d09c185 LICENSE:2); graph data: ventus-grid-engine Apache-2.0, stars and code-generator none in repository (DISCLOSED, owner Q5), spiders NOT EVALUATED",
    "state": {
     "status": "EMPTY",
     "why": "awaiting step 7 keys (Opus team 7, data/graphs/*.json as code-feature-collection.v1)"

@@ -1,5 +1,5 @@
---- a/editions/202611012135/index.html	2026-11-01 21:57:11.710401334 +0000
-+++ b/editions/202611012135/index.html	2026-11-01 21:57:11.737694359 +0000
+--- a/editions/202611012135/index.html	2026-11-01 22:23:09.704416350 +0000
++++ b/editions/202611012135/index.html	2026-11-01 22:23:11.609096041 +0000
 @@ -67,12 +67,6 @@
      z-index:11;background:#090c13f2;border:1px solid #1d6470;border-radius:0 0 6px 6px;padding:10px 12px;pointer-events:auto;text-align:left}
    #hud{right:0;left:auto;max-width:min(560px,96vw)} #foot{border-top:1px solid #1d6470}
@@ -8,7 +8,7 @@
 -  #linesctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
 -  #linesctl label{color:#8fb3bd} #linesctl input[type=text],#linesctl #lyFind{flex:1 1 180px;background:var(--bg);color:var(--ink);border:1px solid #12414a;padding:5px 8px;font:inherit}
 -  #linesctl button{background:#0b1a20;color:#8fb3bd;border:1px solid #12414a;padding:5px 9px;font:inherit;text-transform:uppercase;cursor:pointer}
--  #lineslist .ln{padding:5px 6px;border-top:1px solid #121a26;cursor:pointer;color:var(--dim)} #lineslist .ln b{color:var(--ink);font-weight:600}
+-  #lineslist .ln{padding:5px 6px;border-top:1px solid #121a26;cursor:pointer;color:var(--dim);content-visibility:auto;contain-intrinsic-size:auto 44px} /* EDITION 5 (perf): rows out of view are not laid out */ #lineslist .ln b{color:var(--ink);font-weight:600}
 -  #lineslist .ln.focus b{color:var(--gn)} #lineslist .ln.sel{background:rgba(255,43,214,.12)} #lineslist .ln:hover{background:rgba(80,220,240,.10)}
    #card{bottom:12px!important;z-index:13;max-height:30vh;overflow:auto;padding:8px 36px 8px 12px;position:fixed}
    #card .cx{position:absolute;right:6px;top:4px;width:26px;height:26px;border:1px solid #12414a;color:#8fb3bd;background:transparent;font:inherit;cursor:pointer;touch-action:manipulation}
@@ -22,7 +22,7 @@
    { const st = new URLSearchParams(location.search).get('selftest') || '', mt = st.match(/^(20\d\d)-(\d\d)$/);
      if (mt) setTimeout(() => { tween = null; const R = Math.sqrt(SPACE); cx = 0; cy = 0; zoom = (Math.min(cv.width, cv.height)/2)*0.80/R;
        const got = lightTime(+mt[1], +mt[2], 0); tween = null; cx = 0; cy = 0; zoom = (Math.min(cv.width, cv.height)/2)*0.80/R; draw();
-@@ -639,80 +633,7 @@
+@@ -639,84 +633,7 @@
    else if (e.key === '/') { e.preventDefault(); gbox.style.display = 'block'; gin.value = ''; gin.focus(); }
    else if (e.key === 'Backspace') { e.preventDefault(); target = null; litRepo = -1; newFrom = -1; flash = 0; pulse = -1; litK = [-1,-1]; litCi = null; card.style.display = 'none'; home(); } });
  
@@ -33,9 +33,13 @@
 -// spark here is a key that python tools/key.py would resolve to that very line. Lines whose commit is
 -// not on the wafer are counted and named, never placed: the seventh law.
 -let ED = [], edPlaced = [], edSel = -1, edMeta = null;
--const EDPATH = 'keys.json';
+-const EDPATH = 'keys-min.json', EDFULL = 'keys.json';
+-// EDITION 5 (perf, NL-009 07): the page draws 17 of the 36 fields of each record, so it loads keys-min.json
+-// (1,558,451 bytes, written from keys.json by tools/edition_min.py, which records the sha256 of its source). The
+-// card law keeps line_text whole, so 07's 233 kB is not reached: one record's line_text is 1,240,449 bytes.
+-// keys.json (1,709,129 bytes) stays in the folder as the evidence. Without the compact file the full one loads.
 -async function loadEdition(){
--  try { const r = await fetch(EDPATH); if (!r.ok) throw new Error(EDPATH); const j = await r.json();
+-  try { let r = await fetch(EDPATH); if (!r.ok) r = await fetch(EDFULL); if (!r.ok) throw new Error(EDFULL); const j = await r.json();
 -    edMeta = j.summary || {}; ED = j.bodies || j; }
 -  catch (e) { ED = []; edMeta = { error: 'keys.json did not load' }; }
 -  edPlaced = ED.filter(b => b.on_wafer && b.verified && Number.isFinite(b.key) && b.key >= 0 && b.key < SPACE)
@@ -56,7 +60,7 @@
 -    o2.fillStyle = sel ? 'rgba(255,43,214,.95)' : (focus ? 'rgba(34,238,119,.95)' : 'rgba(34,238,119,.70)'); o2.fill();
 -    if (sel) { o2.strokeStyle = 'rgba(255,43,214,.9)'; o2.lineWidth = 1.5; o2.beginPath(); o2.arc(x, y, 14, 0, 6.2832); o2.stroke(); } }
 -  const notOn = ED.length - edPlaced.length;
--  hud.textContent += '\nEDITION 2 · ' + fmt(edPlaced.length) + ' verified lines on this wafer, ' + fmt(onScreen) + ' in view'
+-  hud.textContent += '\nEDITION 5 · ' + fmt(edPlaced.length) + ' verified lines on this wafer, ' + fmt(onScreen) + ' in view'
 -    + (notOn ? ' · ' + fmt(notOn) + ' not on the wafer (named in keys.json), counted, not placed' : '')
 -    + ' · bright green: gridatlas and the data-centre repositories · green: the rest of the estate';
 -}
@@ -103,7 +107,7 @@
  
  // ============================================================ EDITION 3: the menu bar, panels at rest hidden
  // Borrowed in spirit from gridatlas atlas/modules/202609031958-menu-bar.js: one row of titles, every panel
-@@ -725,12 +646,7 @@
+@@ -729,12 +646,7 @@
    + '<button class="gm-title" data-panel="lines" aria-controls="lines" aria-expanded="false">lines</button>'
    + '<button class="gm-title" data-panel="foot" aria-controls="foot" aria-expanded="false">commands</button>';
  document.body.prepend(bar);
@@ -117,7 +121,7 @@
  for (const [k, el] of Object.entries(PANELS)) { el.setAttribute('role', 'region'); el.setAttribute('aria-label', { top:'edition', hud:'readout', lines:'lines', foot:'commands' }[k]); }
  let openPanel = null;
  function placePanels(){ const h = bar.getBoundingClientRect().height; for (const el of Object.values(PANELS)) el.style.top = (h + 2) + 'px'; }
-@@ -739,7 +655,6 @@
+@@ -743,7 +655,6 @@
    openPanel = (openPanel === name) ? null : name;
    for (const [k, el] of Object.entries(PANELS)) el.classList.toggle('gm-open', k === openPanel);
    for (const b of bar.querySelectorAll('.gm-title')) { const on = b.dataset.panel === openPanel; b.classList.toggle('gm-on', on); b.setAttribute('aria-expanded', on ? 'true' : 'false'); }
@@ -125,7 +129,7 @@
    dirty = true;
  }
  bar.addEventListener('click', e => { const b = e.target.closest('.gm-title'); if (b) { e.stopPropagation(); setPanel(b.dataset.panel); } });
-@@ -763,30 +678,6 @@
+@@ -767,30 +678,6 @@
  { const _safe = safeBox; safeBox = function(){ const s = _safe(); placePanels(); s.y0 = Math.max(s.y0, bar.getBoundingClientRect().bottom + 8); s.y1 = Math.max(s.y0 + 24, innerHeight - 8); return s; }; }
  // prefers-reduced-motion: the camera lands at once instead of flying for 900 ms
  { const _fly = flyTo, rm = matchMedia('(prefers-reduced-motion: reduce)'); flyTo = function(x, y, z){ _fly(x, y, z); if (rm.matches && tween) tween.t0 -= tween.dur; }; }
@@ -154,5 +158,5 @@
 -    for (let t = 0; t < n; t++) { i = (i + step + n) % n; if (visibleLine(edPlaced[i])) break; }
 -    edSel = i; const b = edPlaced[edSel]; edCard(edSel); edFly(b); }; }
  // ======================================== KUIPER HOOK TABLE AND LOADER kuiper.hooks.v1 · begin (Opus team 4, step 4)
- // The engine above is untouched but for the wafer promise (three statements in the data block). Everything a module
- // may reach is in window.KY, built here after every wrap of the edition layer and frozen; the loader admits the
+ // Engine lines this patch changes: the wafer promise (one line after `let N = 0`, and kyWaferOk/kyWaferNo at the belt
+ // check, after `N = issued` and in the wafer.tsv catch), and the NL-009 round-1 fixes folded in by team 4: 09-robust

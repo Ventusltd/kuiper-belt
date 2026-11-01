@@ -65,6 +65,7 @@ const KEYS = JSON.parse(KEYS_BYTES.toString('utf8'));
 const META = JSON.parse(fs.readFileSync(path.join(REPO, 'cosmos/wafer-meta.json'), 'utf8'));
 const BODIES = KEYS.bodies || KEYS;
 // the edition's own admission predicate (index.html:632 at kuiper-belt@96736f5): verified, on the wafer, finite, inside SPACE
+const FILTER_EXPECT = BODIES.filter(b => b.on_wafer && b.verified && Number.isFinite(b.key) && b.key >= 0 && b.key < META.address_space && (b.repo + ' ' + b.path + ' ' + b.title).toLowerCase().includes('gridatlas')).length;
 const PLACED_KEYS = BODIES.filter(b => b.on_wafer && b.verified && Number.isFinite(b.key) && b.key >= 0 && b.key < META.address_space).map(b => b.key);
 // one byte changed, the length kept, the JSON still valid: only the sha256 can catch it
 const TAMPERED = (() => { const s = KEYS_BYTES.toString('latin1'); const t = s.indexOf('"title"'); let i = s.indexOf('"', s.indexOf(':', t) + 1) + 1;
@@ -118,14 +119,15 @@ function probeFn() {
     cam, SPACE: SP, card: q('#card') ? vis(q('#card')) : false, selftest: window.__selftest ? JSON.parse(JSON.stringify(window.__selftest)) : null,
   };
 }
-// the overlay pixels at the screen place of every admitted key: green = G > 120 and G > R + 40 (the step's own test)
+// the overlay pixels at the screen place of every admitted key: green = G > 120 and G > R + 40 (the step's own test) and
+// G > B + 60, so the cyan of the instrument (#2ee6e6, PALETTE.md:10: date labels drawn on #o) is not counted as a spark (#22ee77, :11)
 function sparksFn(keys) {
   const G32 = 2654435769; const place = k => { const m = Math.imul((k % 4294967296) >>> 0, G32) >>> 0, th = 2 * Math.PI * m / 4294967296, r = Math.sqrt(k + 0.5); return [r * Math.cos(th), r * Math.sin(th)]; };
   let c = null; try { c = window.KY && KY.cam ? { x: KY.cam.x, y: KY.cam.y, zoom: KY.cam.zoom } : null; } catch (e) {}
   if (!c || !Number.isFinite(c.zoom)) { try { c = { x: cx, y: cy, zoom: zoom }; } catch (e) { return { error: 'no camera (KY.cam nor globals)' }; } }   // eslint-disable-line no-undef
   const ov = document.getElementById('o'); if (!ov) return { error: 'no #o' };
   const W = ov.width, H = ov.height, d = ov.getContext('2d').getImageData(0, 0, W, H).data;
-  const greenAt = (sx, sy) => { let n = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const x = Math.round(sx) + dx, y = Math.round(sy) + dy; if (x < 0 || y < 0 || x >= W || y >= H) continue; const i = (y * W + x) * 4; if (d[i + 3] > 60 && d[i + 1] > 120 && d[i + 1] > d[i] + 40) n++; } return n; };
+  const greenAt = (sx, sy) => { let n = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const x = Math.round(sx) + dx, y = Math.round(sy) + dy; if (x < 0 || y < 0 || x >= W || y >= H) continue; const i = (y * W + x) * 4; if (d[i + 3] > 60 && d[i + 1] > 120 && d[i + 1] > d[i] + 40 && d[i + 1] > d[i + 2] + 60) n++; } return n; };
   let green = 0, onCanvas = 0, first = null;
   keys.forEach((k, j) => { const [x, y] = place(k), sx = (x - c.x) * c.zoom + W / 2, sy = H / 2 - (y - c.y) * c.zoom;
     const on = sx >= 0 && sy >= 0 && sx < W && sy < H; if (on) onCanvas++; const g = on ? greenAt(sx, sy) : 0; if (g) green++;
@@ -251,12 +253,12 @@ async function runDevice(browser, deviceName, shots) {
     let filtered = null, cleared = null;
     if (p.find) { await A.page.evaluate(() => { const f = document.getElementById('lyFind') || document.querySelector('#ky-layers input[type=search], #layers input[type=search]'); if (f) f.scrollIntoView({ block: 'center' }); });
       await sleep(200); let q = await A.probe(); await A.tap(q.find.rect); await sleep(300); await A.page.keyboard.type('gridatlas', { delay: 25 }); await sleep(800); q = await A.probe();
-      const all = await A.page.evaluate(() => [...document.querySelectorAll('#lineslist [data-i], #ky-layers [data-i]')].every(r => /gridatlas/i.test(r.textContent)));
-      filtered = { value: q.find.value, countLine: q.countLine, rows: q.lineRows, allMatch: all };
+      const all = q.countLine ? q.countLine.shown === FILTER_EXPECT : false;   // rows are grouped under their repository's header, so a row need not repeat the name
+      filtered = { value: q.find.value, countLine: q.countLine, rows: q.lineRows, expected: FILTER_EXPECT, allMatch: all };
       if (q.clear) { await A.tap(q.clear.rect); await sleep(700); q = await A.probe(); cleared = { value: q.find.value, countLine: q.countLine, rows: q.lineRows }; } }
     const t2b = !!scrollIn && count0 && count0.shown === 344 && count0.total === 344 && filtered && filtered.countLine && filtered.countLine.shown > 0 && filtered.countLine.shown < 344 && filtered.countLine.shown === filtered.rows && filtered.allMatch
       && cleared && cleared.value === '' && cleared.countLine && cleared.countLine.shown === 344;
-    record('t2-list', 'test 2: the lines list scrolls inside the panel (panel scrollHeight = clientHeight, list overflows), "344 of 344 rows", filter "gridatlas" narrows, clear restores 344', t2b,
+    record('t2-list', 'test 2: the lines list scrolls inside the panel (panel scrollHeight = clientHeight, list overflows), "344 of 344 rows", filter "gridatlas" shows exactly the Edition 4 predicate\'s count over keys.json (repo + path + title, index.html:741), clear restores 344', t2b,
       { panel: p.panel && { scrollHeight: p.panel.scrollHeight, clientHeight: p.panel.clientHeight }, list: p.list, rows: p.lineRows, countLine: count0, find: p.find, clear: p.clear, filtered, cleared },
       t2b ? '' : why(!p.list && 'no lines list ([data-i] rows) in #layers', p.list && !scrollIn && 'panel ' + p.panel.scrollHeight + '/' + p.panel.clientHeight + ', list ' + p.list.scrollHeight + '/' + p.list.clientHeight, !(count0 && count0.shown === 344 && count0.total === 344) && 'count line ' + JSON.stringify(count0), !p.find && 'no filter input', p.find && !p.clear && 'no clear control', filtered && !(filtered.countLine && filtered.countLine.shown === filtered.rows && filtered.allMatch) && 'filtered ' + JSON.stringify(filtered), cleared && !(cleared.value === '' && cleared.countLine && cleared.countLine.shown === 344) && 'cleared ' + JSON.stringify(cleared)));
 

@@ -16,7 +16,7 @@ Integer arithmetic: floor((2j+1) * SPACE / 40000) == floor((j+0.5)*SPACE/20000) 
 the float64 expression See Through evaluates gives the same integer for every j (asserted below).
 
 Usage, from the kuiper-belt root:  python3 editions/202611012135/handoff/05-see-through/build-see-through-json.py
-(Apache-2.0, kuiper-belt code. It reads See Through's data file and copies only names, which are ODbL data, not code.)
+(CERN-OHL-S v2, as the module: it quotes and evaluates See Through's star-key rule above, ROADMAP 9.8. Names are ODbL 1.0 data.)
 """
 import hashlib, json, os, re, subprocess, sys
 

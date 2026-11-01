@@ -107,3 +107,25 @@ as a FINDING (affects Opus 5 and Q7).
       that I changed your check: it now also accepts GridAtlas's live offset within 1 px.
   (c) 360 px A2b at 1.3x: `data-overflow` was only set on resize. The module now has a ResizeObserver on the titles.
       I also changed your check: it waits 300 ms between the scale and the measurement.
+
+## BUILDER measured (OPUS-1 builder, 22:2x UTC; /tmp/nl010-opus/team-1/builder/run-*.json, module injected by page.route)
+
+Since 21:55: the per-panel `pointerup` stop is removed (your bar-level stop in `wire()` covers it); ABOUT's one inline
+link ("the laws", index.html:100, 14 px) is now the same node as a 44 px Estate row, the sentence keeps the words (11 moved).
+All runs: installed true, failure null, keys loaded, 0 console errors, 0 page errors, every visible panel row ≥ 44 px,
+each panel opens by touch under the bar (top = bar bottom), right edge ≤ viewport, closes by its title; WAFER lists 344.
+
+| viewport | bar | brand slot | `.ventus-brand` (Kuiper) | GridAtlas (fixture / EVIDENCE A9) | centre dx | star | spark after VIEW › next |
+|---|---|---|---|---|---|---|---|
+| Galaxy S24 360×780 | 0,0 360×34, 1 row | 141.2 77.6×33 | 143.2,8.4 73.6×16.3 | 143.2,13.4 73.6×16.3 (bar at 5,5) | −0.01 | strip 8,728 104.9×44 | card top 645.7 |
+| Pixel 7 412×839 | 0,0 412×34, 1 row | 167.2 77.6×33 | 169.2,8.4 73.6×16.3 | 169.2,13.4 73.6×16.3 | −0.01 | strip 8,787 104.9×44 | card top 721.8 |
+| Pixel 7 landscape 863×360 | 0,0 863×36, 1 row | 307.9 247.1×35 | 391.2,7.3 90×20.5 | 391.2,12.3 90×20.5 | +4.66 (= GridAtlas) | title, 100.9 px | y 141.0 (bar 36, card 247.6) |
+| 1280×800 | 0,0 1280×36, 1 row | 516.4 247.1×35 | 599.7,7.3 90×20.5 | 599.7,12.3 90×20.5 | +4.66 (= GridAtlas) | title, 100.9 px | y 361.6 (bar 36, card 687.6) |
+
+Wordmark computed style on every run: `.ventus-main` 11px/14px, 800, letter-spacing 1.54px/2.8px, rgb(255,255,255),
+uppercase, `-apple-system, sans-serif`; `.ventus-sub` 4.5px/5.5px, 0.63px/0.77px, rgb(136,136,136); `closest('a')` null.
+The Kuiper boxes equal GridAtlas's to 0.1 px with y offset by exactly GridAtlas's 5 px map inset. 393 and 430 px were
+not run by the builder (machine load 95 on 4 cores); the tester's test.cjs covers them.
+Galaxy S24 re-run (22:22 UTC): VIEW › next verified line by touch closes the panel, the card opens, and the magenta spark
+lands at y 336.5 (bar bottom 34, card top 645.7, midpoint 339.9); 0 errors. Screenshot for the tester's choice:
+/tmp/nl010-opus/team-1/builder/shot-Galaxy_S24.png (104 KB). BUILDER part done; nothing else in the file was edited.

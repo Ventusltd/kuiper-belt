@@ -13,7 +13,7 @@
    :419-432, :1451-1462); the live state in the label (:91-98); install-then-inventory (:107-139); the whole row is the
    hit target (:1414-1425); galaxies-wafers@fff6fc6 layers-panel.mjs:117-118 (states), :325-330 (refuse on the row).
    requires: wafer, keyPlace, address, describe, findBy, flyTo, safeBox, fmt, esc, cv, o2, hud, big, sub, card, gbox,
-             repos, commits, lightTime, cam, lit, sel, redraw, draw, panels
+             repos, commits, N, SPACE, lightTime, cam, lit, sel, redraw, draw, panels
    optional (used when admitted earlier, never required): line-card (api.show), see-through/apps (api via register)
    provides: layers */
 (function () {
@@ -21,7 +21,7 @@
   var ID = 'layers', GEN = '202611012141';
   var SCHEMA = 'kuiper.layers.v1', MANIFEST = 'data/layers.json', TIMEOUT_MS = 60000;
   var REQUIRES = ['wafer', 'keyPlace', 'address', 'describe', 'findBy', 'flyTo', 'safeBox', 'fmt', 'esc', 'cv', 'o2',
-    'hud', 'big', 'sub', 'card', 'gbox', 'repos', 'commits', 'lightTime', 'cam', 'lit', 'sel', 'redraw', 'draw', 'panels'];
+    'hud', 'big', 'sub', 'card', 'gbox', 'repos', 'commits', 'N', 'SPACE', 'lightTime', 'cam', 'lit', 'sel', 'redraw', 'draw', 'panels'];
   var STATES = ['WAIT', 'LOAD', 'OK', 'EMPTY', 'FAIL', 'REFUSED'];
   // kuiper-belt PALETTE.md:9-14, one colour one meaning; a layer may not invent a sixth (PALETTE.md:19)
   var PALETTE = { '#c9d3e6': 'the record', '#ffffff': 'the record', '#2ee6e6': 'the instrument', '#22ee77': 'energised',
@@ -35,6 +35,7 @@
   var lines = { ED: [], placed: [], sel: -1, meta: null, focus: false, query: '', folded: {} };
   var lastRepo = -1, lastK0 = -1, booting = true;
 
+  function edName() { return 'Kuiper edition ' + (KY && KY.edition ? KY.edition : '?'); }
   function esc(v) { return H ? H.esc(v) : String(v == null ? '' : v); }
   function fmt(n) { return H.fmt(n); }
 
@@ -223,7 +224,7 @@
     + '#layers.gm-open{display:flex}'
     + '#layers.ky-in-shell{position:static;border:0;padding:0;background:transparent;max-height:none}#layers.ky-in-shell #lineslist{max-height:45vh}'
     + '@media (min-width:641px){#layers{right:auto;width:min(720px,96vw)}}'
-    + '#layers .ky-ly-rows{flex:0 1 auto;min-height:88px;overflow-y:auto;overscroll-behavior:contain}'
+    + '#layers .ky-ly-rows{flex:none;min-height:88px;overflow-y:auto;overscroll-behavior:contain}'
     + '#layers .ky-ly-g{color:#2ee6e6;letter-spacing:.12em;text-transform:uppercase;font-size:10px;padding:4px 2px 0;line-height:16px}'
     + '#layers label.ky-ly{position:relative;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 4px;border:0;box-shadow:inset 0 1px #121a26;'
     + 'color:#8fb3bd;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}'
@@ -253,7 +254,9 @@
     + '#linesctl button:active{border-color:#2ee6e6;color:#2ee6e6}'
     + '#lyClear{display:none!important;font-size:20px;line-height:1;padding:0}#lyClear.on{display:inline-block!important}'
     + '#lycount{color:#7d8799;padding:2px 2px 0;line-height:1.4}'
-    + '#lineslist{flex:1 1 0;min-height:88px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}'
+    // a short screen (landscape, 360 px tall): the rows shrink and scroll themselves so every row stays reachable (builder)
+    + '@media (max-height:600px){#layers .ky-ly-rows{flex:0 1 auto}#layers #lineslist{flex:1 1 0;min-height:44px}}'
+    + '#lineslist{flex:1 1 auto;min-height:88px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}'
     + '#lineslist .lg{position:sticky;top:0;z-index:1;display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 8px;background:#0b1a20;color:#2ee6e6;'
     + 'border-top:1px solid #12414a;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;touch-action:manipulation;user-select:none}'
     + '#lineslist .lg .n{color:#7d8799;letter-spacing:0;text-transform:none}#lineslist .lg.focus{color:#22ee77}#lineslist .lg .ch{width:12px;color:#7d8799}'
@@ -274,10 +277,8 @@
     if (host) { panel.classList.remove('gm-panel'); panel.classList.add('gm-open', 'ky-in-shell'); host.appendChild(panel); panelName = 'shell'; }
     else {
       document.body.appendChild(panel);
-      // without the shell, the Edition 4 LINES title (index.html:702) opens the WAFER panel once the page's #lines is deleted
-      var t = document.querySelector('#bar .gm-title[data-panel="lines"]');
-      try { if (!t) throw 0; KY.panels.add('lines', panel, 'WAFER'); panelName = 'lines'; }
-      catch (e) { KY.panels.add('wafer', panel, 'WAFER'); panelName = 'wafer'; }
+      // without the shell: a panel named wafer; its bar title is team 1's (ROADMAP R2), KY.panels.set('wafer') opens it
+      KY.panels.add('wafer', panel, 'WAFER'); panelName = 'wafer';
     }
     // one delegated change listener: the single implementation of on/off (menu-bar.js:1451-1462, :1723-1726)
     panel.addEventListener('change', function (e) {
@@ -296,7 +297,7 @@
       if (row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.stopPropagation(); row.click(); } });
   }
   function closePanel() {
-    if (panelName === 'shell') { var sh = window.__KUIPER_SHELL__; if (sh && typeof sh.close === 'function') sh.close(); return; }
+    if (panelName === 'shell') { var sh = (KY.modules['kuiper-shell'] && KY.modules['kuiper-shell'].api) || window.__KUIPER_SHELL__; if (sh && typeof sh.close === 'function') sh.close(); return; }
     if (panel.classList.contains('gm-open')) KY.panels.set(panelName);
   }
   function sizePanel() {
@@ -415,7 +416,7 @@
       r.placed = lines.placed.length; r.total = bodies.length; r.loaded = true;
       if (!r.placed) setState('lines', 'EMPTY', 'no body admitted of ' + fmt(bodies.length));
       else setState('lines', 'OK', fmt(r.placed) + ' of ' + fmt(r.total));
-      H.big.textContent = 'Kuiper Edition 5 · ' + fmt(r.placed) + ' verified lines lit';
+      H.big.textContent = edName() + ' · ' + fmt(r.placed) + ' verified lines lit';
       H.sub.textContent = 'Edition 1 verified ' + fmt(bodies.length) + ' lines of the estate (354 keyed findings, 495 keys re-resolved; see ../202610311905/). '
         + 'Here each is a green spark at its own key on the one wafer: ' + H.sub.textContent;
       fillLines(); KY.redraw();
@@ -424,8 +425,8 @@
   function edScreen(b) { return scr([b.x, b.y]); }
   function drawLines(o2) {
     var hud = H.hud, P = lines.placed;
-    if (!rt.lines.on) { hud.textContent += '\nEDITION 5 · verified lines layer off'; return; }
-    if (!P.length) { hud.textContent += '\nEDITION 5 · ' + tagText('lines'); return; }
+    if (!rt.lines.on) { hud.textContent += '\n' + edName() + ' · verified lines layer off'; return; }
+    if (!P.length) { hud.textContent += '\n' + edName() + ' · ' + tagText('lines'); return; }
     var on = 0, W = o2.canvas.width, Hh = o2.canvas.height;
     for (var i = 0; i < P.length; i++) { var b = P[i]; if (lines.focus && b.class !== 'focus') continue;
       var p = edScreen(b), x = p[0], y = p[1];
@@ -435,7 +436,7 @@
       o2.fillStyle = sel ? 'rgba(255,43,214,.95)' : (focus ? 'rgba(34,238,119,.95)' : 'rgba(34,238,119,.70)'); o2.fill();
       if (sel) { o2.strokeStyle = 'rgba(255,43,214,.9)'; o2.lineWidth = 1.5; o2.beginPath(); o2.arc(x, y, 14, 0, 6.2832); o2.stroke(); } }
     var notOn = lines.ED.length - P.length;
-    hud.textContent += '\nEDITION 2 · ' + fmt(P.length) + ' verified lines on this wafer, ' + fmt(on) + ' in view'
+    hud.textContent += '\n' + edName() + ' · ' + fmt(P.length) + ' verified lines on this wafer, ' + fmt(on) + ' in view'
       + (notOn ? ' · ' + fmt(notOn) + ' not on the wafer (named in keys.json), counted, not placed' : '')
       + ' · bright green: gridatlas and the data-centre repositories · green: the rest of the estate';
   }
@@ -628,7 +629,7 @@
     KY.draw.add(function (o2) {
       if (!M) return;
       refreshWaferTags();
-      M.order.forEach(function (id) { var r = rt[id]; if (!r || !r.on || r.status === 'REFUSED') return;
+      M.order.forEach(function (id) { var r = rt[id]; if (!r || (!r.on && id !== 'lines') || r.status === 'REFUSED') return;   // drawLines writes 'verified lines layer off' itself (test 3; builder)
         if (id === 'lines') drawLines(o2); else if (id === 'editions') drawEditions(o2); else if (r.draw) r.draw(o2, KY); });
     }, 30);
     fetchBytes(MANIFEST).then(function (buf) {
@@ -673,7 +674,6 @@
     edScreen: function (i) { var b = lines.placed[i]; return b ? edScreen(b) : null; },
     placed: function () { return lines.placed.length; } };
 
-  try { window.__KUIPER_LAYERS__ = api; } catch (e) { /* a frozen window property: the api is KY.modules.layers.api */ }
   if (window.KY && typeof window.KY.register === 'function') {
     window.KY.register({ schema: 'kuiper.module.v1', id: ID, generation: GEN, requires: REQUIRES, provides: ['layers'],
       install: install, inspect: inspect });

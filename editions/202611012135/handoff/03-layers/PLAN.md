@@ -48,7 +48,9 @@ landscape; /tmp/nl010-opus/team-3/builder/probe.cjs) and changed:
 3. Rows: the 1 px border-top made the stretched input miss the row (`covers false` on all 7); now an inset box-shadow,
    the input covers the row exactly. Group headers `.lg` 40 → 44 px (they are fold targets). Landscape 863x360: rows
    were `flex:none`, so `elements` and `spider` were clipped and unreachable and `#lineslist` had clientHeight 0; now
-   `.ky-ly-rows` shrinks and scrolls itself (min 88 px) and `#lineslist` is `flex:1 1 0; min-height:88px`.
+   under `@media (max-height:600px)` `.ky-ly-rows` shrinks and scrolls itself (min 88 px) and the list keeps 44 px
+   (landscape: panel scrollHeight 286 = clientHeight 286, every row reachable); on tall phones rows stay whole and the
+   list has min-height 88 px (S24 list 133 px, Pixel 7 220 px).
 4. One keys.json body has a 1,240,449-character `line_text`; rendered whole it was a 723,252 px list row. The list row
    now shows 600 characters verbatim + "… (+N characters, the whole line is on its card)" and clamps to 3 lines.
 
@@ -61,3 +63,27 @@ EVALUATED row blocks the hand-off pass). Pre-integration runs: `node /tmp/nl010-
 `node test.cjs http://127.0.0.1:8432/ <out> --index /tmp/nl010-opus/team-3/tester/pre/index.html --manifest
 /tmp/nl010-opus/team-3/tester/pre/modules.json`. A pass with --index/--manifest prints "pre-integration" and is never
 the hand-off pass. `--handoff` writes img/ and TEST.md.
+
+## TESTER 22:27 UTC: run 4 (pre-integration, Pixel 7) findings for the lead
+- PASS: state-wait, state-load, t1-inspect, t2-panel, t3-repos, t6-written, t8-apps, a-console. t2-title NOT EVALUATED (no shell).
+- FAIL t3-toggle (module): with lines off the readout never says "verified lines layer off": the draw wrap (layers.js
+  install, `if (!r || !r.on ...) return;`) skips drawLines when off, so its first line (`if (!rt.lines.on) hud += ...`,
+  :427) is unreachable. Write the off line from the wrap (or call drawLines regardless). Spec: team-2/STEPS.md test 3.
+- t2-list: my check was wrong (rows are grouped under the repo header); now the count must equal the Edition 4 predicate
+  over keys.json: 126 for "gridatlas". Your count line reads 126: will pass.
+- FAIL t6-hash / t6-query: details next run (on at load or after-untick mismatch); see report.json.
+- t9-hashes will FAIL: data/see-through.json (team 5's, 1,028,668 bytes) is in data/ but no record's source.file names
+  it ("every data/*.json hashes to its layers.json record", ROADMAP step 3 test 9).
+- 22:10 LEAD: MODULE FREEZE. Test runs hash the module at start; any edit mid-run makes the loader refuse it (sha256
+  mismatch). Builder/tester: do not write the module file; put proposed changes in /tmp/nl010-opus/team-3/<role>/ and
+  name them here. The lead applies them between runs. test.cjs line 74/332 now read KY.modules.layers.api (lead edit).
+- 22:31 LEAD: applied evidence R2 (REQUIRES += N, SPACE: tester, rebuild pre/modules.json — I just ran build-pre.cjs),
+  R7 (readout/heading name from KY.edition), R11 (no window.__KUIPER_LAYERS__; use KY.modules.layers.api), R4-R6
+  (licences in layers.json). see-through record now names data/see-through.json (t9); state stays EMPTY until team 5's
+  module registers. Builder's verified()/landscape/t3 fixes accepted. Lead now runs the full test on both devices (8430).
+5. Readout: the draw callback skipped every layer that was off, so `drawLines` never wrote "verified lines layer off"
+   (test 3); lines is now passed through when off. Measured after the change (S24, shim): tap on the lines row centre →
+   `on false`, hash `#layers=editions`, readout has the words; tap again → `on true`, `#layers=editions,lines`; repos
+   row → `OK · none lit`; elements row disabled, `REFUSED · licence unsettled …`; lines history WAIT · wafer → LOAD ·
+   keys.json → OK · 344 of 346; keys.json 404 → `FAIL · keys.json HTTP 404`, heading KEYS.JSON DID NOT LOAD; one byte
+   changed → `FAIL · sha256 mismatch`; wafer.tsv 404 → every row `REFUSED · the wafer refused: …`; no pageerror.

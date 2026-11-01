@@ -21,6 +21,13 @@ page, the loader reference (header + the same block bytes), `index.html.patch` a
   `// Apache-2.0 (kuiper-belt), kuiper-belt README.md:157.` to test.cjs's header (R7).**
 - HOOKS.md corrections (a) time 21:42:44Z, (b) `big` :123, (c) the refusal list = the loader's exact strings.
 
+## Rev 2 is in (22:14 UTC)
+
+`index.html.patch` sha256 `811e5dad…3d5b`, `modules/202611012145-loader.js` `d6766eec…2f98` (12,405 bytes), hello
+unchanged `ee2130b5…dd53`; modules.json and modules.schema.json regenerated; edition_check.py.patch carries the E6
+`header names` check and the licence line. Rev 1 passed tests 1-9 on Pixel 7 and Galaxy S24 under the lead's harness
+(/tmp/nl010-opus/team-4/lead/report-rev1.json); the lead re-runs it on rev 2 now. HOOKS.md corrected (a)-(c).
+
 ## After rev 2
 
 - Tester: re-run test.cjs on both devices against the new `index.html.patch`; write TEST.md; screenshots of 1, 2, 7 to img/.
