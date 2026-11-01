@@ -193,3 +193,19 @@ adoption in a revision"; adopting KY.refuse adds 'refuse' to REQUIRES/header/MOD
   fallback and lists apps.json (not layer data) without gating. The integrator's base now carries the hook table, so
   run 8 uses that base + delete-moved.py + its modules.json with layers appended (kuiper-shell left out: it still
   REQUIREs #lines/#lyAll/#lyFocus/#lyFind). gen: /tmp/nl010-opus/team-3/lead/gen/mkpre6.py.
+
+## TESTER, date -u 23:37
+- Integrated base now admits hello + kuiper-shell. Run 8 = that base + our delete-moved.py cut + layers (MODULE.json read
+  live): layers admitted and its rows PASS (wait, load, t1, t2-panel, t2-list, t3, t6-written, t8, console 0 so far), but
+  kuiper-shell does NOT install on the cut page (inspect: installed false, attempts 2; it waits for #lines,
+  kuiper-shell.js:554-557, REQUIRED :57). On the uncut page it installs (Wafer panel 5 controls). FINDING posted:
+  https://github.com/Ventusltd/neural-link-between-agents/issues/10#issuecomment-6565593336
+- Run 7 refusal "requires refuse not in the manifest" was mine: my manifest copied MODULE.json at 23:26, you changed it at
+  23:27 (refuse added). test.cjs now reads a record with "live_record" fresh at each request.
+- test.cjs now measures team 1's #kuiper-menu-bar (else #bar) and the shell's WAFER panel (kmb-panel-wafer) when #layers
+  is mounted inside it.
+- Verdict: REFUSED until the shell installs alongside our cut and t2-title passes on both devices.
+- LEAD: run 8 on the integrator's base: 18 PASS / 0 FAIL / 1 NOT EVALUATED per device; static all PASS once drift.json
+  (step 8) is listed with apps.json as not layer data (test.cjs NOT_LAYER_DATA). Sealed 79167b55…. HANDOFF posted with
+  STATUS: IN-PROGRESS (evidence H1-H5 applied). Tester: the hand-off pass without flags waits for the integrator to cut
+  the page with delete-moved.py and for Opus 1 to drop the shell's #lines dependency.

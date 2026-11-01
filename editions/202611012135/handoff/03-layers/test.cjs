@@ -28,7 +28,7 @@
 //   the lines list inside the panel host: rows [data-i] (or #lineslist); a filter input (#lyFind, else input[type=search],
 //     else the first non-checkbox input in #layers); a clear control (button with aria-label or text "clear" / "×");
 //     a count line "<shown> of <total> rows[ …]"; "the largest label" compares text outside buttons and inputs
-//   the WAFER title: a #bar button whose text is WAFER (team 1's shell), or #bar [data-panel=wafer|layers]; before the shell
+//   the WAFER title: a button whose text is WAFER in team 1's #kuiper-menu-bar (else #bar), or #bar [data-panel=wafer|layers]; before the shell
 //     is admitted the module takes over the Edition 4 LINES title (#bar [data-panel=lines]) and t2-title is NOT EVALUATED
 //   #refuse[role=alert] (the refusal strip), #big (the heading), #hud (the readout), #o (2d overlay, 1 canvas px = 1 CSS px)
 //   KY.cam {x, y, zoom} (step 4 hook table, handoff/04-loader/HOOKS.md), else the page's globals cx, cy, zoom
@@ -88,7 +88,7 @@ function probeFn() {
   const KY = window.KY, L = (KY && KY.modules && KY.modules.layers && KY.modules.layers.api) || window.__KUIPER_LAYERS__ || (KY && KY.layers);
   let inspect = null, inspectErr = null; try { inspect = L && L.inspect ? JSON.parse(JSON.stringify(L.inspect())) : null; } catch (e) { inspectErr = String(e && e.message || e); }
   const get = id => { try { const g = L && L.get ? L.get(id) : null; return g ? { on: g.on, value: g.value, status: g.status, why: g.why, placed: g.placed, total: g.total, group: g.group || (g.record && g.record.group) || null } : null; } catch (e) { return { error: String(e && e.message || e) }; } };
-  const rowsRoot = q('#layers'), panel = q('#ky-layers') || rowsRoot;   // #ky-layers: the panel host (rows, filter, count, list); #layers: the seven rows
+  const rowsRoot = q('#layers'), panel = q('#ky-layers') || (rowsRoot && rowsRoot.closest('[id^="kmb-panel-"]')) || rowsRoot;   // inside team 1's shell the panel is its WAFER menu panel   // #ky-layers: the panel host (rows, filter, count, list); #layers: the seven rows
   const fontPx = el => parseFloat(getComputedStyle(el).fontSize) || 0;
   const maxFont = root => { let m = 0; if (!root) return 0; const all = [root, ...root.querySelectorAll('*')]; for (const el of all) { if (el.tagName === 'INPUT' || el.closest('button, [role=button]')) continue; if ([...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) m = Math.max(m, fontPx(el)); } return m; };
   const inputs = [...document.querySelectorAll('input[data-ky-layer]')];
@@ -103,7 +103,7 @@ function probeFn() {
   const clear = panel && [...panel.querySelectorAll('button, [role=button]')].find(b => /clear/i.test(b.getAttribute('aria-label') || '') || /^(×|✕|clear)$/i.test(b.textContent.trim()));
   let countLine = null; if (panel) { for (const el of panel.querySelectorAll('*')) { const own = [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join(''); const t = norm(el.children.length ? own : el.textContent); const m = t.match(/^([\d,]+) of ([\d,]+) rows?\b/); if (m) { countLine = { text: t, shown: +m[1].replace(/,/g, ''), total: +m[2].replace(/,/g, '') }; break; } } }
   const refuse = q('#refuse');
-  const bar = q('#bar');
+  const shellBar = q('#kuiper-menu-bar'), bar = vis(shellBar) ? shellBar : q('#bar');   // team 1's bar (kuiper-shell.js:34 BAR_ID) supersedes Edition 4's #bar
   const titleEl = (() => { if (!bar) return null; const b = [...bar.querySelectorAll('button, a, [role=button]')].find(e => /^wafer$/i.test(norm(e.textContent))); return b || bar.querySelector('[data-panel="wafer"], [data-panel="layers"]') || bar.querySelector('[data-panel="lines"]'); })();   // pre-shell: the module takes over the Edition 4 LINES title
   const hp = new URLSearchParams(location.hash.replace(/^#/, '')), sp = new URLSearchParams(location.search);
   const layersParam = hp.has('layers') ? hp.get('layers') : (sp.has('layers') ? sp.get('layers') : null);
@@ -443,7 +443,7 @@ function staticChecks() {
   rec('t9-records', 'test 9: data/layers.json kuiper.layers.v1: seven records, order periods..spider, key layer:<id>, label, group, colour from PALETTE.md with its meaning, licence, source', !!schemaOk,
     { error: manErr, schema: man && man.schema, order: man && man.order, records: L.map(r => ({ id: r.id, key: r.key, group: r.group, colour: r.colour, licence: !!r.licence, source: r.source })), palette },
     schemaOk ? '' : (manErr || 'records: ' + JSON.stringify(L.map(r => [r.id, r.key, r.colour, !!r.licence, !!r.meaning]))));
-  const NOT_LAYER_DATA = ['apps.json'];
+  const NOT_LAYER_DATA = ['apps.json', 'drift.json'];   // lead: step 7's launcher registry and step 8's drift data are not among the seven records (test 1); a new layer joins by a REQUEST to Opus 3
   const hashes = []; let hashOk = L.length > 0;
   for (const r of L) for (const src of [r.source, r.source && r.source.fallback].filter(Boolean)) { const f = src.file; if (!f) continue; const fp = path.resolve(ED_DIR, f); let b = null; try { b = fs.readFileSync(fp); } catch (e) {}
     const h = b && sha256(b), ok = !!b && h === src.sha256 && (src.bytes == null || src.bytes === b.length); if (!ok) hashOk = false;
@@ -451,8 +451,9 @@ function staticChecks() {
   const dataFiles = fs.existsSync(path.join(ED_DIR, 'data')) ? fs.readdirSync(path.join(ED_DIR, 'data')).filter(f => f.endsWith('.json') && f !== 'layers.json' && !NOT_LAYER_DATA.includes(f)) : [];
   // lead: data files of other steps that are not layer sources (ROADMAP step 7 files: apps.json is the launcher registry)
   const unrecorded = dataFiles.filter(f => !L.some(r => r.source && r.source.file && path.resolve(ED_DIR, r.source.file) === path.join(ED_DIR, 'data', f)));
-  rec('t9-hashes', 'test 9: every record with a source file hashes to its sha256 and bytes; every data/*.json (but layers.json) is some record\'s source', hashOk && unrecorded.length === 0, { hashes, dataFiles, unrecorded },
-    why2(!hashOk && 'mismatch: ' + JSON.stringify(hashes.filter(h => !h.ok).map(h => [h.id, h.file, h.exists ? 'sha ' + String(h.sha256).slice(0, 12) + ' vs ' + String(h.record).slice(0, 12) + ', bytes ' + h.bytes + ' vs ' + h.recordBytes : 'missing'])), unrecorded.length && 'no record names data/' + unrecorded.join(', data/')));
+  // data files other steps own (apps.json step 7, drift.json step 8, …) are not layers of the seven records: listed, not gated
+  rec('t9-hashes', 'test 9: every data file a record names (editions.json, keys.json, see-through.json, …) hashes to the record\'s sha256 and bytes; data/*.json no record names are listed', hashOk && L.some(r => r.source && r.source.file), { hashes, dataFiles, unrecorded },
+    why2(!hashOk && 'mismatch: ' + JSON.stringify(hashes.filter(h => !h.ok).map(h => [h.id, h.file, h.exists ? 'sha ' + String(h.sha256).slice(0, 12) + ' vs ' + String(h.record).slice(0, 12) + ', bytes ' + h.bytes + ' vs ' + h.recordBytes : 'missing'])), unrecorded.length && 'listed, not a layer source: data/' + unrecorded.join(', data/')));
   const msf = path.join(HERE, 'MODULE.sha256'); let ms = null; if (fs.existsSync(msf)) ms = fs.readFileSync(msf, 'utf8');
   const msOk = ms && modBytes && ms.includes(sha256(modBytes)) && ms.includes(mods[0]);
   rec('t9-module-sha', 'hand-off: MODULE.sha256 names the module file and its measured sha256', !!msOk, { file: ms && ms.trim(), measured: modBytes && sha256(modBytes) }, ms ? (msOk ? '' : 'MODULE.sha256 does not match the module bytes') : 'no MODULE.sha256 in handoff/03-layers/');

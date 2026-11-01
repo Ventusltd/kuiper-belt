@@ -66,6 +66,9 @@ const KEY_RE = /^(block:[A-Za-z0-9]+|surface:https:\/\/)/;
 const SRC = { elements: 'f7a92fb085c38dcbbd5cb469a66cd5ca61fb95bf', homepage: 'c66759f0d7ac3489df9158da6eaa1330a37c069f', testcode: 'd09c185c8dacbc5c73afb2b0d0d8dad40745a544' };
 const SEE_THROUGH_KEY = 'surface:https://ventusltd.github.io/kuiper-belt/see-through/';
 const README_606 = '606 in the live register, 244 catalogued', README_221 = '221 elements placed, 23 counted, not placed';
+// file.js's EVIDENCE rows (Opus team 6) HEAD these; the integrator writes the missing ones at assembly (ROADMAP step 6, 10)
+const EVIDENCE = ['keys.json', 'proof/edition-sha256.txt', 'proof/keys-summary.json', 'modules.json', 'LICENCES.md', 'proof/android-journey.json', 'README.md'];
+const ALLOW_EVIDENCE = argv.includes('--allow-missing-evidence');
 const STUB = '<!DOCTYPE html><meta charset="utf-8"><title>stub</title><p>off-origin dashboard: the test asserts the URL only</p>';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const sha256 = b => crypto.createHash('sha256').update(b).digest('hex');
@@ -82,7 +85,7 @@ const sstep = (id, pass, measured) => { report.script.push({ id, result: pass ==
 // ======================================================================== S: by script, against the sources (A1, A4 data)
 async function scriptChecks() {
   const get = async f => { const r = await fetch(URL0 + f, { cache: 'no-store' }); if (!r.ok) throw new Error(f + ' HTTP ' + r.status); return Buffer.from(await r.arrayBuffer()); };
-  for (const f of ['modules/202611012309-apps.js', 'data/apps.json', 'data/elements.json', 'data/graphs/overview.json', 'data/graphs/periodic-table.json']) {
+  for (const f of ['index.html', 'modules.json', 'modules/202611012309-apps.js', 'data/apps.json', 'data/elements.json', 'data/graphs/overview.json', 'data/graphs/periodic-table.json']) {
     try { const b = await get(f); report.files[f] = { sha256: sha256(b), bytes: b.length }; } catch (e) { report.files[f] = { error: e.message }; } }
   // ---- A1 apps.json
   let A; try { A = JSON.parse(await get('data/apps.json')); } catch (e) { sstep('A1 data/apps.json served and parses', false, e.message); return; }
@@ -212,7 +215,7 @@ async function waferLit(page) {
 
 // ======================================================================== one device
 async function runDevice(browser, DEV) {
-  const R = report.devices[DEV] = { steps: [], errors: [], console_errors: [], failed_local: [], expected_404: [], blocked_offorigin: [], see_through_console: [], shots: [] };
+  const R = report.devices[DEV] = { steps: [], errors: [], console_errors: [], failed_local: [], expected_404: [], blocked_offorigin: [], see_through_console: [], shots: [], evidence_404: [], aborted_local: [] };
   const step = (id, pass, measured) => { R.steps.push({ id, result: pass === null ? 'NOT EVALUATED' : (pass ? 'PASS' : 'FAIL'), measured }); if (pass !== true) allPass = false; console.error('[' + DEV + '] ' + (pass === null ? 'NOT EVALUATED' : pass ? 'PASS' : 'FAIL') + '  ' + id); };
   const slug = DEV.replace(/[^A-Za-z0-9]+/g, '-').toLowerCase();
   let spiderLink = null, allow404 = null;
@@ -228,9 +231,10 @@ async function runDevice(browser, DEV) {
     p.on('console', m => { if (m.type() !== 'error') return; const t = m.text().slice(0, 300), u = (m.location() || {}).url || '';
       if (!onEd()) { R.see_through_console.push(t + ' @ ' + u); return; }
       if (/status of 404/.test(t) && allow404 && allow404.test(u)) return;          // the routed negative case, listed in expected_404
+      if (/status of 404/.test(t) && EVIDENCE.some(f => u === URL0 + f)) { if (!R.evidence_404.includes(u)) R.evidence_404.push(u); return; }   // team 6's rows, the integrator's files
       R.console_errors.push(t + (u ? ' @ ' + u : '')); });
-    p.on('requestfailed', q => { const u = q.url(); if (!u.startsWith(ORIGIN + '/')) return; const f = q.failure(); if (f && /ERR_ABORTED/.test(f.errorText) && q.isNavigationRequest()) return; R.failed_local.push(u + ' ' + (f && f.errorText)); });
-    p.on('response', r => { const u = r.url(); if (u.startsWith(ORIGIN + '/') && r.status() >= 400 && !(allow404 && allow404.test(u)) && onEd()) R.failed_local.push(u + ' HTTP ' + r.status()); });
+    p.on('requestfailed', q => { const u = q.url(); if (!u.startsWith(ORIGIN + '/')) return; const f = q.failure(); if (f && /ERR_ABORTED/.test(f.errorText) && q.isNavigationRequest()) return; (f && /ERR_ABORTED/.test(f.errorText) ? R.aborted_local : R.failed_local).push(u + ' ' + (f && f.errorText)); });
+    p.on('response', r => { const u = r.url(); if (u.startsWith(ORIGIN + '/') && r.status() >= 400 && !(allow404 && allow404.test(u)) && !(r.status() === 404 && EVIDENCE.some(f => u === URL0 + f)) && onEd()) R.failed_local.push(u + ' HTTP ' + r.status()); });
     return p;
   }
   async function ready(p) {
@@ -244,6 +248,8 @@ async function runDevice(browser, DEV) {
   const shot = async (p, name) => { const dir = SHOTS && DEV === 'Pixel 7' ? SHOTS : path.join(OUT, slug); fs.mkdirSync(dir, { recursive: true });
     const f = path.join(dir, (SHOTS && DEV === 'Pixel 7' ? '' : slug + '-') + name + '.png');
     try { await p.screenshot({ path: f, scale: 'css', timeout: 180000 }); R.shots.push({ file: f, bytes: fs.statSync(f).size }); } catch (e) { R.errors.push('screenshot ' + name + ': ' + e.message); } };
+  const launcherOpen = p => p.evaluate(() => { const L = document.getElementById('ky-apps'); return !!L && getComputedStyle(L).display !== 'none' && L.getBoundingClientRect().height > 0; });
+  const closeLauncher = async p => { if (await launcherOpen(p)) { await tapSel(p, '#ky-apps button.ky-x'); await sleep(1200); } };
   const inspect = p => p.evaluate(() => { try { return KY.modules.apps.api.inspect(); } catch (e) { return { error: String(e) }; } });
   const layer = (p, id) => p.evaluate(i => { try { const g = KY.modules.layers.api.get(i); const lab = document.querySelector('label.ky-ly[data-id="' + i + '"]');
     return { status: g && g.status, why: g && g.why, row: lab ? lab.querySelector('.st').textContent.trim() : null, disabled: lab ? lab.querySelector('input').disabled : null, checked: lab ? lab.querySelector('input').checked : null }; } catch (e) { return { error: String(e) }; } }, id);
@@ -274,12 +280,18 @@ async function runDevice(browser, DEV) {
     step('A2 each row\'s first visible line is its key; the first row\'s header is a key', headerOk && KEY_RE.test(L1.rows[0].header) && keys.includes(L1.rows[0].header),
       { first_row: L1.rows[0], mismatches: L1.rows.filter(r => r.header !== r.key).slice(0, 5) });
     await shot(p, 'launcher');
+    // one panel at a time (step 1: a real tap opens exactly one panel): WAFER tapped while the launcher is open closes it
+    await tapSel(p, '#kuiper-menu-bar .gm-menu[data-menu="wafer"] > .gm-title'); await sleep(1500);
+    const one = await p.evaluate(() => { const L = document.getElementById('ky-apps'), b = document.getElementById('kuiper-menu-bar');
+      return { launcherOpen: !!L && getComputedStyle(L).display !== 'none' && L.getBoundingClientRect().height > 0, menuOpen: b && b.getAttribute('data-open') }; });
+    step('A2 one panel at a time: a real tap on WAFER while the launcher is open closes the launcher', !one.launcherOpen && one.menuOpen === 'wafer', one);
+    await closeLauncher(p);
     // ------------------------------------------------------------------ A4 readout, elements row, inspect
     const txt = await p.evaluate(readoutText), ins = await inspect(p);
     const ie = ins.elements || {};
     step('A4 the readout says "' + README_221 + '" and "' + README_606 + '"; inspect() 221 / 23 / 244', txt.includes(README_221) && txt.includes(README_606) && ie.placed === 221 && ie.named === 23 && ie.total === 244,
       { has221: txt.includes(README_221), has606: txt.includes(README_606), inspect_elements: ie });
-    await closeMenus(p); await openMenu(p, 'wafer'); await sleep(1500);
+    await closeLauncher(p); await closeMenus(p); await openMenu(p, 'wafer'); await sleep(1500);
     const el = await layer(p, 'elements');
     if (Q1open) step('A4 Q1 open: the elements row reads REFUSED · licence unsettled, its control disabled', el.status === 'REFUSED' && /REFUSED/.test(el.row || '') && /licence unsettled/.test(el.row || '') && el.disabled === true, el);
     else step('A4 Q1 answered: the elements layer loads, 221 of 244', el.status === 'OK' && /221/.test(el.row || ''), el);
@@ -302,7 +314,7 @@ async function runDevice(browser, DEV) {
       { line: nokeyLine, periodic: gp });
     await shot(p, 'spider-layer');
     // ------------------------------------------------------------------ A4 card from the periodic-table panel (if any)
-    await closeMenus(p);
+    await closeLauncher(p); await closeMenus(p);
     await openMenu(p, 'file'); await tapSel(p, '#ky-file-open-app'); await sleep(3000);
     const ptRow = '#ky-apps [data-id="periodic-table"] button.ky-app-w';   // "keys ▸": the panel; the row's link would leave the page
     if (await p.locator(ptRow).count()) { await tapSel(p, ptRow); await sleep(3000); }
@@ -327,7 +339,7 @@ async function runDevice(browser, DEV) {
       }
       step('A4 card from the periodic-table panel: first line = line_text, second = block:<Sym> (3 elements)', cards.length === 3 && cards.every(c => c.ok), { rows: nEl, cards });
     }
-    await closeMenus(p);
+    await closeLauncher(p); await closeMenus(p);
     // ------------------------------------------------------------------ A5 the spider row opens its dashboard
     await openMenu(p, 'file'); await tapSel(p, '#ky-file-open-app'); await sleep(3000);
     const spSel = '#ky-apps [data-id="spider-sandbox"] a.ky-app-a';
@@ -340,7 +352,7 @@ async function runDevice(browser, DEV) {
       if (landed !== URL0 && !landed.startsWith(URL0)) { await p.goBack({ timeout: LONG }).catch(e => R.errors.push('goBack ' + e.message)); await ready(p); }
     }
     // ------------------------------------------------------------------ A3 See Through, same tab, back
-    await closeMenus(p);
+    await closeLauncher(p); await closeMenus(p);
     await openMenu(p, 'file'); await tapSel(p, '#ky-file-open-app'); await sleep(3000);
     const stSel = '#ky-apps [data-key="' + SEE_THROUGH_KEY + '"] a.ky-app-a';
     const navs = []; const onReq = q => { if (q.isNavigationRequest() && q.frame() === p.mainFrame()) navs.push(q.url()); }; p.on('request', onReq);
@@ -384,10 +396,13 @@ async function runDevice(browser, DEV) {
   }
   // ------------------------------------------------------------------ A6 and E
   const offDash = R.blocked_offorigin;
-  step('A6 every step above ran with every off-origin request blocked (listed)', R.steps.filter(s => /^A[2-5]/.test(s.id)).every(s => s.result === 'PASS'),
+  step('A6 every step above ran with every off-origin request blocked (listed)', R.steps.filter(s => /^A[2-5]/.test(s.id)).length >= 14 && !R.steps.some(s => s.id === 'harness') && R.steps.filter(s => /^A[2-5]/.test(s.id)).every(s => s.result === 'PASS'),
     { blocked: offDash.length, sample: offDash.slice(0, 12) });
   step('E zero pageerrors, zero console errors, zero failed same-origin requests on the edition', R.errors.length === 0 && R.console_errors.length === 0 && R.failed_local.length === 0,
-    { pageerrors: R.errors.slice(0, 10), console: R.console_errors.slice(0, 10), failed_local: R.failed_local.slice(0, 10), see_through_console_listed_not_counted: R.see_through_console.length });
+    { pageerrors: R.errors.slice(0, 10), console: R.console_errors.slice(0, 10), failed_local: R.failed_local.slice(0, 10), see_through_console_listed_not_counted: R.see_through_console.length,
+      aborted_listed: R.aborted_local.length, evidence_404_listed: R.evidence_404 });
+  if (R.evidence_404.length) step('E\' the EVIDENCE files file.js rows HEAD are present (written by the integrator at assembly)', ALLOW_EVIDENCE ? null : false,
+    { missing: R.evidence_404, why: ALLOW_EVIDENCE ? '--allow-missing-evidence: NOT EVALUATED (never a pass); team 6\'s rows, the integrator\'s files' : 'console 404s on the edition' });
 }
 
 // ======================================================================== TEST.md
@@ -399,10 +414,13 @@ function writeTestMd(file) {
   L.push('');
   L.push('Tester OPUS-7 (Opus team 7). Written by `test.cjs` at ' + report.finished + '; every cell is a measurement of that run, never an estimate.');
   L.push('');
-  L.push('**Verdict: ' + (report.pass ? 'PASS: the hand-off may go.' : 'FAIL: the hand-off is refused until every gate below reads PASS on both devices.') + '**');
+  const nonPass = [].concat(report.script.filter(s => s.result !== 'PASS').map(s => s.id), ...Object.values(report.devices).map(d => d.steps.filter(s => s.result !== 'PASS').map(s => s.id)));
+  const onlyEvidence = !report.pass && nonPass.length > 0 && nonPass.every(id => /^E'/.test(id)) && Object.values(report.devices).every(d => d.steps.filter(s => /^E'/.test(s.id)).every(s => s.result === 'NOT EVALUATED'));
+  L.push('**Verdict: ' + (report.pass ? 'PASS: the hand-off may go.' : onlyEvidence ? 'PASS for every team-7 gate; NOT EVALUATED: E\' (the EVIDENCE files of file.js that the integrator writes at assembly). Not a full pass until the integrator\'s run shows them present.' : 'FAIL: the hand-off is refused until every gate below reads PASS on both devices.') + '**');
   L.push('');
   L.push('| run | value |'); L.push('|---|---|');
   L.push('| edition | ' + URL0 + ' |');
+  for (const f of ['index.html', 'modules.json']) L.push('| served ' + f + ' | sha256 `' + ((report.files[f] || {}).sha256 || '-') + '` (' + ((report.files[f] || {}).bytes || '-') + ' bytes) |');
   L.push('| module | `modules/202611012309-apps.js` sha256 `' + ((report.files['modules/202611012309-apps.js'] || {}).sha256 || '-') + '` (' + ((report.files['modules/202611012309-apps.js'] || {}).bytes || '-') + ' bytes) |');
   for (const f of ['data/apps.json', 'data/elements.json', 'data/graphs/overview.json', 'data/graphs/periodic-table.json']) L.push('| ' + f + ' | sha256 `' + ((report.files[f] || {}).sha256 || '-') + '` (' + ((report.files[f] || {}).bytes || '-') + ' bytes) |');
   L.push('| test.cjs | sha256 `' + sha256(fs.readFileSync(__filename)) + '` |');

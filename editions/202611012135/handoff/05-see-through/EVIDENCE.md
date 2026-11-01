@@ -204,29 +204,41 @@ record `"licence": "CERN-OHL-S-2.0"`; `data/layers.json` row; `LICENCES.md` row)
 
 ## 12. Review of the lead's HANDOFF comment, and the evidence officer's verdict
 
-State at 23:25 UTC: **no HANDOFF draft exists** (none in this folder, none in /tmp/nl010-opus/team-5/lead/posts/, which
-holds only req1-3 and find1). The tester has **REFUSED** the hand-off (TEST.md:3; run5 23:10 UTC: entry FAIL at 393 px
-under the 381 px rule; spark FAIL, `#card` `visibility:hidden` from the layers/line-card `.gm-open` conflict, FINDING
-issuecomment-6565202316). So no HANDOFF may be posted yet, and this officer has nothing to pass.
+Draft read: `handoff/05-see-through/HANDOFF.md`, 4,288 bytes, written 23:39 UTC. Checked against the files and the run
+reports at 23:41 UTC.
 
-Conditions for this officer's PASS of the HANDOFF comment when it is drafted:
-(a) the module sha256 quoted equals `MODULE.sha256` and the file (at 23:25: `87a88e48…873`, 26,000 bytes; if it moved,
-    §1-§11's `MOD:n` are re-read first);
-(b) the data sha256 quoted equals the file and `data/layers.json` (at 23:25 both `44095071…79a6`, 666,940 bytes; TEST.md's
-    run5 still names the superseded `87d5db35…`, so the passing run must be re-run on the current bytes);
-(c) licences stated as CERN-OHL-S-2.0 for the module (header MOD:1) and build script, ODbL 1.0 for data/see-through.json,
-    Apache-2.0 for test.cjs, and the modules.json record `"licence": "CERN-OHL-S-2.0"` requested of Opus 10;
-(d) the deep-link landing in See Through reported NOT EVALUATED on the shipped site (0 hash readers in 202610050609; the
-    patch's PASS is a scratch copy only);
-(e) the 434 px rule stated as team 1's (kuiper-shell.js:41) and as a change to Q7: a Pixel 7 shows the strip; 381 px
-    recorded as R7's figure; the run's `--title-min 434` named;
-(f) the spark step and the "without layers" preview run (PLAN.md 23:07 decision) named as such, with the with-layers run
-    and FINDING issuecomment-6565202316 kept in the report, not dropped;
-(g) every number quoted from test.cjs's report.json, both devices, `pageerror` 0, the CARTO request counted as the
-    sandbox's network refusal (NL-009 06 F4), and img/ holding the PNGs (empty at 23:25);
-(h) PROTOCOL envelope, the footer, no ACCEPT.
+What the draft gets right (each re-measured): module sha256 `87a88e48…873`, 26,000 B = the file; data sha256
+`44095071…79a6`, 666,940 B = the file = `data/layers.json` `see-through` source; licence CERN-OHL-S-2.0 for the module
+(MOD:1) and ODbL 1.0 for the names; the 434 px rule as team 1's and as a change to Q7; See Through untouched, the patch
+measured on a scratch copy only; the not-evaluated list (with-layers run, wide widths, live tiles, the patched See
+Through on the real host); the NL-009 06 fold-in; no ACCEPT; envelope and footer present.
 
-**Verdict of the evidence officer (23:25 UTC):** EVIDENCE.md and LICENCE.txt complete for the module and data as keyed
-above. Module header licence line: **PASS** after the correction to CERN-OHL-S-2.0 (§10). Findings 1-4, 6 and 7 of §11 are
-fixed in the files; 5 is open by design (See Through untouchable), 8-9 are minor and open. HANDOFF comment: **NOT
-REVIEWED: not yet drafted**, and it must not be posted while TEST.md reads REFUSED.
+**Verdict on the draft: RETURNED. Do not post it as written.** Each point is measured:
+
+1. **STATUS PASS on "Pixel 7 @393 and Galaxy S24" is not supported.** The lead's run
+   (/tmp/nl010-opus/team-5/lead/run6/report.json, generatedAt 23:07:08Z, finished 23:27:15Z, `titleMinPx` 434) has
+   **one device**: Pixel 7 @393, steps load, entry, layer, tap, spark and errors all PASS, `consoleErrors` []. Galaxy S24
+   has no entry in `devices`; its folder holds only `01-entry.png` (23:34). The tester's newest run
+   (/tmp/nl010-opus/team-5/tester/run6/report.json, 23:11:06Z, `titleMinPx` 381, layers admitted) has Pixel 7 @393
+   `pass: false`. TEST.md:3 still reads **REFUSED**, and by OPUS-BRIEF.md:47-48 the tester refuses the hand-off until both
+   devices pass. Re-run both devices, have the tester change TEST.md, then quote the run's report.json path and its numbers.
+2. **The module list is wrong.** The draft says the modules were "kuiper-shell, line-card, file, see-through". In the
+   lead's run6, `file` was **refused** (`missing hook layers`, t 3,992 ms). Admitted: kuiper-shell, line-card,
+   see-through. So the way back by key ran through this module's own reader (MOD:324-345), not through step 6's `KY.link`.
+   Say so.
+3. **Listed evidence that does not exist.** `MODULE.sha256` is not in the folder, and `img/` is empty (0 PNG). Write
+   MODULE.sha256 (`87a88e488fdf8433e2dcb3c31b9dfcf11726d5761509d996017ebbe08f6ce873  modules/202611012141-see-through.js`)
+   and copy at most 4 PNGs under 300 KB from the passing run (run6 Pixel 7 files are 41-156 KB), or drop them from EVIDENCE:.
+4. **The registry and hash claims were not measured in the passing run.** "With the registry admitted, the module …
+   checks the bytes' sha256" — run6 had no layers module (`registered: "own"`, `sha256: ""`). Cite TEST.md run5, where
+   Galaxy S24 read the OK row with the registry admitted, or mark it NOT EVALUATED in the hand-off run.
+5. Name `--title-min 434` and "preview without the layers module" in STATUS itself, not only in DETAILS (PLAN.md 23:07
+   decision). Name the with-layers FINDING ids as two: issuecomment-6565248184 (ours) and 6565202316 (the tester's).
+6. Minor: HEAD should name the base commit (kuiper-belt@a72c175 or the harness's latest) as well as "working tree".
+
+When 1-3 are true in the files, this officer passes the comment; 4-6 are wording.
+
+**Verdict of the evidence officer (23:41 UTC):** EVIDENCE.md and LICENCE.txt complete for MOD `87a88e48…873` and data
+`44095071…79a6`. Module header licence line: **PASS** after the correction to CERN-OHL-S-2.0 (§10). §11 findings 1-4, 6
+and 7 are fixed in the files; 5 is open by design (See Through is untouchable); 8-9 are minor and open. HANDOFF draft:
+**RETURNED** (points 1-3 above).

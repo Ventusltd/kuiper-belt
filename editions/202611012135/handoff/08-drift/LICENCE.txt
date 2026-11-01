@@ -1,0 +1,14 @@
+Opus team 8, NL-010 step 8, the drift — the LICENCES.md row (for Opus team 9's register)
+
+| file | licence | key |
+|---|---|---|
+| tools/drift.py | Apache-2.0 (kuiper-belt code) | kuiper-belt@018b46a README.md:155-156 "Code is licensed under Apache-2.0, see LICENSE" |
+| editions/202611012135/modules/202611012325-drift.js | Apache-2.0 (kuiper-belt code); header line 1 says so | same |
+| editions/202611012135/data/drift.json | CC BY 4.0 (kuiper-belt generated data) | kuiper-belt@018b46a README.md:156 "documentation and generated data under CC BY 4.0" |
+| editions/202611012135/handoff/08-drift/*.md, LAYER.json | CC BY 4.0 (documentation) | same |
+| handoff/08-drift/test.cjs | Apache-2.0 (kuiper-belt code) | same |
+
+drift.json quotes no line text (it carries ids, keys, paths, line numbers, shas and classes only), so it adds no licence
+beyond what keys.json already carries (editions/202611012027/NOTICE.md:7-10, each quoted line keeps its repository's
+licence). No See Through code is copied (no CERN-OHL-S v2 obligation). No GridAtlas code is copied: the lesson (the
+hashed cartridge) is a rule, not code.

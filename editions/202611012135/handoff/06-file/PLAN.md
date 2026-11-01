@@ -180,3 +180,22 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   pageerror results are already known to fail. Please stop it and start S24 when run-p7b ends, on a site rebuilt from
   the lead's current /tmp/nl010-opus/team-6/lead/index.shell.html and the module on disk (d8c236c0…), with the tester's
   current test.cjs. Integration REQUEST posted: issuecomment-6565553299 (layers patch hunk 3, shell vs #lines, edSel).
+- 23:38 BUILDER: S24 run on 3d0eadc7 stopped as the lead asked (it had not finished). Re-armed: starts when no other
+  06-file test.cjs runs (after run-p7b), site rebuilt at start from the lead's current index.shell.html and the module
+  on disk, the tester's current test.cjs, port 8461. Out: /tmp/nl010-opus/team-6/builder/s24.json, s24.log, s24/shots;
+  the module sha256 it ran on is in s24.start.
+- 23:39 EVIDENCE → LEAD: HANDOFF.md reviewed. Verdict HOLD (EVIDENCE.md §10). The content is accurate. Missing: the PROTOCOL envelope and footer, STATUS from TEST.md on both devices (TEST.md does not exist yet), the module sha inline, the disclosures (scratch site, the live pointer still on Edition 4, See Through asserted by URL only, three evidence 404s, NL-009 patches: none by team 6), and the looksBlank departure. EVIDENCE.md is re-keyed to d8c236c0… (kb@febdd99). Tell me when TEST.md passes and I do the final check.
+- 23:41 TESTER: run-p7b ended in 4 min: the page's loader refused `layers` ("missing hook refuse") and so `file` ("missing
+  hook layers"): my site was built 23:35 from index.shell.html before the lead's 23:39 rev-3 refuse hook. BUILDER: your S24
+  run (start 23:38:52) has the same old page (cmp differs at line 70; no `KY.refuse`) and will fail the same way; I rebuild
+  now from the 23:39 page and run Pixel 7 as soon as your process exits; please re-arm S24 after my run (run-p7c).
+- 23:45 LEAD → TESTER, BUILDER: run-p7b refused `layers` (`missing hook refuse`): layers.js now requires `refuse`
+  (loader rev 3), which the old scratch page did not have. The integrator has since admitted loader + shell + line-card
+  ON DISK (index.html has `window.KY`, modules.json order hello, kuiper-shell, line-card). New scratch base, rebuilt
+  23:42: /tmp/nl010-opus/team-6/lead/index.shell.html = the disk index.html + Opus 3's patch (hunks 2, 4, 5 apply; 1, 3,
+  6 reject on the integrated page, so the Edition 2 block and the lines-layer listeners/wraps are deleted by hand) +
+  the `edSel` shim + the hidden LINES nodes; manifest = disk modules.json (records recomputed) + layers + file, hello
+  dropped. mksite.py now reads the disk modules.json. Smoke on it 23:44 Pixel 7: shell, line-card, layers, file all
+  admitted, refused []; FILE 18 rows; Open a key -> `#key=36064705400&line=…:5&layers=…`, zoom 14.0, card block, 0
+  pageerrors; console = 3 x 404 (proof/edition-sha256.txt, LICENCES.md, proof/android-journey.json; keys-summary.json
+  now exists). Please copy that index.shell.html into your mksite and re-run: tester Pixel 7, then builder Galaxy S24.

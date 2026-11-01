@@ -1,8 +1,9 @@
 # TEST: handoff/05-see-through/test.cjs (Opus team 5 tester)
 
 **Hand-off status: REFUSED** (OPUS-BRIEF.md "Roles": the tester refuses the hand-off until test.cjs passes on both
-devices with zero console errors). Two of the six steps fail on causes outside this module; see "What blocks the
-hand-off".
+devices with zero console errors). In run6 (23:44 UTC): static checks, load, layer, tap and errors PASS on both devices,
+and the entry passes on Galaxy S24. `entry` fails on Pixel 7 @393 and `spark` fails on both devices, each from a cause
+outside this module (see "What blocks the hand-off").
 
 test.cjs is the tester's file (OPUS-BRIEF.md "Roles"). Lead and builder: please send changes to the tester, do not
 overwrite it.
@@ -54,21 +55,26 @@ Nothing on disk is changed in any mode. preview and shim are built in `<outdir>`
 in `externalUnreachable` per device and does not fail. Any same-origin failure, any page error and any other console
 error fails.
 
-## Results (run5, 23:10 UTC, mode preview)
+## Results (run6, 23:44 UTC, mode preview; the latest)
 
-Run conditions: index.html is kuiper-belt@96736f5 plus 04-loader plus 02-card. The modules admitted are kuiper-shell,
-line-card, layers, file and see-through; the module is `202611012141-see-through.js`. The data file is 666,945 bytes,
-sha256 `87d5db35…ecd`.
+Run conditions: index.html is the file on disk plus 04-loader plus 02-card. 03-layers' deletion patch does not apply
+after 02-card. The modules admitted are kuiper-shell, line-card, layers, file, see-through and apps. The module is
+`202611012141-see-through.js`, sha256 `87a88e48…873`, with line 1 `… (UTC), CERN-OHL-S-2.0 (the whole file; …)`. The
+data file `data/see-through.json` has sha256 `44095071…9a6`. Full JSON: /tmp/nl010-opus/team-5/tester/run6/report.json.
 
 | step | Pixel 7 @393 | Galaxy S24 (360) |
 |---|---|---|
-| static module / data | PASS / PASS (5,800 features, 0 key mismatches, 0 beyond SPACE, 0 remap failures, space 63,340,120,796 = wafer, ODbL named) | (same) |
+| static module / data | PASS / PASS (5,800 features, 5,800 distinct j, 0 key mismatches, 0 beyond SPACE, 0 remap failures, space 63,340,120,796 = wafer, ODbL named) | (same) |
 | load | PASS, 0 errors | PASS, 0 errors |
-| entry | **FAIL**: form `strip` at 393 px (entry 112.5×44 at x 9, y 788; strip x 8, bottom 831 = 839 − 8). The roadmap wants a title at ≥ 381 px | PASS: form `strip`, entry 112.5×44, strip x 8, bottom 772 = 780 − 8, lit at rest, bar 360/360 one row, the six titles 34.6–40.2 px |
-| layer | FAIL in run5 only because layers.json still held the old sha256 of see-through.json (row `FAIL · data/see-through.json sha256 mismatch`). It passed on S24 in the same run once OPUS-3 updated the record. remap: 5,800 checked, 0 failures; keyPlace: 0 mismatches | PASS: row `OK · 5,800 of 5,800 · See Through 202610050609 (its sky 59,637,070,538 until the patch) · SPACE 63,340,120,796 · names © OpenStreetMap contributors, ODbL`; remap 0/5,800; keyPlace 0 mismatches |
-| tap | navigation PASS (same tab, same host, `…/see-through/202610050609/`, title "See Through", back returns to the edition with the entry present once). Failed only on "a panel is open: layers". That was the test's own fault: it counted a `.gm-open` class, not a panel on screen. Fixed in test.cjs | (same) |
-| spark | **FAIL**: our row is right (`../../see-through/#key=36064705400`, and `api.link({key})` gives the same), but `#card` is `visibility:hidden` and the touch lands on `canvas#c` | **FAIL** (same) |
-| errors | PASS (0; externalUnreachable: the CARTO style, 2 entries) | PASS (0; the same 2) |
+| entry | **FAIL**: form `strip` at 393 px (entry 112.5×44 at x 9, y 788; strip 114.5×44 at x 8, bottom 831 = 839 − 8; lit at rest; aria-label the homepage sentence). The roadmap wants a title at ≥ 381 px | PASS: form `strip` (entry 112.5×44; strip x 8, bottom 772 = 780 − 8); bar 360/360 on one row; the six titles 34.6–40.2 px |
+| layer | PASS: row `OK · 5,800 of 5,800 · See Through 202610050609 (its sky 59,637,070,538 until the patch) · SPACE 63,340,120,796 · names © OpenStreetMap contributors, ODbL`; `KY.hooks.keyPlace` 0 mismatches over 5,800 keys; remap of all 5,800 old-sky star keys: 0 failures (identity 0, starKey 0) | PASS (same numbers) |
+| tap | PASS: same tab, same host, `…/see-through/202610050609/` through the pointer, title "See Through"; back returns to the edition with the entry present once and no panel on screen | PASS (same) |
+| spark | **FAIL**: the row is right (`../../see-through/#key=36064705400` for card 1 of 344, bodies[0]; `api.link({key})` gives the same), but `#card` is `visibility:hidden` and the hit test at the row lands on `#c`, so the touch never reaches it | **FAIL** (same) |
+| errors | PASS: 0 errors. externalUnreachable has 2 entries, the CARTO style and its echo | PASS (same) |
+
+Earlier runs: run5 (23:10) failed `layer` on Pixel only. layers.json still held the old sha256 of see-through.json; it
+passed later in that same run once OPUS-3 updated the record. In run5 `tap` also failed, on a check in the test that
+counted the `.gm-open` class instead of a panel on screen; that check has been fixed in test.cjs.
 
 ## What blocks the hand-off
 
@@ -81,14 +87,20 @@ sha256 `87d5db35…ecd`.
    `layers.js:277` keeps `gm-open` on `#layers` while the WAFER panel is hidden. `line-card.js:165` hides `#card`
    (`lc-behind`, `visibility:hidden`) whenever any `.gm-open` exists. FINDING posted:
    https://github.com/Ventusltd/neural-link-between-agents/issues/10#issuecomment-6565202316.
-3. For the integrator: `02-card/index.patch` and `03-layers/index.html.after-04-loader.patch` cannot both apply, and the
-   current index.html (22:28) refuses `04-loader/index.html.patch`. Both points are in the same FINDING.
+3. For the integrator: `02-card/index.patch` and `03-layers/index.html.after-04-loader.patch` cannot both apply (the
+   same FINDING). At 22:28 index.html refused `04-loader/index.html.patch`; by run6 (23:2x) it accepted it again.
 
 Not tested here because it is not shipped this edition: See Through's own hash reader. See Through is untouchable, so
 `#key=` reaches See Through's URL (asserted) but is not yet read there (see-through-hash-reader.patch, REQUESTS.md item 1).
 
 ## Screenshots (img/)
 
-img/ is written by the passing run (`--img`, each PNG under 300 KB, quantised if needed): `01-entry-<form>-pixel-7-393.png`,
-`02-entry-<form>-galaxy-s24.png`, `03-landing-see-through-*.png`, `04-deep-link-key-*.png`. Until the hand-off passes,
-the latest run's screenshots are in /tmp/nl010-opus/team-5/tester/run6/img/.
+Written by `--img`. Each PNG is under 300 KB and named by the form measured, not the form wanted. From run6:
+
+- `01-entry-strip-pixel-7-393.png` (112,181 bytes): Pixel 7 at 393 px. The entry is the bottom-left strip, not a title:
+  this is the open point 1 below.
+- `02-entry-strip-galaxy-s24.png` (98,231 bytes): Galaxy S24, the 44 px chip.
+- `03-landing-see-through-pixel-7-393.png` (156,029 bytes): See Through after the tap on the entry (202610050609
+  through the pointer).
+- `04-deep-link-key-*.png`, See Through opened from a spark's `#key=` row, is not written yet: the spark step has not
+  passed. The run's own frame of that step is the edition, because the touch could not reach the hidden card.

@@ -14,15 +14,15 @@
    GridAtlas lessons: a thing enters only through a registry record (gridatlas@5ec7f62 atlas/current.json:5, :14-21);
    install nothing until the hooks exist, and count what was found (atlas/modules/202609031958-menu-bar.js:8-17, :34);
    the estate's apps as one entity table with a key, a type, a purpose (globalgrid2050@c66759f homepage_v134.html:31-56).
-   requires: wafer, keyPlace, address, flyTo, safeBox, esc, fmt, o2, hud, card, repos, commits, SPACE, cam, sel, redraw, draw, panels
+   requires: wafer, keyPlace, flyTo, esc, fmt, cv, o2, hud, card, repos, commits, SPACE, cam, sel, redraw, draw
    optional (used when admitted earlier, never required): kuiper-shell (FILE panel, close), layers (register, get),
              file (its FILE row "Open an app" calls api.open() and api.list()), line-card (closed before our card)
    provides: apps */
 (function () {
   'use strict';
   var ID = 'apps', GEN = '202611012309', SCHEMA = 'kuiper.apps.v1';
-  var REQUIRES = ['wafer', 'keyPlace', 'address', 'flyTo', 'safeBox', 'esc', 'fmt', 'o2', 'hud', 'card', 'repos',
-    'commits', 'SPACE', 'cam', 'sel', 'redraw', 'draw', 'panels'];
+  var REQUIRES = ['wafer', 'keyPlace', 'flyTo', 'esc', 'fmt', 'cv', 'o2', 'hud', 'card', 'repos',
+    'commits', 'SPACE', 'cam', 'sel', 'redraw', 'draw'];   // every name used below, and no other
   var FILES = { apps: 'data/apps.json', elements: 'data/elements.json',
     graphs: ['data/graphs/overview.json', 'data/graphs/periodic-table.json'] };
   var HEAD_TIMEOUT_MS = 8000, HEAD_PARALLEL = 4;
@@ -314,7 +314,7 @@
       st.open = true; panel.classList.add('ky-open');
       try { history.pushState({ kyApps: 1 }, ''); st.pushed = true; } catch (e) { st.pushed = false; }
     }
-    showView('apps');
+    showView('apps'); list.scrollTop = 0; elsBox.scrollTop = 0;   // every open starts at the star player (measured: a kept scroll hid the first row)
     loadApps().then(function () { if (st.open) { fillHead(); fillApps(); } }, function () { if (st.open) { fillHead(); fillApps(); } });
     return true;
   }
@@ -324,7 +324,20 @@
     if (st.pushed) { st.pushed = false; st.ignorePop = true; try { history.back(); } catch (e) { st.ignorePop = false; } }
     return true;
   }
+  // one panel at a time (step 1 A5): a touch on the bar while the launcher is open hides it at once. Its history entry
+  // cannot be popped there (the shell pushes its own entry in the same gesture, and an asynchronous back would pop the
+  // shell's), so the entry is marked and skipped when the back gesture lands on it (measured by the tester: the launcher
+  // covered the WAFER panel and the next tap left the page)
+  function onBarDown(e) {
+    if (!st.open) return;
+    var bar = document.getElementById('kuiper-menu-bar') || document.getElementById('bar');
+    if (!bar || !bar.contains(e.target)) return;
+    st.open = false; panel.classList.remove('ky-open');
+    if (st.pushed) { st.pushed = false; try { history.replaceState({ kyAppsClosed: 1 }, ''); } catch (x) { /* nothing to mark */ } }
+    st.bar_dismissed = (st.bar_dismissed || 0) + 1;
+  }
   function onPop() {
+    if (history.state && history.state.kyAppsClosed && !st.open) { st.skipped = (st.skipped || 0) + 1; setTimeout(function () { if (history.state && history.state.kyAppsClosed) history.back(); }, 0); return; }
     if (st.ignorePop) { st.ignorePop = false; return; }
     if (st.open) { st.open = false; st.pushed = false; panel.classList.remove('ky-open'); }   // the back gesture closes the launcher
   }
@@ -540,6 +553,7 @@
     KY = K; H = K.hooks;
     installStyle(); buildPanel();
     addEventListener('popstate', onPop); addEventListener('pageshow', onShow); addEventListener('keydown', onKey, true);
+    document.addEventListener('pointerdown', onBarDown, true);
     addEventListener('resize', place);
     K.draw.add(readout, 50);
     mountEntry();

@@ -14,10 +14,10 @@ everything this edition brings in is `LICENCES.md` (Opus team 9) when it lands.
 
 | file | team, step | licence (line 1) | state |
 |---|---|---|---|
-| `modules/202611012145-loader.js` | Opus 4, step 4 (reference copy of the hook table and loader in `index.html`; never fetched) | Apache-2.0 | waiting for admission |
-| `modules/202611012145-hello.js` | Opus 4, step 4 (the loader's proof; leaves `order` before PR A) | Apache-2.0 | waiting for admission |
-| `modules/202611012143-kuiper-shell.js` | Opus 1, step 1 | Apache-2.0; the bar's CSS values and menu structure copied from GridAtlas (Apache-2.0, gridatlas@5ec7f62 LICENSE:1-4, NOTICE:1-12) | waiting for admission |
-| `modules/202611012143-line-card.js` | Opus 2, step 2 | Apache-2.0 | waiting for admission |
+| `modules/202611012145-loader.js` | Opus 4, step 4 (reference copy of the hook table and loader in `index.html`; never fetched) | Apache-2.0 | admitted 23:19 UTC as `references` (sha256 `25a16f1d3c3f`) |
+| `modules/202611012145-hello.js` | Opus 4, step 4 (the loader's proof; leaves `order` before PR A) | Apache-2.0 | admitted 23:19 UTC (sha256 `ee2130b56e74`) |
+| `modules/202611012143-kuiper-shell.js` | Opus 1, step 1 | Apache-2.0; the bar's CSS values and menu structure copied from GridAtlas (Apache-2.0, gridatlas@5ec7f62 LICENSE:1-4, NOTICE:1-12) | admitted 23:21 UTC (sha256 `eeea45817821`) |
+| `modules/202611012143-line-card.js` | Opus 2, step 2 | Apache-2.0 | admitted 23:35 UTC (sha256 `e2baeaaaf244`) |
 | `modules/202611012141-layers.js` | Opus 3, step 3 | Apache-2.0 | waiting for admission |
 | `modules/202611012141-see-through.js` | Opus 5, step 5 | **CERN-OHL-S v2, the whole file**: it copies See Through's star-key rule (`see-through/202610050609/descent.js:19, :963, :965`; licence `see-through/202610050609/LICENSE.md:3-7`, text `see-through/202610050609/licences/globalgrid2050-CERN-OHL-S-2.0.txt`). The Apache-2.0 engine is only called, never copied into it. | waiting for admission |
 | `modules/202611012231-file.js` | Opus 6, step 6 | Apache-2.0; GridAtlas's copy-or-show clipboard, export blank-check and travelling-stamp method (Apache-2.0, gridatlas@5ec7f62 atlas/modules/202609031958-menu-bar.js:707-733, :794-834, :1082-1097, :1120-1137, :1354-1365); no GridAtlas bytes copied but the words of two row labels (its header, lines 4-7) | waiting for admission |

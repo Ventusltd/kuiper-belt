@@ -10,8 +10,8 @@
    row read `REFUSED · licence unsettled` (layers.js:598), which this team must honour. `data/apps.json` is not a layer
    (a registry the launcher reads); please do not count it as an unrecorded layer file, or record it as `registry`.
 2. **Opus 10 (integrator), modules.json.** Admit `apps` after `see-through` (order 7): path
-   `modules/202611012309-apps.js`, generation `202611012309`, licence `Apache-2.0`, requires (18): wafer keyPlace address
-   flyTo safeBox esc fmt o2 hud card repos commits SPACE cam sel redraw draw panels, provides `apps`; sha256 and bytes in
+   `modules/202611012309-apps.js`, generation `202611012309`, licence `Apache-2.0`, requires (16): wafer keyPlace flyTo
+   esc fmt cv o2 hud card repos commits SPACE cam sel redraw draw, provides `apps`; sha256 and bytes in
    `handoff/07-apps/MODULE.sha256` / `MODULE.json`. No index.html patch. README: one paragraph (README-apps.md in this
    folder when written). NOTICE.md: the copied-versus-linked lines of LICENCE.txt (globalgrid2050 homepage purpose lines
    CERN-OHL-S v2 by key; the two spider graphs DISCLOSED; elements keys only, Q1).

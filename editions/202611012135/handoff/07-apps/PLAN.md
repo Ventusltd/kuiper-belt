@@ -180,3 +180,49 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   tracked yet, hence the direct scan). Builder findings carried to the HANDOFF: the 15 overview edges are rings (all 16
   nodes keyed by one served folder, ventus-grid-engine); the elements layer is REFUSED until Q1, so A4's spark-tap is
   NOT EVALUATED with that reason (the card is tested from the periodic-table panel instead).
+- 23:40 TESTER: test.cjs written; script gates (A1 by script against APPS.md:7-13, homepage_v134.html:32-56, INDEX.md:13;
+  Q1/Q5; elements.json vs catalogue + cosmos/wafer.tsv; tools/key.py on 3 samples) ALL PASS. Device run 1 FAILED at M:
+  team-6's 22:50 index has no `refuse` hook and layers.js (23:23) now requires it, so layers and file were refused. The
+  tester site now uses the integrator's live index.html (sha256 418ae14c…, loader rev 3 with KY.refuse; team 3's
+  index.html.patch does NOT apply to it: 2 of 6 hunks fail, so it runs without those deletions). Accepted in the test:
+  `source_href` + stable folder link (see-through, learn-the-kuiper), K1-withheld link (cable-selection), `no_key`.
+- 23:58 TESTER run 2 (Pixel 7, integrator index): M, A2 x4, A4 REFUSED row PASS. FAIL for LEAD: (1) the launcher stays
+  open when WAFER (any other bar title) is tapped: #ky-apps (z 10025) covers the WAFER panel, the next tap meant for the
+  spider row landed on a launcher row and left the page (measured: GET https://globalgrid2050.com/scripts/
+  upgrade_v5_skid_mva_controls.py). Gate added: "a real tap on WAFER while the launcher is open closes the launcher"
+  (one panel at a time, step 1 A5). (2) readout lacks "606 in the live register, 244 catalogued": waits for the
+  BUILDER's counts.live_register. Not ours: file.js EVIDENCE rows 404 (proof/edition-sha256.txt, LICENCES.md,
+  proof/android-journey.json; integrator writes them) -> listed as E' (FAIL, or NOT EVALUATED with
+  --allow-missing-evidence), never counted as a team-7 console error.
+- 23:47 EVIDENCE (OPUS-7 evidence officer) → LEAD, BUILDER: keys re-verified by script (all 5 provenance sha256 equal the
+  sources at their commits; 25 homepage rows: id, name, kind, purpose and line equal homepage_v134.html:32-56; links
+  equal except see-through / learn-the-kuiper (pointer, source_href kept) and cable-selection (K1); 7 register rows:
+  key = APPS.md:7-13, link = catalogue/apps.json live[0], wafer = files[0]; both graph copies verified, the stars copy =
+  source with 1 token x 2 occurrences replaced; K1 leaks() = 0 over all 11 team files and the whole edition folder; no
+  file contains the underscore token). DEFECTS for you to fix (EVIDENCE.md section 9 lists them; HANDOFF must not claim
+  them done until fixed): (a) apps.json periodic-table purpose cites neural-link BRIEF.md:9; the owner's "bring in
+  periodic table" is BRIEF.md:8 (tools/apps_registry.py:213). (b) elements.json register_note keys the 606 at
+  stars@cbca125 blocks/blocks.json:2; that file has 0 newlines (one line): the key is blocks/blocks.json:1, len(blocks)=606.
+  (c) elements.json has no counts.live_register, so the module (apps.js:85) prints "the live register not counted" and the
+  tester's "606 in the live register, 244 catalogued" check fails. (d) module header/REQUIRES: H.cv is used
+  (apps.js:418,423) but not in requires; safeBox, panels and address are required but never called. (e) apps.json
+  spider graphs[1].copy_matches_source = true although k1_redacted_tokens = 2: write false (or "after K1 redaction").
+  (f) apps.json top-level licence "CC BY 4.0" is not true of the 25 copied homepage name/kind/purpose lines: those are
+  globalgrid2050 CERN-OHL-S v2 (globalgrid2050@c66759f LICENSE.txt:1); say so in the field. (g) block:St licence is
+  now evaluable: solar-electrical-topology-analysis-engine-text-based@d3b4c49 LICENSE:1 GNU GPL v3 (builder's clone);
+  apps.json still says NOT EVALUATED. (h) spider row name is INDEX.md:1, purpose INDEX.md:13; source cites :13 only.
+  (i) HISTORY: K1-matching versions are PUSHED on origin/edition/202611012135: data/apps.json@b8e7c74,@b4a5dba,
+  data/elements.json@38ed53c, data/graphs/periodic-table.json@b8e7c74 (leaks()=1 each). ci_check K1 reads the tree only,
+  so it passes; the branch history still carries the token. FINDING for the harness/owner, not fixable by this team.
+- 23:47 LEAD (date -u): TESTER (1) fixed: a pointerdown on #kuiper-menu-bar while the launcher is open hides it at
+  once (capture listener); its history entry is replaced by {kyAppsClosed} and skipped when back lands on it (the shell
+  pushes its own entry in the same gesture, so an async back there would pop the shell's). Also: every open() resets the
+  list scroll to the star player (measured: a kept scroll hid the See Through row). Pixel 7 on 8470 (integrator index +
+  shell, line-card, layers, file, apps; all admitted, refused []): launcher 34 rows min 71 px; keys ▸ → 244 element rows,
+  23 disabled; tap block:Gc → card header "/* geo-core — the one distance primitive, and the earth model it stands on.",
+  second "block:Gc"; readout lines present; See Through tap starts same-tab navigation (the loaded machine timed out the
+  page before goBack in that run; the 23:20 Galaxy S24 run completed NAV + BACK). TESTER: your "23:58" heading is ahead
+  of the clock (date -u read 23:46-23:47 at that time); please correct it. BUILDER: counts.live_register still absent
+  from data/elements.json; please add it (measured count of stars@cbca125 blocks/blocks.json blocks) and re-run.
+- 23:48 LEAD: requires narrowed to the 16 names the module uses (removed address, safeBox, panels: never called;
+  added cv: SECTION C's tap test reads H.cv). Module changed since the testers' last copy: re-run mksite before the next run.

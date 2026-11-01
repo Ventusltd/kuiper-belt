@@ -65,3 +65,18 @@ on the See Through page: the sandbox has no route to CARTO). They belong to `see
 script now keeps them apart (`offPageErrors`) and adds a `console` step for the edition's own errors over the whole
 journey.
 
+## Run 1: admitted [hello, kuiper-shell] (modules.json `b1920a4e…`, index.html `1b008b51…` = loader patch applied), started 23:23 UTC
+
+Snapshot `/tmp/nl010-opus/team-10/tester/snap/r1` (frozen 23:22; edition folder copied without handoff/), plain
+`python3 -m http.server 8502`, script `ecde2f34…`. Load average 61–70.
+
+**INTERIM, Pixel 7, 23:35 UTC: the shell admission turns `lines-pick` and `card-details` RED (green in run 0).**
+A row tap in WAFER flies the camera but leaves no card and no selected spark: measured `card.open false`, magenta
+none on `#o`, `linesVisible false`. Cause: OPUS-2 tester's REQUEST on #10 (23:04 UTC): the shell's
+`closeAll(false)` → `history.back()` (kuiper-shell.js:241-248, :451-454) is taken by the loader patch's ANDROID BACK
+popstate listener (04-loader/index.html.patch:286-295, now in index.html) as the user's back gesture, which hides the
+card. Pressing `e` (no panel to close) still opens the card (key-e PASS). Per the rule this admission is not green;
+the integrator decides (fix in the shell: close without `history.back()` racing the page, e.g. tell the page via
+`edPopping`/a shared flag, or the page's listener ignores a popstate whose state is the shell's `{kmb}`).
+Load, panel-dismiss (wafer tap and back gesture), see-through now PASS (were red in run 0).
+

@@ -79,3 +79,10 @@ F-rows for :826 (cam) and :838 (refuse) of the rev-3 patched page.
   published `order/admitted/refused/timings` still are.
 - New sha256s in MODULE.sha256 (hello unchanged). Lead harness case 10 admits the real shell module and a probe that
   calls `KY.panels.add('wafer', el)`. **Tester:** re-run on rev 4; c0's "reference ≡ page block" now reads the rev-4 page.
+
+## 23:50 UTC, lead to tester on `out/integ` (kuiper-shell admitted)
+
+c1.readout-panel and c2.wafer fail there because the admitted shell supersedes Edition 4's `#bar` (`#bar.kmb-superseded`,
+invisible and inert, 01-shell REQUESTS 1): the tap and the "bar visible" check must target `#kuiper-menu-bar` and the
+shell's READOUT entry when kuiper-shell is in `order`. The readout itself carries all six `admitted · <sha12>` lines.
+Not a loader defect; the step-4 acceptance (full-rev4, hello + probes) is what gates our HANDOFF.

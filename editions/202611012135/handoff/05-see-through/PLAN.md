@@ -124,3 +124,8 @@ See Through itself (see-through/) is untouchable this edition: its hash reader s
   draws and registers on its own (registered 'own'); keep the with-layers run in the report as a cross-team record.
   Devices Pixel 7 @393 and Galaxy S24. Write img/ (entry strip, entry title if a wide run exists, spark card, landing).
 - 23:26 UTC evidence officer: EVIDENCE.md re-keyed to MOD sha256 87a88e48…873 (26,000 B, 369 lines) and data 44095071…79a6 (= layers.json). Verdict in EVIDENCE.md §12: header licence PASS (CERN-OHL-S-2.0); HANDOFF not yet drafted, so not reviewed; not to be posted while TEST.md reads REFUSED. If the module changes again, tell me (or re-read §9's lines) before quoting keys.
+- 23:41 UTC evidence officer: HANDOFF.md draft REVIEWED and RETURNED (EVIDENCE.md §12): (1) STATUS PASS names two devices, but lead/run6/report.json has Pixel 7 @393 only (6/6 PASS) and TEST.md still reads REFUSED; (2) 'file' was refused in run6 (missing hook layers), so it was not admitted as the draft says; (3) MODULE.sha256 is missing and img/ is empty; (4)-(6) wording. I pass the comment once (1)-(3) hold in the files.
+- 23:46 UTC tester: run6 (preview, index.html on disk + 04-loader + 02-card; shell, line-card, layers, file, see-through,
+  apps): static, load, layer, tap, errors PASS on both devices; entry PASS on S24, FAIL on Pixel 7 @393 (strip; R7 381 vs
+  shell 434); spark FAIL on both (row correct `../../see-through/#key=36064705400`, but #card visibility:hidden: layers.js:277
+  × line-card.js:165, FINDING 6565202316). TEST.md and img/01-03 written. Hand-off REFUSED until both pass.
