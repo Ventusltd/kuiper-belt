@@ -15,8 +15,8 @@ calls `install` in try, freezes `KY.modules[id]`, and writes `<id> admitted · <
 and one `#refuse[role=alert]` strip in words, and every other module, the bar and the wafer keep running. The exact
 refusal strings are in HOOKS.md.
 
-**Files.** `index.html.patch` (sha256 `__PATCH__`) against kuiper-belt@96736f5: the hook table and loader block (the
-same bytes as `modules/202611012145-loader.js` between its marker lines, `__LOADER__`, listed under `references`,
+**Files.** `index.html.patch` (sha256 `811e5dad…3d5b`) against kuiper-belt@96736f5: the hook table and loader block (the
+same bytes as `modules/202611012145-loader.js` between its marker lines, `d6766eec…2f98, 12,405 bytes`, listed under `references`,
 never fetched); the wafer promise (one line after `let N = 0` :198, resolve after `N = issued` :208, reject at the belt
 refusal :207 and the wafer.tsv catch :240); and NL-009 round-1 patches folded in: **04-touch** (viewport meta, tap slop
 10 px / 700 ms and `tapUp`, card `stopImmediatePropagation`, Escape closes the card, the dismissing tap, no long-press
@@ -27,9 +27,24 @@ patches' Escape hunks conflict; merged into one handler. `modules/202611012145-h
 registers, draws one cyan ring at `keyPlace(0)`, `inspect()`. `modules.json` first records (`order: ["hello"]`) and
 the JSON Schema `kuiper.modules.v1`. `edition_check.py.patch`: E6-E8 (E1-E5 minimal drafts for team 9 to replace).
 
-**Tests (test.cjs, tester's; Pixel 7 and Galaxy S24, real touch).** __TESTS__
+**Tests (test.cjs, tester's; Pixel 7 and Galaxy S24, real touch).** Lead harness on rev 2, Pixel 7 and Galaxy S24, every case PASS with
+pageerror 0 and console errors 0 (only the browser's own 404 line in cases 6 and 7b): 1 hello, probe-a, probe-b admitted
+in order with the manifest's sha256, three `admitted · <sha12>` lines in READOUT (opened by touch), hello's ring drawn;
+2 one byte of hello changed → `sha256 mismatch`, probe-a and probe-b admitted, `#refuse[role=alert]` at 12,281 →
+348,367 inside 360 × 780, wafer drawn; 3 `requires: ['noSuchHook']` → `missing hook noSuchHook`, `#ky-probe-a` absent,
+probe-b → `missing hook probe-a`; 4 `stamp mismatch: generation 202611012145, file name 202611012146`, and admitted when
+named without digits; 5 `install threw test`; 6 `HTTP 404`; 7 empty manifest → wafer and bar, `admitted: []`, no
+alert, KY and its seven members frozen, a strict write throws TypeError, `Object.keys(KY.hooks)` = the 28 names,
+`__KUIPER_MODULES__ === KY.modules`; 7b wafer.tsv 404 → modules admitted, the engine's words in the strip, a module
+awaiting `wafer` gets them as its rejection; 7c wafer.tsv held 12 s → hello admitted at 141 ms (S24) / 1,555 ms
+(Pixel 7) after navigation, the wafer resolved at 12.5 s / 13.4 s; 8 `edition_check.py` E1-E8 PASS on an integrated copy
+and exit 1 on each of seven mutations (hash, stamp, requires, stray file, writes, register twice, no licence). Tester's
+test.cjs (with the NL-009 04-touch T* and 09-robust R* probes): __TESTER__
 
-**Measured (test 9, no threshold).** __T9__
+**Measured (test 9, no threshold).** Navigation to the last `admitted` line, three modules, SwiftShader: Pixel 7 2,742 ms
+(load event 184 ms), Galaxy S24 5,071 ms (load event 363 ms). With wafer.tsv held back the same modules are admitted by
+141-1,555 ms: the gap is the wafer's TSV parse and texture upload holding the one main thread, not the loader. Σ bytes
+2,401 against Σ byte_budget 12,288. One run each, not a benchmark.
 
 **Corrections and limits.** fmt is :125, not :126. team-2/STEPS.md 4.4 says a write to the frozen table is a silent
 no-op; the page script is `<script type="module">` (:102), so strict, and it throws (the closure rule stands). An

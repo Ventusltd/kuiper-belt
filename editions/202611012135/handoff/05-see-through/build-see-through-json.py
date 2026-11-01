@@ -84,8 +84,8 @@ def main():
                   'note': 'The 5,800 stars of See Through that land on the 5,800 UK substations: star j carries key '
                           'floor((j + 0.5) * SPACE / 20000), placed here by keyPlace, the same law See Through uses. '
                           'A star is a line of code, not a substation; tap one to fall to its substation in See Through.'},
-        'licence': 'Data CC BY 4.0 (kuiper-belt); substation names (c) OpenStreetMap contributors, ODbL 1.0; '
-                   'See Through is CERN-OHL-S v2 (see-through/202610050609/LICENSE.md:3-6) and is linked, not copied',
+        'licence': 'ODbL 1.0: a derived database of 4,460 OpenStreetMap substation names (c) OpenStreetMap contributors; '
+                   'the star keys are arithmetic of See Through\'s rule (CERN-OHL-S v2, see-through/202610050609/LICENSE.md:3-6)',
         'attribution': 'Substation names (c) OpenStreetMap contributors, ODbL 1.0 (see-through/202610050609/NOTICE.md:22-25; grid-data.js:7)',
         'law': {'nrule': NRULE, 'nsub': NSUB, 'formula': 'key_j = floor((j + 0.5) * space / nrule), j < nsub',
                 'source': 'kuiper-belt see-through/202610050609/descent.js:19, :963, :965',

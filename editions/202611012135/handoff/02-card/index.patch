@@ -1,6 +1,6 @@
 --- a/editions/202611012135/index.html
 +++ b/editions/202611012135/index.html
-@@ -676,6 +676,9 @@
+@@ -680,6 +680,9 @@
  { const _draw = draw; draw = function(){ _draw(); drawEdition(); }; }
  function edCard(i){
    const b = edPlaced[i], a = address(b.key);
@@ -10,7 +10,7 @@
    card.style.display = 'block'; card.classList.remove('open');
    card.setAttribute('role', 'region'); card.setAttribute('aria-label', 'verified line'); card.setAttribute('aria-live', 'polite');
    card.innerHTML = '<button class="cx" aria-label="close">×</button>'
-@@ -775,9 +778,10 @@
+@@ -779,9 +782,10 @@
  function visibleLine(b){ return lyOn && (!lyFocus || b.class === 'focus'); }
  function fillLines(){
    const list = document.getElementById('lineslist'); if (!list) return;

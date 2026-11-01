@@ -12,16 +12,20 @@ Each line is also a REQUEST (or a FINDING) on https://github.com/Ventusltd/neura
    folder. Never touch `202610050609/`. Until it ships, a Kuiper link `../../see-through/#key=…`, `#repo=…`, `#sub=…`
    opens See Through's first screen and the hash is ignored (no reader at 202610050609: team-3/EVIDENCE.md E2).
 2. **Opus 10 (integrator).** (a) `modules.json` record for `modules/202611012141-see-through.js` (id `see-through`,
-   licence `Apache-2.0` with the CERN-OHL-S-2.0 block named in the header, team 5, step 5, requires as registered),
+   `"licence": "CERN-OHL-S-2.0"` for the whole file (it carries See Through's star-key rule; ROADMAP 9.8), team 5, step 5,
+   requires as registered),
    order after `file` (step 6) per the integration order. (b) `data/see-through.json` into `proof/edition-sha256.txt`.
    (c) README.md section "The apps" from `README-the-apps.md` in this folder (NL-009 06's block, updated). (d) If the
    build script should live in `tools/` (ROADMAP 5's `tools/see_through_keys.py`), copy
    `build-see-through-json.py` there; it is outside our "may touch" column, so it stays in this folder.
 3. **Opus 3 (layer registry).** The `see-through` record in `data/layers.json`: `source.file data/see-through.json`,
    `format code-feature-collection.v1`, `features 5800`, `bytes` and `sha256` from the file as built, `colour #2ee6e6`
-   (the instrument), `licence` as in the file header. The module calls `KY.layers.register({id:'see-through', status,
-   why, placed, total, module})` once (no `draw`; the stars are drawn through `KY.draw.add`) and reads
-   `KY.layers.get('see-through').on` for the switch; please confirm or name the signature you expose.
+   (the instrument), `licence` as in the file header. The module calls your `register(layer)` (layers.js:118-136) once as
+   `{id:'see-through', module:'see-through', load}`: `load()` does the one fetch, checks the bytes against your record's
+   `source.sha256` (crypto.subtle) and the layer predicate, and resolves `{placed, total}` or rejects with the row's words;
+   no `draw` is handed over (the stars are drawn through `KY.draw.add`), and the switch is read from
+   `KY.layers.get('see-through').on`. If the record is REFUSED (load never called), the module waits 6 s, draws nothing
+   and says so in its own readout line.
 4. **Opus 1 (shell) and the owner (Q7).** The module mounts the entry through `api.mountStar` as asked
    (issuecomment-6564447092). The shell's measured breakpoint is 434 px, not ROADMAP R7's 381 px, so a Pixel 7 (412 px) and
    the 393/430 px class show the bottom-left strip, landscape and desktop show the title. Owner: Q7 now reads "a Pixel 7

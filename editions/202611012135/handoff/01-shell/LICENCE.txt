@@ -20,6 +20,13 @@ WHAT IS NOT IN THIS MODULE (so no other licence attaches)
 - No MapLibre, CARTO, OpenStreetMap or ODbL data: the shell draws no map.
 - No GridAtlas third-party data (excluded by gridatlas NOTICE:25-32 in any case).
 
+STATUS IN THE EDITION (22:36 UTC)
+
+- editions/202611012135/NOTICE.md (Opus 10, working tree) carries the shell's row (Apache-2.0; GridAtlas LICENSE:1-4,
+  NOTICE:1-12) and, at its lines 39-41, the Q8 sentence marked "pending the owner's confirmation". It agrees with this file.
+- The module's header (kuiper-shell.js:1-5) carries the licence on line 1, the GridAtlas NOTICE line and the mark note;
+  the ABOUT panel repeats them in the page. Verdict in EVIDENCE.md section 4.
+
 OPEN, FOR THE OWNER
 
 - Q8 (ROADMAP "Open questions for the owner"): confirm the NOTICE wording for the mark above. Until confirmed the row

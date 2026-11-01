@@ -4,9 +4,29 @@ Code in this folder (`index.html`, the Kuiper engine with the edition layer, the
 `modules/*.js` unless its own header names another licence; `tools/edition_keys.py` and `tools/edition_min.py` at the
 repository root) is licensed under the Apache License 2.0, as the kuiper-belt repository. Documentation, the register
 and generated data (`keys.json`, `keys-min.json`, `modules.json`, `data/*.json`, `proof/*`, `README.md`) are under
-CC BY 4.0. Each module's own licence is written on line 1 of its file and in its `modules.json` record; where a module
-carries code copied from See Through, that code stays under CERN-OHL-S v2 inside that one file and is not relicensed.
-The licence register of everything this edition brings in is `LICENCES.md` (Opus team 9) when it lands.
+CC BY 4.0, except the OpenStreetMap names in `data/see-through.json` (below). Each module's own licence is written on
+line 1 of its file and in its `modules.json` record; a module that carries code copied from See Through is
+CERN-OHL-S v2 as a whole file, and the reciprocity stops at that file (ROADMAP step 9, 9.8). The licence register of
+everything this edition brings in is `LICENCES.md` (Opus team 9) when it lands.
+
+**The modules and their licences.** Line 1 of each file in `modules/`, as on disk; "admitted" means listed in `modules.json` `order` with this sha256
+(`handoff/10-integration/ADMISSIONS.md`). Builder OPUS-10 keeps this list current after each admission.
+
+| file | team, step | licence (line 1) | state |
+|---|---|---|---|
+| `modules/202611012145-loader.js` | Opus 4, step 4 (reference copy of the hook table and loader in `index.html`; never fetched) | Apache-2.0 | waiting for admission |
+| `modules/202611012145-hello.js` | Opus 4, step 4 (the loader's proof; leaves `order` before PR A) | Apache-2.0 | waiting for admission |
+| `modules/202611012143-kuiper-shell.js` | Opus 1, step 1 | Apache-2.0; the bar's CSS values and menu structure copied from GridAtlas (Apache-2.0, gridatlas@5ec7f62 LICENSE:1-4, NOTICE:1-12) | waiting for admission |
+| `modules/202611012143-line-card.js` | Opus 2, step 2 | Apache-2.0 | waiting for admission |
+| `modules/202611012141-layers.js` | Opus 3, step 3 | Apache-2.0 | waiting for admission |
+| `modules/202611012141-see-through.js` | Opus 5, step 5 | **CERN-OHL-S v2, the whole file**: it copies See Through's star-key rule (`see-through/202610050609/descent.js:19, :963, :965`; licence `see-through/202610050609/LICENSE.md:3-7`, text `see-through/202610050609/licences/globalgrid2050-CERN-OHL-S-2.0.txt`). The Apache-2.0 engine is only called, never copied into it. | waiting for admission |
+
+Steps 6 (file), 7 (apps), 8 (drift) and 9 (law, `tools/edition_check.py`, `LICENCES.md`): no file on disk yet.
+
+**OpenStreetMap.** `data/see-through.json` (Opus 5) holds the names of 4,460 of its 5,800 substations (measured:
+features with `properties.name`), taken from See Through: © OpenStreetMap contributors, Open Database Licence 1.0
+(`see-through/202610050609/NOTICE.md:22-25`). Those names are ODbL 1.0 data, not CC BY 4.0; the rest of the file
+(the star keys) is CC BY 4.0. See Through itself is linked (`../../see-through/`), not copied.
 
 Every quoted line belongs to the repository it is keyed to and keeps that repository's licence:
 Apache-2.0 (kuiper-belt, pipelinenews and most code), CERN-OHL-S v2 (globalgrid2050-derived material,

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/tools/edition_check.py
-@@ -0,0 +1,235 @@
+@@ -0,0 +1,237 @@
 +#!/usr/bin/env python3
 +"""edition_check.py: the edition law's checks for one folder editions/<stamp>/ (NL-010; Opus team 9 owns this file).
 +Apache-2.0 (kuiper-belt), kuiper-belt README.md:157.
@@ -50,7 +50,9 @@
 +        f.write(src); name = f.name
 +    try:
 +        r = subprocess.run(['node', '--check', name], capture_output=True, text=True)
-+        return None if r.returncode == 0 else (r.stderr.strip().split('\n') or ['?'])[-1][:160]
++        if r.returncode == 0: return None
++        err = [l for l in r.stderr.split('\n') if re.match(r'^\w*Error\b', l.strip())]
++        return (err[0] if err else r.stderr.strip().split('\n')[0]).strip()[:160]
 +    finally:
 +        os.remove(name)
 +

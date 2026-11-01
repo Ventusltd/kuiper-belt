@@ -17,6 +17,13 @@ Q7, Q8; FIXES/NL-010/team-1/STEPS.md C1-C10 and team-1/EVIDENCE.md (FABLE-T1B), 
 "4" → "5" (`diff editions/202611012027/index.html editions/202611012135/index.html`), so every Edition 4 line number
 in team-1/EVIDENCE.md B1-B3 holds at `96736f5` unchanged.
 
+**index.html is moving under Opus 10 (22:35 UTC).** Every Kuiper key in this file is pinned at `96736f5`. At the
+harness's later commit `934a4ca14fd4dc989b852e91e3b6b01bdecadb55` the integrator's perf patch (`keys-min.json`, +4 lines at
+:627-631) shifts every line from :628 down by 4 (`loadEdition` :632, `edCard` :659, `edFly` :680, `edNext` :686, the spark
+picker :689, `const bar` :702, `PANELS` :714, `setPanel` :718, the `safeBox` wrap :730); lines up to :600 (`#keys`
+delegation, the engine's `pointerup` :590, `<script type="module">` :102) are unchanged; the working tree adds a
+further `edBand` block at :679 ff. The module's own `IX:` comments should say `@96736f5` so they stay true.
+
 Copy check: the live GridAtlas composes the menu bar from the cartridge, not the module file
 (gridatlas@5ec7f62 atlas/current.json:566-573, id `substation-intelligence`, sha256 `d94b0de50deddac7…`, re-hashed here
 with `sha256sum`: identical). `diff` of module lines 160-385 (the whole style block) against cartridge lines 4509-4734 is
@@ -142,7 +149,7 @@ editions/202611012135/handoff/04-loader/HOOKS.md), or (c) the engine's own liste
 | line 1 parses | `/* kuiper module <name>, generation <module-stamp> (UTC), <licence> */` (ROADMAP step 4, 4.3; HOOKS.md); the loader reads it with `/^\/\* kuiper module ([a-z0-9-]+), generation (\d{12}) \(UTC\),/` (editions/202611012135/modules/202611012145-loader.js:79) | `/* kuiper module kuiper-shell, generation 202611012143 (UTC), Apache-2.0 (kuiper-belt).` (kuiper-shell.js:1) | PASS: name `kuiper-shell`, stamp `202611012143` = file name = `GEN` (:33); the licence field reads `Apache-2.0 (kuiper-belt)` as in hello.js:1 and line-card.js:1. Cosmetic: line 1 ends in `.` and the comment closes at :30, not on line 1; the regex does not need the close. |
 | the licence is right | kuiper-belt code is Apache-2.0 (kuiper-belt@96736f5 LICENSE:1-3; README.md:156-157); CERN-OHL-S v2 only where See Through code is copied (OPUS-BRIEF) | Apache-2.0; no See Through code in the file (the star entry is a link to `../../see-through/`, the default of NL-009 06, :315-321) | PASS |
 | the NOTICE line (Apache-2.0 s.4(d)) | the GridAtlas NOTICE line in the module header (ROADMAP step 1 licence note) | :2-3 "copied from GridAtlas, Copyright 2026 Ventus Ltd, Apache-2.0 (gridatlas@5ec7f62 LICENSE:1-4, NOTICE:1-12), atlas/modules/202609031958-menu-bar.js" | PASS (LICENSE:1 is blank, :2-4 the title; NOTICE:1-12 "gridatlas / Copyright 2026 Ventus Ltd … Licensed under the Apache License, Version 2.0": both re-read) |
-| the mark | Q8 wording "The VENTUS mark is used by Ventus Ltd, its owner. The Apache-2.0 licence of this code does not license the mark." | :4-5 "\"Ventus\" and \"Cables & Connectivity(R)\" are the mark of Ventus Ltd, used by its owner's instruction of 1 Nov 2026; the Apache-2.0 licence of this code does not license the mark (LICENSE:139, s.6)"; the ABOUT panel says the same in the page (:472-475) | PASS in substance (gridatlas LICENSE:139-142 is s.6 Trademarks, re-read). The words are not yet Q8's; Q8 is the owner's to confirm and NOTICE.md is Opus 10's. |
+| the mark | Q8 wording "The VENTUS mark is used by Ventus Ltd, its owner. The Apache-2.0 licence of this code does not license the mark." | :4-5 "\"Ventus\" and \"Cables & Connectivity(R)\" are the mark of Ventus Ltd, used by its owner's instruction of 1 Nov 2026; the Apache-2.0 licence of this code does not license the mark (LICENSE:139, s.6)"; the ABOUT panel says the same in the page (:481-484) | PASS in substance (gridatlas LICENSE:139-142 is s.6 Trademarks, re-read). The words are not yet Q8's; Q8 is the owner's to confirm and NOTICE.md is Opus 10's. |
 | requires list in the header | the header names the hooks (OPUS-BRIEF "requires list") | :7-11 DOM ids + `safeBox card hud big sub cv gbox gin redraw`; `KY.register` `requires` at the registration (:530-535) is the same nine names, each on Opus 4's admissible list (HOOKS.md: 28 hooks + `cam lit sel redraw draw panels`) | PASS. Note: `redraw` is `KY.redraw`, not a `KY.hooks` member; `missing()` checks the eight in `KY.hooks` only, which is right. |
 
 The manifest record (Opus 10's `modules.json`) must carry `"licence": "Apache-2.0"`: the loader refuses an empty licence
@@ -183,24 +190,24 @@ Two facts the acceptance text must absorb (both found independently by the build
 
 ## 6. Review of the module and of the HANDOFF draft
 
-### 6a. Keys cited inside the module that are off (the values are right; the line numbers are not). For the lead, before MODULE.sha256 is cut.
+### 6a. Keys cited inside the module that are off (the values are right; the line numbers are not). For the lead, before MODULE.sha256 is cut. Module line numbers are those of the 563-line file of 22:25 UTC (sha256 `10b2cb70…`).
 
 | module line | cites | the line that says it (re-read at gridatlas@5ec7f62 / kuiper-belt@96736f5) |
 |---|---|---|
 | :94 | titles `MB:174-177`, hover/open `MB:178-179`, focus `MB:180-181` | titles M:174-176, hover/open M:177-178, focus M:179-180 |
 | :119 | panels `MB:206-213`, right group `MB:218-224`, rows `MB:226-235` | panel M:206-211, right group M:219, rows M:220-227 (hover :226-227) |
-| :154 | `chipStaysOnMap cartridge :1521-1552` | :1521-1552 is the MODULE file (M); the cartridge's is L:5870 ff. |
-| :165 | `MB cartridge :6010-6016` | L:6011-6016 ("The search bar is NOT moved") |
-| :172 | `MB:372-383` | M:372-382 (:383 is `].join('')`) |
-| :195 | shell `index.html:23-33` | :23-34 (the `.hud-header` closes at :34) |
-| :208 | `MB:545` | M:544 |
-| :213 | `ventus-corev8engine.js:603-608` | :602-608 (`setInterval` at :602, target `Date.UTC(2050,0,1)` :604, days :607) |
-| :373 | `MB:244-246` | M:245-247 |
-| :141 | Edition 4 `index.html:66-71` | :64-70 (`#top,#hud,#foot,#lines{display:none}` :64 … `#lines{…}` :70) |
-| :359 | `IX:610-618` (the keydown table) | :614-618 (:605-613 is the `#gotoin` handler) |
-| :443 | `IX:603-613` | :604-613 |
-| :409 | `PALETTE.md:8-13` | kuiper-belt@96736f5 PALETTE.md:9-13 (:8 is the table rule) |
-| :542 | `index.html:697-703` | :698-704 (`const bar` :698 … `appendChild(bar)` :704) |
+| :155 | `chipStaysOnMap cartridge :1521-1552` | :1521-1552 is the MODULE file (M); the cartridge's is L:5870 ff. |
+| :166 | `MB cartridge :6010-6016` | L:6011-6016 ("The search bar is NOT moved") |
+| :173 | `MB:372-383` | M:372-382 (:383 is `].join('')`) |
+| :196 | shell `index.html:23-33` | :23-34 (the `.hud-header` closes at :34) |
+| :209 | `MB:545` | M:544 |
+| :214 | `ventus-corev8engine.js:603-608` | :602-608 (`setInterval` at :602, target `Date.UTC(2050,0,1)` :604, days :607) |
+| :376 | `MB:244-246` | M:245-247 |
+| :142 | Edition 4 `index.html:66-71` | :64-70 (`#top,#hud,#foot,#lines{display:none}` :64 … `#lines{…}` :70) |
+| :362 | `IX:610-618` (the keydown table) | :614-618 (:605-613 is the `#gotoin` handler) |
+| :444 | `IX:603-613` | :604-613 |
+| :410 | `PALETTE.md:8-13` | kuiper-belt@96736f5 PALETTE.md:9-13 (:8 is the table rule) |
+| :551 | `index.html:697-703` | :698-704 (`const bar` :698 … `appendChild(bar)` :704) |
 
 Correct as cited: M:166-172, M:181-183, M:192-205, ventusv8.css:4,6-8, M:220-225 (row), M:228-233, M:554-583, M:1662-1669,
 :1556-1558; IX:600-601, :602, :615-618, :685-689, :692, :729-734, :726, :262-268.

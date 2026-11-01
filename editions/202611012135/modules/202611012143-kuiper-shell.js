@@ -91,7 +91,7 @@
       '-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);isolation:isolate;pointer-events:auto;',
       '-webkit-text-size-adjust:100%;text-size-adjust:100%}',
       B + ' .gm-menu{position:relative;min-width:0;display:flex}',
-      // C4 titles: MB:174-177; hover/open MB:178-179 (hover gated, NL-009 01 F4); focus MB:180-181
+      // C4 titles: MB:174-176; hover/open MB:177-178 (hover gated, NL-009 01 F4); focus MB:179-180
       B + ' .gm-title{appearance:none;border:0;background:transparent;color:#cfeef6;display:flex;align-items:center;',
       'min-height:36px;padding:0 11px;cursor:pointer;font:inherit;letter-spacing:.05em;',
       'text-transform:uppercase;white-space:nowrap;text-decoration:none;box-sizing:border-box;position:relative;',
@@ -116,7 +116,7 @@
       B + ' .ventus-main{font-family:-apple-system,sans-serif;font-size:14px;font-weight:800;color:#fff;',
       'letter-spacing:.2em;text-transform:uppercase;margin:0}',
       B + ' .ventus-sub{font-family:-apple-system,sans-serif;font-size:5.5px;color:#888;letter-spacing:.14em;text-transform:uppercase}',
-      // C7 panels: MB:206-213, right group MB:218-224, rows MB:226-235, headings MB:245-247
+      // C7 panels: MB:206-211, right group MB:219, rows MB:220-227, headings MB:245-247
       // top: one px below MB's 100% so the panel starts under the bar's 1 px rule, not on it (measured: 35 vs bar bottom 36)
       B + ' .gm-panel{position:absolute;top:calc(100% + 1px);left:0;min-width:240px;max-width:min(92vw,420px);',
       'max-height:min(72dvh,620px);overflow:auto;overscroll-behavior:contain;padding:6px;background:rgba(4,10,13,.98);',
@@ -139,7 +139,7 @@
       // prose moved into panels: NL-009 08-type scale (desktop 12/11 px, phone 13/12 px, line-height 1.55/1.45)
       B + ' .gm-prose{font-size:12px;line-height:1.55;padding:6px 8px;color:#d5dcea;white-space:normal}',
       B + ' .gm-prose.gm-small{font-size:11px;color:#8fb3bd}',
-      // Edition 4's layers become panel blocks (they keep their ids and listeners; index.html:66-71 is overridden here)
+      // Edition 4's layers become panel blocks (they keep their ids and listeners; index.html:64-70 is overridden here)
       B + ' .gm-panel #top,' + B + ' .gm-panel #hud,' + B + ' .gm-panel #lines,' + B + ' .gm-panel #foot{display:block!important;',
       'position:static!important;inset:auto!important;max-width:none!important;max-height:none!important;width:auto!important;',
       'border:0!important;border-radius:0!important;background:transparent!important;padding:6px 8px!important;',
@@ -152,7 +152,7 @@
       B + ' .gm-panel #linesctl input[type=checkbox]{width:20px;height:20px;margin:0;accent-color:#2ee6e6}',
       B + ' .gm-panel #lyFind{min-height:44px;box-sizing:border-box;width:100%;font:12px ui-monospace,monospace}',
       B + ' .gm-panel #lineslist .ln{min-height:44px;box-sizing:border-box}',
-      // the star strip, bottom-left, 44 px (GridAtlas's phone chips: chipStaysOnMap cartridge :1521-1552)
+      // the star strip, bottom-left, 44 px (GridAtlas's phone chips: chipStaysOnMap MB:1521-1552; live twin in the cartridge from :5870)
       '#' + STRIP_ID + '{position:fixed;left:calc(8px + env(safe-area-inset-left,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));',
       'z-index:10019;display:flex;height:44px;box-sizing:border-box;background:rgba(4,10,13,.95);border:1px solid rgba(80,220,240,.3);',
       'font:11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px)}',
@@ -163,14 +163,14 @@
       // which measures it, still starts the safe rectangle under the bar; invisible and untouchable.
       '#bar.kmb-superseded{visibility:hidden!important;pointer-events:none!important;height:var(--kmb-h,36px)!important;',
       'padding:0!important;border:0!important;overflow:hidden!important;flex-wrap:nowrap!important}',
-      // #goto (the find box) opens right-aligned directly under the bar, 44 px, as GridAtlas's search (C6, MB cartridge :6010-6016)
+      // #goto (the find box) opens right-aligned directly under the bar, 44 px, as GridAtlas's search (C6, cartridge 202609062358-substation-intelligence-v9-63.js:6011-6016)
       'body.kmb-installed #goto{left:auto!important;right:calc(10px + env(safe-area-inset-right,0px))!important;transform:none!important;',
       'top:calc(var(--kmb-h,36px) + 6px)!important;width:min(82vw,390px);min-width:0!important;min-height:44px;box-sizing:border-box;',
       'background:rgba(4,10,13,.98)!important;border:1px solid rgba(80,220,240,.32)!important;z-index:10018!important}',
       // C4 the 44 px hit box on a coarse pointer, removed while a panel is open (A6)
       '@media (pointer:coarse){' + B + ' .gm-title::after{content:"";position:absolute;left:0;right:0;top:0;height:44px}',
       B + '[data-open] .gm-title::after{display:none}}',
-      // phone rule MB:372-383 (max-width:700px)
+      // phone rule MB:372-382 (max-width:700px)
       '@media (max-width:700px){' + B + '{height:calc(34px + env(safe-area-inset-top,0px))}',
       B + ' .gm-title{min-height:34px;padding:0 6px;font-size:9px;letter-spacing:.025em}',
       B + ' .gm-brand-slot{max-width:48%;padding:0 2px}',
@@ -193,7 +193,7 @@
     var left = el('div', 'gm-side gm-side-left'), slot = el('div', 'gm-brand-slot'), right = el('div', 'gm-side gm-side-right');
     // the star slot: first in the left group (R7); its owner's schema name on it; empty until a node is mounted
     starHome = el('div', 'gm-group gm-star-slot'); starHome.setAttribute('data-owner', state.star.owner); left.appendChild(starHome);
-    // C3: GridAtlas's masthead (shell atlas/releases/202608300453-atlas-v9/index.html:23-33), the same classes
+    // C3: GridAtlas's masthead (shell atlas/releases/202608300453-atlas-v9/index.html:23-34), the same classes
     var hh = el('div', 'hud-header');
     var lf = el('div'); lf.innerHTML = '<small>SYSTEM TIME</small><br><span class="hud-val kmb-clock">--:--:--</span><br><span class="kmb-date">--/--/----</span>';
     var vb = el('div', 'ventus-brand'); vb.appendChild(el('div', 'ventus-main', 'Ventus')); vb.appendChild(el('div', 'ventus-sub', 'Cables & Connectivity®'));
@@ -206,12 +206,12 @@
       t.setAttribute('aria-controls', 'kmb-panel-' + name);
       p.id = 'kmb-panel-' + name; p.setAttribute('role', 'group'); p.setAttribute('aria-labelledby', t.id); p.hidden = true;
       menu.appendChild(t); menu.appendChild(p);
-      (i < 3 ? left : right).appendChild(menu);                 // MB:545 index < 3 ? left : right
+      (i < 3 ? left : right).appendChild(menu);                 // MB:544 index < 3 ? left : right
       menus[name] = { menu: menu, title: t, panel: p };
     });
     bar.appendChild(left); bar.appendChild(slot); bar.appendChild(right);
     strip = el('div'); strip.id = STRIP_ID; strip.setAttribute('data-owner', state.star.owner);
-    // the clock and the days to 2050-01-01 UTC: the engine's own arithmetic (ventus-corev8engine.js:603-608)
+    // the clock and the days to 2050-01-01 UTC: the engine's own arithmetic (ventus-corev8engine.js:602-608)
     function tick() {
       var now = new Date(), target = new Date(Date.UTC(2050, 0, 1, 0, 0, 0));
       bar.querySelector('.kmb-clock').textContent = now.toLocaleTimeString('en-GB');
@@ -359,7 +359,7 @@
     // (#lyAll/#lyFocus change IX:729-730, #lyFind input/keydown IX:731-732, the #lines row/command delegation IX:733-734,
     // #top's own toggle IX:602). The five #keys buttons carry no listener of their own: #keys delegates
     // (IX:600-601 "dispatchEvent(new KeyboardEvent('keydown', { key:k }))"), so a moved button is answered by the same
-    // one-line delegation on its panel, and the engine's keydown table (IX:610-618, :692) stays the only implementation.
+    // one-line delegation on its panel, and the engine's keydown table (IX:614-618, :692) stays the only implementation.
     var moved = 0;
     function row(label, onTap, hint) {                           // a 44 px command row (GridAtlas MB:220-225)
       var b = el('button', 'gm-row', label); b.type = 'button';
@@ -373,7 +373,7 @@
       if (hint) a.appendChild(el('span', 'gm-hint', hint));
       return a;
     }
-    function heading(panel, title) { var h = el('div', 'gm-layer-group', title); panel.appendChild(h); return h; }   // MB:244-246
+    function heading(panel, title) { var h = el('div', 'gm-layer-group', title); panel.appendChild(h); return h; }   // MB:245-247
     function group(panel, name, owner) {                         // a named, empty group its owner fills (STEPS.md C5, brief)
       var g = el('div', 'gm-group'); g.setAttribute('data-group', name); g.setAttribute('data-owner', owner);
       panel.appendChild(g); state.groups[name] = owner; return g;
@@ -407,7 +407,7 @@
     heading(P.edit, 'Colours (PALETTE.md)');
     [['#c9d3e6', 'grey', 'the record, as measured'], ['#2ee6e6', 'cyan', 'the instrument'],
      ['#22ee77', 'green', 'energised: lit by a query'], ['#ffb000', 'amber', 'attention: new code'],
-     ['#ff2bd6', 'magenta', 'selected: the thing under the hand']].forEach(function (c) {   // PALETTE.md:8-13, IX:27-28
+     ['#ff2bd6', 'magenta', 'selected: the thing under the hand']].forEach(function (c) {   // PALETTE.md:9-13, IX:27-28
       var d = el('div', 'gm-prose gm-legend');
       var sw = el('span'); sw.style.cssText = 'display:inline-block;width:12px;height:12px;margin-right:10px;vertical-align:-1px;background:' + c[0];
       d.appendChild(sw); d.appendChild(document.createTextNode(c[1] + ' · ' + c[2])); P.edit.appendChild(d);
@@ -441,7 +441,7 @@
     focus.classList.add('gm-check'); moveNode(P.scope, focus);   // gridatlas + data centres only (IX:730)
     moveNode(P.scope, hinted(key('n'), 'n'));                    // new code (IX:616)
     moveNode(P.scope, hinted(key('r'), 'r'));                    // random line (IX:615)
-    P.scope.appendChild(row('one repository or one period', function () { run('/'); }, '/'));   // IX:603-613
+    P.scope.appendChild(row('one repository or one period', function () { run('/'); }, '/'));   // IX:604-613
 
     // ---- WAFER: the verified-lines layer, whole (its row delegation lives on #lines, IX:733-734); step 3's group
     group(P.wafer, 'layers', 'layers (Opus 3, kuiper.layers.v1)');
@@ -548,7 +548,7 @@
     }
     whenEngine(function () { try { install(null); } catch (e) { /* the strip already says why */ } });
   }
-  // The engine's synchronous part ends by building Edition 4's #bar (index.html:697-703); until then nothing is
+  // The engine's synchronous part ends by building Edition 4's #bar (index.html:698-704); until then nothing is
   // judged. After the limit the failure names what never came.
   function whenEngine(go) {
     if (document.getElementById('bar') && document.getElementById('lines')) return go();

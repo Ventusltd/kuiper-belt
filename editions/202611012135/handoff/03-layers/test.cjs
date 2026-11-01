@@ -153,8 +153,8 @@ async function waferDisc(page, png, yMin) {
     const W = innerWidth, H = innerHeight, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g = cv.getContext('2d'); g.drawImage(img, 0, 0, W, H);
     const d = g.getImageData(0, 0, W, H).data; const ox = -c.x * c.zoom + W / 2, oy = H / 2 + c.y * c.zoom, Rr = Math.sqrt(SP) * c.zoom;
     let lit = 0, tot = 0;
-    for (let y = Math.max(0, Math.ceil(yMin)); y < H; y++) for (let x = 0; x < W; x++) { if ((x - ox) ** 2 + (y - oy) ** 2 > Rr * Rr) continue; tot++; const i = (y * W + x) * 4; if (0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2] > 34) lit++; }
-    return { centre: [+ox.toFixed(1), +oy.toFixed(1)], radius: +Rr.toFixed(1), pixels: tot, lit, litFraction: +(lit / Math.max(1, tot)).toFixed(4) };
+    for (let y = Math.max(0, Math.ceil(Number.isFinite(+yMin) ? +yMin : 0)); y < H; y++) for (let x = 0; x < W; x++) { if ((x - ox) ** 2 + (y - oy) ** 2 > Rr * Rr) continue; tot++; const i = (y * W + x) * 4; if (0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2] > 34) lit++; }
+    return { yMin: yMin, centre: [+ox.toFixed(1), +oy.toFixed(1)], radius: +Rr.toFixed(1), pixels: tot, lit, litFraction: +(lit / Math.max(1, tot)).toFixed(4) };
   }, { b64: png.toString('base64'), yMin });
 }
 
@@ -332,7 +332,7 @@ async function runDevice(browser, deviceName, shots) {
       p = await S.until(q => q.hasLayers && S.settled(q), STATE_MAX); await sleep(FIXED_WAIT); p = await S.probe();
       const on0 = (p.inspect || {}).on, landed = p.url.href, h1 = p;
       let after = null;
-      let h1b = h1; if (p.hasLayers) { await S.openPanel(); h1b = await S.probe(); after = await S.tapRow('periods'); await sleep(800); after = await S.probe(); }   // h1b: after the panel opened (opening it may push the back-gesture entry)
+      let h1b = h1; if (p.hasLayers) { await S.openPanel(); await sleep(2500); h1b = await S.probe();   /* lead 22:55: the page's back-gesture entry (04 patch edSync) is pushed on the next drawn frame; measure after it */ after = await S.tapRow('periods'); await sleep(800); after = await S.probe(); }   // h1b: after the panel opened (opening it may push the back-gesture entry)
       const ok = JSON.stringify(on0) === JSON.stringify(['periods', 'lines']) && after && after.url.layers === 'lines' && JSON.stringify((after.inspect || {}).on) === JSON.stringify(['lines']) && after.marker === h1.marker && after.historyLength === h1b.historyLength && S.errors.length === 0;
       record(id, name, ok, { opened: url, landed, pointer: id === 't6-pointer' ? { liveTarget: target, substitutions: nSub } : undefined, onAtLoad: on0, afterUntick: after && { url: after.url.layers, href: after.url.href, on: (after.inspect || {}).on }, sameDocument: after && after.marker === h1.marker, historyLength: after && { atLoad: h1.historyLength, panelOpen: h1b.historyLength, afterUntick: after.historyLength }, ...errFree(S) },
         ok ? (id === 't6-pointer' && target !== STAMP ? 'pointer still names ' + target + ' (Edition 4); measured with the stamp moved' : '') : why(!p.hasLayers && 'KY.layers absent at ' + landed, JSON.stringify(on0) !== '["periods","lines"]' && 'on at load ' + JSON.stringify(on0), after && after.url.layers !== 'lines' && 'after untick the URL says layers=' + after.url.layers, after && after.marker !== h1.marker && 'reloaded', after && after.historyLength !== h1b.historyLength && 'history.length ' + h1b.historyLength + ' -> ' + after.historyLength + ' on the untick (a push, not replaceState)', after && JSON.stringify((after.inspect || {}).on) !== '["lines"]' && 'on after untick ' + JSON.stringify((after.inspect || {}).on), S.errors.length && S.errors.length + ' console error(s): ' + S.errors[0].text));

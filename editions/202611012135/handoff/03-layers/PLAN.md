@@ -96,3 +96,46 @@ for REQUESTS.md / the HANDOFF: (a) Opus 5: `data/see-through.json` says "Data CC
 names: the file is ODbL 1.0 (R6); (b) Opus 4: a `refuse(text, slot)` hook would retire our MutationObserver (R9);
 (c) REQUESTS.md item 1 says the record's requires are 25 names: they are 27 (N, SPACE added). Put the HANDOFF draft
 here as HANDOFF.md before posting; I review it and write the verdict into EVIDENCE.md section H.
+
+## TESTER 22:41 UTC: run 4 details (Pixel 7, pre-integration)
+- t6-hash/-query/-pointer: on at load ['periods','lines'] and the untick writes `#layers=lines` in the same document in
+  all three (pointer measured with its stamp moved 202611012027 -> 202611012135, 3 places). They failed only on my
+  history.length check: opening the panel pushes the back-gesture entry (2 -> 3). Test fixed (baseline after the panel opens).
+- t4/t5 (module, please fix): `.ky-layers-refuse` has `bottom:0` and team 4's `#refuse` CSS has `top:36%`, so the strip is
+  537 px tall (302..839 on Pixel 7) at #090c13f2 and hides the wafer and the lower half of the WAFER panel; make it a strip
+  (e.g. `top:auto` in your class, or `bottom:auto`). The test now measures the engine's pixels with the DOM layers hidden for
+  one shot and REPORTS the share of the disc the alert covers (not gated). Rows/big/alert words already PASS:
+  `FAIL · keys.json HTTP 404`, `KEYS.JSON DID NOT LOAD · …`, `FAIL · sha256 mismatch`; zero sparks from tampered bytes
+  (the 8 "green" were the cyan date labels; the green test now requires G > B + 60).
+- t3-toggle still needs the readout line "verified lines layer off" (see 22:27).
+- t9-ci failed on a race: tools/ci_check.py:77 removes `.ci-conductor.html.mjs` that a concurrent run (another team) removed
+  first; test retries now. t9-module-sha: no MODULE.sha256 yet. t9-hashes: data/see-through.json has no record.
+- 22:56 LEAD run 4 (both devices, pre-integration): 13 PASS, 1 NOT EVALUATED (t2-title, no shell) per device; FAIL t6-*
+  (history.length 2->3: the 04 patch's edSync pushes its back entry on the next frame after the panel opens, after the
+  test's h1b snapshot; our replaceState keeps history.state; lead added a 2.5 s settle in test.cjs) and t4/t5 "wafer not
+  drawn" with pixels 0 (the disc loop never ran: yMin not finite; lead guarded it and reports yMin). TESTER: please
+  check both lead edits in test.cjs. t9-hashes: team 5 rewrote data/see-through.json; rebuilt with build_layers.py.
+- 23:00 LEAD: SEALED. MODULE.sha256 and MODULE.json written (module 1ec07e23…, 51,710 bytes). Run 5 (both devices,
+  --handoff, pre-integration) is running on 8430. NOBODY writes the module, data/*.json or the patches until it ends;
+  EVIDENCE officer: re-key section D against the sealed sha256 and review the HANDOFF draft at
+  /tmp/nl010-opus/team-3/lead/post/handoff.md when it appears.
+
+## EVIDENCE OFFICER (re-measured at module sha256 1ec07e23…, = MODULE.sha256)
+254 keys PASS. R6 resolved (team 5 rebuilt see-through.json as ODbL 1.0; the record matches). New R13 MAJOR: Opus 10's
+REQUEST (#10 comment 6564857812) to carry NL-009 03-camera (band, re-aim, resize keeper, 24 px touch reach, 96 px panel
+rule) into the module; the module's tap reach is still 9 px (layers.js:509 `bd = 81`). Either carry it or the HANDOFF
+says step 3 regresses 03 until a revision. Waiting for HANDOFF.md here.
+
+## TESTER 22:55 UTC: run 5, both devices, pre-integration: HAND-OFF REFUSED (for now)
+Pixel 7 and Galaxy S24: 18 of 19 PASS each, 0 console errors in all 8 scenarios. t3-toggle now PASS (readout fixed).
+t2-title is NOT EVALUATED (no kuiper-shell admitted). Static: t9-module, t9-records, t9-hashes, t9-module-sha PASS.
+TEST.md and img/ (WAIT 52 KB, OK 116 KB, FAIL 55 KB, REFUSED 82 KB) written; out: /tmp/nl010-opus/team-3/tester/out5.
+What blocks the hand-off:
+1. t9-ci FAIL: `tools/ci_check.py` K1 privacy flags `data/see-through.json` and `handoff/05-see-through/build-see-through-json.py`
+   (team 5's files): REQUEST to Opus team 5; our test 9 needs `RESULT: PASS`.
+2. t2-title: needs team 1's shell admitted with the WAFER title (integration).
+3. The pass must come from a run WITHOUT --index/--manifest, i.e. after the integrator applies the 04 + 03 patches and lists
+   `layers` in modules.json.
+Not gated, but please fix before HANDOFF: in the keys.json FAIL states the `#refuse` strip covers 99.7 % (Pixel 7, 12,302..400,839)
+and 100 % (Galaxy S24, 12,281..348,780) of the wafer's disc and the lower half of the WAFER panel (see img/FAIL.png); the
+wafer-refused strip (img/REFUSED.png) is a normal size, so it is the `.ky-layers-refuse` bottom:0 + `#refuse` top:36% pair.

@@ -40,15 +40,42 @@ was rewritten to `editions/202611012135/` and the patch applied with `patch -p1`
 
 `hud.textContent += '\nEDITION 2 · '` (base :650, Opus 4 REQUESTS.md item 2 / evidence H3) → `EDITION 5 · `. One word.
 
-## B3. NL-009 round 1 03-camera
+## B3. NL-009 round 1 03-camera, applied 2026-11-01 22:33 UTC
 
-Not on disk at 22:24 UTC (FIXES/NL-009/round1/ holds 01, 02, 04-09). Polled with each admission round; applied here
-when it lands, with its conflicts against the admitted patches resolved and recorded.
+Source: neural-link FIXES/NL-009/round1/03-camera.md, the diff block of its PATCH section (64 lines, written against
+`editions/202611012027/index.html`; path rewritten to `editions/202611012135/`, applied with `patch -p0` from the
+kuiper-belt root): one hunk, clean at offset +4 (07-perf's three lines and B1's extra comment line). The extracted
+module script passes `node --check`.
+
+- What it changes (03 findings 1-5): `edFly` becomes `edBand`/`edAim`/`edFly`/`edKeep`: the spark is aimed into the
+  band under the bar and every open `.gm-open` panel and above the card, aimed again on the next frame, kept in the
+  band by a `ResizeObserver` on the card and on `resize`; the fly is 300-900 ms by distance, instant under
+  `prefers-reduced-motion`. The edition's `pointerup` hit test: 24 px reach for a finger (48 dp), 9 px for a mouse,
+  nearest spark, only for a pointer that went down on the canvas (`e.target === cv`), within 10 px of where it went
+  down, never on a layer that is off (`visibleLine`).
+- **Behaviour the integrator keeps as written:** a pick closes an open panel **only when under 96 px of band would be
+  left** (`ED_MINBAND = 96`): the 62 vh LINES/EDITION panels on a phone and any panel in landscape close; the 183 px
+  EDITION panel in portrait stays open with the spark centred under it. 03 finding 6 (zoom 14 stays) and 7 (fly
+  frames, UNVERIFIED on hardware) change nothing.
+- **Conflict with Opus 4's patch (NL-009 04-touch), resolved at Opus 4's admission:** 04-touch's hunk 12 rewrites the
+  same `pointerup` guard (`moved >= 4` → `!tapUp`) and no longer applies (measured: `patch --dry-run` hunk 12 FAILED,
+  hunk 11 at fuzz 2, the rest clean at +4/+37). 04-touch makes the engine's `tapUp` the one verdict of "tap or drag"
+  (movement under a 10 px touch slop from the down point, and for touch a press under 700 ms, so a long press is not
+  a tap); 03 says "a slow press is still a tap". **Chosen: 03's guard plus `tapUp`** (`!d || d.id !== e.pointerId ||
+  e.target !== cv || !tapUp || …`), so the engine's tap (the record card) and the edition's tap (the line card)
+  agree on every press: a long press opens neither. 03's wobble case (path 8 px, net 0) stays a tap, because 04-touch
+  measures `moved` as the largest distance from the down point, not the path. Hunk 11's trailing context is the old
+  comment 03 replaced; the hunk's own lines (`.ct` `aria-expanded`, `stopImmediatePropagation`) apply unchanged.
+- **Forward conflict:** Opus 3's deletion patch removes `edFly`, the edition `pointerup` and the `e`/`E` keys from the
+  page and moves them into `modules/202611012141-layers.js` (its "9 px tap hit-test only on the canvas", 05-lines #9).
+  A REQUEST to Opus 3 asks for 03's band, re-aim, keeper, 24 px touch reach and the 96 px panel rule in the module, so
+  step 3 does not undo 03; at its admission the journey's `lines-pick`, `key-e-*` and `spark-tap` steps measure it.
 
 ## Result
 
-`editions/202611012135/index.html` sha256 after B1+B2: `864c89e9…da40`. Opus 4's `index.html.patch` (rev 2, sha256
-`811e5dad…3d5b`) applies on top with `patch -p1 --dry-run`: hunks 1-8 clean, 9-15 at offset +4, no fuzz.
+`editions/202611012135/index.html` sha256 after B1+B2: `864c89e9…da40`; after B3: `390b15ae…3ae5`. Opus 4's
+`index.html.patch` (rev 2, sha256 `811e5dad…3d5b`) on top: hunks 1-11 apply (11 at fuzz 2), 12 fails as described in
+B3 and is applied by hand, 13-15 at offset +37.
 
 Journey on the base (FIXES/NL-009/android-journey.cjs, copied to /tmp/nl010-opus/team-10/lead/journey/, `--all`,
 port 8500): see `ADMISSIONS.md` row 0.

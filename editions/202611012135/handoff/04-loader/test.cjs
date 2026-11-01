@@ -3,7 +3,8 @@
 // Opus team 4 tester (ROADMAP.md step 4; team-2/STEPS.md step 4 "Acceptance test on Android"; OPUS-BRIEF.md "Testing").
 //
 //   node test.cjs [--devices "Pixel 7,Galaxy S24"] [--patch FILE | --html FILE] [--port 8442]
-//                 [--scratch DIR] [--out DIR] [--only c1,c2,...] [--skip-probes]
+//                 [--scratch DIR] [--out DIR] [--only c1,c2,...] [--skip-probes] [--base FILE]
+// Apache-2.0 (kuiper-belt), kuiper-belt README.md:157.
 //
 // 1. A scratch copy, never the repository: <scratch>/root/editions/<stamp>/ is a copy of the edition folder (handoff/
 //    left out), ../../cosmos is a symlink to the repository's cosmos/, its index.html is the edition page with
@@ -69,16 +70,19 @@ const KY_EXTRA = ['cam', 'lit', 'sel', 'redraw', 'draw', 'panels'];
 const PROBE_GEN = '202611012200';
 
 // ------------------------------------------------------------------ 1. the scratch copy
+// --base FILE patches that page instead of the edition's current index.html (e.g. the skeleton's page at 96736f5, the
+// base the patch was cut against, when the integrator has since changed the page and the patch no longer applies)
 function patchedPage() {
-  const original = fs.readFileSync(path.join(EDITION_DIR, 'index.html'), 'utf8');
+  const baseFile = flag('--base') ? path.resolve(String(flag('--base'))) : path.join(EDITION_DIR, 'index.html');
+  const original = fs.readFileSync(baseFile, 'utf8');
   if (flag('--html')) { const f = path.resolve(String(flag('--html'))); return { html: fs.readFileSync(f, 'utf8'), how: 'html ' + f }; }
   let p = flag('--patch') ? path.resolve(String(flag('--patch'))) : null;
   if (!p && fs.existsSync(path.join(HERE, 'index.html.patch'))) p = path.join(HERE, 'index.html.patch');
   if (p) {
     const o = path.join(SCRATCH, 'index.patched.html');
-    const r = cp.spawnSync('patch', ['-s', '-o', o, path.join(EDITION_DIR, 'index.html'), p], { encoding: 'utf8' });
-    if (r.status !== 0) throw new Error('the patch does not apply: ' + p + '\n' + r.stdout + r.stderr);
-    return { html: fs.readFileSync(o, 'utf8'), how: 'patch ' + p + ' (sha256 ' + sha(fs.readFileSync(p)) + ') on index.html (sha256 ' + sha(original) + ')' };
+    const r = cp.spawnSync('patch', ['-s', '-o', o, baseFile, p], { encoding: 'utf8' });
+    if (r.status !== 0) throw new Error('the patch does not apply: ' + p + ' (sha256 ' + sha(fs.readFileSync(p)) + ') on ' + baseFile + ' (sha256 ' + sha(original) + ')\n' + r.stdout + r.stderr);
+    return { html: fs.readFileSync(o, 'utf8'), how: 'patch ' + p + ' (sha256 ' + sha(fs.readFileSync(p)) + ') on ' + path.relative(REPO, baseFile) + ' (sha256 ' + sha(original) + ')' };
   }
   if (/kuiper\.hooks\.v1/.test(original)) return { html: original, how: 'the edition page, which already carries the hook table' };
   throw new Error('no patch: expected ' + path.join(HERE, 'index.html.patch') + ' (or --patch / --html)');
@@ -484,8 +488,11 @@ async function runDevice(browser, deviceName, S) {
         check('R3', '09-robust R3 Escape closes the panel, then the card', !e1.openPanel && e1.card === 'block' && e2.card !== 'block', { first: { openPanel: e1.openPanel, card: e1.card }, second: { openPanel: e2.openPanel, card: e2.card } });
         const vp = dev.viewport, geo = [];
         await tapSel(page, '#bar .gm-title[data-panel="hud"]'); await sleep(400);
-        for (const [w, hh] of [[vp.height, vp.width], [vp.width, vp.height], [vp.width, vp.height - 56]]) { await page.setViewportSize({ width: w, height: hh }); await sleep(6000);
-          geo.push(await page.evaluate(() => { const c = document.getElementById('c'), p = document.querySelector('.gm-open'), b = document.getElementById('bar').getBoundingClientRect(); return { w: innerWidth, h: innerHeight, cw: c.width, ch: c.height, panelTop: p ? parseFloat(p.style.top) : null, barBottom: +b.bottom.toFixed(1) }; })); }
+        // the canvas follows on the next resize event, which Chromium dispatches with a frame; under SwiftShader on a shared
+        // machine a frame can take seconds, so wait (up to 30 s) for the canvas to follow and record how long it took
+        for (const [w, hh] of [[vp.height, vp.width], [vp.width, vp.height], [vp.width, vp.height - 56]]) { const t0 = Date.now(); await page.setViewportSize({ width: w, height: hh });
+          await page.waitForFunction(([w, hh]) => document.getElementById('c').width === w && document.getElementById('c').height === hh, [w, hh], { timeout: 30000 }).catch(() => {}); const followMs = Date.now() - t0; await sleep(2000);
+          geo.push(Object.assign(await page.evaluate(() => { const c = document.getElementById('c'), p = document.querySelector('.gm-open'), b = document.getElementById('bar').getBoundingClientRect(); return { w: innerWidth, h: innerHeight, cw: c.width, ch: c.height, panelTop: p ? parseFloat(p.style.top) : null, barBottom: +b.bottom.toFixed(1) }; }), { follow_ms: followMs })); }
         await page.setViewportSize(vp); await sleep(2000);
         check('R2', '09-robust R2 rotation and the toolbar: the canvas follows the window, the open panel sits under the bar', geo.every(g => g.cw === g.w && g.ch === g.h && g.panelTop !== null && g.panelTop >= g.barBottom - 1 && g.panelTop <= g.barBottom + 6), { geo });
       } catch (e) { check('R.harness', '09-robust R1 R2 R3 R8 ran to the end', false, { error: String(e.stack || e).slice(0, 600) }); }
@@ -496,6 +503,7 @@ async function runDevice(browser, deviceName, S) {
       check('R4', '09-robust R4 prefers-reduced-motion: the camera lands in one step after e (one zoom value)', distinct.length === 1, { distinct: distinct.slice(0, 40), frames: z.length });
       errOk(h, 'R4'); await h.context.close(); }
     { const h = await open('R5', { status: { 'keys.json': 404 }, expect404: [/keys\.json$/] }); const { page } = h; await sleep(FIXED_WAIT);
+      await tapSel(page, '#bar .gm-title[data-panel="lines"]'); await sleep(1500);
       const t = await page.evaluate(() => ({ big: document.getElementById('big').textContent, lines: (document.getElementById('lineslist') || {}).textContent || '' }));
       check('R5', '09-robust R5 keys.json 404 is said in EDITION and LINES', /keys\.json did not load/i.test(t.big) && /keys\.json did not load/i.test(t.lines), t);
       errOk(h, 'R5'); await h.context.close(); }
@@ -531,7 +539,7 @@ function handoffCheck(S) {
 
 // ------------------------------------------------------------------ c8 / test 8: edition_check.py E1-E8 on a copy, and on each mutation
 // The folder layout and the mutations follow the first draft of this test by the team 4 lead (21:52 UTC).
-function editionCheck() {
+function editionCheck(S) {
   const first = JSON.parse(fs.readFileSync(path.join(HERE, 'modules.json'), 'utf8')), hello = first.modules.find(m => m.id === 'hello');
   const tmp = path.join(SCRATCH, 'c8'); fs.rmSync(tmp, { recursive: true, force: true }); fs.mkdirSync(tmp, { recursive: true });
   const tool = path.join(REPO, 'tools', 'edition_check.py'), toolFrom = fs.existsSync(tool) ? 'tools/edition_check.py' : 'handoff/04-loader/edition_check.py.patch';
@@ -540,11 +548,10 @@ function editionCheck() {
     fs.mkdirSync(path.join(e, 'modules'), { recursive: true }); fs.mkdirSync(path.join(d, 'tools'));
     fs.copyFileSync(path.join(REPO, 'editions', 'index.html'), path.join(d, 'editions', 'index.html'));
     if (prev) fs.cpSync(path.join(REPO, 'editions', prev), path.join(d, 'editions', prev), { recursive: true });
-    for (const f of ['index.html', 'keys.json', 'README.md']) fs.copyFileSync(path.join(EDITION_DIR, f), path.join(e, f));
+    for (const f of ['keys.json', 'README.md']) fs.copyFileSync(path.join(EDITION_DIR, f), path.join(e, f));
+    fs.writeFileSync(path.join(e, 'index.html'), S.html);   // the same patched page the browser cases use
     for (const f of [hello.path, ...(first.references || []).map(r => r.file)]) fs.copyFileSync(path.join(EDITION_DIR, f), path.join(e, f));
     fs.writeFileSync(path.join(e, 'modules.json'), JSON.stringify(first, null, 1));
-    if (!fs.readFileSync(path.join(e, 'index.html'), 'utf8').includes('KUIPER HOOK TABLE AND LOADER'))
-      cp.execFileSync('patch', ['-s', path.join(e, 'index.html'), path.join(HERE, 'index.html.patch')]);
     if (fs.existsSync(tool)) fs.copyFileSync(tool, path.join(d, 'tools', 'edition_check.py'));
     else cp.execFileSync('patch', ['-p1', '-s', '-i', path.join(HERE, 'edition_check.py.patch')], { cwd: d });
     return { d, e }; };
@@ -578,7 +585,7 @@ function editionCheck() {
   const report = { schema: 'opus4.loader-test.v1', stamp: STAMP, started: new Date().toISOString(), url: `http://127.0.0.1:${PORT}/editions/${STAMP}/`, scratch: S.root, page: S.how, page_sha256: S.htmlSha,
     bases: S.bases, manifest: S.manifest, c0: null, c8: null, devices: [] };
   if (want('c0')) { report.c0 = handoffCheck(S); process.stderr.write(`[all] ${report.c0.pass ? 'PASS' : 'FAIL'} c0 MODULE.sha256 and the loader reference\n`); }
-  if (want('c8')) { try { report.c8 = editionCheck(); } catch (e) { report.c8 = { pass: false, error: String(e.stack || e).slice(0, 800) }; } process.stderr.write(`[all] ${report.c8.pass ? 'PASS' : 'FAIL'} c8 edition_check.py E1-E8 and its mutations\n`); }
+  if (want('c8')) { try { report.c8 = editionCheck(S); } catch (e) { report.c8 = { pass: false, error: String(e.stack || e).slice(0, 800) }; } process.stderr.write(`[all] ${report.c8.pass ? 'PASS' : 'FAIL'} c8 edition_check.py E1-E8 and its mutations\n`); }
   const server = await serve(S.root);
   let browser;
   try { browser = await chromium.launch({ args: LAUNCH }); for (const d of DEVICES) report.devices.push(await runDevice(browser, d, S)); }

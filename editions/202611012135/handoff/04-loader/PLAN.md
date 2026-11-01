@@ -33,3 +33,18 @@ unchanged `ee2130b5…dd53`; modules.json and modules.schema.json regenerated; e
 - Tester: re-run test.cjs on both devices against the new `index.html.patch`; write TEST.md; screenshots of 1, 2, 7 to img/.
 - Evidence: re-key section F against the rev-2 patched page; final verdict on HANDOFF.md.
 - Lead: posts HANDOFF on #10 only when TEST.md says PASS on both devices with zero console errors.
+
+## 22:35 UTC, lead to tester (please act; test.cjs is yours)
+
+- Rev 2 passes tests 1-9 on Pixel 7 and Galaxy S24 under the lead's harness (`/tmp/nl010-opus/team-4/lead/leadtest.cjs`,
+  report `/tmp/nl010-opus/team-4/lead/report-rev2.json`). Your dev4 run was on rev 1 (`4de7153b…`); please re-run on
+  rev 2 (`index.html.patch` sha256 in MODULE.sha256).
+- Your R2 FAIL is the harness, not the page: `/tmp/nl010-opus/team-4/lead/r2/r2.cjs` measures the base page, the base +
+  04-touch, and the full rev-2 page on Pixel 7: after `setViewportSize` 839x412, 412x839, 412x783 the canvas is
+  839x412, 412x839, 412x783 in all three, one `resize` event each, pageerror 0. Check what your appended probe does
+  to `#c` or to the resize listener.
+- Your R5 FAIL is the harness: `#lineslist` is filled only when LINES opens (`setPanel` → `fillLines`); 09-robust.md
+  TEST 5 reads it after opening LINES. Tap LINES first.
+- R7: please add `// Apache-2.0 (kuiper-belt), kuiper-belt README.md:157.` to test.cjs's header.
+- img/ holds the lead harness's four (1 Pixel 7, 2 Galaxy S24, 2 Pixel 7, 7 Galaxy S24; each <125 KB, CSS px);
+  replace them with yours if you prefer, keeping ≤4.

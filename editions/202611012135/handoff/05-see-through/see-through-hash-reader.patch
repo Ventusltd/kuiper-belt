@@ -1,0 +1,232 @@
+see-through-hash-reader.patch  Opus team 5, NL-010 roadmap step 5 (5.5 the deep link in, 5.6 the sky re-lifted, 5.8 the way home)
+Licence: CERN-OHL-S v2, as see-through/202610050609/ (LICENSE.md:3-6). For a LATER See Through dated folder: See Through is
+untouchable in Edition 5, so nothing here is applied to the repository by Opus team 5.
+Base: kuiper-belt@96736f55c2137defcf02c898f8f2b0d04374d74b see-through/202610050609/ (descent.js, kuiper-law.js).
+Apply, from the kuiper-belt root, with <stamp> the new folder's UTC minute:
+    cp -r see-through/202610050609 see-through/<stamp>
+    (cd see-through/<stamp> && patch -p1 < ../../editions/202611012135/handoff/05-see-through/see-through-hash-reader.patch)
+    then move the pointer see-through/index.html in its three places (:7, :11, :12) to <stamp>/ and add the README entry.
+What it adds (descent.js; the 13 controls, flyTo, flightDepth, the layout and the refusal words are unchanged):
+  #repo=<name>      lights the stars whose keys fall in that repository's ranges (cosmos/wafer.tsv walked as the engine
+                    does); note "<REPO> · n OF <NP> STARS"; unknown: "NO REPOSITORY CALLED <NAME>"
+  #key=<k>[&space=<s>]  identity: the star that lands on substation j (box pre-filled, "THE STAR THAT LANDS ON <NAME>.
+                    PRESS GO"), else one amber ring at KuiperLaw.place(k), "KEY <k> · A LINE OF CODE, NOT A SUBSTATION";
+                    k >= SPACE: "KEY <k> IS BEYOND THIS SKY"; space differing from SPACE remaps a star key by its formula,
+                    "STAR KEY REMAPPED · SKY <s> → <SPACE> · …"
+  #sub=<name>       the box and GO, exactly as typed (existing words "NO SUBSTATION NAME HERE CONTAINS THAT. TRY ANOTHER NAME")
+  #view=kuiper|map|sat|3d   after the flight; other fields: "LINK FIELD <NAME> NOT UNDERSTOOD"
+  on arrival:       history.replaceState '#key=<subKey>&space=<SPACE>&sub=<name>'; __descent.link() returns it
+  the way home:     X at the stars stage (nothing to undo) -> history.back() for a same-origin referrer, else ../../editions/;
+                    aria-label "back to the Kuiper" there; the card's 44 px row "STAR KEY <k> · OPEN IT ON THE KUIPER" ->
+                    ../../editions/#key=<k>; the credit line "Stars placed by the Kuiper law (kuiper-belt@96736f5, SPACE …)"
+  sky:              kuiper-law.js SPACE 63,340,120,796 (cosmos/wafer-meta.json:4 at 96736f5); descent.js reads
+                    ../../cosmos/wafer-meta.json and __descent.sky() says {space, spaceSource: 'wafer-meta' | 'frozen …'}
+Measured on a scratch site (lead, Pixel 7, SwiftShader): see handoff/05-see-through/EVIDENCE.md "The See Through patch".
+
+diff -ruN a/descent.js b/descent.js
+--- a/descent.js	2026-11-01 22:01:41.578110765 +0000
++++ b/descent.js	2026-11-01 22:03:02.798421131 +0000
+@@ -9,6 +9,9 @@
+ //                 dark-matter style, Esri World Imagery for satellite, GridAtlas's own 400/275/132 kV line files.
+ //                 Network only; the module opens and works offline from file:// without it.
+ // A star is a line of code today, not a substation. The stars gather into the grid; they do not address it.
++// NL-010 step 5 (CERN-OHL-S v2, as the rest of this file): the deep link in (#repo, #key with #space, #sub, #view, read after
++// the names load and on hashchange), the link written on arrival, and the way home to the Kuiper by key (the X at the stars
++// stage, the STAR KEY row, the credit line). Grammar: FIXES/NL-010/ROADMAP.md step 5.5 and team-3/STEPS.md 5.5.
+ (function () {
+   'use strict';
+   var SCRIPT_SRC = (document.currentScript && document.currentScript.src) || '';
+@@ -34,6 +37,8 @@
+   var ATTR_SUBS = 'Substations and lines © OpenStreetMap contributors, ODbL';
+   var ATLAS_URL = 'https://ventusltd.github.io/gridatlas/atlas/';
+   var SIM_URL = 'https://globalgrid2050.com/energy-transition-simulator/202609282123/overlay.html';
++  var KUIPER_URL = '../../editions/';           // the Kuiper's pointer (kuiper-belt editions/index.html:7, :11, :12), same host
++  var KUIPER_LAW_SHA = '96736f55c2137defcf02c898f8f2b0d04374d74b';
+   // grid-data.js stores each network in its own frame: x = ax lon + bx, y = ay lat + by (fitted, descent/DESCENT-MAP.md)
+   var FRAME = { substations: [0.09964309, 0.31622146, 0.16536946, -9.15422211],
+     grid400: [0.15191996, 0.22101387, 0.25086508, -13.53743135], grid132: [0.12832519, 0.30976879, 0.21383207, -11.62522065] };
+@@ -440,11 +445,13 @@
+     S.flight = null; S.auto3d = 0; S.hold = 0;
+     if (S.in3d) { setView('sat', true); S.D = S.Dgoal = DMAX; camera(S.D); syncMap(1); showCard(); return; }
+     if (!M.standalone) { M.close(); return; }
++    if (S.T < 0 && S.D < 0.01 && !S.input.value) { goHome(); return; }
+     S.input.value = ''; S.q = ''; S.mN = S.mTotal = 0; S.note.textContent = '';
+     S.T = -1; S.D = S.Dgoal = 0; S.corrA = 0; S.spider = null; S.spiderOn = false; lit(S.spB, false);
+     S.cardDirty = false; hideCard(); S.viewTouched = false; S.stage = 0;
+     setView('map', false); caption('SEE THROUGH'); layout(); syncMap(0);
+-    S.cv.style.visibility = 'visible';
++    S.cv.style.visibility = 'visible'; S.ring = null; S.repoLit = null;
++    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+   }
+ 
+   // ---------------- SPIDER: the grid engine pack when present, otherwise nearest by distance ----------------
+@@ -519,6 +526,8 @@
+   function frame(now) {
+     if (!S) return;
+     S.raf = requestAnimationFrame(frame);
++    var xl = (M.standalone && S.T < 0 && S.D < 0.01 && !S.input.value) ? 'back to the Kuiper' : 'back';
++    if (S.xLab !== xl) { S.xLab = xl; S.xbtn.setAttribute('aria-label', xl); }
+     var t0 = performance.now(); if (S.last) S.fiv[S.fj++ % S.fiv.length] = now - S.last;
+     var dt = Math.min(0.1, Math.max(0.001, (now - (S.last || now)) / 1000)); S.last = now;
+     // the one control: D eases toward its goal, with a speed cap so a huge wheel turn is still a fall, not a cut
+@@ -595,6 +604,12 @@
+     }
+ 
+     instruments(g, cam);
++    if (D < 1 && (S.ring || S.repoLit)) {        // NL-010 5.5: amber is attention (kuiper-belt PALETTE.md)
++      g.save(); g.globalAlpha = 1 - D; g.strokeStyle = C.amber; g.fillStyle = C.amber; g.lineWidth = 1.5;
++      if (S.ring) { g.beginPath(); g.arc(cx + S.ring.x * ks, cy - S.ring.y * ks, 10, 0, 2 * Math.PI); g.stroke(); }
++      if (S.repoLit) { g.beginPath(); for (var rl = 0; rl < S.repoLit.length; rl++) { var rq = S.repoLit[rl]; g.rect(sx[rq] - 1.5, sy[rq] - 1.5, 3, 3); } g.fill(); }
++      g.restore();
++    }
+     if (S.grid && D > 1.6) drawLines(g, cam, mapA, smooth((D - 1.6) / 0.5));
+     sweep(g);
+ 
+@@ -833,6 +848,7 @@
+   function attrib() {
+     var t = [], bad = S.failedSources && Object.keys(S.failedSources).length;
+     if (S.D > 1.5) t.push(ATTR_SUBS);
++    if (S.D < 1) t.push('Stars placed by the Kuiper law (kuiper-belt@' + KUIPER_LAW_SHA.slice(0, 7) + ', SPACE ' + fmt(S.SPACE) + ')');
+     if (!bad && (S.mapVis || S.in3d)) { t.push(ATTR_MAP); if (S.view === 'sat' || S.in3d) t.push(ATTR_SAT); if (S.in3d) t.push('Terrain: Terrain Tiles (Tilezen) on AWS; UK terrain (c) Environment Agency copyright and/or database right 2015. All rights reserved'); }
+     edgeText(S.att, t.join(' · ')); S.att.style.display = t.length ? 'block' : 'none';
+     S.netNote.style.display = bad && S.D > 1.5 ? 'block' : 'none';
+@@ -849,6 +865,9 @@
+     if (S.T < 0 || S.in3d) return;
+     S.card.textContent = nameOf(S.T) + ' · ' + voltText(S.T);
+     S.card.title = S.card.textContent;
++    var hk = el('a', 'display:block;min-height:44px;line-height:44px;color:' + C.cyan + ';text-decoration:none;border-top:1px solid rgba(0,255,255,0.3);margin-top:6px;pointer-events:auto',
++      'STAR KEY ' + fmt(keyOfSub(S.T)) + ' · OPEN IT ON THE KUIPER', S.card);
++    hk.href = KUIPER_URL + '#key=' + keyOfSub(S.T); hk.setAttribute('data-st', 'kuiper-key');
+     S.card.style.display = 'block'; S.cardOn = true;
+   }
+   function hideCard() { if (S) { S.card.style.display = 'none'; S.cardOn = false; S.cardDirty = S.T >= 0; } }
+@@ -856,6 +875,80 @@
+     S.cardDirty = true; S.mN = 0; S.mTotal = 0; ping(12, 0.04); ping(19, 0.025);
+     caption('ONE SUBSTATION: ' + nameOf(S.T).toUpperCase());
+     if (window.SeeThrough3D && !S.viewTouched) S.auto3d = performance.now() + 1400;
++    writeLink();
++    if (S.linkView) { var lv = S.linkView; S.linkView = null; S.auto3d = 0; setView(lv, true); }
++  }
++
++  // ---------------- the deep link (NL-010 step 5.5): read once the names are loaded, and on hashchange ----------------
++  // key with space is the identity (every substation j has one star key, keyOfSub(j)); sub is a search that lands on the
++  // first named match; repo lights the stars inside a repository's key ranges; view picks the view after the flight.
++  function linkText() { return S && S.T >= 0 ? '#key=' + keyOfSub(S.T) + '&space=' + S.SPACE + '&sub=' + encodeURIComponent(D0.names[S.T] || '') : ''; }
++  function writeLink() { try { if (S && S.T >= 0) history.replaceState(null, '', location.pathname + location.search + linkText()); } catch (e) {} }
++  function linkFields() {
++    var h = (location.hash || '').replace(/^#/, ''), f = { bad: [] };
++    h.split('&').forEach(function (kv) {
++      if (!kv) return; var i = kv.indexOf('='), k = i < 0 ? kv : kv.slice(0, i), v = i < 0 ? '' : kv.slice(i + 1);
++      try { v = decodeURIComponent(v.replace(/\+/g, ' ')); } catch (e) {}
++      if (/^(sub|key|space|repo|view)$/.test(k)) f[k] = v; else f.bad.push(k);
++    });
++    return f;
++  }
++  function readLink() {
++    if (!S) return;
++    var f = linkFields(); S.linkIn = f; S.ring = null; S.repoLit = null;
++    if (f.repo) linkRepo(f.repo);
++    if (f.key != null) linkKey(f.key, f.space);
++    if (f.sub) { S.input.value = String(f.sub).slice(0, 80); goSearch(); }
++    if (f.view) { if (!/^(kuiper|map|sat|3d)$/.test(f.view)) f.bad.push('view'); else if (S.flight) S.linkView = f.view; else setView(f.view, true); }
++    if (f.bad.length && !S.note.textContent) S.note.textContent = 'LINK FIELD ' + String(f.bad[0]).toUpperCase().slice(0, 20) + ' NOT UNDERSTOOD';
++  }
++  function linkKey(kv, sv) {
++    if (!/^\d{1,15}$/.test(kv)) { S.note.textContent = 'LINK FIELD KEY NOT UNDERSTOOD'; return; }
++    var k = +kv, pre = '';
++    if (sv != null && /^\d{1,15}$/.test(sv) && +sv !== S.SPACE) {     // the SPACE remap: a star key cut under another sky
++      var sp = +sv, j = Math.floor(k * NRULE / sp), hit = -1;
++      for (var d = -1; d <= 1; d++) if (j + d >= 0 && j + d < NSUB && Math.floor((j + d + 0.5) * sp / NRULE) === k) hit = j + d;
++      if (hit >= 0) { pre = 'STAR KEY REMAPPED · SKY ' + fmt(sp) + ' → ' + fmt(S.SPACE) + ' · '; k = keyOfSub(hit); }
++    }
++    if (k >= S.SPACE) { S.note.textContent = pre + 'KEY ' + fmt(k) + ' IS BEYOND THIS SKY'; return; }
++    for (var i = 0; i < NSUB; i++) if (S.subKey[i] === k) {
++      S.input.value = D0.names[i] || ''; S.linkSub = i;
++      S.note.textContent = pre + 'THE STAR THAT LANDS ON ' + nameOf(i).toUpperCase() + '. PRESS GO'; return;
++    }
++    S.ring = window.KuiperLaw.place(k);
++    S.note.textContent = pre + 'KEY ' + fmt(k) + ' · A LINE OF CODE, NOT A SUBSTATION';
++  }
++  function linkRepo(name) {
++    var want = String(name).toLowerCase();
++    Promise.all(['../../cosmos/repos.tsv', '../../cosmos/wafer.tsv'].map(function (u) {
++      return fetch(u).then(function (r) { if (!r.ok) throw new Error(u + ' HTTP ' + r.status); return r.text(); });
++    })).then(function (t) {
++      if (!S) return;
++      var rows = function (x) { return x.split('\n').filter(function (l) { return l && l[0] !== '#'; }).map(function (l) { return l.split('\t'); }); };
++      var rr = rows(t[0]), ri = -1, nm = '';
++      for (var a = 0; a < rr.length; a++) if (rr[a][1].toLowerCase() === want) { ri = +rr[a][0]; nm = rr[a][1]; }
++      if (ri < 0) { S.note.textContent = 'NO REPOSITORY CALLED ' + String(name).toUpperCase().slice(0, 40); return; }
++      var ranges = [], k = 0;                        // the engine's own walk (kuiper-belt editions/202611012027/index.html:203-208)
++      rows(t[1]).forEach(function (p) { k += +p[4]; var k0 = k; k += +p[1]; if (+p[2] === ri && k > k0) ranges.push([k0, k]); });
++      var lit = [], n = S.NP, phoneNow = n < NRULE;
++      for (var q = 0; q < n; q++) {
++        var ki = (phoneNow && q >= NSUB) ? NSUB + 2 * (q - NSUB) : q, key = Math.floor((ki + 0.5) * S.SPACE / NRULE);
++        var lo = 0, hi = ranges.length - 1; while (lo <= hi) { var m = (lo + hi) >> 1; if (key < ranges[m][0]) hi = m - 1; else if (key >= ranges[m][1]) lo = m + 1; else { lit.push(q); break; } }
++      }
++      S.repoLit = lit;
++      S.note.textContent = nm.toUpperCase() + ' · ' + fmt(lit.length) + ' OF ' + fmt(n) + ' STARS';
++    }).catch(function (e) { if (S) S.note.textContent = 'REPOSITORY LINK: ' + e.message; });
++  }
++  // the Kuiper's address space today, read at run time; the frozen constant is used when it cannot be read
++  function readSky() {
++    S.spaceSource = 'frozen';
++    fetch('../../cosmos/wafer-meta.json', { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
++      .then(function (m) { if (!S) return; S.waferSpace = +m.address_space; S.spaceSource = S.waferSpace === S.SPACE ? 'wafer-meta' : 'frozen (wafer ' + fmt(S.waferSpace) + ')'; S.attDirty = true; })
++      .catch(function () {});
++  }
++  function goHome() {               // the X at the stars stage: back to the Kuiper that opened this page, else its pointer
++    var same = false; try { same = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (e) {}
++    if (same && history.length > 1) history.back(); else location.href = KUIPER_URL;
+   }
+ 
+   // ---------------- input ----------------
+@@ -1047,14 +1140,22 @@
+       sub: function (i) { return { name: D0.names[i], lat: D0.lat[i], lon: D0.lon[i], volt: voltText(i), op: opText(i) }; },
+       screenOf: function (i) { return [S.sx[i], S.sy[i]]; },
+       mapPointOf: function (i) { if (!S.map) return null; var p = S.map.project([D0.lon[i], D0.lat[i]]); return [p.x, p.y]; },
+-      mapReady: function () { return !!(S.map && S.mapState === 'ready' && S.map.loaded() && S.map.areTilesLoaded()); }
++      mapReady: function () { return !!(S.map && S.mapState === 'ready' && S.map.loaded() && S.map.areTilesLoaded()); },
++      link: function () { return linkText(); },
++      subKey: function (i) { return keyOfSub(i); },
++      ring: function () { return S.ring ? { x: S.cx + S.ring.x * S.Rpx / S.Rw, y: S.cy - S.ring.y * S.Rpx / S.Rw, key: S.ring.key } : null; },
++      sky: function () { return { space: S.SPACE, spaceSource: S.spaceSource, wafer: S.waferSpace || null }; },
++      repoLit: function () { return S.repoLit ? S.repoLit.length : -1; }
+     };
+     ensureGridData(function () {
+       if (!S) return;
+       var names = window.KGGridData && window.KGGridData.substations && window.KGGridData.substations.names;
+       if (names) for (var q = 0; q < D0.n; q++) { D0.names[q] = names[q] || ''; D0.low[q] = D0.names[q].toLowerCase(); }
+       else caption('grid-data.js did not load: names and lines are missing');
++      readLink();
+     });
++    on(window, 'hashchange', function () { if (S && location.hash !== linkText()) readLink(); });
++    readSky();
+   }
+ 
+   function close() {
+diff -ruN a/kuiper-law.js b/kuiper-law.js
+--- a/kuiper-law.js	2026-11-01 22:01:41.578616491 +0000
++++ b/kuiper-law.js	2026-11-01 22:03:02.793996078 +0000
+@@ -33,7 +33,11 @@
+   const G32 = 2654435769, TW = 4096;
+   const TWO32 = 4294967296;
+   // the whole wafer as of this commit: sum of every gap_before and lines in cosmos/wafer.tsv (index.html:180  N = issued; SPACE = k;)
+-  const SPACE = 59637070538;
++  // RE-LIFTED (NL-010 step 5.6): the law above is unchanged at kuiper-belt@96736f5 (index.html:92, :250-251); only the sky
++  // grew. SPACE is the address_space of kuiper-belt@96736f5 cosmos/wafer-meta.json:4, re-summed from cosmos/wafer.tsv
++  // (lines + gap_before over 13,344 rows = 63,340,120,796). Was 59,637,070,538 at 7a65dd3. descent.js also reads
++  // ../../cosmos/wafer-meta.json at run time and says when the sky and the wafer disagree.
++  const SPACE = 63340120796;
+ 
+   // index.html:250-251, VERBATIM. This is the electron. Do not edit it; edit the live page and re-lift.
+   function keyPlace(k){ const m = Math.imul((k % 4294967296) >>> 0, G32) >>> 0, th = 2*Math.PI*m/4294967296, r = Math.sqrt(k + 0.5);
+@@ -110,7 +114,7 @@
+   const KuiperLaw = {
+     place: place, placeMany: placeMany, keyPlace: keyPlace, shader: shader, toScreen: toScreen, homeZoom: homeZoom,
+     constants: constants, teach: teach,
+-    source: 'kuiper-belt@7a65dd315b0c60b1baf9a7090206c900b2cfd0a1 index.html:92,143-148,250-251,333-335,357',
++    source: 'kuiper-belt@7a65dd315b0c60b1baf9a7090206c900b2cfd0a1 index.html:92,143-148,250-251,333-335,357; SPACE re-lifted at kuiper-belt@96736f55c2137defcf02c898f8f2b0d04374d74b cosmos/wafer-meta.json:4',
+     live: 'https://ventusltd.github.io/kuiper-belt/'
+   };
+   Object.freeze(constants); Object.freeze(KuiperLaw);

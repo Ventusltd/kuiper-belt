@@ -146,9 +146,9 @@
    "module_registers": true,
    "source": {
     "file": "data/see-through.json",
-    "bytes": 666922,
+    "bytes": 666945,
     "features": 5800,
-    "sha256": "87069db330a59108ed8f532cd6f8a32b01a52a69725906291b978382513c8dbd",
+    "sha256": "87d5db3576334f56defa424255757419c87b68a4a4c6b4e06f39f568bdff1ecd",
     "owner": "Opus team 5 (step 5) writes it with handoff/05-see-through/build-see-through-json.py"
    },
    "licence": "ODbL-1.0 for the substation names (OpenStreetMap contributors, see-through/202610050609/NOTICE.md:22-25); keys CC BY 4.0; See Through itself (CERN-OHL-S-2.0, see-through/202610050609/LICENSE.md:6) is linked, not copied",

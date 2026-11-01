@@ -2,7 +2,7 @@
 // test.cjs — Opus team 1, roadmap step 1 "the shell contract": acceptance A1–A9, measured, never estimated.
 //
 //   node test.cjs [--port 8412] [--ga-port 8512] [--out DIR] [--write] [--module FILE] [--html FILE]
-//                 [--devices "Pixel 7,Galaxy S24,Pixel 7 landscape,360x740"] [--extra] [--no-ga] [--no-a8] [--loader]
+//                 [--devices "Pixel 7,Galaxy S24,Pixel 7 landscape,360x740"] [--extra] [--no-ga] [--no-a8] [--loader] [--also-loader]
 //
 // What it does, in the form of FIXES/NL-009/android-journey.cjs (Playwright Chromium, SwiftShader flags, real touch:
 // page.touchscreen.tap for every tap, the keyboard only for Escape):
@@ -25,6 +25,7 @@
 //   --html FILE   serve FILE in place of index.html (for a loader-patched copy before team 10 lands it)
 //   --loader      loader-preview: team 4's handoff/04-loader/index.html.patch applied to a copy and modules.json served as
 //                 team 4's manifest plus a kuiper-shell record (sha256, bytes, requires read from the module's KY.register)
+//   --also-loader after the inject run of Pixel 7 and Galaxy S24, the same device again in loader-preview (extra columns)
 //
 // Exit 0 when every assertion on every device passed (the hand-off may go), 1 otherwise, 2 on a harness error.
 // Element ids, classes and probes the test relies on (C1–C10 of team-1/STEPS.md:115-199):
@@ -55,6 +56,9 @@ const KURL = `http://127.0.0.1:${PORT}/editions/${STAMP}/`;
 const GAURL = `http://127.0.0.1:${GA_PORT}/atlas/`;
 const ARGS = ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'];
 const SETTLE = 7000, INSTALL_MAX = 60000, MARGIN = 10;
+// the star entry may be a bar title only from this width (lead's measurement, FINDING issue #10 comment 6564447092: a ~74 px title
+// fits the left side beside a centred 77.6 px brand only at W >= 433.2 px; team 1's 381 px counted the total, not the side)
+const STAR_MIN = 434;
 const SIX = ['FILE', 'EDIT', 'VIEW', 'SCOPE', 'WAFER', 'ABOUT'];
 const GA_SIX = ['FILE', 'EDIT', 'VIEW', 'SCOPE', 'GRID', 'ABOUT'];
 // GridAtlas's measured values, team-1/STEPS.md:39-82 (gridatlas@5ec7f62, served and measured 1 Nov 2026):
@@ -218,6 +222,9 @@ async function openPage(browser, devName, kind, opts = {}) {
     html = opts.rewrite(html);
     return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: html });
   });
+  // the module is served from the bytes read when the run started, so every device tests the one sha256 TEST.md names,
+  // even while the lead and the builder keep editing the file
+  if (kind === 'kuiper' && SNAPSHOT) await page.route(KURL + 'modules/' + SNAPSHOT.name, route => route.fulfill({ status: 200, contentType: 'application/javascript', headers: { 'cache-control': 'no-store' }, body: SNAPSHOT.bytes }));
   if (kind === 'kuiper' && opts.manifest) await page.route(KURL + 'modules.json', route => route.fulfill({ status: 200, contentType: 'application/json', headers: { 'cache-control': 'no-store' }, body: opts.manifest }));
   return { ctx, page, errors, sandboxNet };
 }
@@ -227,6 +234,7 @@ async function shot(page, file, clip) {
   for (let a = 0; a < 2; a++) { try { await page.screenshot({ path: file, scale: 'css', timeout: 180000, ...(clip ? { clip } : {}) }); return file; } catch (e) { if (a) return 'FAILED ' + String(e.message || e).split('\n')[0]; } }
 }
 async function shotB64(page, clip) { try { return (await page.screenshot({ scale: 'css', timeout: 180000, ...(clip ? { clip } : {}) })).toString('base64'); } catch (e) { return null; } }
+let SNAPSHOT = null;   // {name, bytes} of the module under test, read once at the start
 const KCFG = { barId: 'kuiper-menu-bar', failId: 'kuiper-menu-bar-failure', schema: 'kuiper.menu-bar.v1', ns: ['__KUIPER_MODULES__'] };
 const GCFG = { barId: 'gridatlas-menu-bar', failId: 'gridatlas-menu-bar-failure', schema: 'gridatlas.menu-bar.v2', ns: ['__GRIDATLAS_MODULES__'] };
 
@@ -248,12 +256,13 @@ async function runGA(browser, devName) {
 }
 
 // ------------------------------------------------------------------ the Kuiper run on one device
-async function runKuiper(browser, devName, mod, ga) {
+async function runKuiper(browser, devName, mod, ga, label) {
+  label = label || devName; const touch = !!DEVICE_SETS[devName]().hasTouch;
   const A = {};   // id -> {pass, measured, note}
-  const rec = (id, pass, measured, note) => { A[id] = { pass: !!pass, measured, note: note || '' }; log(`[${devName}] ${pass ? 'PASS' : 'FAIL'} ${id}${note ? ' — ' + note : ''}`); };
+  const rec = (id, pass, measured, note) => { A[id] = { pass: !!pass, measured, note: note || '' }; log(`[${label}] ${pass ? 'PASS' : 'FAIL'} ${id}${note ? ' — ' + note : ''}`); };
   const imgs = {};
   const { ctx, page, errors, sandboxNet } = await openPage(browser, devName, 'kuiper', mod.pageOpts);
-  const tap = (x, y) => page.touchscreen.tap(Math.round(x), Math.round(y));
+  const tap = (x, y) => touch ? page.touchscreen.tap(Math.round(x), Math.round(y)) : page.mouse.click(Math.round(x), Math.round(y));   // real touch on every phone; the 1280x800 desktop has no touch screen
   const tapR = r => tap(r.x + r.w / 2, r.y + r.h / 2);
   try {
     await page.goto(KURL, { waitUntil: 'load', timeout: 120000 });
@@ -282,7 +291,7 @@ async function runKuiper(browser, devName, mod, ga) {
       const titlesInBar = ts.every(t => !t.visible || (t.rect.y >= p.bar.y - 0.5 && t.rect.bottom <= p.bar.bottom + 0.5));
       const lastRight = ts.length ? Math.max(...ts.map(t => t.rect.right)) : null;
       const noScroll = p.scroll && p.scroll.scrollWidth === p.scroll.clientWidth;
-      const starOk = !star || (vw >= 381 ? (star.side === 'left' && ts.indexOf(star) < ts.findIndex(t => t.text.toUpperCase() === 'FILE')) : false);
+      const starOk = !star || (vw >= STAR_MIN ? (star.side === 'left' && ts.indexOf(star) < ts.findIndex(t => t.text.toUpperCase() === 'FILE')) : false);
       const ok = !!p.bar && JSON.stringify(names) === JSON.stringify(SIX) && sides === 'left,left,left,right,right,right' && ys.size === 1 && brandInBar && titlesInBar && lastRight <= vw + 0.5 && noScroll && starOk
         && nonStar.every(t => t.tag === 'button' && t.haspopup === 'menu' && t.controls && t.expanded === 'false');
       rec('A2', ok, { names, sides, rowsY: [...ys], titleRects: ts.map(t => [t.text, t.rect && t.rect.x, t.rect && t.rect.w]), titleSum: +nonStar.reduce((s, t) => s + (t.rect ? t.rect.w : 0), 0).toFixed(1), slot: p.slot, slack: p.bar && p.slot ? +(vw - nonStar.reduce((s, t) => s + t.rect.w, 0) - p.slot.w - (star ? star.rect.w : 0)).toFixed(1) : null, lastRight, scroll: p.scroll, star: star && { text: star.text, side: star.side, rect: star.rect, href: star.href }, aria: nonStar.map(t => [t.tag, t.haspopup, t.expanded, t.controls]), titleFont: nonStar[0] && [nonStar[0].fontSize, nonStar[0].letterSpacing, nonStar[0].padding, nonStar[0].color] },
@@ -315,8 +324,8 @@ async function runKuiper(browser, devName, mod, ga) {
       const ok = !!p.bar && r.offenderCount === 0 && namedOk && findOk && (p.openPanels || []).length === 0;
       rec('A4', ok, { ...r, openAtRest: p.openPanels, findExpectTop: r.barBottom + 36 }, ok ? '' : (r.offenderCount ? r.offenderCount + ' element(s) over the wafer: ' + r.offenders.slice(0, 4).map(o => o.el).join(' ') : '') + (namedOk ? '' : ' named still visible: ' + Object.entries(r.named).filter(([, v]) => v === 'VISIBLE').map(([k]) => k).join(' ')) + (findOk ? '' : ' find box misplaced ' + JSON.stringify(r.find)));
     }
-    if (!fs.existsSync(path.join(OUT, slug(devName)))) fs.mkdirSync(path.join(OUT, slug(devName)), { recursive: true });
-    imgs.rest = await shot(page, path.join(OUT, slug(devName), '01-rest.png'));
+    if (!fs.existsSync(path.join(OUT, slug(label)))) fs.mkdirSync(path.join(OUT, slug(label)), { recursive: true });
+    imgs.rest = await shot(page, path.join(OUT, slug(label), '01-rest.png'));
     imgs.strip = await shotB64(page, { x: 0, y: 0, width: vw, height: 50 });
 
     // A6 (closed): the 44 px hit box below the bar on a coarse pointer
@@ -341,7 +350,7 @@ async function runKuiper(browser, devName, mod, ga) {
         r.open1 = s.open.length; r.panel = s.open[0] || null; r.expanded = s.expanded[t.i];
         r.underBar = !!r.panel && r.panel.top >= s.barBottom - 0.5; r.inside = !!r.panel && r.panel.right <= vw + 0.5 && r.panel.left >= -0.5;
         if (r.panel) { const rows = await page.evaluate(panelRows, r.panel.id); r.rows = rows.length; a5.rowCount += rows.length; rows.filter(x => x.h < 44 - 0.05).forEach(x => a5.rowsUnder44.push({ panel: t.text, ...x }));
-          if (t.text.toUpperCase() === 'VIEW' || (!a5.viewShot && t === six[0])) { const f = await shot(page, path.join(OUT, slug(devName), `02-panel-${slug(t.text)}.png`)); if (t.text.toUpperCase() === 'VIEW') { imgs.view = f; a5.viewShot = true; } else imgs.firstPanel = f; } }
+          if (t.text.toUpperCase() === 'VIEW' || (!a5.viewShot && t === six[0])) { const f = await shot(page, path.join(OUT, slug(label), `02-panel-${slug(t.text)}.png`)); if (t.text.toUpperCase() === 'VIEW') { imgs.view = f; a5.viewShot = true; } else imgs.firstPanel = f; } }
         await tapR(await titleRect(t.i)); await waitOpen(0); s = await openState(); r.closedBySecondTap = s.open.length === 0;
         await tapR(await titleRect(t.i)); await waitOpen(1);
         await page.keyboard.press('Escape'); await waitOpen(0); s = await openState(); r.closedByEscape = s.open.length === 0;
@@ -385,7 +394,7 @@ async function runKuiper(browser, devName, mod, ga) {
           await sleep(1500); sp = await page.evaluate(sparkProbe, KCFG.barId); const s = await openState();
           const between = !!(sp.magenta && sp.magenta.x != null && sp.card && sp.magenta.y >= sp.barBottom + MARGIN && sp.magenta.y <= sp.card.top - MARGIN && sp.magenta.x >= MARGIN && sp.magenta.x <= vw - MARGIN);
           a5.next = { found, spark: sp.magenta, card: sp.card, barBottom: sp.barBottom, between, panelsOpenAfter: s.open.length };
-          imgs.next = await shot(page, path.join(OUT, slug(devName), '03-next-line.png'));
+          imgs.next = await shot(page, path.join(OUT, slug(label), '03-next-line.png'));
           if (s.open.length) { await page.keyboard.press('Escape'); await waitOpen(0); }
         } else a5.next = { found: null, between: false, note: 'no row "next verified line" (data-k="e") in any panel' };
       }
@@ -427,7 +436,8 @@ async function runKuiper(browser, devName, mod, ga) {
     }
     // A7 zero page errors, zero console errors, node --check of the module
     {
-      const chk = mod.file ? spawnSync(process.execPath, ['--check', mod.file], { encoding: 'utf8' }) : { status: -1, stderr: 'no module file' };
+      const snapFile = path.join(OUT, 'module-under-test.js'); if (SNAPSHOT) fs.writeFileSync(snapFile, SNAPSHOT.bytes);
+      const chk = SNAPSHOT ? spawnSync(process.execPath, ['--check', snapFile], { encoding: 'utf8' }) : { status: -1, stderr: 'no module file' };
       const ok = errors.length === 0 && chk.status === 0;
       rec('A7', ok, { errors, nodeCheck: chk.status === 0 ? 'ok' : String(chk.stderr).slice(0, 300), sandboxNetworkDenied: sandboxNet.slice(0, 10) }, ok ? '' : (errors.length ? errors.length + ' error(s): ' + errors[0].text.slice(0, 120) : 'node --check failed'));
     }
@@ -468,7 +478,7 @@ async function runKuiper(browser, devName, mod, ga) {
     rec('HARNESS', false, { error: String(e.stack || e).slice(0, 600) }, String(e.message || e).split('\n')[0]);
   }
   await ctx.close();
-  return { device: devName, A, imgs, errors, sandboxNet };
+  return { device: label, base: devName, mode: mod.mode, A, imgs, errors, sandboxNet };
 }
 
 // ------------------------------------------------------------------ A8: the admission rule (#keys gone after the engine ran)
@@ -527,7 +537,7 @@ function placeImg(src, dst) { if (!src || /^FAILED/.test(src) || !fs.existsSync(
 // ------------------------------------------------------------------ TEST.md
 const ASSERT_TEXT = {
   A1: '`#kuiper-menu-bar` at x=0 y=0, full width, height 34 px (≤700 px) / 36 px; state `installed:true`, `failure:null`, schema `kuiper.menu-bar.v1`',
-  A2: 'six `button.gm-title[aria-haspopup=menu]` FILE EDIT VIEW (left) SCOPE WAFER ABOUT (right) on one rounded y, inside the bar, last right edge ≤ viewport, `scrollWidth === clientWidth`; star entry (if any) obeys the 381 px rule',
+  A2: 'six `button.gm-title[aria-haspopup=menu]` FILE EDIT VIEW (left) SCOPE WAFER ABOUT (right) on one rounded y, inside the bar, last right edge ≤ viewport, `scrollWidth === clientWidth`; star entry (if any) is a bar title only at ≥ 434 px (the lead\'s measured breakpoint, FINDING #10 6564447092), first on the left',
   A2b: '360 px with a 1.3× font scale on titles and wordmark (01-bar method): still one row, bar height kept; if it overflows, `overflow-x:auto` and the last title reachable by scroll and opens on tap',
   A3: 'wordmark: `.ventus-main` "Ventus" 11/14 px 800 `rgb(255,255,255)` uppercase; `.ventus-sub` 4.5/5.5 px `rgb(136,136,136)`; centred within 1 px (x on the viewport, y on the bar); not a link; box within 1 px of the team-1 table AND of GridAtlas measured live in this run',
   A4: 'at rest nothing over the wafer outside the bar but `#c`, `#o`, the find box (top = bar bottom + 36, right-aligned, 44 px on touch) and the star chip; `#keys #top #hud #foot #lines #bar` hidden; no panel open',
@@ -543,6 +553,8 @@ function writeTestMd(rep, file) {
   L.push('# handoff/01-shell/TEST.md: step 1 "the shell contract", acceptance A1–A9', '');
   L.push(`Tester OPUS-1 (Opus team 1). Written by \`test.cjs\` at ${rep.finished} UTC; every cell below is a measurement from that run, never an estimate.`, '');
   L.push(`**Verdict: ${rep.pass ? 'PASS — the hand-off may go.' : 'FAIL — HAND-OFF REFUSED by the tester until every cell reads PASS.'}**`, '');
+  if (rep.alsoLoaderSkipped) L.push(`Loader preview: ${rep.alsoLoaderSkipped}.`, '');
+  if (rep.alsoLoader) L.push(`Loader preview (Opus 4's patch, not gating team 1's hand-off, reported for the integrator): **${rep.loaderPreviewPass ? 'PASS' : 'FAIL'}**.`, '');
   L.push('| run | value |', '|---|---|');
   L.push(`| module | ${rep.module.file ? '`modules/' + path.basename(rep.module.file) + '`' : 'NOT FOUND (no `modules/<stamp>-kuiper-shell.js`)'} |`);
   L.push(`| module sha256 | ${rep.module.sha256 ? '`' + rep.module.sha256 + '`' : '-'} (${rep.module.bytes || 0} bytes) |`);
@@ -551,7 +563,8 @@ function writeTestMd(rep, file) {
   L.push(`| Kuiper | ${KURL} (kuiper-belt \`${rep.heads.kuiper}\`, branch \`${rep.heads.kuiperBranch}\`, working tree) — server ${rep.servers.kuiper} |`);
   L.push(`| GridAtlas | ${GAURL} (gridatlas \`${rep.heads.gridatlas}\`) — server ${rep.servers.gridatlas}; maplibre-gl@3.6.2 from \`see-through/202610050513/vendor/\`, Carto style = one background layer, all other external requests aborted (team-1/STEPS.md:20-29) |`);
   L.push(`| browser | Playwright Chromium ${rep.browserVersion}, \`${ARGS.join(' ')}\`, real touch (\`touchscreen.tap\`), ${SETTLE / 1000} s settle |`);
-  L.push(`| devices | ${devs.map(d => d + ' ' + (DEVICE_SETS[d]().viewport.width + '×' + DEVICE_SETS[d]().viewport.height)).join(' · ')} |`, '');
+  L.push(`| devices | ${rep.devices.map(d => d.device + ' ' + (DEVICE_SETS[d.base]().viewport.width + '×' + DEVICE_SETS[d.base]().viewport.height) + (DEVICE_SETS[d.base]().hasTouch ? ' touch' : ' mouse')).join(' · ')} |`, '');
+  if (rep.alsoLoader) L.push(`Columns marked (loader) are the same device with the module admitted by Opus 4's loader instead of the stand-in script tag: ${rep.alsoLoader}`, '');
   L.push('## Pass / fail per assertion', '');
   L.push('| id | assertion | ' + devs.join(' | ') + ' |', '|---|---|' + devs.map(() => '---').join('|') + '|');
   for (const id of ['A1', 'A2', 'A2b', 'A3', 'A4', 'A5', 'A6', 'A7', 'A9', 'HARNESS']) {
@@ -584,6 +597,7 @@ const NOTES = [
   'A8 removes `#keys` after the engine has run (a module script right after the engine\'s, and at DOMContentLoaded), not from the HTML: removed from the HTML, the engine itself throws at `index.html:600` (`document.getElementById(\'keys\').addEventListener`) before it creates Edition 4\'s `#bar`, so "Edition 4\'s bar still clickable" could never hold. Measured on the Edition 4 copy at kuiper-belt `editions/202611012135/index.html:600`.',
   'The back gesture is `page.goBack()`: on Android Chrome the system back gesture is history back. A panel that pushes no history entry makes back leave the page; the test records that as FAIL (`stayedOnPage`), reloads and continues.',
   'Box tolerance is 1 px on width and height, as ROADMAP step 1 A3 states; positions differ by design (GridAtlas\'s bar sits at (5,5) inside its 1 px bordered map container, the Kuiper\'s at (0,0) on the window), so centres are compared relative to each bar.',
+  'The module is read once when the run starts and served from those bytes for every device (a `page.route` on its URL), so the sha256 at the top of this file is the one every cell measured, even while the file is being edited; `node --check` runs on the same bytes.',
   'Console errors from external hosts the sandbox proxy refuses are listed separately and not counted; every local 4xx/5xx and every page error is counted.',
   'A3 centre, measured adjustment (builder FINDING and lead, PLAN.md 22:12; tester agreed and added the slot check): above 700 px GridAtlas\'s own wordmark sits +4.66 px right of its bar centre because the SYSTEM TIME flank (66 px) is wider than 2050 TARGET (57 px) (team-1 table: brand (599.7,12.3) 90×20.5 at 1280, centre 644.7 vs 640). "Centred within 1 px" and "box within 1 px of GridAtlas" cannot both hold there with the flanks copied, so A3 passes centreX when the wordmark is centred within 1 px OR sits at GridAtlas\'s live offset within 1 px, and additionally requires `.gm-brand-slot` centred within 1 px on every device.',
   'A2b waits 300 ms after the 1.3× scale before measuring (a real font-scale change relayouts first; lead edit, kept). A5 `top ≥ bar bottom` is strict (0.5 px): the first run found the landscape panels at y=35 on the bar\'s 1 px rule (GridAtlas\'s `top:100%` does the same inside its own bar); the module now uses `top:calc(100% + 1px)`.',
@@ -591,11 +605,29 @@ const NOTES = [
   'Pixel 7 landscape is 863 px wide, over GridAtlas\'s 700 px phone rule, so both shells show the 36 px desktop bar and the full lockup there (team-1/STEPS.md:84-86); the expected box is 90.0×20.5.',
 ];
 
+// integration preview: team 4's loader patch applied to a copy of index.html, the shell admitted by the manifest
+function loaderMod(mod) {
+  const name = path.basename(mod.file);
+  const L4 = path.join(EDITION_DIR, 'handoff', '04-loader'), tmp = path.join(OUT, 'loader-preview'); fs.mkdirSync(tmp, { recursive: true });
+  const out = path.join(tmp, 'index.html'); const pr = spawnSync('patch', ['-s', '-o', out, path.join(EDITION_DIR, 'index.html'), path.join(L4, 'index.html.patch')], { encoding: 'utf8' });
+  if (pr.status !== 0) throw new Error('team 4 index.html.patch did not apply: ' + pr.stdout + pr.stderr);
+  const man = JSON.parse(fs.readFileSync(path.join(L4, 'modules.json'), 'utf8')); const src = SNAPSHOT.bytes.toString('utf8');
+  const reqs = ((src.match(/KY\.register\(\{[\s\S]*?requires:\s*\[([^\]]*)\]/) || [])[1] || '').split(',').map(x => x.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean);
+  const provs = ((src.match(/KY\.register\(\{[\s\S]*?provides:\s*\[([^\]]*)\]/) || [])[1] || '').split(',').map(x => x.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean).map(x => x === 'ID' ? 'kuiper-shell' : x);
+  man.order = man.order.filter(x => x !== 'kuiper-shell').concat(['kuiper-shell']);
+  man.modules = man.modules.filter(x => x.id !== 'kuiper-shell').concat([{ id: 'kuiper-shell', generation: name.slice(0, 12), path: 'modules/' + name, sha256: mod.sha256, bytes: mod.bytes, byte_budget: Math.ceil(mod.bytes / 4096) * 4096 + 4096,
+    requires: reqs, provides: provs, reads: [], writes: ['window.__KUIPER_MODULES__.menuBar', '#kuiper-menu-bar'], creates_controls: 'bar', licence: 'Apache-2.0', team: '01', step: 1, proof: 'handoff/01-shell/' }]);
+  fs.writeFileSync(path.join(tmp, 'modules.json'), JSON.stringify(man, null, 1));
+  return { mode: 'loader-preview', modeNote: `(team 4's handoff/04-loader/index.html.patch applied to a scratch copy; modules.json = team 4's plus a kuiper-shell record with this sha256, order ${JSON.stringify(man.order)}; requires ${JSON.stringify(reqs)})`,
+    pageOpts: { htmlFile: out, rewrite: h => h, manifest: JSON.stringify(man) } };
+}
+
 // ------------------------------------------------------------------ main
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
   const modFile = findModule();
-  const mod = { file: modFile, sha256: modFile ? sha256(modFile) : null, bytes: modFile ? fs.statSync(modFile).size : 0, mode: 'none', pageOpts: {} };
+  if (modFile) SNAPSHOT = { name: path.basename(modFile), bytes: fs.readFileSync(modFile) };
+  const mod = { file: modFile, sha256: modFile ? crypto.createHash('sha256').update(SNAPSHOT.bytes).digest('hex') : null, bytes: modFile ? SNAPSHOT.bytes.length : 0, mode: 'none', pageOpts: {} };
   const servers = { kuiper: await ensureServer(PORT, ROOT, KURL + 'index.html'), gridatlas: flag('--no-ga') ? 'skipped' : await ensureServer(GA_PORT, GA_ROOT, GAURL) };
   if (modFile) {
     const name = path.basename(modFile);
@@ -605,31 +637,21 @@ const NOTES = [
     else { mod.mode = 'inject'; mod.modeNote = `(neither index.html nor modules.json names it yet; served with \`<script defer src="modules/${name}"></script>\` before \`</body>\`, standing in for team 1's one script tag)`;
       mod.pageOpts = { ...(flag('--html') ? { htmlFile: String(flag('--html')) } : {}), rewrite: h => h.replace(/<\/body>/i, `<script defer src="modules/${name}"></script>\n</body>`) }; }
     if (flag('--html')) mod.modeNote += ' — index.html replaced by ' + flag('--html');
-    if (flag('--loader') && mod.mode !== 'page') {   // integration preview: team 4's loader patch applied, the shell admitted by the manifest
-      const L4 = path.join(EDITION_DIR, 'handoff', '04-loader'), tmp = path.join(OUT, 'loader-preview'); fs.mkdirSync(tmp, { recursive: true });
-      const out = path.join(tmp, 'index.html'); const pr = spawnSync('patch', ['-s', '-o', out, path.join(EDITION_DIR, 'index.html'), path.join(L4, 'index.html.patch')], { encoding: 'utf8' });
-      if (pr.status !== 0) throw new Error('team 4 index.html.patch did not apply: ' + pr.stdout + pr.stderr);
-      const man = JSON.parse(fs.readFileSync(path.join(L4, 'modules.json'), 'utf8')); const src = fs.readFileSync(modFile, 'utf8');
-      const reqs = ((src.match(/KY\.register\(\{[\s\S]*?requires:\s*\[([^\]]*)\]/) || [])[1] || '').split(',').map(x => x.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean);
-      const provs = ((src.match(/KY\.register\(\{[\s\S]*?provides:\s*\[([^\]]*)\]/) || [])[1] || '').split(',').map(x => x.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean).map(x => x === 'ID' ? 'kuiper-shell' : x);
-      man.order = man.order.filter(x => x !== 'kuiper-shell').concat(['kuiper-shell']);
-      man.modules = man.modules.filter(x => x.id !== 'kuiper-shell').concat([{ id: 'kuiper-shell', generation: name.slice(0, 12), path: 'modules/' + name, sha256: mod.sha256, bytes: mod.bytes, byte_budget: Math.ceil(mod.bytes / 4096) * 4096 + 4096,
-        requires: reqs, provides: provs, reads: [], writes: ['window.__KUIPER_MODULES__.menuBar', '#kuiper-menu-bar'], creates_controls: 'bar', licence: 'Apache-2.0', team: '01', step: 1, proof: 'handoff/01-shell/' }]);
-      fs.writeFileSync(path.join(tmp, 'modules.json'), JSON.stringify(man, null, 1));
-      mod.mode = 'loader-preview'; mod.modeNote = `(team 4's handoff/04-loader/index.html.patch applied to a copy, ${path.join(tmp, 'index.html')}; modules.json = team 4's plus a kuiper-shell record with this sha256, order ${JSON.stringify(man.order)}; requires ${JSON.stringify(reqs)})`;
-      mod.pageOpts = { htmlFile: out, rewrite: h => h, manifest: JSON.stringify(man) };
-    }
+    if (flag('--loader') && mod.mode !== 'page') Object.assign(mod, loaderMod(mod));
   } else mod.modeNote = '— no module file yet; every Kuiper assertion fails';
   log('module:', modFile || 'NONE', mod.mode);
+  let alsoLoader = null, alsoLoaderSkipped = null;
+  if (flag('--also-loader') && modFile && mod.mode === 'inject') { try { alsoLoader = { ...mod, ...loaderMod(mod) }; } catch (e) { alsoLoaderSkipped = 'loader preview not run: ' + String(e.message || e).split('\n')[0].slice(0, 200) + ' (the edition index.html moved under the patch; Opus 4 rebases it)'; log(alsoLoaderSkipped); } }
   const browser = await chromium.launch({ args: ARGS });
   const rep = { started: new Date().toISOString().slice(0, 16).replace('T', ' '), module: { file: modFile, sha256: mod.sha256, bytes: mod.bytes, mode: mod.mode, modeNote: mod.modeNote }, servers, devices: [], ga: [], images: [],
     heads: { kuiper: spawnSync('git', ['-C', ROOT, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).stdout.trim(), kuiperBranch: spawnSync('git', ['-C', ROOT, 'branch', '--show-current'], { encoding: 'utf8' }).stdout.trim(), gridatlas: spawnSync('git', ['-C', GA_ROOT, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).stdout.trim() },
-    testSha256: sha256(__filename), browserVersion: browser.version() };
+    testSha256: sha256(__filename), browserVersion: browser.version(), alsoLoader: alsoLoader ? alsoLoader.modeNote : null, alsoLoaderSkipped };
   for (const d of DEVICES) {
     const ga = flag('--no-ga') ? null : await runGA(browser, d);
     if (ga) { log(`[GA ${d}] bar ${JSON.stringify(ga.probe && ga.probe.bar)} brand ${JSON.stringify(ga.probe && ga.probe.brand)} installed ${ga.probe && ga.probe.state && ga.probe.state.installed}${ga.error ? ' ERROR ' + ga.error : ''}`); rep.ga.push({ device: d, probe: ga.probe, error: ga.error, errors: ga.errors }); }
     const k = await runKuiper(browser, d, mod, ga);
     k.gaStrip = ga && ga.strip; rep.devices.push(k);
+    if (alsoLoader && ['Pixel 7', 'Galaxy S24'].includes(d)) { const kl = await runKuiper(browser, d, alsoLoader, ga, d + ' (loader)'); rep.devices.push(kl); }
   }
   rep.a8 = flag('--no-a8') ? null : await runA8(browser, mod);
   // images: at most four PNG, each under 300 KB
@@ -648,7 +670,9 @@ const NOTES = [
       fs.writeFileSync(im.file, Buffer.from(b64, 'base64')); await ctx.close(); im.kb = Math.round(fs.statSync(im.file).size / 1024); im.what += ' (cropped to stay under 300 KB)'; void tmp; } }
   await browser.close();
   rep.finished = new Date().toISOString().slice(0, 16).replace('T', ' ');
-  rep.pass = rep.devices.length > 0 && rep.devices.every(d => Object.values(d.A).length > 0 && Object.values(d.A).every(a => a.pass)) && (!rep.a8 || rep.a8.pass) && !flag('--no-ga') && !flag('--no-a8');
+  const gating = rep.devices.filter(d => d.mode !== 'loader-preview' || rep.module.mode === 'loader-preview');
+  rep.loaderPreviewPass = rep.alsoLoader ? rep.devices.filter(d => d.mode === 'loader-preview').every(d => Object.values(d.A).every(a => a.pass)) : null;
+  rep.pass = gating.length > 0 && gating.every(d => Object.values(d.A).length > 0 && Object.values(d.A).every(a => a.pass)) && (!rep.a8 || rep.a8.pass) && !flag('--no-ga') && !flag('--no-a8');
   const slim = JSON.parse(JSON.stringify(rep, (k, v) => (k === 'strip' || k === 'gaStrip' ? undefined : v)));
   fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(slim, null, 1));
   const md = WRITE ? path.join(HERE, 'TEST.md') : path.join(OUT, 'TEST.md');

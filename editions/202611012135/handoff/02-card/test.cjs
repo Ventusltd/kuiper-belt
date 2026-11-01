@@ -96,11 +96,12 @@ function staticChecks() {
   const shaRec = (shaText.match(/[0-9a-f]{64}/) || [null])[0];
   rec('S3', 'handoff MODULE.sha256 equals the module file sha256', !!modSha && shaRec === modSha, { recorded: shaRec, measured: modSha }, !shaText ? 'MODULE.sha256 missing' : (shaRec === modSha ? '' : 'recorded ' + shaRec + ' measured ' + modSha));
   // the record the integrator is asked to add (REQUESTS.md 2): it must carry the file's own sha256 and bytes
-  let hoRec = null; try { hoRec = JSON.parse(fs.readFileSync(path.join(HERE, 'module-record.json'), 'utf8')); } catch (e) {}
+  let hoRec = null, hoName = null;
+  for (const f of ['MODULE.json', 'module-record.json']) { if (hoRec) break; try { hoRec = JSON.parse(fs.readFileSync(path.join(HERE, f), 'utf8')); hoName = f; } catch (e) {} }
   const modBytes = modFile ? fs.statSync(path.join(EDITION, 'modules', modFile)).size : null;
-  rec('S3r', 'handoff module-record.json: id line-card, path = the module, sha256 and bytes = the file, licence set, bytes ≤ byte_budget', !!hoRec && hoRec.id === 'line-card' && hoRec.path === 'modules/' + modFile && hoRec.sha256 === modSha && hoRec.bytes === modBytes && !!String(hoRec.licence || '').trim() && (!hoRec.byte_budget || modBytes <= hoRec.byte_budget),
-    { present: !!hoRec, path: hoRec && hoRec.path, recorded: hoRec && hoRec.sha256, measured: modSha, bytes: hoRec && hoRec.bytes, measuredBytes: modBytes, byte_budget: hoRec && hoRec.byte_budget },
-    !hoRec ? 'module-record.json missing' : (hoRec.sha256 === modSha && hoRec.bytes === modBytes ? '' : 'record sha256 ' + String(hoRec.sha256).slice(0, 12) + '/' + hoRec.bytes + ' B, file ' + String(modSha).slice(0, 12) + '/' + modBytes + ' B'));
+  rec('S3r', 'handoff MODULE.json (the record for modules.json): id line-card, path = the module, sha256 and bytes = the file, licence set, bytes ≤ byte_budget', !!hoRec && hoRec.id === 'line-card' && hoRec.path === 'modules/' + modFile && hoRec.sha256 === modSha && hoRec.bytes === modBytes && !!String(hoRec.licence || '').trim() && (!hoRec.byte_budget || modBytes <= hoRec.byte_budget),
+    { file: hoName, path: hoRec && hoRec.path, recorded: hoRec && hoRec.sha256, measured: modSha, bytes: hoRec && hoRec.bytes, measuredBytes: modBytes, byte_budget: hoRec && hoRec.byte_budget },
+    !hoRec ? 'MODULE.json missing' : (hoRec.sha256 === modSha && hoRec.bytes === modBytes ? '' : 'record sha256 ' + String(hoRec.sha256).slice(0, 12) + '/' + hoRec.bytes + ' B, file ' + String(modSha).slice(0, 12) + '/' + modBytes + ' B'));
   let manifest = null; try { manifest = JSON.parse(fs.readFileSync(path.join(EDITION, 'modules.json'), 'utf8')); } catch (e) {}
   const mrec = manifest && (manifest.modules || []).find(r => r.id === 'line-card');
   rec('S3m', 'modules.json lists line-card with the module sha256 (integrator, team 10)', mrec && mrec.sha256 === modSha, { listed: !!mrec, recorded: mrec && mrec.sha256, inOrder: !!(manifest && (manifest.order || []).includes('line-card')) }, mrec ? (mrec.sha256 === modSha ? '' : 'manifest sha256 differs') : 'not listed yet (served through page.route)', true);
@@ -152,8 +153,15 @@ function buildServed(st) {
   const apply = (patchFile, why) => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'card-served-')), d = path.join(tmp, 'editions', STAMP); fs.mkdirSync(d, { recursive: true });
     fs.writeFileSync(path.join(d, 'index.html'), html); spawnSync('git', ['init', '-q'], { cwd: tmp });
-    const r = spawnSync('git', ['apply', '--include=editions/' + STAMP + '/index.html', patchFile], { cwd: tmp, encoding: 'utf8' });
-    if (r.status === 0) { html = fs.readFileSync(path.join(d, 'index.html'), 'utf8'); subs.push('applied ' + path.relative(EDITION, patchFile) + ' (' + why + ')'); }
+    let r = spawnSync('git', ['apply', '--include=editions/' + STAMP + '/index.html', patchFile], { cwd: tmp, encoding: 'utf8' });
+    // the integrator's base moves (handoff/10-integration/BASE.md: NL-009 07-perf, 03-camera; Opus 4's hunk 12 is applied
+    // there by hand): when git apply refuses, fall back to patch(1) and say how many hunks it rejected (lead, 22:44 UTC)
+    let how = '';
+    if (r.status !== 0) { const p = spawnSync('patch', ['-p1', '--no-backup-if-mismatch', '-r', '-', '-i', patchFile], { cwd: tmp, encoding: 'utf8' });
+      const t = fs.readFileSync(path.join(d, 'index.html'), 'utf8'), rej = ((p.stdout || '').match(/FAILED at \d+/g) || []);
+      const landed = /04-loader/.test(patchFile) ? /window\.KY\s*=/.test(t) : /modules\['line-card'\]/.test(t);
+      if (landed) { r = { status: 0 }; how = ' by patch(1)' + (rej.length ? ', ' + rej.length + ' hunk(s) rejected: ' + rej.join(', ') : ''); } }
+    if (r.status === 0) { html = fs.readFileSync(path.join(d, 'index.html'), 'utf8'); subs.push('applied ' + path.relative(EDITION, patchFile) + how + ' (' + why + ')'); }
     else subs.push('FAILED to apply ' + path.relative(EDITION, patchFile) + ': ' + (r.stderr || '').trim().split('\n')[0]);
     fs.rmSync(tmp, { recursive: true, force: true });
   };
@@ -176,9 +184,13 @@ function buildServed(st) {
     if (WITH_SHELL && shellFile) { order.push('kuiper-shell'); modules.push((base.modules || []).find(r => r.id === 'kuiper-shell') || recOf('kuiper-shell', shellFile)); }
     order.push('line-card'); modules.push(st.mrec || st.hoRec || recOf('line-card', st.modFile, { team: '02', step: 2, proof: 'handoff/02-card/test.cjs' }));
     manifest = Object.assign({ hooks: 'kuiper.hooks.v1' }, base, { order, modules });
-    subs.push('modules.json served with order [' + order.join(', ') + '] (line-card record ' + (st.mrec ? 'from modules.json' : st.hoRec ? 'from handoff/02-card/module-record.json, verbatim' : 'built from the file on disk') + ')');
+    subs.push('modules.json served with order [' + order.join(', ') + '] (line-card record ' + (st.mrec ? 'from modules.json' : st.hoRec ? 'from handoff/02-card/MODULE.json, verbatim' : 'built from the file on disk') + ')');
   }
-  return { html, manifest: manifest && JSON.stringify(manifest, null, 1), subs };
+  // rebuilt from disk at every request, so a page load never meets a stale sha256; S6 fails the run if the module moved
+  const rebuild = () => { if (!manifest) return null; const m = JSON.parse(JSON.stringify(manifest));
+    for (const r of m.modules) { try { const buf = fs.readFileSync(path.join(EDITION, r.path)); if (r.id === 'line-card' && !st.mrec && !st.hoRec) { r.sha256 = sha256(buf); r.bytes = buf.length; } } catch (e) {} }
+    return JSON.stringify(m, null, 1); };
+  return { html, manifest: manifest && JSON.stringify(manifest, null, 1), rebuild, subs };
 }
 
 // ------------------------------------------------------------------ in-page probes (no page globals used)
@@ -290,7 +302,7 @@ async function runDevice(browser, deviceName, served) {
   await context.route(/^https:\/\/github\.com\//, r => r.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><title>stub</title>github stub' }));
   const pageUrl = new URL(URL0);
   if (served.html) await context.route(u => u.origin === pageUrl.origin && (u.pathname === pageUrl.pathname || u.pathname === pageUrl.pathname + 'index.html'), r => r.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: served.html }));
-  if (served.manifest) await context.route(u => u.origin === pageUrl.origin && u.pathname === pageUrl.pathname + 'modules.json', r => r.fulfill({ status: 200, contentType: 'application/json', body: served.manifest }));
+  if (served.manifest) await context.route(u => u.origin === pageUrl.origin && u.pathname === pageUrl.pathname + 'modules.json', r => r.fulfill({ status: 200, contentType: 'application/json', body: served.rebuild() }));
   const page = await context.newPage(); page.setDefaultTimeout(180000);
   const cdp = await context.newCDPSession(page);
   await page.addInitScript(() => { let n = 0; const f = () => { n++; window.__fr = n; requestAnimationFrame(f); }; requestAnimationFrame(f); });
@@ -534,6 +546,9 @@ function writeTestMd(out) {
   const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   try { for (const d of DEVICES) { out.devices.push(await runDevice(browser, d, served)); fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(out, null, 1)); } }
   finally { await browser.close(); }
+  const endSha = st.modFile ? sha256(fs.readFileSync(path.join(EDITION, 'modules', st.modFile))) : null;
+  const s6 = { id: 'S6', name: 'the module did not change while the run ran (sha256 at start = at end)', pass: endSha === st.modSha, info: false, measured: { start: st.modSha, end: endSha }, note: endSha === st.modSha ? '' : 'module changed during the run: results are void, rerun' };
+  st.S.push(s6); process.stderr.write(`[static] ${s6.pass ? 'PASS' : 'FAIL'} S6 ${s6.name}${s6.note ? ' — ' + s6.note : ''}\n`);
   out.pass = st.S.filter(s => !s.info).every(s => s.pass) && out.devices.length === DEVICES.length && out.devices.every(d => d.pass);
   out.RESULT = out.pass ? 'PASS' : 'FAIL';
   out.summary = { static: st.S.filter(s => !s.info && !s.pass).map(s => s.id), devices: out.devices.map(d => ({ device: d.device, passed: d.passed, failed: d.failed, failedSteps: d.steps.filter(s => !s.info && !s.pass).map(s => s.id), consoleErrors: d.consoleErrors.length })) };

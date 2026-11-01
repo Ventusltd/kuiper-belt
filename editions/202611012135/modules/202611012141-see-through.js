@@ -126,9 +126,11 @@
       + 'substations rising on the real satellite ground with its pylons, drawn by rule from open map data; CERN-OHL-S v2; the SEE THROUGH '
       + 'entry above), and <a href="../../learn-the-kuiper/">Learn the Kuiper</a>, a small game about the one rule that places every dot '
       + 'here, one dot and two numbers (code Apache-2.0, text CC BY 4.0). Both gather their stars by the placement law of this wafer, '
-      + 'r = √key, θ = key × golden angle, and both stay on this host: see-through/ and learn-the-kuiper/ always open the newest dated folder.';
+      + 'r = \u221a(key + 0.5), \u03b8 = 2\u03c0 \u00b7 frac(key \u00d7 2654435769 / 2\u00b3\u00b2) (cosmos/wafer-meta.json:12; index.html:278), and both stay on this host: see-through/ and learn-the-kuiper/ always open the newest dated folder.';
     d.addEventListener('click', function (e) { if (e.target.closest('a')) e.stopPropagation(); });
-    if (host.firstChild && host.id !== 'top') host.insertBefore(d, host.firstChild); else host.appendChild(d);   // ABOUT: See Through first
+    // ABOUT: first after the card law's sentence, which Opus 2 holds as ABOUT's first child (kuiper-shell.js:459-462)
+    if (host.id === 'top') host.appendChild(d);
+    else { var law = host.querySelector(':scope > [data-owner="line-card"]'); host.insertBefore(d, law ? law.nextSibling : host.firstChild); }
   }
 
   // ------------------------------------------------------------------ SECTION 3: the Kuiper layer of See Through's stars (5.6)
@@ -143,7 +145,10 @@
     if (KY) KY.redraw();
   }
   function row() {
-    if (st.status === 'OK') return 'OK · ' + H.fmt(st.placed) + ' of ' + H.fmt(st.total) + ' · See Through 202610050609 · SPACE ' + H.fmt(st.space);
+    // ROADMAP 5.6's row; the folder the pointer opens today (202610050609) still draws its frozen sky 59,637,070,538 until
+    // see-through-hash-reader.patch ships in a later folder, and the row says so; the names carry their ODbL credit
+    if (st.status === 'OK') return 'OK \u00b7 ' + H.fmt(st.placed) + ' of ' + H.fmt(st.total) + ' \u00b7 See Through 202610050609 (its sky 59,637,070,538 until the patch) \u00b7 SPACE ' + H.fmt(st.space)
+      + ' \u00b7 names \u00a9 OpenStreetMap contributors, ODbL';
     if (st.status === 'FAIL' && st.space && st.wafer && st.space !== st.wafer) return 'FAIL · SPACE ' + H.fmt(st.space) + ' ≠ wafer ' + H.fmt(st.wafer);
     return st.status + (st.why ? ' · ' + st.why : '');
   }
@@ -268,7 +273,10 @@
   function cardKey() {
     var card = H.card, el = card.querySelector('[data-key]');
     if (el && /^\d{1,15}$/.test(el.getAttribute('data-key'))) return +el.getAttribute('data-key');
-    var m = /key\s*(?:<b>)?\s*([\d,]{1,20})\s*(?:<\/b>)?/i.exec(card.innerHTML);
+    // the line-card's key row (modules/202611012143-line-card.js:95-98, '… · key 36,064,705,400'), else describe()'s
+    // 'key <b>36,064,705,400</b>' (index.html:288); never a number found inside the line of code itself
+    var lk = card.querySelector('.lc-k'), m = lk ? /\bkey ([\d,]{1,20})\s*$/.exec(lk.textContent) : null;
+    if (!m) m = /\bkey <b>([\d,]{1,20})<\/b>/.exec(card.innerHTML);
     return m ? +m[1].replace(/,/g, '') : -1;
   }
   function starIndexOfKey(k) {

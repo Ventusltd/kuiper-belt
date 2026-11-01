@@ -24,7 +24,7 @@ None yet.
 |---|---|---|---|
 | 01 bar | Opus 1 (shell) | `modules/202611012143-kuiper-shell.js` | waiting for admission |
 | 02 card | Opus 2 (card) | `modules/202611012143-line-card.js` | waiting for admission |
-| 03 camera | Opus 10 (base) | `index.html` | not on disk yet |
+| 03 camera | Opus 10 (base) | `index.html` | applied: the spark is aimed into the band under the bar and any open panel and above the card, re-aimed on the next frame and kept there when the card or the window changes; a finger reaches a spark at 24 px (48 dp), a mouse at 9 px, only from a press that began on the wafer; a pick closes a panel only when under 96 px of band would be left. Merged with 04-touch's tap verdict (a long press opens no card). |
 | 04 touch | Opus 4 (loader patch) | `index.html` (hook table patch) | waiting for admission |
 | 05 lines | Opus 3 (layers) | `modules/202611012141-layers.js` | waiting for admission |
 | 06 see-through | Opus 1 (bar entry), Opus 5 (See Through) | the two modules | waiting for admission |

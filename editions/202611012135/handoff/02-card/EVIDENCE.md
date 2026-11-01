@@ -119,9 +119,12 @@ The page script is a module (`index.html:102`, `<script type="module">`), so `ed
 `fillLines` are module-scoped. A separate file cannot reach or wrap them, and ROADMAP 4.8 forbids wrapping an engine
 function anyway. The published hook table (`handoff/04-loader/HOOKS.md`, 28 names) has `describe`, `card`, `esc`,
 `fmt`, `address` and `gbox`, but not `edCard`, `edFly` or `fillLines`. The lead's design (PLAN.md) does not wrap them:
-the page delegates to `KY.modules['line-card'].api` through `handoff/02-card/index.patch`. That patch applies cleanly
-on top of `handoff/04-loader/index.html.patch` (verified in `/tmp/nl010-opus/team-2/evidence/apply/`: both apply with
-`patch -p1`, no fuzz). ROADMAP step 2's phrase "wrapping `edCard` and `fillLines` through the hook table" is met by
+the page delegates to `KY.modules['line-card'].api` through `handoff/02-card/index.patch`. That patch applies on top of
+`handoff/04-loader/index.html.patch` (sha256 `811e5dad…`), applied to the committed index.html (sha256 `864c89e9…`, the
+same at 4a4ee2d, 80c5037 and 934a4ca). Re-verified at 22:40 UTC in `/tmp/nl010-opus/team-2/evidence/apply2/`: both
+apply with `patch -p1` and no fuzz. The working-tree index.html at that time (sha256 `390b15ae…`, uncommitted, not team
+2's) has another team's rewrite of `edFly` (`edBand`/`edAim`). The 04-loader patch's hunk 12 does not apply to it; the
+owners of those two files must rebase. The E rows below are keyed at 96736f5, where they remain true. ROADMAP step 2's phrase "wrapping `edCard` and `fillLines` through the hook table" is met by
 that delegation, not by a hook.
 
 | # | hook / engine line | key | fragment |
@@ -175,12 +178,12 @@ and the file contains exactly one `KY.register(`.
 | F2 | requires list in the header = the registration's | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:2 | `// requires: card esc fmt address describe sel lit redraw gbox` |
 | F3 | the law as the head comment (team-1/STEPS.md K3: "and as a comment at the head of the card module") | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:6 | `// The line of code is the header. Every card opens with the line itself` |
 | F4 | the NL-009 02-card patch is named as folded in | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:16 | `NL-009 round 1 patch 02-card (FABLE-02) folded in` |
-| F5 | registration requires | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:81 | `requires: ['card', 'esc', 'fmt', 'address', 'describe', 'sel', 'lit', 'redraw', 'gbox'],` |
-| F6 | K0 handles a missing field and a `null` (B2): `typeof === 'string'`, not `'line_text' in b` | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:77 | `typeof b.line_text === 'string'` |
-| F7 | K1 row 1: the header is `line_text`, escaped | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:101 | `esc(b.line_text) + '</code>'` |
-| F8 | the register quote row only when it differs (216 of 344, C) | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:107 | `b.quote !== b.line_text` |
-| F9 | K2 aria-label = the header | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:133 | `card.setAttribute('aria-label', header(b));` |
-| F10 | the NL-009 handle is `.lc-grip`, not `.ch` | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:57 | `#card.lc .lc-grip{display:none}` |
+| F5 | registration requires | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:82 | `requires: ['card', 'esc', 'fmt', 'address', 'describe', 'sel', 'lit', 'redraw', 'gbox'],` |
+| F6 | K0 handles a missing field and a `null` (B2): `typeof === 'string'`, not `'line_text' in b` | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:78 | `typeof b.line_text === 'string'` |
+| F7 | K1 row 1: the header is `line_text`, escaped | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:102 | `esc(b.line_text) + '</code>'` |
+| F8 | the register quote row only when it differs (216 of 344, C) | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:108 | `b.quote !== b.line_text` |
+| F9 | K2 aria-label = the header | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:134 | `card.setAttribute('aria-label', header(b));` |
+| F10 | the NL-009 handle is `.lc-grip`, not `.ch` | kuiper-belt@WT editions/202611012135/modules/202611012143-line-card.js:58 | `#card.lc .lc-grip{display:none}` |
 | F11 | NL-009 02-card used `.ch` for the handle and hid it on a desktop… | neural-link@b9b7d5d FIXES/NL-009/round1/02-card.md:107 | `#card .ch{display:none}` |
 | F12 | …and squeezed it to 36×4 px on a phone | neural-link@b9b7d5d FIXES/NL-009/round1/02-card.md:120 | `#card .ch{display:block;width:36px;height:4px` |
 | F13 | ROADMAP K1 names the header `<header class="ch">` | neural-link@b9b7d5d FIXES/NL-010/ROADMAP.md:139 | `<header class="ch"><code>` |

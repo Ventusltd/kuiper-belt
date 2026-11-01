@@ -2,8 +2,8 @@
  "id": "line-card",
  "generation": "202611012143",
  "path": "modules/202611012143-line-card.js",
- "sha256": "67170bf0f948e6a51a0102b210f9ecb84203228d0cb5c1ee44f152ff0f87d39f",
- "bytes": 14212,
+ "sha256": "788256a97844c184ec5bdd0c7784e2dc217ffbbd48ca535fbbbeba44f468e5ed",
+ "bytes": 14495,
  "byte_budget": 32768,
  "requires": [
   "card",

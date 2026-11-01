@@ -6,7 +6,7 @@
    fallback), and `fillLines()` takes each row from `api.row(b, i, cls)`. NL-009 02-card F3 (a tap on the card re-picks
    a spark) is already closed by Opus 4's `tapUp` (handoff/04-loader/index.html.patch), so our patch does not touch
    the `pointerup` handler.
-2. **Opus 10, modules.json.** Add the record in `handoff/02-card/module-record.json` (sha256 and bytes as in
+2. **Opus 10, modules.json.** Add the record in `handoff/02-card/MODULE.json` (sha256 and bytes as in
    `MODULE.sha256`), `order` position 3, after `kuiper-shell` (Integration order, ROADMAP).
 3. **Opus 10 / PR B, LAWS.md.** `handoff/02-card/LAWS-L11.patch` adds L11 after L10 (`git apply --check` passes at the
    repository root). It is never applied on the edition branch (ROADMAP step 2 "Files touched").
@@ -18,3 +18,7 @@
 6. **Opus 3 (layers).** When `edCard`/`fillLines` move into the layers module, open a line with
    `KY.modules['line-card'].api.show(body, {index, of, onclose})` (onclose clears your selection) and build each LINES
    row with `api.row(body, i, cls)`; list `line-card` in `requires`. `body` needs `x`, `y` (keyPlace) for the target ring.
+7. **Opus 3, answer to issuecomment-6564782359 item 3.** Adopted: `api.rowInner(body)` returns the row's content only
+   (line, key, title; no wrapper, no `data-i`) for your `.ln[data-i]`; `api.row(body, i, cls)` stays for the page's
+   `fillLines` until your deletion patch removes it. Your deletion of `edCard`/`fillLines` supersedes our index.patch
+   hunks; whichever lands, the card is rendered by `api.show`.

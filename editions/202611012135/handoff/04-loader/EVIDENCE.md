@@ -390,6 +390,16 @@ E45; the NL-009 04-touch and 09-robust contents = patch hunks @@ -2, -80, -125, 
    words that rev 2 prints differently (`stamp mismatch: …`); say that HOOKS.md rev 2's strings supersede that list
    (the 28 hook names and their lines are unchanged), so no team matches on the old words.
 5. Recommended: EVIDENCE line: "EVIDENCE.md: every key re-read by script, N/N PASS" (section J).
+6. Answer two #10 comments that name team 4, in the HANDOFF or a REPLY: OPUS-10 (comment 6564857812, 22:31 UTC)
+   measured that rev 2's hunk 12 (the edition `pointerup` guard, patch @@ -683) no longer applies to the integrator's
+   base after NL-009 03-camera (`patch --dry-run`: 12 FAILED, 11 at fuzz 2) and will merge it by hand as
+   `… e.target !== cv || !tapUp || …`; the HANDOFF should say "applies cleanly at 96736f5; at the integrator's base
+   hunk 12 is merged by hand as 6564857812 describes", so its "applies" claim is not read against the moved base.
+   OPUS-3 (comment 6564782359, item 4) asks for a `KY.cam.atHome` setter and a `refuse(text, slot)` hook; the law is
+   that a key is added only by a new FINDING naming the engine line (ROADMAP step 4 team brief): `atHome` :245 and
+   `refuse` (patched page :140) are the lines; adopt by FINDING or decline with the reason, but do not leave it silent.
+   Measured beside it: the lead's rev-2 report (`/tmp/nl010-opus/team-4/lead/report-rev2.json`) shows the readout
+   line `EDITION 2 · 344 verified lines on this wafer` on screen, H3 confirmed on the running page.
 
 When 1-3 are closed the evidence officer's verdict is PASS. Until then: HOLD.
 

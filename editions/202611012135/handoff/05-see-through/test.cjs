@@ -31,7 +31,8 @@
 //               and a minimal loader that hashes, admits or refuses the module in words. Nothing on disk is changed.
 //
 // What is asserted (the caller's list; ROADMAP.md step 5 A1, A2, A4, A5, A8; team-3/STEPS.md step 5):
-//   static   the module file: header names the licence (Apache-2.0; CERN-OHL-S wherever See Through code is copied),
+//   static   the module file: header line 1 names the licence, CERN-OHL-S-2.0 whenever the body carries See Through code
+//            (ROADMAP step 9's register: such a module cannot be Apache-2.0),
 //            generation in the header = file name stamp = registration; one KY.register; node --check; MODULE.sha256
 //            data/see-through.json: 5,800 features, key_j = floor((j + 0.5) * SPACE / 20000) recomputed with BigInt,
 //            all < SPACE, space = cosmos/wafer-meta.json address_space, 0 remap failures (j = floor(key * 20000 / space)
@@ -108,16 +109,21 @@ function staticChecks() {
     const hdrGen = (header.match(/kuiper module see-through, generation (\d{12}) \(UTC\)/) || [])[1] || null;
     const regGen = (text.match(/GEN\s*=\s*'(\d{12})'/) || text.match(/generation:\s*'(\d{12})'/) || [])[1] || null;
     const registers = (text.match(/\bKY\.register\s*\(/g) || []).length;
-    const apache = /Apache-2\.0/.test(header);
-    const copiesCern = /SEE-THROUGH-CERN|CERN-OHL/.test(text.slice(header.length));
-    const cernNamed = /CERN-OHL-S/.test(header);
+    // the licence rule (ROADMAP.md step 9, the register: copying See Through code makes the module CERN-OHL-S v2 and it cannot be
+    // relicensed Apache-2.0; step 4, 4.3: the licence is on the header's first line): the first line names exactly one of the two,
+    // and CERN-OHL-S-2.0 whenever the body carries See Through code
+    const line1 = header.split('\n')[0];
+    const l1Licence = (line1.match(/\(UTC\),\s*(CERN-OHL-S-2\.0|Apache-2\.0)/) || [])[1] || null;
+    const copiesCern = /CERN-OHL-S|SEE-THROUGH-CERN/.test(text.slice(header.length));
+    const apache = !!l1Licence;                              // a licence is named on line 1
+    const cernNamed = copiesCern ? l1Licence === 'CERN-OHL-S-2.0' : true;
     let nodeCheck = null; try { cp.execFileSync(process.execPath, ['--check', file], { stdio: 'pipe' }); nodeCheck = 'ok'; } catch (e) { nodeCheck = String(e.stderr || e.message).split('\n').slice(0, 3).join(' '); }
     const shaFile = path.join(__dirname, 'MODULE.sha256');
     const shaRecorded = fs.existsSync(shaFile) ? (fs.readFileSync(shaFile, 'utf8').match(/[0-9a-f]{64}/) || [null])[0] : null;
     const sha = sha256(src);
     const pass = apache && (!copiesCern || cernNamed) && hdrGen === fileStamp && regGen === fileStamp && registers === 1 && nodeCheck === 'ok' && (shaRecorded === null || shaRecorded === sha);
-    out.module = { pass, file: path.relative(ROOT, file), bytes: src.length, sha256: sha, moduleSha256File: shaRecorded, headerFirstLine: header.split('\n')[0], licenceInHeader: { apache2: apache, cernOhlS: cernNamed, copiesSeeThroughCode: copiesCern }, generation: { fileName: fileStamp, header: hdrGen, registration: regGen }, kyRegisterCalls: registers, nodeCheck,
-      note: [apache ? '' : 'header does not name Apache-2.0', copiesCern && !cernNamed ? 'See Through code copied but CERN-OHL-S not named in the header' : '', hdrGen === fileStamp ? '' : 'header generation ' + hdrGen + ' ≠ file name ' + fileStamp, regGen === fileStamp ? '' : 'registration generation ' + regGen + ' ≠ file name ' + fileStamp, registers === 1 ? '' : registers + ' KY.register calls (want 1)', nodeCheck === 'ok' ? '' : 'node --check: ' + nodeCheck, shaRecorded === null || shaRecorded === sha ? '' : 'MODULE.sha256 ' + shaRecorded.slice(0, 12) + ' ≠ file ' + sha.slice(0, 12)].filter(Boolean).join('; ') };
+    out.module = { pass, file: path.relative(ROOT, file), bytes: src.length, sha256: sha, moduleSha256File: shaRecorded, headerFirstLine: line1, licence: l1Licence, licenceInHeader: { namedOnLine1: apache, copiesSeeThroughCode: copiesCern, cernWhenCopied: cernNamed }, generation: { fileName: fileStamp, header: hdrGen, registration: regGen }, kyRegisterCalls: registers, nodeCheck,
+      note: [apache ? '' : 'header line 1 names no licence (CERN-OHL-S-2.0 or Apache-2.0 after "(UTC),")', copiesCern && !cernNamed ? 'the body carries See Through code (CERN-OHL-S) but line 1 says ' + l1Licence : '', hdrGen === fileStamp ? '' : 'header generation ' + hdrGen + ' ≠ file name ' + fileStamp, regGen === fileStamp ? '' : 'registration generation ' + regGen + ' ≠ file name ' + fileStamp, registers === 1 ? '' : registers + ' KY.register calls (want 1)', nodeCheck === 'ok' ? '' : 'node --check: ' + nodeCheck, shaRecorded === null || shaRecorded === sha ? '' : 'MODULE.sha256 ' + shaRecorded.slice(0, 12) + ' ≠ file ' + sha.slice(0, 12)].filter(Boolean).join('; ') };
   }
   // data/see-through.json
   const meta = JSON.parse(fs.readFileSync(path.join(ROOT, 'cosmos', 'wafer-meta.json'), 'utf8'));
@@ -256,6 +262,9 @@ async function runDevice(browser, name, ctx) {
       await route.fulfill({ response: r, body, headers: { ...r.headers(), 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
     });
   } else if (ctx.mode === 'preview') {
+    await context.route(u => new URL(u).pathname in ctx.preview.bytes, async (route) => {
+      await route.fulfill({ status: 200, body: ctx.preview.bytes[new URL(route.request().url()).pathname], headers: { 'content-type': 'text/javascript', 'cache-control': 'no-store' } });
+    });
     await context.route(u => { const p = new URL(u).pathname; return p === '/editions/' + STAMP + '/' || p === '/editions/' + STAMP + '/index.html' || p === '/editions/' + STAMP + '/modules.json'; }, async (route) => {
       const isMan = new URL(route.request().url()).pathname.endsWith('/modules.json');
       await route.fulfill({ status: 200, body: isMan ? JSON.stringify(ctx.preview.manifest) : ctx.preview.html, headers: { 'content-type': isMan ? 'application/json' : 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
@@ -268,10 +277,20 @@ async function runDevice(browser, name, ctx) {
   }
   const page = await context.newPage(); page.setDefaultTimeout(180000);
   const errors = [];
+  // A request to ANOTHER host that this sandbox's egress proxy refuses (See Through's MapLibre style at basemaps.cartocdn.com,
+  // net::ERR_TUNNEL_CONNECTION_FAILED) is not an error of the edition or of the module: it is recorded in `external`, named in
+  // TEST.md, and does not fail the step; its echo "Failed to load resource: <same net error>" is paired with it. Every
+  // same-origin failure, every page error and every other console error fails.
+  const external = [], EGRESS = /ERR_TUNNEL_CONNECTION_FAILED|ERR_PROXY_CONNECTION_FAILED|ERR_NAME_NOT_RESOLVED|ERR_INTERNET_DISCONNECTED|ERR_CONNECTION_REFUSED/;
+  const origin0 = new URL(EDURL).origin;
   const watch = (pg, where) => {
-    pg.on('console', m => { if (m.type() === 'error') errors.push({ where, kind: 'console', url: pg.url(), text: m.text().slice(0, 300) }); });
+    pg.on('console', m => { if (m.type() !== 'error') return; const t = m.text(), loc = (m.location() || {}).url || '';
+      const ext = /^Failed to load resource: net::/.test(t) && EGRESS.test(t) && loc && !loc.startsWith(origin0);
+      (ext ? external : errors).push({ where, kind: 'console', url: pg.url(), resource: loc.slice(0, 200), text: t.slice(0, 300) }); });
     pg.on('pageerror', e => errors.push({ where, kind: 'pageerror', url: pg.url(), text: String(e.message || e).slice(0, 300) }));
-    pg.on('requestfailed', r => { const f = r.failure(); if (f && !/aborted|ERR_ABORTED/i.test(f.errorText)) errors.push({ where, kind: 'request', url: r.url().slice(0, 200), text: f.errorText }); });
+    pg.on('requestfailed', r => { const f = r.failure(); if (!f || /aborted|ERR_ABORTED/i.test(f.errorText)) return;
+      const ext = !r.url().startsWith(origin0) && EGRESS.test(f.errorText);
+      (ext ? external : errors).push({ where, kind: 'request', url: r.url().slice(0, 200), text: f.errorText }); });
   };
   watch(page, 'tab');
   let newTabs = 0; context.on('page', p => { if (p !== page) { newTabs++; watch(p, 'new-tab'); } });
@@ -287,7 +306,7 @@ async function runDevice(browser, name, ctx) {
   const loadEdition = async (url) => { await page.goto(url, { waitUntil: 'load', timeout: 120000 });
     await page.waitForFunction(() => /verified lines lit/.test((document.getElementById('big') || {}).textContent || ''), null, { timeout: 60000 }).catch(() => {});
     await waitAdmitted(); await sleep(FIXED_WAIT); };
-  const report = { device: name, viewport: dev.viewport, dpr: dev.deviceScaleFactor, mode: ctx.mode, url: EDURL, startedAt: new Date().toISOString(), steps, consoleErrors: errors, pass: false };
+  const report = { device: name, viewport: dev.viewport, dpr: dev.deviceScaleFactor, mode: ctx.mode, url: EDURL, startedAt: new Date().toISOString(), steps, consoleErrors: errors, externalUnreachable: external, pass: false };
   const SPACE = ctx.static.data.waferSpace;
   try {
     // 1 load: the module admitted, zero errors so far
@@ -423,7 +442,7 @@ async function runDevice(browser, name, ctx) {
     record('spark', 'a deep link from a spark: the card row is ../../see-through/#key=<key>; a touch lands there with that hash; back returns', why.length === 0, deep || { card: p.card }, why.join('; '));
 
     // 6 zero console errors across every page this device opened
-    record('errors', 'zero console errors, page errors and failed requests on every page', errors.length === 0, { errors: errors.slice() }, errors.length ? errors.length + ' error(s); first: [' + errors[0].kind + '] ' + errors[0].text + ' @ ' + errors[0].url : '');
+    record('errors', 'zero console errors, page errors and failed requests on every page', errors.length === 0, { errors: errors.slice(), externalUnreachable: external.slice() }, errors.length ? errors.length + ' error(s); first: [' + errors[0].kind + '] ' + errors[0].text + ' @ ' + errors[0].url : '');
   } catch (err) {
     record('harness', 'harness error', false, { error: String(err && err.stack || err) }, String(err && err.message || err));
   }
@@ -448,22 +467,28 @@ function buildPreview() {
   const ids = ORDER.filter(id => wanted.includes(id) && latest[id]).concat(wanted.filter(id => !ORDER.includes(id) && latest[id]));
   const dir = path.join(OUT, 'preview'); fs.rmSync(dir, { recursive: true, force: true }); fs.mkdirSync(dir, { recursive: true });
   fs.copyFileSync(path.join(EDDIR, 'index.html'), path.join(dir, 'index.html'));
-  const applied = [];
+  const applied = []; let base = 'index.html on disk';
+  // the loader patch is cut against the skeleton (kuiper-belt@96736f5); when index.html has moved on and refuses it, the preview
+  // uses the skeleton's index.html (git show) and says so in report.preview.base
+  try { cp.execFileSync('patch', ['--dry-run', '-s', '--forward', '-p3', '-d', dir, '-i', path.join(__dirname, '..', PATCHES[''])], { stdio: 'pipe' }); }
+  catch (e) { try { fs.writeFileSync(path.join(dir, 'index.html'), cp.execFileSync('git', ['-C', ROOT, 'show', '96736f5:editions/' + STAMP + '/index.html'])); base = 'kuiper-belt@96736f5 editions/' + STAMP + '/index.html (the file on disk refused the loader patch)'; } catch (e2) { /* the patch below records the refusal */ } }
   for (const key of ['', 'line-card', 'layers']) { if (key && !ids.includes(key)) continue; const pf = path.join(__dirname, '..', PATCHES[key]);
     if (!fs.existsSync(pf)) { applied.push({ patch: PATCHES[key], ok: false, why: 'missing' }); continue; }
     try { const args = ['-s', '--forward', '--no-backup-if-mismatch', '-r', '-', '-p3', '-d', dir, '-i', pf];   // all hunks or none: a dry run first
       cp.execFileSync('patch', ['--dry-run'].concat(args), { stdio: 'pipe' }); cp.execFileSync('patch', args, { stdio: 'pipe' }); applied.push({ patch: PATCHES[key], ok: true }); }
     catch (e) { applied.push({ patch: PATCHES[key], ok: false, why: String(e.stdout || '') + String(e.stderr || '') }); } }
-  const modules = ids.map(id => { const f = latest[id], b = fs.readFileSync(path.join(modDir, f)); let reg = null;
+  const bytes = {};   // the modules are snapshotted at the start: other teams edit them live, and a manifest must match the bytes it serves
+  const modules = ids.map(id => { const f = latest[id], b = fs.readFileSync(path.join(modDir, f)); bytes['/editions/' + STAMP + '/modules/' + f] = b; let reg = null;
     try { const sb = { window: {}, document: { readyState: 'loading', addEventListener() {}, getElementById() { return null; }, querySelector() { return null; }, createElement() { return { style: {}, setAttribute() {}, appendChild() {} }; } }, console: { log() {}, warn() {}, error() {} }, setTimeout() {}, addEventListener() {} };
       sb.window = sb; sb.window.KY = { register: x => { reg = x; } }; sb.KY = sb.window.KY; vm.runInNewContext(b.toString('utf8'), sb, { timeout: 2000 }); } catch (e) { /* the registration may need a live page; the regex below reads it */ }
     const t = b.toString('utf8'); const arr = re => { const m = t.match(re); return m ? (m[1].match(/'([^']+)'/g) || []).map(x => x.slice(1, -1)) : []; };
     return { id, generation: f.slice(0, 12), path: 'modules/' + f, sha256: sha256(b), bytes: b.length, byte_budget: Math.max(65536, b.length),
       requires: reg && reg.requires ? reg.requires : arr(/requires:\s*\[([^\]]*)\]/), provides: reg && reg.provides ? reg.provides : (arr(/provides:\s*\[([^\]]*)\]/).length ? arr(/provides:\s*\[([^\]]*)\]/) : [id]),
-      reads: [], writes: [], creates_controls: 'none', licence: 'Apache-2.0', team: '', step: 0, proof: '' }; });
+      reads: [], writes: [], creates_controls: 'none', licence: ((t.split('\n')[0].match(/\(UTC\),\s*(CERN-OHL-S-2\.0|Apache-2\.0)/) || [])[1]) || 'Apache-2.0', team: '', step: 0, proof: '' }; });
   const manifest = { schema: 'kuiper.modules.v1', edition: STAMP, hooks: 'kuiper.hooks.v1', order: ids, modules };
   fs.writeFileSync(path.join(dir, 'modules.json'), JSON.stringify(manifest, null, 1));
-  return { html: fs.readFileSync(path.join(dir, 'index.html'), 'utf8'), manifest, applied, ids, loaderPatched: applied[0] && applied[0].ok };
+  for (const [u, b] of Object.entries(bytes)) fs.writeFileSync(path.join(dir, path.basename(u)), b);
+  return { html: fs.readFileSync(path.join(dir, 'index.html'), 'utf8'), manifest, bytes, applied, ids, base, loaderPatched: applied[0] && applied[0].ok };
 }
 
 (async () => {
@@ -484,11 +509,11 @@ function buildPreview() {
   const ctx = { mode, static: st, placed, modulePathFromEdition: modFile ? path.relative(EDDIR, modFile).split(path.sep).join('/') : null };
   if (modFile) { const genStamp = path.basename(modFile).slice(0, 12);
     ctx.record = { id: 'see-through', file: path.basename(modFile), generation: genStamp, path: ctx.modulePathFromEdition, sha256: st.module.sha256, bytes: st.module.bytes, byte_budget: Math.max(65536, st.module.bytes),
-      requires: [], provides: ['see-through'], reads: ['data/see-through.json'], writes: [], creates_controls: ['#kuiper-star', '#kuiper-star-strip'], licence: 'Apache-2.0', team: 5, step: 5, proof: 'handoff/05-see-through/test.cjs' }; }
+      requires: [], provides: ['see-through'], reads: ['data/see-through.json'], writes: [], creates_controls: ['#kuiper-star', '#kuiper-star-strip'], licence: st.module.licence || 'CERN-OHL-S-2.0', team: 5, step: 5, proof: 'handoff/05-see-through/test.cjs' }; }
   if (mode === 'preview') { ctx.preview = buildPreview(); if (!ctx.preview.loaderPatched) { process.stderr.write('[mode] preview: the loader patch did not apply; falling back to shim\n'); mode = ctx.mode = 'shim'; } }
-  const out = { base: BASE, edition: EDURL, stamp: STAMP, titleMinPx: TITLE_MIN, mode, preview: ctx.preview ? { ids: ctx.preview.ids, patches: ctx.preview.applied, manifest: ctx.preview.manifest.modules.map(m => ({ id: m.id, path: m.path, sha256: m.sha256, requires: m.requires, provides: m.provides })) } : null, hasLoader, manifestListsSeeThrough: listed, outdir: OUT, generatedAt: new Date().toISOString(), static: { module: st.module, data: st.data }, devices: [] };
+  const out = { base: BASE, edition: EDURL, stamp: STAMP, titleMinPx: TITLE_MIN, mode, preview: ctx.preview ? { base: ctx.preview.base, ids: ctx.preview.ids, patches: ctx.preview.applied, manifest: ctx.preview.manifest.modules.map(m => ({ id: m.id, path: m.path, sha256: m.sha256, requires: m.requires, provides: m.provides })) } : null, hasLoader, manifestListsSeeThrough: listed, outdir: OUT, generatedAt: new Date().toISOString(), static: { module: st.module, data: st.data }, devices: [] };
   for (const [k, v] of Object.entries({ module: st.module, data: st.data })) process.stderr.write(`[static] ${v && v.pass ? 'PASS' : 'FAIL'} ${k}${v && v.note ? ' — ' + v.note : ''}\n`);
-  process.stderr.write(`[mode] ${mode}${mode === 'shim' ? ' (no hook table in index.html yet: the test serves a minimal one, nothing on disk changes)' : ''}${mode === 'preview' ? ' modules ' + ctx.preview.ids.join(',') + ' · patches ' + ctx.preview.applied.map(a => a.patch + (a.ok ? ' ok' : ' FAILED')).join(', ') : ''}\n`);
+  process.stderr.write(`[mode] ${mode}${mode === 'shim' ? ' (no hook table in index.html yet: the test serves a minimal one, nothing on disk changes)' : ''}${mode === 'preview' ? ' base ' + ctx.preview.base + ' · modules ' + ctx.preview.ids.join(',') + ' · patches ' + ctx.preview.applied.map(a => a.patch + (a.ok ? ' ok' : ' FAILED')).join(', ') : ''}\n`);
   if (!modFile) { out.pass = false; fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(out, null, 1)); console.log(JSON.stringify(out, null, 1)); process.exit(1); }
   const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   try { for (const d of DEVICES) { out.devices.push(await runDevice(browser, d, ctx)); fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(out, null, 1)); } }

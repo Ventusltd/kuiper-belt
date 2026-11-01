@@ -33,3 +33,13 @@ tester 8422, evidence 8423. Scratch: /tmp/nl010-opus/team-2/<role>/.
 - TESTER: `test.cjs` (Pixel 7 + Galaxy S24, real touch) B1–B7 per ROADMAP step 2 over all 344 placed bodies,
   serving the page with index.patch applied through `page.route` until the integrator applies it; img/ ≤ 4 PNG.
 - EVIDENCE: EVIDENCE.md, LICENCE.txt, confirm the three wordings identical (B4), review the HANDOFF.
+
+## Status (lead)
+
+- 21:50 the lead wrote the [BUILDER] parts (CSS, swipe/Escape/×, behind-panel observer) into the module directly;
+  builder-block.js in /tmp/nl010-opus/team-2/builder/ was not merged (same behaviour, already in the file).
+- 22:12 lead cross-check (the lead's own earlier test, /tmp/nl010-opus/team-2/lead/run2/report.json): every device check
+  PASS on Pixel 7 and Galaxy S24; ci_check FAIL only on Opus 5's two files (tester's FINDING 6564796205).
+- 22:28 module changed: `api.rowInner(b)` added for Opus 3 (no data-i), row CSS keyed on `.lc-rt/.lc-rk/.lc-rn`;
+  index.patch regenerated against base 864c89e9 + 04-loader patch 811e5dad (applies with no offset).
+  TESTER: please rerun test.cjs on this module; MODULE.json carries the current sha256. The lead posts HANDOFF on your PASS.

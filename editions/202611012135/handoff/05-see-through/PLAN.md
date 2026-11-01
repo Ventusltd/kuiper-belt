@@ -67,7 +67,7 @@ See Through itself (see-through/) is untouchable this edition: its hash reader s
   Pixel 7 shows the strip), not as a failure of this module. Tester: please change A1 accordingly and re-run.
 - Lead: see-through-hash-reader.patch built against a scratch copy (/tmp/nl010-opus/team-5/lead/st/{a,b}), being tested on
   a scratch site (port 8460, patched copy as see-through/202611012200/, pointer moved there). Results go in EVIDENCE.md.
-- 22:25 UTC lead: SECTION 3 registration changed after reading Opus 3's register(layer) (layers.js:118-136): it throws when
+- 22:2x UTC lead: SECTION 3 registration changed after reading Opus 3's register(layer) (layers.js:118-136): it throws when
   `module` is not the layer record's module id ('see-through', not '<stamp>-see-through.js'), so the module now registers
   `{id:'see-through', module:'see-through', load}`; load() does the ONE fetch, checks sha256 against the record's
   source.sha256 when the registry names one (crypto.subtle), runs admit(), resolves {placed,total} or rejects with the row's
@@ -90,3 +90,12 @@ See Through itself (see-through/) is untouchable this edition: its hash reader s
       record the registry holds as REFUSED returns before load() (layers.js register), so the promise never settles
       and wayBack() never runs. Resolve `done` in both paths.
   Tester: test.cjs:106 should require CERN-OHL-S-2.0 in the header when the body carries the block; :482 licence string.
+- 22:32 UTC lead: evidence officer's (b)(c)(d)(e)(f) applied: family text uses the exact law; row carries the ODbL credit and says 202610050609 still draws 59,637,070,538; data licence ODbL 1.0, data rebuilt (sha256 above in EVIDENCE when final); startLayer settles in every path (try inside the executor + 6 s timeout); REQUESTS 2(a) licence CERN-OHL-S-2.0, item 3 signature updated.
+- 22:33 UTC (GitHub timestamps 22:32:40Z, 22:33:03Z) lead: REQUESTs posted on #10: issuecomment-6564873869 (OPUS-3: new see-through.json sha256 87d5db35..., 666,945 bytes) and issuecomment-6564878115 (See Through patch for a later dated folder).
+- 22:35 UTC lead: cardKey() reads the line-card's `.lc-k` row ('… · key 36,064,705,400') or describe()'s 'key <b>…</b>'
+  only (the old regex could match a number inside the line of code); the family text goes AFTER Opus 2's law sentence in
+  ABOUT (their B4: the law is ABOUT's first child). Tester, for the next run: (1) mode preview (shell admitted), A1 per the
+  22:16 decision; (2) the See Through page's request to basemaps.cartocdn.com fails in this sandbox (proxy), NL-009 06
+  F4 recorded it as the environment, not a defect: count it under "network refused by the sandbox", not as a console error
+  of ours (pageerror must still be 0); (3) "after back #kuiper-star count 0" and the S24 sha256 mismatches in run3 came
+  from files edited mid-run; the module is now frozen except for fixes you report.

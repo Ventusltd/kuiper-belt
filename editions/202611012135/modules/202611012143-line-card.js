@@ -57,12 +57,12 @@
     '#card.lc.lc-behind{visibility:hidden}',
     '#card.lc .lc-grip{display:none}',
     /* K6, the LINES rows: the line, then the key, then the title */
-    '#lineslist .lc-row code{display:block;white-space:pre;overflow:hidden;text-overflow:ellipsis;color:#fff;font-weight:600;',
+    '#lineslist .lc-rt{display:block;white-space:pre;overflow:hidden;text-overflow:ellipsis;color:#fff;font-weight:600;',
     '  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}',
-    '#lineslist .lc-row .lc-rk{display:block;color:#cde}',
-    '#lineslist .lc-row .lc-rn{display:block}',
-    '#lineslist .lc-row i{color:var(--dim);font-style:normal}',
-    '#lineslist .lc-row i.lc-none{color:var(--am)}',
+    '#lineslist .lc-rk{display:block;color:#cde}',
+    '#lineslist .lc-rn{display:block}',
+    '#lineslist .lc-rt ~ i{color:var(--dim);font-style:normal}',
+    '#lineslist .lc-rt ~ i.lc-none{color:var(--am)}',
     '@media (max-width:640px){',
     '  #card.lc{left:0;right:0;bottom:0!important;max-width:none;max-height:34vh;max-height:34dvh;font-size:12px;line-height:1.5;',
     '    border-left:0;border-right:0;border-bottom:0;border-radius:12px 12px 0 0}',
@@ -147,14 +147,18 @@
         KY.sel.target = null; KY.redraw();
         if (cb) { try { cb(); } catch (e) { /* the caller's callback; the card is closed either way */ } }
       }
-      // K6: a LINES row reads the line, then the key, then the title
-      function row(b, i, cls) {
+      // K6: a LINES row reads the line, then the key, then the title. rowInner(b) is the row's content only, for a
+      // module that wraps it in its own .ln[data-i] (Opus 3, #10 issuecomment-6564782359 item 3); row(b, i, cls) is the
+      // whole row the page's fillLines uses until then
+      function rowInner(b) {
         var t = hasText(b) ? b.line_text : '';
-        return '<div class="ln lc-row' + (cls ? ' ' + cls : '') + '" data-i="' + (i | 0) + '" role="button" tabindex="0">'
-          + '<code class="lc-rt">' + esc(t) + '</code>'
+        return '<code class="lc-rt">' + esc(t) + '</code>'
           + (hasText(b) ? (t === '' ? '<i>empty line at key</i>' : '') : '<i class="lc-none">no text at key</i>')
           + '<span class="lc-rk">' + esc(keyText(b)) + '</span>'
-          + '<span class="lc-rn">' + esc(b.title) + '</span></div>';
+          + '<span class="lc-rn">' + esc(b.title) + '</span>';
+      }
+      function row(b, i, cls) {
+        return '<div class="ln lc-row' + (cls ? ' ' + cls : '') + '" data-i="' + (i | 0) + '" role="button" tabindex="0">' + rowInner(b) + '</div>';
       }
 
       // the card steps behind any open panel (visibility, so the page can still measure it) and returns when it closes
@@ -198,7 +202,7 @@
         return { schema: 'kuiper.card.v1', law: LAW, open: card.style.display === 'block' && !!state.shown,
           index: state.index, of: state.of, opened: state.opened, refused: state.refused, last: state.last, about: aboutLaw() };
       }
-      return Object.freeze({ law: LAW, header: header, show: show, close: close, row: row, inspect: inspect });
+      return Object.freeze({ law: LAW, header: header, show: show, close: close, row: row, rowInner: rowInner, inspect: inspect });
     },
     inspect: function () { return { schema: 'kuiper.card.v1', law: LAW }; }
   });
