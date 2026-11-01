@@ -185,7 +185,7 @@
     "sha256": "",
     "owner": "Opus team 7 (step 7) writes data/elements.json"
    },
-   "licence": "UNSETTLED: elements@f7a92fb has no LICENSE (owner question Q1)",
+   "licence": "UNSETTLED: elements@f7a92fb has no LICENSE, owner question Q1",
    "requires": [
     "keyPlace",
     "o2"

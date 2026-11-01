@@ -2,7 +2,19 @@
 // test.cjs: the acceptance test of Opus team 6's module `file` (ROADMAP step 6, A1-A8; team-3/STEPS.md 6.1-6.5),
 // in the form of FIXES/NL-009/android-journey.cjs: real touch (page.touchscreen.tap), measured assertions, one JSON
 // report. Apache-2.0 (kuiper-belt), kuiper-belt README.md:157. Opus team 6 lead; the A6/A7 flows follow the builder's
-// smoke-touch.cjs (OPUS-6 builder, 22:49 UTC).
+// smoke-touch.cjs (OPUS-6 builder, 22:49 UTC). The G gates are the tester's (OPUS-6 tester, 23:06 UTC):
+//   G1 every GRAMMAR.md example round-trips parse -> serialise -> parse byte-identical, in the page, through the module's
+//      own link.read and its serialiser (link.format when the module exposes it, else link.set + link.hashText on a hash
+//      that holds only the example's own `layers`, because hashText() re-reads `layers` from location.hash);
+//   G2 the REAL pointer editions/index.html (not routed) forwards each example's hash byte for byte, and the routed
+//      pointer lands on this edition with the hash byte for byte before the page has read it;
+//   G3 Open an edition by touch: the row lands on ../<stamp>/#<the copied link's hash>, byte for byte;
+//   G4 Open an app by touch: See Through lands on ../../see-through/#key=<the open key>;
+//   G5 Copy a link to this view with the clipboard denied: the link (= link.url()) in a selected read-only 44 px field.
+// Pages that are not this edition (Edition 2, Edition 1, the published 202611012027, See Through) are answered with a
+// one-line page through ctx.route: the test asserts the URL the Kuiper sends the person to, not another page's console.
+// Console errors are counted strictly: a 404 of an EVIDENCE file the integrator has not written yet is a FAIL unless
+// --allow-missing-evidence is given, which turns it into NOT EVALUATED (never a pass).
 //
 //   node test.cjs <edition url> <outdir> [--device "Pixel 7"] [--devices "Pixel 7,Galaxy S24"] [--shots <dir>]
 //
@@ -29,6 +41,12 @@ const EVIDENCE = ['keys.json', 'proof/edition-sha256.txt', 'proof/keys-summary.j
 const ROWS = ['Open', 'Open a key…', 'python tools/key.py', 'Open a line…', 'Open an edition ▸', 'Open an app ▸', 'Link', 'Copy a link to this view',
   'Copy the key', 'Copy python tools/key.py', 'Evidence'].concat(EVIDENCE).concat(['Export', '⤓ Save an image of this view', '⎙ Print']);
 const LINE0 = '0048802883266c68d5bdb6f5add0074e8b5b729d:5', KEY0 = 36064705400;
+const ALLOW404 = argv.includes('--allow-missing-evidence');
+// GRAMMAR.md "Examples" (and ROADMAP step 6.3), byte for byte
+const EXAMPLES = ['#key=36064705400', '#line=0048802883266c68d5bdb6f5add0074e8b5b729d:5', '#repo=gridatlas&period=2026-07',
+  '#layers=lines,see-through&key=63035688574', '#edition=202611010114&key=36064705400', '#app=see-through&sub=Drax'];
+const FOREIGN = u => /\/editions\/(202611010114|202611012027|202610311905)\//.test(u.pathname) || /\/see-through\//.test(u.pathname);
+const LANDED = '<!DOCTYPE html><meta charset="utf-8"><title>landed</title><p>not this edition: the test asserts the URL only</p>';
 fs.mkdirSync(OUT, { recursive: true });
 
 (async () => {
@@ -44,7 +62,8 @@ fs.mkdirSync(OUT, { recursive: true });
     async function newPage(opts) {
       const ctx = await browser.newContext({ ...devices[DEV], acceptDownloads: true });
       if (!opts || opts.clip !== false) await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(URL0).origin });
-      await ctx.route(POINTER, r => r.fulfill({ status: 200, contentType: 'text/html', body: '<!DOCTYPE html><meta charset="utf-8"><script>location.replace(' + JSON.stringify(STAMP + '/') + ' + location.hash);</script>' }));
+      await ctx.route(FOREIGN, r => r.fulfill({ status: 200, contentType: 'text/html', body: LANDED }));
+      if (!opts || !opts.realPointer) await ctx.route(POINTER, r => r.fulfill({ status: 200, contentType: 'text/html', body: '<!DOCTYPE html><meta charset="utf-8"><script>location.replace(' + JSON.stringify(STAMP + '/') + ' + location.hash);</script>' }));
       const p = await ctx.newPage();
       p.on('pageerror', e => R.errors.push(String(e)));
       p.on('console', m => { if (m.type() !== 'error') return; const u = (m.location() || {}).url || '', t = m.text();
@@ -175,7 +194,10 @@ fs.mkdirSync(OUT, { recursive: true });
       await p.context().close();
 
       // ------------------------------------------------------------------ A4 through the pointer, A5 round trip
-      const viaPointer = async (hash, wantNav) => { const q = await newPage(); await q.goto(POINTER + hash, { timeout: 180000 }); if (wantNav) { await q.waitForURL(wantNav, { timeout: 120000 }).catch(() => {}); return q; } await ready(q); await settle(q, 8000); return q; };
+      const forwarded = [];
+      const viaPointer = async (hash, wantNav) => { const q = await newPage(); await q.goto(POINTER + hash, { timeout: 180000 });
+        if (!wantNav) { await q.waitForURL(u => u.pathname.indexOf('/editions/' + STAMP + '/') >= 0, { timeout: 120000, waitUntil: 'commit' }).catch(() => {}); forwarded.push({ hash, landed: q.url(), ok: q.url() === URL0 + hash }); }
+        if (wantNav) { await q.waitForURL(wantNav, { timeout: 120000 }).catch(() => {}); return q; } await ready(q); await settle(q, 8000); return q; };
       let q = await viaPointer('#key=' + KEY0);
       const pk = await sel(q); step('A4 pointer #key: zoom 14 at the key, the card', pk.header === bodies[0].line_text && Math.abs(pk.zoom - 14) < 0.01, pk); await q.context().close();
       q = await viaPointer('#line=' + LINE0);
@@ -194,6 +216,7 @@ fs.mkdirSync(OUT, { recursive: true });
       step('A4 pointer #edition=…&key=…: the URL is that edition with the rest of the hash', /editions\/202611010114\/#key=36064705400$/.test(q.url()), { url: q.url() }); await q.context().close();
       q = await viaPointer('#app=see-through&sub=Drax', /see-through/);
       step('A4 pointer #app=see-through&sub=Drax: the URL is See Through with #sub=Drax', /\/see-through\/(\d{12}\/)?#sub=Drax$/.test(q.url()), { url: q.url() }); await q.context().close();
+      step('G2 the routed pointer lands on this edition with the hash byte for byte', forwarded.length === 4 && forwarded.every(f => f.ok), { forwarded });
       // A5 the round trip: e, then two random verified lines
       const picks = ['e', Math.floor(Math.random() * P.length), Math.floor(Math.random() * P.length)];
       for (const pick of picks) {
@@ -203,7 +226,35 @@ fs.mkdirSync(OUT, { recursive: true });
         await settle(p, 7000);
         const s0 = await sel(p);
         await openMenu(p, 'file'); await tapSel(p, '#ky-file-copy-link'); await p.waitForTimeout(1200);
-        const link = await p.evaluate(() => navigator.clipboard.readText()); await p.context().close();
+        const link = await p.evaluate(() => navigator.clipboard.readText());
+        if (pick === picks[0] || pick === picks[1]) {
+          await openMenu(p, 'file');
+          const isFirst = pick === picks[0];
+          if (isFirst) {                              // G3 Open an edition by touch: Edition 2's row carries the hash
+            if (!(await p.evaluate(() => document.getElementById('ky-file-editions').classList.contains('ky-open')))) await tapSel(p, '#ky-file-open-edition');
+            await p.waitForFunction(() => document.querySelector('#ky-file-editions[data-filled="ok"]'), null, { timeout: 60000 }).catch(() => {});
+            const h = await p.evaluate(() => KY.modules.file.api.link.hashText());
+            const r = await tapSel(p, '#ky-file-editions [data-ky-edition="202611010114"]');
+            await p.waitForURL(/\/editions\/202611010114\//, { timeout: 60000 }).catch(() => {});
+            const want = ROOT + 'editions/202611010114/#' + h;
+            step('G3 Open an edition by touch: ../202611010114/#<hash>, the copied link\'s hash byte for byte', p.url() === want && link.slice(link.indexOf('#')) === '#' + h && r.height >= 44,
+              { landed: p.url(), want, copied_hash: link.slice(link.indexOf('#')), row_h: Math.round(r.height) });
+          } else {                                    // G4 Open an app by touch: See Through, first and lit, carries the key
+            if (await p.evaluate(() => !!(KY.modules.apps && KY.modules.apps.api))) step('G4 Open an app by touch', null, { why: 'the apps module is admitted: Open an app opens its launcher (step 7 tests it)' });
+            else {
+              if (!(await p.evaluate(() => document.getElementById('ky-file-apps').classList.contains('ky-open')))) await tapSel(p, '#ky-file-open-app');
+              await p.waitForTimeout(600);
+              const k = await p.evaluate(() => KY.modules.file.api.link.inspect().fields.key);
+              const first = await p.evaluate(() => { const e = document.querySelector('#ky-file-apps > *'); return e && { app: e.getAttribute('data-ky-app'), lit: e.classList.contains('ky-lit') }; });
+              const r = await tapSel(p, '#ky-file-apps [data-ky-app="see-through"]');
+              await p.waitForURL(/\/see-through\//, { timeout: 60000 }).catch(() => {});
+              const want = ROOT + 'see-through/#key=' + k;
+              step('G4 Open an app by touch: See Through first and lit, lands on ../../see-through/#key=<the open key>', p.url() === want && first && first.app === 'see-through' && first.lit && r.height >= 44,
+                { landed: p.url(), want, first, row_h: Math.round(r.height) });
+            }
+          }
+        }
+        await p.context().close();
         const hash = link.slice(link.indexOf('#'));
         q = await viaPointer(hash); const s1 = await sel(q); await q.context().close();
         step('A5 round trip (' + (pick === 'e' ? 'e' : 'edPlaced[' + pick + ']') + ')', s0.index >= 0 && s1.index === s0.index && s1.header === s0.header && /line=[0-9a-f]{40}:\d+/.test(hash) && /key=\d+/.test(hash),
@@ -218,6 +269,12 @@ fs.mkdirSync(OUT, { recursive: true });
       const fb = await p.evaluate(() => { const f = document.querySelector('input.ky-file-payload[data-for="ky-file-copy-cmd"]'); if (!f) return null; const r = f.getBoundingClientRect();
         return { value: f.value, readOnly: f.readOnly, selected: f.selectionStart === 0 && f.selectionEnd === f.value.length, focused: document.activeElement === f, h: Math.round(r.height) }; });
       step('A2 clipboard refused -> the command in a selected read-only field', !!fb && fb.value === 'python tools/key.py ' + KEY0 && fb.readOnly && fb.selected && fb.h >= 44, fb);
+      await openMenu(p, 'file'); await tapSel(p, '#ky-file-copy-link'); await p.waitForTimeout(1500);
+      const fl = await p.evaluate(() => { const f = document.querySelector('input.ky-file-payload[data-for="ky-file-copy-link"]'); if (!f) return null; const r = f.getBoundingClientRect();
+        return { value: f.value, url: KY.modules.file.api.link.url(), readOnly: f.readOnly, selected: f.selectionStart === 0 && f.selectionEnd === f.value.length, focused: document.activeElement === f, h: Math.round(r.height),
+          why: (document.querySelector('#ky-file-copy-link .ky-file-why') || {}).textContent || null, open: document.getElementById('kuiper-menu-bar').getAttribute('data-open') }; });
+      step('G5 Copy a link to this view, clipboard denied -> the link in a selected read-only 44 px field, never silent', !!fl && fl.value === fl.url && /#key=36064705400(&|$)/.test(fl.value)
+        && fl.readOnly && fl.selected && fl.h >= 44, fl);
       await shot(p, '04-copy-fallback');
       await p.evaluate(() => KY.modules['kuiper-shell'].api.close()); await p.waitForTimeout(800);
       // three link changes on one page (no card left open), then back leaves the page in one step
@@ -235,10 +292,41 @@ fs.mkdirSync(OUT, { recursive: true });
       await p.evaluate(k => { KY.modules.file.api.link.set('key', String(k)); KY.modules.file.api.link.flush(); KY.modules.file.api.link.set('repo', 'gridatlas'); KY.modules.file.api.link.flush(); KY.modules.file.api.link.set('period', '2026-07'); KY.modules.file.api.link.flush(); }, KEY0);
       const lenAfter = await p.evaluate(() => ({ len: history.length, hash: location.hash }));
       step('A8 three module link writes add no history entry (replaceState)', lenAfter.len === lenBefore && /period=2026-07/.test(lenAfter.hash), { lenBefore, lenAfter, hl });
+      // G1 parse -> serialise -> parse, byte-identical, for every GRAMMAR.md example
+      await p.waitForTimeout(600);
+      const g1 = await p.evaluate(exs => {
+        const L = KY.modules.file.api.link, W = ['key', 'line', 'repo', 'period', 'layers'], pure = typeof L.format === 'function', saved = location.pathname + location.hash;
+        const pick = f => { const o = {}; W.forEach(k => { if (f[k] != null) o[k] = f[k]; }); return o; };
+        const ser = f => { if (pure) return L.format(f);
+          history.replaceState(history.state, '', location.pathname + (f.layers != null ? '#layers=' + f.layers : ''));
+          L.clear([]); let ok = true; W.forEach(k => { if (f[k] != null) ok = L.set(k, f[k]) && ok; }); const h = L.hashText(); return ok ? h : 'SET REFUSED ' + h; };
+        const out = exs.map(ex => {
+          const r1 = L.read(ex), f1 = r1.fields, s1 = ser(pick(f1)), r2 = L.read('#' + s1), f2 = r2.fields, s2 = ser(f2), r3 = L.read('#' + s2);
+          const nav = Object.keys(f1).filter(k => W.indexOf(k) < 0);
+          return { ex, f1, s1, f2, s2, nav, refused: r1.refused.concat(r2.refused), canonical: '#' + s1 === ex,
+            identical: JSON.stringify(pick(f1)) === JSON.stringify(f2) && JSON.stringify(f2) === JSON.stringify(r3.fields) && s1 === s2 };
+        });
+        L.clear([]); history.replaceState(history.state, '', saved); L.flush();
+        return { serialiser: pure ? 'link.format (pure)' : 'link.set + link.hashText (format not exposed)', out };
+      }, EXAMPLES);
+      step('G1 every grammar example: parse -> serialise -> parse byte-identical, nothing refused', g1.out.length === EXAMPLES.length && g1.out.every(o => o.identical && o.refused.length === 0 && Object.keys(o.f1).length > 0), g1);
+      await p.context().close();
+
+      // ------------------------------------------------------------------ G2 the real pointer forwards the hash byte for byte
+      p = await newPage({ realPointer: true });
+      const g2 = [];
+      for (const ex of EXAMPLES) {
+        await p.goto(POINTER + ex, { timeout: 180000 }); await p.waitForURL(/\/editions\/\d{12}\//, { timeout: 120000 }).catch(() => {});
+        const ptrSrc = g2.length ? null : await (await fetch(POINTER)).text();
+        const m = ptrSrc && ptrSrc.match(/location\.replace\('(\d{12})\/' \+ location\.hash\)/);
+        if (m) g2.target = m[1];
+        g2.push({ ex, landed: p.url(), ok: p.url() === POINTER + (g2.target || '') + '/' + ex });
+      }
+      step('G2 the real pointer editions/index.html forwards every example\'s hash byte for byte', !!g2.target && g2.every(x => x.ok), { pointer_target: g2.target, results: g2 });
       await p.context().close();
     } catch (e) { step('harness', false, String(e && e.stack || e)); }
     step('zero pageerror', R.errors.length === 0, R.errors);
-    step('zero console errors (besides 404s of EVIDENCE files not yet written)', R.other_console.length === 0, { other: R.other_console, expected_404: R.expected_404 });
+    step('zero console errors (strict)', R.other_console.length === 0 && (R.expected_404.length === 0 || (ALLOW404 ? null : false)), { other: R.other_console, evidence_404: R.expected_404, allow_missing_evidence: ALLOW404 });
     R.pass = R.steps.every(s => s.result !== 'FAIL');
   }
   report.finished = new Date().toISOString(); report.pass = allPass;

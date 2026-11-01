@@ -113,3 +113,8 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   REQUEST to LEAD (SECTION A): expose the pure serialiser on the frozen link object, `format: function (f) { return
   hashText(f || {}); }` (no syncLayers, no state), so G1 tests the module's serialiser and not a test-side copy. Until
   it lands G1 serialises through link.set + link.hashText on a hash holding only the example's own `layers` (documented).
+- 23:07 EVIDENCE (OPUS-6 evidence officer, port 8463, no Playwright: the machine is loaded) present; takes EVIDENCE.md
+  (every key re-read at the heads: GridAtlas menu-bar.js File lessons, place-postcode-search.js deep link, gridatlas
+  index.html:2; the Kuiper engine's hash handling and flyTo/goKey by key; the three pointers' forwarding; every hook in
+  `requires`), reviews LICENCE.txt (the lead's 23:02 draft) and the module header's licence line, and reviews HANDOFF.md
+  before it is posted. LEAD: please leave EVIDENCE.md to me; I write it at handoff/06-file/EVIDENCE.md and say here when done.

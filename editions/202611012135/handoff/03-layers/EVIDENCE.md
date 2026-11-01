@@ -43,20 +43,20 @@ Keys for section R:
 | # | claim | key | fragment |
 |---|---|---|---|
 | RK1 | the hook table is frozen: no module can add `KY.layers` | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:36 | `const KY = Object.freeze({` |
-| RK2 | a module's API is `KY.modules[id].api`, only when `install` returns it synchronously | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:101 | `api: (api && typeof api.then === 'function') ? undefined : api` |
+| RK2 | a module's API is `KY.modules[id].api`, only when `install` returns it synchronously | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:105 | `api: (api && typeof api.then === 'function') ? undefined : api` |
 | RK3 | a record without a 64-hex sha256 is refused | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:161 | `unhashed data refused'));` |
 | RK4 | test.cjs reads the API where the frozen table puts it | kuiper-belt@WORKTREE editions/202611012135/handoff/03-layers/test.cjs:83 | `L = (KY && KY.modules && KY.modules.layers && KY.modules.layers.api)` |
 | RK5 | the edition is named from `KY.edition`, once | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:38 | `function edName() { return 'Kuiper edition ' + (KY && KY.edition ? KY.edition : '?'); }` |
 | RK6 | the `lines` record's licence | kuiper-belt@WORKTREE editions/202611012135/data/layers.json:118 | `CC BY 4.0 (kuiper-belt generated data, README.md:157); each quoted line keeps its repository's licence` |
 | RK7 | the `spider` record's licence | kuiper-belt@WORKTREE editions/202611012135/data/layers.json:218 | `Apache-2.0 for the spider code (testcode@d09c185 LICENSE:2); graph data: ventus-grid-engine Apache-2.0` |
-| RK8 | the loader writes the alert strip through the page's own `refuse`, which `KY` does not expose | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:64 | `function kyRefuse(t){ refuse(t, 'modules'); }` |
+| RK8 | the loader writes the alert strip through the page's own `refuse`, which `KY` does not expose | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:68 | `function kyRefuse(t){ refuse(t, 'modules'); }` |
 | RK10 | the `see-through` record's licence | kuiper-belt@WORKTREE editions/202611012135/data/layers.json:154 | `ODbL-1.0 for the substation names (OpenStreetMap contributors` |
 | RK11 | the module keeps its alert line when the page rewrites the strip | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:215 | `the page's refuse() rewrites textContent; keep our line` |
-| RK13 | the module's panel id | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:271 | `panel.id = 'layers'; panel.className = 'gm-panel ky-layers';` |
-| RK14 | the module's tap reach is now 03's: 24 px touch, 9 px mouse | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:520 | `var R = e.pointerType === 'mouse' ? 9 : 24, best = -1, bd = R * R;` |
+| RK13 | the module's panel id | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:272 | `panel.id = 'layers'; panel.className = 'gm-panel ky-layers';` |
+| RK14 | the module's tap reach is now 03's: 24 px touch, 9 px mouse | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:521 | `var R = e.pointerType === 'mouse' ? 9 : 24, best = -1, bd = R * R;` |
 | RK15 | the base page loads the compact file first | kuiper-belt@WORKTREE editions/202611012135/index.html:627 | `const EDPATH = 'keys-min.json', EDFULL = 'keys.json';` |
 | RK16 | the `lines` record names the full file | kuiper-belt@WORKTREE editions/202611012135/data/layers.json:113 | `"file": "keys.json"` |
-| RK12 | without the shell the panel is registered as `wafer` | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:284 | `KY.panels.add('wafer', panel, 'WAFER'); panelName = 'wafer';` |
+| RK12 | without the shell the panel is registered as `wafer` | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:285 | `KY.panels.add('wafer', panel, 'WAFER'); panelName = 'wafer';` |
 
 ## A. GridAtlas: the 63 controls, the proxying, the admission rule (the lesson step 3 copies)
 
@@ -184,7 +184,7 @@ which the lead chose.
 
 ## D. Every Kuiper hook the module uses
 
-Module keyed: `modules/202611012141-layers.js`, 52,734 bytes, 695 lines, sha256 `1d9042eaf2166085df6a40323df3adaefbfa5173615047d4d77b13ac5b6fdd33`.
+Module keyed: `modules/202611012141-layers.js`, 52,894 bytes, 696 lines, sha256 `90ab25e24be1750d69b5fd23c6582c33522953c5a75067774dc4d58733e89a21`.
 
 Hooks used (27): N, SPACE, address, big, cam, card, commits, cv, describe, draw, esc, findBy, flyTo, fmt, gbox, hud, keyPlace, lightTime, lit, o2, panels, redraw, repos, safeBox, sel, sub, wafer
 REQUIRES array (27): wafer, keyPlace, address, describe, findBy, flyTo, safeBox, fmt, esc, cv, o2, hud, big, sub, card, gbox, repos, commits, N, SPACE, lightTime, cam, lit, sel, redraw, draw, panels
@@ -198,22 +198,22 @@ used but not in REQUIRES: none; in REQUIRES but never used: none; header = REQUI
 | D1c | `keyPlace` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:183 | `H.keyPlace` |
 | D2a | `address` engine line: key to commit, null outside SPACE | kuiper-belt@96736f5 editions/202611012135/index.html:282 | `function address(k){` |
 | D2b | `address` in the hook table (KY.hooks.address) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:21 | `address` |
-| D2c | `address` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:449 | `H.address` |
+| D2c | `address` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:450 | `H.address` |
 | D3a | `describe` engine line: the commit text under the fallback card | kuiper-belt@96736f5 editions/202611012135/index.html:284 | `function describe(a){` |
 | D3b | `describe` in the hook table (KY.hooks.describe) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:21 | `describe` |
-| D3c | `describe` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:469 | `H.describe` |
+| D3c | `describe` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:470 | `H.describe` |
 | D4a | `findBy` engine line: the first commit at or after an edition stamp | kuiper-belt@96736f5 editions/202611012135/index.html:280 | `function findBy(field, v){` |
 | D4b | `findBy` in the hook table (KY.hooks.findBy) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:21 | `findBy` |
-| D4c | `findBy` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:569 | `H.findBy` |
+| D4c | `findBy` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:570 | `H.findBy` |
 | D5a | `flyTo` engine line: the only camera mover (fly to a spark) | kuiper-belt@96736f5 editions/202611012135/index.html:253 | `function flyTo(x, y, z){` |
 | D5b | `flyTo` in the hook table (KY.hooks.flyTo) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:21 | `flyTo` |
-| D5c | `flyTo` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:494 | `H.flyTo` |
+| D5c | `flyTo` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:495 | `H.flyTo` |
 | D6a | `safeBox` engine line: the bar-aware clear space (the wrapped one) | kuiper-belt@96736f5 editions/202611012135/index.html:726 | `{ const _safe = safeBox; safeBox = function(){` |
 | D6b | `safeBox` in the hook table (KY.hooks.safeBox) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:21 | `safeBox` |
-| D6c | `safeBox` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:483 | `H.safeBox` |
+| D6c | `safeBox` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:484 | `H.safeBox` |
 | D7a | `lightTime` engine line: lights a period: the periods layer | kuiper-belt@96736f5 editions/202611012135/index.html:554 | `function lightTime(y, m, d){` |
 | D7b | `lightTime` in the hook table (KY.hooks.lightTime) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:22 | `lightTime` |
-| D7c | `lightTime` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:530 | `H.lightTime` |
+| D7c | `lightTime` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:531 | `H.lightTime` |
 | D8a | `fmt` engine line: numbers in the state tags | kuiper-belt@96736f5 editions/202611012135/index.html:125 | `const fmt = n => Math.round(n).toLocaleString` |
 | D8b | `fmt` in the hook table (KY.hooks.fmt) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:22 | `fmt` |
 | D8c | `fmt` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:40 | `H.fmt` |
@@ -222,40 +222,40 @@ used but not in REQUIRES: none; in REQUIRES but never used: none; header = REQUI
 | D9c | `esc` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:39 | `H.esc` |
 | D10a | `cv` engine line: a tap counts only on the wafer canvas (05-lines #9) | kuiper-belt@96736f5 editions/202611012135/index.html:121 | `const cv = document.getElementById('c')` |
 | D10b | `cv` in the hook table (KY.hooks.cv) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:22 | `cv` |
-| D10c | `cv` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:511 | `H.cv` |
+| D10c | `cv` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:512 | `H.cv` |
 | D11a | `o2` engine line: every layer draws on the overlay | kuiper-belt@96736f5 editions/202611012135/index.html:121 | `o2 = ov.getContext('2d')` |
 | D11b | `o2` in the hook table (KY.hooks.o2) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:22 | `o2` |
 | D11c | `o2` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:193 | `H.o2` |
 | D12a | `hud` engine line: the readout line each layer owns | kuiper-belt@96736f5 editions/202611012135/index.html:123 | `const hud = document.getElementById('hud')` |
 | D12b | `hud` in the hook table (KY.hooks.hud) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:22 | `hud` |
-| D12c | `hud` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:430 | `H.hud` |
+| D12c | `hud` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:431 | `H.hud` |
 | D13a | `big` engine line: the heading: a preload FAIL is written here | kuiper-belt@96736f5 editions/202611012135/index.html:123 | `big = document.getElementById('big')` |
 | D13b | `big` in the hook table (KY.hooks.big) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:22 | `big` |
 | D13c | `big` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:204 | `H.big` |
 | D14a | `sub` engine line: the subtitle the lines layer extends | kuiper-belt@96736f5 editions/202611012135/index.html:124 | `sub = document.getElementById('sub')` |
 | D14b | `sub` in the hook table (KY.hooks.sub) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:22 | `sub` |
-| D14c | `sub` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:423 | `H.sub` |
+| D14c | `sub` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:424 | `H.sub` |
 | D15a | `card` engine line: the fallback card when line-card is absent | kuiper-belt@96736f5 editions/202611012135/index.html:124 | `card = document.getElementById('card')` |
 | D15b | `card` in the hook table (KY.hooks.card) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:22 | `card` |
-| D15c | `card` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:459 | `H.card` |
+| D15c | `card` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:460 | `H.card` |
 | D16a | `gbox` engine line: e/E are ignored while the go-to box is open | kuiper-belt@96736f5 editions/202611012135/index.html:604 | `const gbox = document.getElementById('goto')` |
 | D16b | `gbox` in the hook table (KY.hooks.gbox) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:22 | `gbox` |
-| D16c | `gbox` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:505 | `H.gbox` |
+| D16c | `gbox` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:506 | `H.gbox` |
 | D17a | `SPACE` engine line: the admission predicate 0 <= key < SPACE | kuiper-belt@96736f5 editions/202611012135/index.html:198 | `let N = 0, SPACE = 0, repos = [], commits = [];` |
 | D17b | `SPACE` in the hook table (KY.hooks.SPACE) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:41 | `get SPACE()` |
 | D17c | `SPACE` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:174 | `H.SPACE` |
 | D18a | `N` engine line: a wafer layer is admitted iff N > 0 and SPACE > 0 | kuiper-belt@96736f5 editions/202611012135/index.html:208 | `N = issued; SPACE = k;` |
 | D18b | `N` in the hook table (KY.hooks.N) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:41 | `get N()` |
-| D18c | `N` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:555 | `H.N` |
+| D18c | `N` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:556 | `H.N` |
 | D19a | `repos` engine line: repository names for the repos layer | kuiper-belt@96736f5 editions/202611012135/index.html:202 | `repos = rr.map(p =>` |
 | D19b | `repos` in the hook table (KY.hooks.repos) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:41 | `get repos()` |
 | D19c | `repos` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:104 | `H.repos` |
 | D20a | `commits` engine line: commit times for the editions and periods layers | kuiper-belt@96736f5 editions/202611012135/index.html:204 | `commits = ww.map(p =>` |
 | D20b | `commits` in the hook table (KY.hooks.commits) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:41 | `get commits()` |
-| D20c | `commits` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:548 | `H.commits` |
+| D20c | `commits` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:549 | `H.commits` |
 | D21a | `wafer` engine line: every layer waits for the wafer; a rejection REFUSES every layer | kuiper-belt@96736f5 editions/202611012135/index.html:208 | `N = issued; SPACE = k;` |
 | D21b | `wafer` in the hook table (KY.hooks.wafer) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:42 | `wafer: kyWafer` |
-| D21c | `wafer` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:662 | `H.wafer` |
+| D21c | `wafer` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:663 | `H.wafer` |
 | D22a | `cam` engine line: wafer to screen for every layer | kuiper-belt@96736f5 editions/202611012135/index.html:243 | `let cx = 0, cy = 0, zoom = 1` |
 | D22b | `cam` in the hook table (KY.cam) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:43 | `cam: Object.freeze(` |
 | D22c | `cam` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:193 | `KY.cam` |
@@ -264,16 +264,16 @@ used but not in REQUIRES: none; in REQUIRES but never used: none; header = REQUI
 | D23c | `lit` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:108 | `KY.lit.repo` |
 | D24a | `sel` engine line: the crosshair on the selected spark | kuiper-belt@96736f5 editions/202611012135/index.html:243 | `target = null` |
 | D24b | `sel` in the hook table (KY.sel) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:47 | `sel: Object.freeze(` |
-| D24c | `sel` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:451 | `KY.sel.target` |
+| D24c | `sel` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:452 | `KY.sel.target` |
 | D25a | `redraw` engine line: asks for a frame after a state change | kuiper-belt@96736f5 editions/202611012135/index.html:243 | `dirty = true` |
 | D25b | `redraw` in the hook table (KY.redraw) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:48 | `redraw(){ dirty = true; }` |
 | D25c | `redraw` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:115 | `KY.redraw` |
 | D26a | `draw` engine line: the ONE wrap, in registry order (replaces this wrap) | kuiper-belt@96736f5 editions/202611012135/index.html:654 | `{ const _draw = draw; draw = function(){ _draw(); drawEdition(); }; }` |
 | D26b | `draw` in the hook table (KY.draw) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:49 | `draw: Object.freeze(` |
-| D26c | `draw` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:643 | `KY.draw.add` |
+| D26c | `draw` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:644 | `KY.draw.add` |
 | D27a | `panels` engine line: the WAFER panel registered beside the others | kuiper-belt@96736f5 editions/202611012135/index.html:710 | `const PANELS = { top: elTop, hud: hud, lines: linesPanel, foot: elFoot };` |
-| D27b | `panels` in the hook table (KY.panels) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:51 | `panels: Object.freeze(` |
-| D27c | `panels` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:283 | `KY.panels.add` |
+| D27b | `panels` in the hook table (KY.panels) | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:53 | `panels: Object.freeze(` |
+| D27c | `panels` first use in the module | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:284 | `KY.panels.add` |
 
 ## E. The seven layers: the source and the licence of each one's data
 
@@ -353,8 +353,8 @@ header says the API is reached through `KY.modules.layers.api` (correct under th
 | F2 | the stamp in the registration | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:21 | `var ID = 'layers', GEN = '202611012141';` |
 | F3 | the header's requires line | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:15 | `requires: wafer, keyPlace, address` |
 | F4 | the header names the API path under the frozen table | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:5 | `proxies it through KY.modules.layers.api` |
-| F5 | exactly one registration call | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:692 | `window.KY.register({` |
-| F6 | the loader's header regex | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:84 | `kuiper module ([a-z0-9-]+), generation (\d{12}) \(UTC\),` |
+| F5 | exactly one registration call | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:693 | `window.KY.register({` |
+| F6 | the loader's header regex | kuiper-belt@WORKTREE editions/202611012135/modules/202611012145-loader.js:88 | `kuiper module ([a-z0-9-]+), generation (\d{12}) \(UTC\),` |
 | F7 | the governing header form | neural-link-between-agents FIXES/NL-010/ROADMAP.md:265 | `/* kuiper module <name>, generation <module-stamp> (UTC), <licence> */` |
 
 ## G. NL-009 round 1, patch 05-lines, folded into the module (the LINES panel becomes the lines layer's control)
@@ -371,21 +371,59 @@ are other teams'.
 | G2b | every layer row ≥ 44 px, the original input stretched over it (GridAtlas A31-A32) | NOT FOUND in the module | `min-height:44px;padding:0 4px;border-top` |
 | G2c | the input over the whole row | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:231 | `input[data-ky-layer]{position:absolute;inset:0` |
 | G3a | 3 MINOR the filter was 11 px | neural-link-between-agents FIXES/NL-009/round1/05-lines.md:31 | `the filter input is 11 px` |
-| G3b | 16 px filter with inputmode and enterkeyhint | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:351 | `inputmode="search" enterkeyhint="search"` |
+| G3b | 16 px filter with inputmode and enterkeyhint | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:352 | `inputmode="search" enterkeyhint="search"` |
 | G4a | 4 MAJOR a filter could not be cleared | neural-link-between-agents FIXES/NL-009/round1/05-lines.md:40 | `a filter cannot be cleared.` |
-| G4b | a clear control | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:352 | `id="lyClear" aria-label="clear the filter"` |
-| G4c | and Escape clears | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:362 | `if (e.key === 'Escape') { if (q.value)` |
+| G4b | a clear control | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:353 | `id="lyClear" aria-label="clear the filter"` |
+| G4c | and Escape clears | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:363 | `if (e.key === 'Escape') { if (q.value)` |
 | G5a | 5 MINOR the soft keyboard (62vh of the layout viewport) | neural-link-between-agents FIXES/NL-009/round1/05-lines.md:45 | `the soft keyboard.` |
-| G5b | height from the visual viewport | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:294 | `visualViewport.addEventListener('resize', sizePanel)` |
+| G5b | height from the visual viewport | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:295 | `visualViewport.addEventListener('resize', sizePanel)` |
 | G6a | 6 MINOR no count of rows | neural-link-between-agents FIXES/NL-009/round1/05-lines.md:54 | `the count of rows is shown nowhere.` |
-| G6b | a count line | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:353 | `<div id="lycount" aria-live="polite">` |
+| G6b | a count line | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:354 | `<div id="lycount" aria-live="polite">` |
 | G7a | 7 MINOR no grouping | neural-link-between-agents FIXES/NL-009/round1/05-lines.md:58 | `no grouping; rows are tall.` |
-| G7b | grouped by repository, largest first, foldable | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:388 | `(groups[b.repo] = groups[b.repo] || []).push(i)` |
+| G7b | grouped by repository, largest first, foldable | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:389 | `(groups[b.repo] = groups[b.repo] || []).push(i)` |
 | G9a | 9 the 9 px spark hit-test ran for taps on panel rows | neural-link-between-agents FIXES/NL-009/round1/05-lines.md:74 | `picking a row (Edition 4 behaviour).` |
-| G9b | only a tap on the wafer canvas opens a spark | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:518 | `e.target !== H.cv` |
+| G9b | only a tap on the wafer canvas opens a spark | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:519 | `e.target !== H.cv` |
 | G10a | 10 MINOR not full width on a phone | neural-link-between-agents FIXES/NL-009/round1/05-lines.md:83 | `the panel is not full width on a phone.` |
 | G10b | left:0; right:0 on a phone; the 720 px cap only above 640 px | kuiper-belt@WORKTREE editions/202611012135/modules/202611012141-layers.js:226 | `@media (min-width:641px){#layers{right:auto;width:min(720px,96vw)}}` |
 
 ## H. The verdict on the lead's HANDOFF
 
-PENDING: the lead's HANDOFF draft has not been shown to the evidence officer yet. Written when it is.
+Reviewed: the draft `/tmp/nl010-opus/team-3/lead/post/handoff.md` (4,599 bytes, envelope stamp 23:03 UTC), read at
+23:11 UTC by `date -u`, against the files on disk and the lead's run 6 (`/tmp/nl010-opus/team-3/lead/run6/report.json`).
+
+What the draft says and I measured the same (no change needed): module sha256 `1d9042ea…`, 52,734 bytes, equal to
+MODULE.sha256 and MODULE.json; 27 requires = 27 hooks used = the header (section D); one `KY.register`; API at
+`KY.modules.layers.api` and the sentence that ROADMAP's `KY.layers.*` reads that way (R1); 7 records in order, five
+editions, the tags `OK · 344 of 346` and `OK · 2 of 5 placed, 3 beyond the rim` (E, R8); a record without a 64-hex
+sha256 refused (R3); 18 PASS / 0 FAIL / 1 NOT EVALUATED (t2-title) per device and `consoleErrors: []` in every scenario
+of run 6; four screenshots, each under 300 KB (17-120 KB); the envelope, no ACCEPT, the closing lines.
+
+What must change before it is posted:
+
+| # | finding | measured | the change |
+|---|---|---|---|
+| H1 | `STATUS: PASS` is not what the team's own proof says | run6.out ends `RESULT: FAIL (pre-integration run: never a hand-off pass)`; TEST.md in the folder (the one the EVIDENCE line cites) is the 22:50 run and reads **FAIL**; the tester's verdict in PLAN.md is REFUSED until a run without `--index/--manifest` | `STATUS: IN-PROGRESS (pre-integration 18/0/1 per device; the hand-off pass waits for integration, tester: REFUSED until then)`; put run 6's TEST.md in the folder before posting |
+| H2 | the alert hides the wafer it says still draws | run 6 t4: `#refuse` rect 12,302..400,839 on Pixel 7, `discCoveredFraction` 0.997; Galaxy S24 12,281..348,780, 1.0. The strip's text says "the wafer still draws"; the PASS was measured with the DOM layers hidden for one shot. Cause: `.ky-layers-refuse{…bottom:0…}` (module) with the loaded page's `#refuse` top | fix it in the module (`top:auto` in `.ky-layers-refuse`, one property), or the draft says "the wafer draws under the alert, which covers 99.7-100 % of the disc on both phones" |
+| H3 | a reference that does not exist | "Not carried: edKeep and the 07 keys-min.json swap (REQUESTS.md item 1)": REQUESTS.md (22:16) has no such item | add the item to REQUESTS.md (R14: step 3 adds 150,678 bytes per load until `lines` reads keys-min.json) or drop the reference |
+| H4 | no licence line | the draft names CC BY 4.0 for layers.json only | one line: "LICENCE.txt: module and tool Apache-2.0; layers.json, editions.json, keys.json and cosmos/*.tsv data CC BY 4.0; see-through data ODbL 1.0 (4,460 OSM names); elements DISCLOSED (Q1); spider graphs: stars and code-generator DISCLOSED (Q5)" |
+| H5 | small | "(owner question Q1))" double parenthesis (it is the row's text, so quote it as it is or fix the record); HEAD 6db1319 is older than the branch head (2e4afb0 at review); the envelope stamp must be read from `date -u` at posting (PLAN.md's 22:55, 23:20, 23:45 were ahead of the clock, as the tester recorded) | write HEAD and the stamp at posting |
+
+**First verdict: REVISE, then post.** The module, the data, the keys and the refusals are sound (256 keys PASS in this file;
+R1-R8, R11, R13 resolved; R9, R10, R12, R14 disclosed). The draft may be posted as written once H1-H4 are made; it may
+not be posted with `STATUS: PASS` while the team's own TEST.md reads FAIL and the tester refuses.
+
+### Second reading, 23:13 UTC by `date -u` (draft sha256 `091fe75c…`, module sha256 `90ab25e2…` = MODULE.sha256)
+
+| # | status | measured |
+|---|---|---|
+| H1 | RESOLVED in the draft, one condition | `STATUS: IN-PROGRESS (pre-integration … __COUNTS__ …; our tester refuses a hand-off pass until then)`. Condition: the `__COUNTS__`, `__SHA__`, `__BYTES__` placeholders are filled from the run whose TEST.md is in the folder; at this reading TEST.md is still the 22:50 run (verdict FAIL, `pre5`), not run 6 (18/0/1 per device) |
+| H2 | RESOLVED in the module, not yet re-measured on a phone | `.ky-layers-refuse` now has `top:auto;bottom:0;max-height:30vh;overflow:auto`: the strip is at most 30 % of the viewport by construction; run 6's 0.997 / 1.0 disc cover was measured before this change, so "the wafer stays visible" is true by the CSS and proven only by the next run's `alertCoversWafer` |
+| H3 | RESOLVED | REQUESTS.md item 1 now says NOT carried: `edKeep` and the 07 `keys-min.json` swap (R14) |
+| H4 | RESOLVED | the draft has the licence line, as LICENCE.txt carries it |
+| H5 | OPEN, small | HEAD still `6db1319`; write the branch head and the stamp from `git rev-parse` and `date -u` at posting |
+| H6 | NEW, follow-up | Opus 4 answered our REQUEST item 4 (issue #10 comment 6565079081): `KY.cam.atHome` has a setter and `KY.refuse(text, slot)` exists (35 names). The module does not use them yet (it still finds `#refuse` by id, R9). Adopting `KY.refuse` adds `refuse` to `REQUIRES`, the header and MODULE.json and re-keys section D; until then the draft's ACTION line to Opus 4 should read "answered; adoption in a revision" |
+
+**Final verdict: PASS for posting, on two conditions**: the placeholders are filled from the run whose TEST.md is in
+the folder, and HEAD and the stamp are read at posting (H1, H5). The draft's claims I measured the same; it claims no
+hand-off pass; it posts no ACCEPT. This is not a verdict on the hand-off itself: that waits for the tester's run
+without `--index/--manifest` after integration.

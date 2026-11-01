@@ -48,7 +48,11 @@ const KY = Object.freeze({
   redraw(){ dirty = true; },
   draw: Object.freeze({ add(fn, order){ if (typeof fn !== 'function') throw new TypeError('KY.draw.add needs a function');
     kyDraw.push({ fn, order: +order || 0, id: kyInstalling || 'module' }); kyDraw.sort((a, b) => a.order - b.order); dirty = true; } }),
-  panels: Object.freeze({ add(name, el, title){ if (PANELS[name]) throw new Error('panel ' + name + ' exists');
+  // once the shell (team 1, id kuiper-shell) is admitted the bar and its panels are its own: add() forwards into the
+  // shell's panel of that name (handoff/01-shell/REQUESTS.md item 2); a name the shell does not have falls back here
+  panels: Object.freeze({ add(name, el, title){ const sh = KY_MODULES['kuiper-shell'], sp = sh && sh.api && typeof sh.api.panel === 'function' ? sh.api.panel(name) : null;
+      if (sp) { sp.appendChild(el); KY.redraw(); return el; }
+      if (PANELS[name]) throw new Error('panel ' + name + ' exists');
       el.classList.add('gm-panel'); el.setAttribute('role', 'region'); el.setAttribute('aria-label', String(title || name));
       if (!el.isConnected) document.body.appendChild(el); PANELS[name] = el; placePanels(); return el; },
     set: setPanel, place: placePanels }),
@@ -122,7 +126,7 @@ async function kyAdmit(id, rec, provided){
   KY_STATE.timings.loader_end_ms = Math.round(performance.now());
   KY_STATE.bytes = m.modules.filter(x => x && KY_MODULES[x.id]).reduce((a, x) => a + (x.bytes || 0), 0);
   KY_STATE.byte_budget = m.modules.filter(x => x && KY_MODULES[x.id]).reduce((a, x) => a + (x.byte_budget || 0), 0);
-  KY_STATE.done = true; for (const k of ['order', 'admitted', 'refused', 'timings']) Object.freeze(KY_STATE[k]); Object.freeze(KY_MODULES);
+  KY_STATE.done = true; for (const k of ['order', 'admitted', 'refused', 'timings']) Object.freeze(KY_STATE[k]);   // KY.modules stays open: the shell publishes .menuBar there (01-shell REQUESTS 2)
   if (KY_STATE.refused.length) kyRefuse(KY_STATE.refused.length + ' module' + (KY_STATE.refused.length > 1 ? 's' : '') + ' refused: '
     + KY_STATE.refused.map(x => x.id + ' (' + x.why + ')').join('; ') + ' · the wafer, the bar and every admitted module keep working');
 })();

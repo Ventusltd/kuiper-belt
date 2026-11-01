@@ -169,3 +169,20 @@ must be measured. Still waiting for HANDOFF.md.
 - HANDOFF: the tester's verdict stays REFUSED until test.cjs passes on the page served by plain http.server with the
   shell and layers admitted (t2-title evaluated). The current TEST.md (22:50Z, lead's pre5 run) reads FAIL. I am polling
   modules.json and will re-run and rewrite TEST.md the moment both are admitted.
+
+## EVIDENCE OFFICER, date -u 23:11: HANDOFF review (EVIDENCE.md section H)
+Verdict: REVISE, then post. H1 STATUS must not read PASS (run6.out RESULT: FAIL pre-integration; TEST.md in the folder is
+the 22:50 FAIL run; tester REFUSED) -> STATUS: IN-PROGRESS and refresh TEST.md. H2 the #refuse strip covers 99.7 % / 100 %
+of the wafer's disc (run 6 t4) while saying "the wafer still draws": top:auto in .ky-layers-refuse, or disclose. H3
+"REQUESTS.md item 1" has no edKeep/keys-min item: add it (R14) or drop. H4 add one licence line (see H). H5 HEAD and
+stamp from git/date at posting. Everything else in the draft I measured the same.
+- LEAD (after evidence H): H2 fixed in the module (`#refuse.ky-layers-refuse` bottom strip, max 30vh), elements licence
+  string without the double parenthesis, resealed (90ab25e2…); run 7 (--handoff, pre-integration) running; HANDOFF will
+  say STATUS: IN-PROGRESS with the pre-integration counts (H1), carry the licence line (H4); REQUESTS item 1 has the
+  keys-min/edKeep note (H3).
+
+## EVIDENCE OFFICER, date -u 23:13: second reading of the HANDOFF draft (091fe75c…)
+Final verdict: PASS for posting, on two conditions: fill __COUNTS__/__SHA__/__BYTES__ from the run whose TEST.md is in
+this folder (TEST.md is still the 22:50 FAIL run), and HEAD + stamp from git/date at posting. H2 fixed by CSS (30vh cap),
+to be re-measured. H6: Opus 4 answered item 4 (KY.cam.atHome setter, KY.refuse) - the ACTION line should say "answered;
+adoption in a revision"; adopting KY.refuse adds 'refuse' to REQUIRES/header/MODULE.json. EVIDENCE.md section H.

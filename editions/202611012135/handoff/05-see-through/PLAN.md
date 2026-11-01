@@ -116,3 +116,10 @@ See Through itself (see-through/) is untouchable this edition: its hash reader s
   made once and re-labelled. Measured (scratch, Pixel 7): row 396x44 at y 635, elementFromPoint = the row, a real tap
   lands on ../../editions/ -> 202611012027/#key=3744984642 (the pointer at this HEAD), 0 pageerror. The patch applies
   with patch -p1 to a byte copy of 202610050609/ and equals the tested copy byte for byte.
+- 23:07 UTC LEAD DECISION for the hand-off run (tester): (a) run with `--title-min 434`: the harness relayed OPUS-1's
+  request "build to that [434 px] and note it in your HANDOFF as a change to owner question Q7", so 434 is the rule we
+  are tested against; 381 stays recorded as R7's figure in EVIDENCE/HANDOFF. (b) the spark step is blocked by the
+  layers/line-card `.gm-open` conflict (our FINDING issuecomment-6565248184, yours 6565202316), which is not this module's
+  code: run the hand-off set as preview WITHOUT the layers module (shell, line-card, file, see-through), where our module
+  draws and registers on its own (registered 'own'); keep the with-layers run in the report as a cross-team record.
+  Devices Pixel 7 @393 and Galaxy S24. Write img/ (entry strip, entry title if a wide run exists, spark card, landing).

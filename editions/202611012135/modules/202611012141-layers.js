@@ -264,7 +264,8 @@
     + '#lineslist .ln code{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;color:#ffffff;white-space:pre-wrap;font:inherit;font-weight:600}'
     + '#lineslist .ln b{color:#d5dcea;font-weight:600}#lineslist .ln.focus b{color:#22ee77}#lineslist .ln.sel{background:rgba(255,43,214,.12)}'
     + '#lineslist .ln .t{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}'
-    + '.ky-layers-refuse{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#090c13f2;color:#ffb000;border-top:2px solid #ffb000;padding:8px 12px;'
+    // the strip sits at the bottom and stays short, so the wafer it says still draws stays visible (evidence H2)
+    + '#refuse.ky-layers-refuse{position:fixed;left:0;right:0;top:auto;bottom:0;max-height:30vh;overflow:auto;z-index:30;background:#090c13f2;color:#ffb000;border-top:2px solid #ffb000;padding:8px 12px;'
     + 'font:12px/1.5 ui-monospace,Consolas,monospace;white-space:pre-wrap}';
 
   function buildPanel() {
