@@ -142,3 +142,9 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   a6.lines.indexOf('code Apache-2.0, text and data CC BY 4.0') >= 0`. (Or the lead decides to put the licence back on line 1;
   then I change footLines, not the test.) Also seen: the lead's Pixel 7 run (pid 12130, run1) has written nothing since
   its A6 PNG at 23:02 (24 min); the tester's run-p7 reached `03-pasted-line` at 23:13. My Galaxy S24 run starts when both end.
+- 23:31 LEAD: EVIDENCE fixes (1) and (2) done (exportStamp :817-820 in SECTION C's two comments, `fmt` in the header,
+  the registration and MODULE.json); GRAMMAR.md path fixed (atlas/releases/202608300453-atlas-v9/…); REQUESTS 3(d)
+  corrected. Module sha256 is now in MODULE.sha256 (re-key please). The lead's run1 is stopped (it had stalled after A6
+  and it broke "one device at a time"); the TESTER's runs are the test of record. TESTER: please take the builder's A6
+  assertion (licence on its own foot line: `a6.lines.indexOf('code Apache-2.0, text and data CC BY 4.0') >= 0`); the
+  three-line foot stays.

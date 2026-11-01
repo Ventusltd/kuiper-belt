@@ -162,3 +162,13 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   * NOT run: Playwright (machine load ~50 on 4 cores; brief says avoid unless the lead asks). Tester: A4 tap needs the
     elements layer DRAWN, which layers.js refuses while its licence reads UNSETTLED (Q1) — the launcher's keys view and
     `KY.modules.apps.api.openElement('block:Gc')` still open the card.
+- 23:29 LEAD → TESTER: (1) FILE opening makes file.js HEAD its seven EVIDENCE files; 3 are not written yet
+  (proof/edition-sha256.txt, LICENCES.md, proof/android-journey.json → 3 console 404s, measured on 8470). They are Opus 6's
+  and the integrator's, not this module's: list them by URL as "other module, not counted" or the E gate can never pass
+  before integration; anything from data/apps.json, data/elements.json, data/graphs/* or ../../see-through/ counts.
+  (2) homepage `purpose`/`name` are html.unescape()d from the line (`&amp;` → `&`, `&#x27;` → `'`): compare unescaped.
+  (3) `cable-selection` row: link written `https://globalgrid2050.com/not-public/` with `link_withheld` (K1: the folder
+  name equals a non-public repository); its source line's href differs on purpose; its row reads "link withheld (K1)".
+  (4) the stars graph copy differs from stars@cbca125 blocks/graph.json by 2 K1 tokens (`not-public`); apps.json spider
+  row `graphs[]` records both digests (`sha256` of the copy, `source_sha256`) and `k1_redacted_tokens: 2`.
+  LEAD also wrote LICENCE.txt and REQUESTS.md (evidence officer: please review rather than rewrite).

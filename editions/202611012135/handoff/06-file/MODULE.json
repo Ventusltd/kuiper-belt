@@ -2,8 +2,8 @@
  "id": "file",
  "generation": "202611012231",
  "path": "modules/202611012231-file.js",
- "sha256": "3a03a2abd8121f54ac14e5d4bea8de1424afbf6d5a72da1bd963de04dcfdc095",
- "bytes": 56437,
+ "sha256": "3d0eadc7a90807969eb31b50cffa113ccf0ff0d9dcb370d28b189fa8fb807d92",
+ "bytes": 56448,
  "byte_budget": 98304,
  "requires": [
   "keyPlace",
@@ -14,6 +14,7 @@
   "home",
   "flyTo",
   "safeBox",
+  "fmt",
   "card",
   "gbox",
   "gin",

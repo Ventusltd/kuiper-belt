@@ -6,8 +6,8 @@
  * atlas/modules/202609031958-menu-bar.js:707-733, :794-834, :1082-1097, :1120-1137, :1354-1365). No GridAtlas bytes
  * are copied verbatim but the words of two row labels. Code Apache-2.0; text and data CC BY 4.0 (kuiper-belt README).
  *
- * requires: keyPlace address describe goKey lightTime home flyTo safeBox card gbox gin SPACE N repos wafer cv ov hud big
- *           panels draw redraw cam lit sel layers
+ * requires: keyPlace address describe goKey lightTime home flyTo safeBox fmt card gbox gin SPACE N repos wafer cv ov hud
+ *           big panels draw redraw cam lit sel layers
  * optional (used when admitted earlier, never required): kuiper-shell (the FILE/EDIT/ABOUT panels), line-card (the
  *           selected index), see-through (its link()), apps (the launcher, data/apps.json)
  * provides: file, link (KY.modules.file.api.link is the grammar: read, read(text), hashText, set, clear, inspect)
@@ -353,7 +353,7 @@
   // ==== SECTION C begin (OPUS-6 builder): EXPORT, the EDIT paste field, the Backspace rule, copy-or-show
   // Keys: GridAtlas's export and clipboard method, gridatlas@5ec7f62 atlas/modules/202609031958-menu-bar.js:707-733
   // (copy, else show the payload in full), :794-811 (export this view; the image is checked before it is offered),
-  // :813-816 exportStamp (UTC to the minute), :1082-1097 looksBlank (sample a 40x40 probe), :1120-1137 capture INSIDE a
+  // :817-820 exportStamp (UTC to the minute), :1082-1097 looksBlank (sample a 40x40 probe), :1120-1137 capture INSIDE a
   // render frame, :1354-1365 every export control named by id and data-*-export. The Kuiper's WebGL context is
   // {antialias:false, alpha:false} with no preserveDrawingBuffer (editions/202611012135/index.html:122), so a read outside
   // the frame is opaque black, not transparent: the blank test here is "every probe pixel one colour" (alpha 0 included),
@@ -414,7 +414,7 @@
         return true;                                                   // one colour (or wholly transparent)
       } catch (e) { return false; }                                    // a tainted canvas is not blank (GridAtlas :1090-1094)
     }
-    function utcStamp(now) { return now.toISOString().replace('T', ' ').slice(0, 16) + ' UTC'; }      // GridAtlas :813-816
+    function utcStamp(now) { return now.toISOString().replace('T', ' ').slice(0, 16) + ' UTC'; }      // GridAtlas :817-820
     function editionName() {
       // the page's own name when #big carries one ("Kuiper Edition 5 · …", index.html:638); layers.js writes
       // "Kuiper edition <stamp>" instead, so a twelve-digit stamp is never read as an edition number
@@ -793,7 +793,7 @@
     looksBlank: C.looksBlank, footLines: C.footLines, strings: C.strings, about: ABOUT_SENTENCE });
 
   window.KY.register({ schema: 'kuiper.module.v1', id: ID, generation: GEN,
-    requires: ['keyPlace', 'address', 'describe', 'goKey', 'lightTime', 'home', 'flyTo', 'safeBox', 'card', 'gbox', 'gin',
+    requires: ['keyPlace', 'address', 'describe', 'goKey', 'lightTime', 'home', 'flyTo', 'safeBox', 'fmt', 'card', 'gbox', 'gin',
       'SPACE', 'N', 'repos', 'wafer', 'cv', 'ov', 'hud', 'big', 'panels', 'draw', 'redraw', 'cam', 'lit', 'sel', 'layers'],
     provides: ['file', 'link'],
     install: install, inspect: inspect });

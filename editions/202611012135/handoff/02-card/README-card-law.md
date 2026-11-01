@@ -4,7 +4,8 @@ The line of code is the header. Every card opens with the line itself, verbatim 
 
 That sentence is the short form of law L11 (`LAWS.md`, carried as `handoff/02-card/LAWS-L11.patch`). The card is the
 module `modules/202611012143-line-card.js` (Opus team 2, roadmap step 2). A card, rendered, for the first of the 344
-placed lines (`keys.json` `bodies[0]`, key 36,064,705,400):
+placed lines (`keys.json` `bodies[0]`, key 36,064,705,400), abridged: the details are shown open and the wafer
+position rows that `describe()` adds under them are left out:
 
 ```
 # Every digest in this repository is taken over git blob content, which is LF,

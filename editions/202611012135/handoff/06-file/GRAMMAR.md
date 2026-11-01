@@ -7,7 +7,7 @@ it in Edit; the pointer keeps it.
 
 ## Why the hash, not GridAtlas's query
 
-GridAtlas's deep link is a query parameter (gridatlas@5ec7f62 atlas/modules/202608291818-place-postcode-search.js:206-209,
+GridAtlas's deep link is a query parameter (gridatlas@5ec7f62 atlas/releases/202608300453-atlas-v9/202608291818-place-postcode-search.js:206-209,
 :294-298) and its root forwards `search + hash` (gridatlas@5ec7f62 index.html:2). The Kuiper's three pointers forward only
 the hash (`location.replace('202611012027/' + location.hash)`, kuiper-belt editions/index.html:12; see-through/index.html:12;
 learn-the-kuiper/index.html:12), Learn the Kuiper already keeps its state in the hash (learn-the-kuiper/202610050609/

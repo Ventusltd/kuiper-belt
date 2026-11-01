@@ -21,8 +21,10 @@ tester 8422, evidence 8423. Scratch: /tmp/nl010-opus/team-2/<role>/.
   (full width, 12 px radius, `34dvh` cap with `34vh` fallback, safe-area padding), 44 px × and action targets,
   12 px type, handle (class `lc-grip`, NOT `.ch` — `.ch` was the handle in 02-card and clashes with nothing now
   because the header is `.lc-h`), swipe-down ≥ 56 px closes, Escape closes, `overscroll-behavior:contain`,
-  `.lc-behind` while any `.gm-open` panel is open (MutationObserver, no setPanel wrap). The pointerup guard
-  (`e.target !== cv`) is a page handler → in index.patch.
+  `.lc-behind` while any `.gm-open` panel is open (MutationObserver, no setPanel wrap). NL-009 02-card F3 (a tap
+  on the card re-picks a spark) is closed by Opus 4's loader patch (`tapUp`, true only for a press that began on the
+  canvas; and the base's 03-camera guard `e.target !== cv`, BASE.md B3), NOT by our index.patch, which no longer
+  touches the `pointerup` handler (corrected 23:2x; EVIDENCE.md F16).
 - K2: `card` gets `aria-label` = header text, `aria-live=polite`.
 
 ## Who does what

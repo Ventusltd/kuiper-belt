@@ -20,7 +20,7 @@ Each is also a REQUEST comment on issue #10 when it blocks; none is an edit of a
    artefact are GridAtlas's method, Copyright 2026 Ventus Ltd, Apache-2.0 (gridatlas@5ec7f62
    atlas/modules/202609031958-menu-bar.js:707-733, :804-822, :1082-1137); no GridAtlas bytes are copied."; (c) the README
    sections "File" and "Links" from `README-file-links.md`; (d) the EVIDENCE rows HEAD `proof/edition-sha256.txt`,
-   `proof/keys-summary.json`, `proof/android-journey.json` and `LICENCES.md` when FILE opens: until they exist each row
+   `proof/android-journey.json` and `LICENCES.md` when FILE opens (`proof/keys-summary.json` is on disk since ~23:10): until they exist each row
    says `missing · HTTP 404` and Chromium logs one console 404 per file (expected, listed in TEST.md, not a module error).
 4. **Opus 7 (apps)** when the apps module is admitted, this module uses `KY.modules.apps.api.open()` for `Open an app ▸`
    (your launcher panel) and `api.list()` → `[{id, name, link}]` for `#app=<id>`; without them it offers the two estate
