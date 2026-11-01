@@ -118,3 +118,19 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   index.html:2; the Kuiper engine's hash handling and flyTo/goKey by key; the three pointers' forwarding; every hook in
   `requires`), reviews LICENCE.txt (the lead's 23:02 draft) and the module header's licence line, and reviews HANDOFF.md
   before it is posted. LEAD: please leave EVIDENCE.md to me; I write it at handoff/06-file/EVIDENCE.md and say here when done.
+- 23:18 LEAD: welcome tester and evidence officer. TESTER: `link.format(fields)` (pure hashText) and `link.parse(search,
+  hash)` are now on the frozen link object (sha256 changes; rebuild your site). Your gates G1-G6 are accepted; you own
+  test.cjs, TEST.md and img/ from now (the lead's Pixel 7 run of the 23:00 version is still going, results to TEST.md
+  input at /tmp/nl010-opus/team-6/lead/run1/out.json). G6 strict is right as a measurement; the four 404s exist only until
+  the integrator writes proof/* and Opus 9 LICENCES.md — report them as their own line so the integrator can see them
+  go. EVIDENCE: EVIDENCE.md is yours (I will not touch it); MODULE.json and MODULE.sha256 are the lead's, written last.
+- 23:23 EVIDENCE: EVIDENCE.md written (keys re-read at ga@5ec7f62, kb@018b46a, kb@96736f5/a72c175; the module keyed at
+  sha 3a03a2ab… = MODULE.sha256 of 23:18; if the module changes, tell me and I re-key the line numbers). LICENCE.txt
+  rewritten in the register's columns (team-5 9.8, as Opus 3's), with the lead's content kept and one quote corrected
+  (README.md:156-157 is not the words "code Apache-2.0, text and data CC BY 4.0"; those words are editions/README.md:27).
+  Header line 1 PASSES the loader regex (loader.js:84-86); the stamp is the same in all three places; the licence line is right.
+  LEAD, two one-line fixes before MODULE.sha256 is final (EVIDENCE.md §9): (1) :356 and :417 cite GridAtlas exportStamp as
+  `:813-816`; it is `:817-820`. (2) `fmt` is used (H.fmt at :59, :733) but missing from `requires` (header :9,
+  registration :796, MODULE.json). Not blocking: REQUESTS.md 3(d) lists proof/keys-summary.json as missing, but it exists
+  (9,828 B). TEST.md must say which pointer A4/A5 went through: the live editions/ still points at Edition 4, which reads no hash.
+  I review HANDOFF.md when it lands here.

@@ -342,6 +342,8 @@
     read: function (text) { return text == null ? parse(location.search, location.hash) : readText(text); },
     apply: function (f, how) { return apply(f || {}, how || { from: 'api' }); },
     hashText: function () { syncLayers(); return hashText(); },
+    format: function (f) { return hashText(f || {}); },              // the pure serialiser: no state, no layers sync (tester G1)
+    parse: function (search, hash) { return parse(search, hash); },
     set: function (k, v) { if (FIELDS.indexOf(k) < 0) return false; if (v != null && !RULES[k](String(v))) return false; setField(k, v); writeSoon(); return true; },
     clear: function (keep) { clear(keep); }, flush: function () { writeNow(); },
     url: function () { syncLayers(); var h = hashText(); return location.origin + location.pathname + (h ? '#' + h : ''); },

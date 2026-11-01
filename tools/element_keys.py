@@ -96,6 +96,8 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--edition', default='202611012135')
     ap.add_argument('--check', type=int, default=3, help='resolve this many keys back (key.py direction)')
+    ap.add_argument('--keypy-root', default='', help='a directory of working clones: run tools/key.py itself, its '
+                    'ROOTS set to this directory, on --check placed elements (smallest commits first)')
     a = ap.parse_args()
     t0 = time.time()
     roots = [r for r in a.roots.split(',') if r]
@@ -114,7 +116,7 @@ def main():
                'lines_before': None, 'commit_lines_measured': None, 'commit_lines_wafer': None, 'blob': None,
                'files_listed': len(e.get('files') or []), 'github': None, 'why': None}
         if not e.get('files'):
-            rec['why'] = 'the register lists no files for this element: counted and named, not placed'
+            rec['why'] = 'no register files: counted and named, not placed'
             out.append(rec)
             continue
         f = e['files'][0]
@@ -212,6 +214,33 @@ def main():
         print('  check %s %s -> %s / %s / %s:%s %s' % (r['sym'], format(k, ','), row['name'], row['sha'],
               landed and landed[0], landed and landed[1], 'OK' if res['ok'] else 'REFUSED'), file=sys.stderr)
 
+    # tools/key.py itself, unmodified, its ROOTS (a Windows path in the file) set to --keypy-root at import
+    keypy = []
+    if a.keypy_root and a.check:
+        picks, used = [], set()
+        for r in sorted(keyed, key=lambda r: (r['commit_lines_wafer'], r['number'])):
+            d = os.path.join(a.keypy_root, r['repo'])
+            if r['repo'] in used or not os.path.isdir(os.path.join(d, '.git')):
+                continue
+            if subprocess.run(['git', 'cat-file', '-e', r['commit'] + '^{commit}'], cwd=d,
+                              stderr=subprocess.DEVNULL).returncode:
+                continue
+            used.add(r['repo'])
+            picks.append(r)
+            if len(picks) == a.check:
+                break
+        for r in picks:
+            code = ('import sys; sys.path.insert(0, %r); import key; key.ROOTS = %r; sys.argv = ["key.py", "%d"]; '
+                    'sys.exit(key.main())' % (HERE, a.keypy_root, r['key']))
+            pr = subprocess.run([sys.executable, '-B', '-c', code], capture_output=True, text=True)
+            want = '%s / %s / ' % (r['repo'], r['commit'][:12])
+            ok = pr.returncode == 0 and want in pr.stdout and ('\n  %s : 1 ' % r['path']) in pr.stdout
+            keypy.append({'sym': r['sym'], 'key': r['key'], 'command': 'python tools/key.py %d' % r['key'],
+                          'roots': a.keypy_root, 'exit': pr.returncode, 'output': pr.stdout.strip().split('\n'),
+                          'ok': ok})
+            print('  key.py %s %d -> exit %d %s' % (r['sym'], r['key'], pr.returncode, 'OK' if ok else 'REFUSED'),
+                  file=sys.stderr)
+
     from collections import Counter
     unplaced = [r for r in out if not r['placed']]
     no_files = [r for r in unplaced if r['files_listed'] == 0]
@@ -252,6 +281,8 @@ def main():
         'readout': readout,
         'checks': checks,
         'checks_ok': all(c['ok'] for c in checks) if checks else None,
+        'checks_keypy': keypy,
+        'checks_keypy_ok': all(c['ok'] for c in keypy) if keypy else None,
         'command': ' '.join(['python3', 'tools/element_keys.py'] + sys.argv[1:]),
         'built_utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
         'seconds': round(time.time() - t0, 1),
@@ -264,7 +295,7 @@ def main():
     print(readout)
     for r in unplaced:
         print('  not placed: %-9s %s' % (r['sym'], r['why']), file=sys.stderr)
-    return 0 if doc['checks_ok'] is not False else 2
+    return 0 if doc['checks_ok'] is not False and doc['checks_keypy_ok'] is not False else 2
 
 
 if __name__ == '__main__':

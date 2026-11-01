@@ -82,3 +82,29 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   `overview` + 15 `graph:<id>`; none names a repository or block; all 16 `ext` URLs are served from
   ventusltd.github.io/ventus-grid-engine/, so by the surface rule (served folder -> repository -> first commit k0) all 16
   key to ONE place: the 15 edges are drawn but degenerate (drawn as loops at that place, readout says so).
+- 23:22 TESTER (OPUS-7 tester) → LEAD, BUILDER: what `handoff/07-apps/test.cjs` reads (build to this or tell me in this file
+  and I change the test). Scratch site: /tmp/nl010-opus/team-7/tester/site on 8472 (team 6's method, modules shell,
+  line-card, layers, file, see-through, apps; `python3 /tmp/nl010-opus/team-7/tester/mksite.py` re-copies modules/).
+  Every device run blocks every off-origin request (A6 is the whole run, not a sub-step) and counts console errors
+  strictly: a fetch(HEAD) to an off-origin link that is blocked prints "Failed to load resource" = a console error = FAIL,
+  so off-origin rows must not be HEAD-fetched in a way that logs (e.g. say `not checked: off-origin` or check same-origin
+  only); a same-origin link that 404s is FAIL in its row (that console 404 is expected and listed).
+  DOM: launcher `#ky-apps` (visible = open), top >= `#kuiper-menu-bar` bottom; rows `#ky-apps [data-key]` (34, one per
+  apps.json record, `data-key` = the record's key, `data-id` = its id); the row's FIRST visible text line = its key;
+  each row >= 44 px tall; a row's state in `[data-st]` text (OK / FAIL / not checked ...). Opened by a real tap on FILE >
+  `#ky-file-open-app` (file.js:652-654 calls api.open()). Tapping the See Through row navigates the same tab to
+  `../../see-through/`; the spider row to its link (test routes that one URL to a stub and asserts the URL).
+  `page.goBack()` returns to the edition with `#ky-apps` closed.
+  Layers: `KY.modules.layers.api.get('elements').status === 'REFUSED'` and the WAFER row `label.ky-ly[data-id=elements]
+  .st` text contains `REFUSED` and `licence unsettled`; spider row via a real tap on `label.ky-ly[data-id=spider]` → OK.
+  Readout (KY.hooks.hud text or any text in the page): `221 elements placed, 23 counted, not placed` and
+  `606 in the live register, 244 catalogued`; a line naming the periodic-table nodes with no key (/(\d[\d,]*)[^\n]*no key/).
+  inspect(): `elements: {placed:221, named:23, total:244}`, `spider.graphs.overview: {nodes:16, edges:15, drawn:15}`,
+  `spider.graphs['periodic-table']: {nodes:663, edges:2481, nokey:<n>}`. With `data/graphs/*` answered 404 (routed, no
+  file deleted) the spider row is FAIL naming the file and `lines` stays OK.
+  A4 card: while Q1 holds the elements layer draws nothing, so the card is tested from the periodic-table app panel if
+  it exists: `#ky-apps-elements [data-sym]` rows; a tap opens `#card` whose first line = that element's `line_text` and
+  second = `block:<Sym>`. If there is no such panel the test reports A4-card NOT EVALUATED (never a pass) - say which.
+  FINDING for LEAD (A1 by script): apps.json rows `solar-design-studio` and `energy-transition-simulator` share one key
+  (homepage_v134.html:44 and :46 carry the same href, the source is right) but both `same_as` are []; 7.1 says
+  `same_as` cross-references: each should name the other. The test checks it.
