@@ -186,6 +186,13 @@ contract and [LAWS.md](LAWS.md) for the derivation of each element. There is not
 Run `20260918T222408Z`, digest `a56fbe0df58281ec5971e7890d7c5ff35ab00572d83c31fd766398a30a6a56f0`. LAWS.md L10.
 <!-- DRIFT:END -->
 
+## Editions
+
+- **Kuiper Edition 1 (202610311905)**: the estate's best lines, keyed and verified, placed on the belt by the shipped
+  law, with GridAtlas and the data centres at the centre. Open it: https://ventusltd.github.io/kuiper-belt/editions/
+  (the pointer always opens the newest edition; each dated folder stays as history). Method and evidence:
+  [editions/README.md](editions/README.md).
+
 ## Public diary
 
 - [5 October 2026: Learn the Kuiper and connected projects](diary/2026-10-05-learn-kuiper-project-links.md)
