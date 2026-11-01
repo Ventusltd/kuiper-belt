@@ -87,3 +87,5 @@ the hand-off pass. `--handoff` writes img/ and TEST.md.
    row → `OK · none lit`; elements row disabled, `REFUSED · licence unsettled …`; lines history WAIT · wafer → LOAD ·
    keys.json → OK · 344 of 346; keys.json 404 → `FAIL · keys.json HTTP 404`, heading KEYS.JSON DID NOT LOAD; one byte
    changed → `FAIL · sha256 mismatch`; wafer.tsv 404 → every row `REFUSED · the wafer refused: …`; no pageerror.
+- 22:38 LEAD: panel name restored to the tester's contract: without the shell the panel is registered as `lines` (the
+  Edition 4 LINES title opens WAFER), else `wafer`; with the shell it mounts in `[data-group=layers]`.

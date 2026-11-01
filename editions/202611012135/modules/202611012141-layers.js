@@ -277,8 +277,11 @@
     if (host) { panel.classList.remove('gm-panel'); panel.classList.add('gm-open', 'ky-in-shell'); host.appendChild(panel); panelName = 'shell'; }
     else {
       document.body.appendChild(panel);
-      // without the shell: a panel named wafer; its bar title is team 1's (ROADMAP R2), KY.panels.set('wafer') opens it
-      KY.panels.add('wafer', panel, 'WAFER'); panelName = 'wafer';
+      // without the shell, the Edition 4 LINES title (index.html:702) opens the WAFER panel once the page's #lines is
+      // deleted (handoff/03-layers patch); the title's words stay team 1's (R2). No such title: a panel named wafer.
+      var t = document.querySelector('#bar .gm-title[data-panel="lines"]');
+      try { if (!t) throw 0; KY.panels.add('lines', panel, 'WAFER'); panelName = 'lines'; }
+      catch (e) { KY.panels.add('wafer', panel, 'WAFER'); panelName = 'wafer'; }
     }
     // one delegated change listener: the single implementation of on/off (menu-bar.js:1451-1462, :1723-1726)
     panel.addEventListener('change', function (e) {

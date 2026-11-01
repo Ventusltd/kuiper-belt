@@ -332,7 +332,7 @@ async function runDevice(browser, deviceName, served) {
   // open whichever bar title shows the element, by touch (Edition 4's titles, or the shell's six menus)
   const reveal = async (sel) => {
     if (await visibleSel(sel)) return { ok: true, title: null };
-    const names = await page.evaluate(() => { const ts = [...document.querySelectorAll('#kuiper-menu-bar .gm-menu > .gm-title, #bar .gm-title')].filter(b => b.getBoundingClientRect().width > 0 && b.tagName === 'BUTTON');
+    const names = await page.evaluate(() => { const ts = [...document.querySelectorAll('#kuiper-menu-bar .gm-menu > .gm-title, #bar:not(.kmb-superseded) .gm-title')].filter(b => b.getBoundingClientRect().width > 0 && b.tagName === 'BUTTON');
       document.querySelectorAll('[data-t-title]').forEach(b => b.removeAttribute('data-t-title')); ts.forEach((b, i) => b.setAttribute('data-t-title', String(i))); return ts.map(b => b.textContent.trim()); });
     for (let i = 0; i < names.length; i++) { const r = await rectOf('[data-t-title="' + i + '"]'); if (!r) continue; await tapRect(r); await sleep(800);
       if (await visibleSel(sel)) return { ok: true, title: names[i], sel: '[data-t-title="' + i + '"]' }; const r2 = await rectOf('[data-t-title="' + i + '"]'); if (r2) await tapRect(r2); await sleep(400); }
