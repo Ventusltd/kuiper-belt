@@ -1,5 +1,5 @@
---- a/editions/202611012135/index.html	2026-11-01 23:42:09.827307477 +0000
-+++ b/editions/202611012135/index.html	2026-11-01 23:42:10.693847668 +0000
+--- a/editions/202611012135/index.html	2026-11-01 23:53:32.037611325 +0000
++++ b/editions/202611012135/index.html	2026-11-01 23:53:32.159861428 +0000
 @@ -67,12 +67,6 @@
      z-index:11;background:#090c13f2;border:1px solid #1d6470;border-radius:0 0 6px 6px;padding:10px 12px;pointer-events:auto;text-align:left}
    #hud{right:0;left:auto;max-width:min(560px,96vw)} #foot{border-top:1px solid #1d6470}
@@ -165,7 +165,7 @@
    dirty = true;
  }
  bar.addEventListener('click', e => { const b = e.target.closest('.gm-title'); if (b) { e.stopPropagation(); setPanel(b.dataset.panel); } });
-@@ -803,31 +678,6 @@
+@@ -806,31 +681,6 @@
  { const _safe = safeBox; safeBox = function(){ const s = _safe(); placePanels(); s.y0 = Math.max(s.y0, bar.getBoundingClientRect().bottom + 8); s.y1 = Math.max(s.y0 + 24, innerHeight - 8); return s; }; }
  // prefers-reduced-motion: the camera lands at once instead of flying for 900 ms
  { const _fly = flyTo, rm = matchMedia('(prefers-reduced-motion: reduce)'); flyTo = function(x, y, z){ _fly(x, y, z); if (rm.matches && tween) tween.t0 -= tween.dur; }; }

@@ -80,6 +80,19 @@ def copy_graph(src, dst):
 COSMOS = os.path.join(HERE, '..', 'cosmos')
 
 
+def live_register(roots, commit='cbca125bb5eeb7d0ffb02f4546d60eb5d47dadc9', path='blocks/blocks.json'):
+    """count the blocks of the live register (stars) at the recorded commit, from git's bytes; None without a clone"""
+    for root in roots:
+        d = os.path.join(root, 'stars')
+        if os.path.isdir(os.path.join(d, '.git')):
+            r = subprocess.run(['git', 'show', '%s:%s' % (commit, path)], cwd=d, capture_output=True)
+            if r.returncode == 0:
+                j = json.loads(r.stdout)
+                return {'blocks': len(j['blocks']), 'source': 'stars@%s %s (generated_utc %s, sha256 %s)'
+                        % (commit[:7], path, j.get('generated_utc'), hashlib.sha256(r.stdout).hexdigest())}
+    return None
+
+
 def sha256_file(p):
     h = hashlib.sha256()
     with open(p, 'rb') as f:
@@ -313,6 +326,11 @@ def main():
         'distinct_commits_walked': len(walks),
         'redacted_records': sum(1 for r in out if r.get('redacted')),
     }
+    # the live register, measured (the launcher's readout "<n> in the live register, 244 catalogued"; lead, 23:57)
+    lr = live_register(roots)
+    if lr:
+        counts['live_register'] = lr['blocks']
+        counts['live_register_source'] = lr['source']
     readout = '%d elements placed, %d counted, not placed' % (counts['placed'], counts['named'])
     doc = {
         'schema': 'kuiper.elements.v1',

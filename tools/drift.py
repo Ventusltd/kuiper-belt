@@ -535,6 +535,17 @@ def check(args):
             if p.stdout.strip():
                 bad.append((r['id'], 'GONE but git grep -F -x finds it'))
         n[cl] += 1
+    # the walk that places a MOVED line's new key, run at the edition's own commit, must give the lines_before that
+    # tools/edition_keys.py recorded in keys.json for that body (the same rule, measured independently there)
+    walked = 0
+    for r in D['rows']:
+        if r['class'] == 'MOVED':
+            k = keys[r['id']]
+            got = lines_before(find_clone(estate, r['repo']), r['edition_commit'], r['path'])
+            walked += 1
+            if got != k.get('lines_before'):
+                bad.append((r['id'], 'lines_before at the edition commit %s, keys.json %s' % (got, k.get('lines_before'))))
+    n['lines_before re-walked'] = walked
     ok('P3 ground truth (git show)', not bad, '%s checked; %d disagreements%s' % (
         dict(n), len(bad), (': ' + '; '.join('%s %s' % x for x in bad[:5])) if bad else ''))
     # P5: the law

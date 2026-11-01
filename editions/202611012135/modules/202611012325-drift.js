@@ -238,12 +238,14 @@
   // ============================================================ SECTION 2: the readout and the filter (WAFER panel)
   var CSS = '#ky-drift{font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;color:#c9d3e6;padding:6px 0 4px;border-top:1px solid rgba(46,230,230,.25)}'
     + '#ky-drift .kd-h{color:#2ee6e6;letter-spacing:.08em;font-size:11px;margin:4px 0}'
+    + '#ky-drift .kd-s{white-space:pre-line}'
     + '#ky-drift .kd-c{display:flex;flex-wrap:wrap;gap:4px}'
-    + '#ky-drift .kd-c button{min-height:44px;min-width:44px;padding:0 8px;background:transparent;border:1px solid rgba(201,211,230,.35);color:inherit;font:inherit;border-radius:3px}'
+    + '#ky-drift .kd-c button{display:inline-flex!important;align-items:center;width:auto!important;flex:0 0 auto;min-height:44px;min-width:44px;padding:0 8px;background:transparent;border:1px solid rgba(201,211,230,.35);color:inherit;font:inherit;border-radius:3px}'
     + '#ky-drift .kd-c button[aria-pressed=true]{border-color:#2ee6e6;color:#fff}'
     + '#ky-drift .kd-l{max-height:30vh;overflow:auto;overscroll-behavior:contain;margin-top:4px}'
-    + '#ky-drift .kd-r{display:block;width:100%;text-align:left;min-height:44px;padding:4px 2px;background:transparent;border:0;border-bottom:1px solid rgba(201,211,230,.12);color:inherit;font:inherit}'
+    + '#ky-drift .kd-r{display:block!important;width:100%!important;text-align:left;min-height:44px;padding:4px 2px;background:transparent;border:0;border-bottom:1px solid rgba(201,211,230,.12);color:inherit;font:inherit}'
     + '#ky-drift .kd-r code{display:block;color:#fff;white-space:pre-wrap;word-break:break-all;max-height:4.2em;overflow:hidden}'
+    + '#ky-drift .kd-r>span{display:block;white-space:normal;word-break:break-all}'
     + '#ky-drift .kd-w{color:#ffb000}'
     + '#card .ky-drift-cl{white-space:pre-wrap;margin:4px 0;font-size:12px}';
   function buildPanel() {
@@ -256,6 +258,10 @@
     try { KY.panels.add('wafer', panel, 'drift'); } catch (e) { st.errors.push('panels.add: ' + e.message); }
     if (!panel.isConnected) {   // no shell and no WAFER panel: the section waits detached, the readout still speaks
       st.errors.push('no WAFER panel to hold the filter');
+    } else {                    // the filter sits just above the verified-lines list it filters, not after 20,000 px of it
+      var host = panel.parentNode, ln = host.querySelector('#layers, #lines');
+      while (ln && ln.parentNode !== host) ln = ln.parentNode;
+      host.insertBefore(panel, ln && ln !== panel ? ln : host.firstChild);
     }
   }
   function paint() {
@@ -279,8 +285,8 @@
       var b = st.bodyById[r.id + '|' + r.repo], t = b && typeof b.line_text === 'string' ? b.line_text : '';
       var tt = t.length > 300 ? t.slice(0, 300) + '… (+' + fmt(t.length - 300) + ' characters, the whole line is on its card)' : t;
       var w = r.class === 'MOVED' ? 'MOVED to line ' + r.head_line + ' (' + (r.delta > 0 ? '+' : '') + r.delta + ')' : r.class === 'UNVERIFIED' ? 'UNVERIFIED · ' + r.reason : r.class;
-      out.push('<button type="button" class="kd-r" role="listitem" data-row="' + i + '" data-class="' + r.class + '"><code>' + esc(tt) + '</code>'
-        + esc(r.repo + '@' + sha7(r.edition_commit) + ' ' + r.path + ':' + r.line + (r.key != null ? ' · key ' + fmt(r.key) : '')) + '\n<span style="color:' + INK[r.class] + '">' + esc(w) + '</span></button>');
+      out.push('<button type="button" class="kd-r" role="listitem" data-row="' + i + '" data-class="' + r.class + '"><code>' + esc(tt) + '</code><span class="kd-k">'
+        + esc(r.repo + '@' + sha7(r.edition_commit) + ' ' + r.path + ':' + r.line + (r.key != null ? ' · key ' + fmt(r.key) : '')) + '</span><span style="color:' + INK[r.class] + '">' + esc(w) + '</span></button>');
     });
     list.innerHTML = out.join('') || '<div class="kd-r">no ' + esc(st.filter) + ' rows</div>';
     list.dataset.count = String(n);

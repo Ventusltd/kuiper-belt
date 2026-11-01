@@ -636,6 +636,12 @@ function loaderMod(mod) {
     if (html.includes('kuiper-shell') || manifest.includes('kuiper-shell')) { mod.mode = 'page'; mod.modeNote = html.includes('kuiper-shell') ? '(index.html names it)' : '(modules.json names it; the loader admits it)'; if (flag('--html')) mod.pageOpts = { htmlFile: String(flag('--html')), rewrite: h => h }; }
     else { mod.mode = 'inject'; mod.modeNote = `(neither index.html nor modules.json names it yet; served with \`<script defer src="modules/${name}"></script>\` before \`</body>\`, standing in for team 1's one script tag)`;
       mod.pageOpts = { ...(flag('--html') ? { htmlFile: String(flag('--html')) } : {}), rewrite: h => h.replace(/<\/body>/i, `<script defer src="modules/${name}"></script>\n</body>`) }; }
+    // page mode through the manifest: when the integrator's record still carries an earlier sha256 of this module (a
+    // revision not yet re-recorded), serve modules.json with this file's sha256 and bytes, the one-line update the
+    // integrator makes, and say so; every other record is served as committed.
+    if (mod.mode === 'page' && !html.includes('kuiper-shell')) { try { const man = JSON.parse(manifest), rec = (man.modules || []).find(m => m && m.id === 'kuiper-shell');
+      if (rec && rec.sha256 !== mod.sha256) { const was = rec.sha256; rec.sha256 = mod.sha256; rec.bytes = mod.bytes; mod.pageOpts = { ...mod.pageOpts, manifest: JSON.stringify(man) };
+        mod.modeNote += ` — modules.json served with kuiper-shell sha256 ${mod.sha256.slice(0, 12)} (committed record ${was.slice(0, 12)}, an earlier revision)`; } } catch (e) {} }
     if (flag('--html')) mod.modeNote += ' — index.html replaced by ' + flag('--html');
     if (flag('--loader') && mod.mode !== 'page') Object.assign(mod, loaderMod(mod));
   } else mod.modeNote = '— no module file yet; every Kuiper assertion fails';

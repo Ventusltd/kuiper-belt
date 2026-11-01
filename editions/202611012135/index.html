@@ -796,6 +796,9 @@ function edSync(){ const open = !!openPanel || card.style.display === 'block';
   else if (!open && edHist) { edHist = false; if (history.state && history.state.kuiper) { edPopping = true; history.back(); } } }
 addEventListener('popstate', () => {
   if (edPopping) { edPopping = false; edHist = !!(history.state && history.state.kuiper); edSync(); return; }   // our own back(): close nothing, re-arm if a layer opened meanwhile
+  // EDITION 5 (integrator, Opus 10): the shell's own back() (it closes its panel by popping its {kmb} entry) can land
+  // after a pick has opened the card; that pop is the shell's, not the person's: the card keeps the entry instead
+  if (history.state && history.state.kmb && !openPanel && card.style.display === 'block') { try { history.replaceState({ kuiper:1 }, ''); } catch (e) {} edHist = true; return; }
   edHist = false; if (openPanel) setPanel(openPanel); if (card.style.display === 'block') { card.style.display = 'none'; edSel = -1; target = null; dirty = true; } });
 { const _draw = draw; draw = function(){ _draw(); edSync(); }; }
 elTop.classList.add('open');                                   // the long subtitle is readable once the panel is open

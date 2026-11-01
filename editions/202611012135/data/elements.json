@@ -32,7 +32,9 @@
    "cartridge": 1
   },
   "distinct_commits_walked": 26,
-  "redacted_records": 1
+  "redacted_records": 1,
+  "live_register": 606,
+  "live_register_source": "stars@cbca125 blocks/blocks.json (generated_utc 2026-10-31T18:45:22.798Z, sha256 07675d74c1858a9cde9f19d9e9a1f985afaf1a514d73dd4c20a2d0034ed6a573)"
  },
  "readout": "221 elements placed, 23 counted, not placed",
  "checks": [
@@ -120,8 +122,8 @@
  ],
  "checks_keypy_ok": true,
  "command": "python3 tools/element_keys.py --elements /home/user/estate/elements --roots /home/user/estate,/home/user,/tmp/nl010-opus/team-7/builder/clones --out editions/202611012135/data/elements.json --check 3 --keypy-root /home/user/estate",
- "built_utc": "2026-11-01T23:24:39Z",
- "seconds": 95.7,
+ "built_utc": "2026-11-01T23:59:01Z",
+ "seconds": 160.8,
  "elements": [
   {
    "sym": "block:At",

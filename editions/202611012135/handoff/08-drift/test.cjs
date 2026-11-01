@@ -35,6 +35,9 @@ const PRE = !(served.order || []).includes('drift');
 function manifest(withDrift) {
   const m = JSON.parse(JSON.stringify(served));
   if (!PRE) { if (!withDrift) { m.order = m.order.filter(x => x !== 'drift'); m.modules = m.modules.filter(x => x.id !== 'drift'); } return m; }
+  // pre-integration: other teams' modules are re-hashed from disk (they are being revised while we test; their
+  // admission is the integrator's test, not ours)
+  m.modules.forEach(x => { try { const b = fs.readFileSync(path.join(ED, x.path)); x.sha256 = crypto.createHash('sha256').update(b).digest('hex'); x.bytes = b.length; if (x.byte_budget < b.length) x.byte_budget = b.length; } catch (e) {} });
   if (!m.order.includes('line-card')) {
     const lc = JSON.parse(fs.readFileSync(path.join(ED, 'handoff', '02-card', 'MODULE.json'), 'utf8'));
     m.modules.push(lc); m.order.push('line-card');
@@ -162,7 +165,7 @@ async function run(devName, scen) {
   fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(report, null, 1));
   if (HANDOFF) {
     const t = ['# TEST.md — Opus team 8, step 8 the drift (P4 on Android)', '',
-      'Run ' + report.when + ' · ' + URL0 + (PRE ? ' · **pre-integration** (modules.json routed: served + line-card + drift)' : ' · as served'),
+      'Run ' + report.when + ' · ' + URL0 + (PRE ? ' · **pre-integration** (modules.json routed: served records re-hashed from disk + line-card + drift)' : ' · as served'),
       'Module `modules/' + modFile + '` sha256 `' + modSha + '` (' + modBytes.length + ' bytes); data/drift.json sha256 `' + report.drift.sha256 + '`.', '',
       '| device | scenario | step | result | measured |', '|---|---|---|---|---|',
       ...all.map(s => '| ' + s.device + ' | ' + s.scenario + ' | ' + s.step + ' | ' + (s.pass ? 'PASS' : 'FAIL') + ' | ' + String(s.detail).replace(/\|/g, '\\|').slice(0, 300) + ' |'), '',

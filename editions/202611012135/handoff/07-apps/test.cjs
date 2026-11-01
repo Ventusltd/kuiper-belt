@@ -332,10 +332,12 @@ async function runDevice(browser, DEV) {
           const w = document.createTreeWalker(c, NodeFilter.SHOW_TEXT), t = []; let n;
           while ((n = w.nextNode()) && t.length < 6) { const el = n.parentElement; if (!n.textContent.trim() || !el || el.closest('style,script') || !el.getClientRects().length || getComputedStyle(el).visibility === 'hidden') continue;
             const blk = el.closest('.ky-ec-h, .ky-ec-s, .lc-h, div, p, li') || el; if (t.length && t[t.length - 1].blk === blk) { t[t.length - 1].text += n.textContent; continue; } t.push({ blk, text: n.textContent }); }
-          const h = c.querySelector('.ky-ec-h code, .ky-ec-h'), sy = c.querySelector('.ky-ec-s');
-          return { open: true, l1: t[0] && t[0].text.trim(), l2: t[1] && t[1].text.trim(), header: h && h.textContent, sym: sy && sy.textContent.trim() }; });
+          const h = c.querySelector('.ky-ec-h code, .ky-ec-h'), sy = c.querySelector('.ky-ec-s'), it = (c.innerText || '').split('\n').map(x => x.trim()).filter(Boolean);
+          return { open: true, w1: t[0] ? t[0].text.trim() : null, w2: t[1] ? t[1].text.trim() : null, i1: it[0] || null, i2: it[1] || null, header: h ? h.textContent : null, sym: sy ? sy.textContent.trim() : null, rect: c.getBoundingClientRect().height }; });
         const lt = String(e.line_text);
-        cards.push({ sym: e.sym, open: c.open, l1: short(c.l1, 120), l2: c.l2, header_equal: c.header === lt, ok: c.open && c.l1 === lt.trim() && (c.l2 === e.sym || c.sym === e.sym) && c.header === lt });
+        // the first visible line is the line at the key (text-node walk or rendered text), the next begins with block:<Sym>
+        const first = c.w1 === lt.trim() || c.i1 === lt.trim(), second = c.w2 === e.sym || (c.i2 || '').split(/\s/)[0] === e.sym;
+        cards.push({ sym: e.sym, open: c.open, first, second, header_equal: c.header === lt, sym_span: c.sym, w1: short(c.w1, 80), w2: short(c.w2, 60), i1: short(c.i1, 80), i2: short(c.i2, 60), h: c.rect, ok: c.open && first && second && c.header === lt && c.sym === e.sym });
       }
       step('A4 card from the periodic-table panel: first line = line_text, second = block:<Sym> (3 elements)', cards.length === 3 && cards.every(c => c.ok), { rows: nEl, cards });
     }
@@ -347,8 +349,8 @@ async function runDevice(browser, DEV) {
     else {
       await tapSel(p, spSel);
       await p.waitForURL(u => !String(u).startsWith(URL0), { timeout: 120000 }).catch(() => {});
-      const landed = p.url();
-      step('A5 the spider row opens the dashboard (same tab, its link)', landed === spiderLink, { landed, link: spiderLink });
+      const landed = p.url(), there = await p.evaluate(() => ({ href: location.href, history: history.length, navigated: (window.KY && KY.modules.apps) ? KY.modules.apps.api.inspect().navigated : null })).catch(e => ({ error: e.message }));
+      step('A5 the spider row opens the dashboard (same tab, its link)', landed === spiderLink, { landed, link: spiderLink, page: there });
       if (landed !== URL0 && !landed.startsWith(URL0)) { await p.goBack({ timeout: LONG }).catch(e => R.errors.push('goBack ' + e.message)); await ready(p); }
     }
     // ------------------------------------------------------------------ A3 See Through, same tab, back

@@ -223,7 +223,7 @@
     + '#layers{display:none;position:fixed;left:0;right:0;width:auto;max-width:none;z-index:11;background:#090c13f2;border:1px solid #1d6470;'
     + 'border-radius:0 0 6px 6px;padding:6px 10px 8px;pointer-events:auto;text-align:left;overscroll-behavior:contain;'
     + 'max-height:var(--ky-layers-max,80vh);overflow:hidden;flex-direction:column}'
-    + '#layers.gm-open{display:flex}'
+    + '#layers.gm-open,#layers.ky-in-shell{display:flex}'
     + '#layers.ky-in-shell{position:static;border:0;padding:0;background:transparent;max-height:none}#layers.ky-in-shell #lineslist{max-height:45vh}'
     + '@media (min-width:641px){#layers{right:auto;width:min(720px,96vw)}}'
     + '#layers .ky-ly-rows{flex:none;min-height:88px;overflow-y:auto;overscroll-behavior:contain}'
@@ -274,7 +274,7 @@
     var rows = document.createElement('div'); rows.className = 'ky-ly-rows'; rows.innerHTML = '<div class="ky-ly-why">' + esc(manifestWhy) + '</div>';
     panel.appendChild(rows);
     var host = document.querySelector('.gm-group[data-group="layers"]');   // team 1's shell: WAFER > layers group
-    if (host) { panel.classList.remove('gm-panel'); panel.classList.add('gm-open', 'ky-in-shell'); host.appendChild(panel); panelName = 'shell'; }
+    if (host) { panel.classList.remove('gm-panel'); panel.classList.add('ky-in-shell'); host.appendChild(panel); panelName = 'shell'; }   // never gm-open itself: an open panel is the shell's, and line-card hides the card only while one is open
     else {
       document.body.appendChild(panel);
       // without the shell, the Edition 4 LINES title (index.html:702) opens the WAFER panel once the page's #lines is
@@ -293,8 +293,9 @@
     sizePanel(); addEventListener('resize', sizePanel);
     if (window.visualViewport) visualViewport.addEventListener('resize', sizePanel);
     // when the panel opens, show where you are (05-lines finding 7); no wrap of setPanel (ROADMAP 4.8)
-    new MutationObserver(function () { if (panel.classList.contains('gm-open')) { sizePanel(); fillLines(true); } })
-      .observe(panel, { attributes: true, attributeFilter: ['class'] });
+    var opener = panelName === 'shell' ? (panel.closest('.gm-panel') || panel) : panel;   // the element whose gm-open means "shown"
+    new MutationObserver(function () { if (opener.classList.contains('gm-open')) { sizePanel(); fillLines(true); } })
+      .observe(opener, { attributes: true, attributeFilter: ['class'] });
     // rows answer Enter and Space as a button does (NL-009 04 touch, as team 4's patch gave the Edition 4 rows)
     panel.addEventListener('keydown', function (e) { var row = e.target.closest && e.target.closest('#lineslist [data-i], #lineslist [data-g]');
       if (row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.stopPropagation(); row.click(); } });
@@ -395,7 +396,7 @@
       html.push('<div class="lg' + (focus ? ' focus' : '') + '" data-g="' + esc(n) + '" role="button" tabindex="0" aria-expanded="' + (folded ? 'false' : 'true') + '"><span class="ch">' + (folded ? '▸' : '▾') + '</span>' + esc(n) + ' <span class="n">' + idx.length + '</span></div>');
       if (folded) return;
       idx.forEach(function (i) { var b = P[i], cls = 'ln' + (i === lines.sel ? ' sel' : '') + (b.class === 'focus' ? ' focus' : '');
-        if (card && typeof card.row === 'function') { html.push('<div class="' + cls + '" data-i="' + i + '" role="button" tabindex="0">' + card.row(b, i, cls) + '</div>'); return; }
+        if (card && typeof card.rowInner === 'function') { html.push('<div class="' + cls + ' lc-row" data-i="' + i + '" role="button" tabindex="0">' + card.rowInner(b) + '</div>'); return; }   // Opus 2's row content, our .ln[data-i]
         // the line of code is the header (ROADMAP law 2): line_text first, verbatim; the key follows; the names after
         html.push('<div class="' + cls + '" data-i="' + i + '" role="button" tabindex="0"><code>' + esc(clipLine(b.line_text)) + '</code><b>' + esc(b.path) + ':' + b.line + '</b> · key ' + fmt(b.key)
           + '<div class="t">' + esc(b.title) + '</div></div>'); });

@@ -180,13 +180,13 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   tracked yet, hence the direct scan). Builder findings carried to the HANDOFF: the 15 overview edges are rings (all 16
   nodes keyed by one served folder, ventus-grid-engine); the elements layer is REFUSED until Q1, so A4's spark-tap is
   NOT EVALUATED with that reason (the card is tested from the periodic-table panel instead).
-- 23:40 TESTER: test.cjs written; script gates (A1 by script against APPS.md:7-13, homepage_v134.html:32-56, INDEX.md:13;
+- 23:3x TESTER (time not read from date -u when written; between run 1 end 23:36 and 23:46): test.cjs written; script gates (A1 by script against APPS.md:7-13, homepage_v134.html:32-56, INDEX.md:13;
   Q1/Q5; elements.json vs catalogue + cosmos/wafer.tsv; tools/key.py on 3 samples) ALL PASS. Device run 1 FAILED at M:
   team-6's 22:50 index has no `refuse` hook and layers.js (23:23) now requires it, so layers and file were refused. The
   tester site now uses the integrator's live index.html (sha256 418ae14c…, loader rev 3 with KY.refuse; team 3's
   index.html.patch does NOT apply to it: 2 of 6 hunks fail, so it runs without those deletions). Accepted in the test:
   `source_href` + stable folder link (see-through, learn-the-kuiper), K1-withheld link (cable-selection), `no_key`.
-- 23:58 TESTER run 2 (Pixel 7, integrator index): M, A2 x4, A4 REFUSED row PASS. FAIL for LEAD: (1) the launcher stays
+- 23:46 TESTER (corrected: first headed 23:58, a guess, not read from date -u) run 2 (Pixel 7, integrator index): M, A2 x4, A4 REFUSED row PASS. FAIL for LEAD: (1) the launcher stays
   open when WAFER (any other bar title) is tapped: #ky-apps (z 10025) covers the WAFER panel, the next tap meant for the
   spider row landed on a launcher row and left the page (measured: GET https://globalgrid2050.com/scripts/
   upgrade_v5_skid_mva_controls.py). Gate added: "a real tap on WAFER while the launcher is open closes the launcher"
@@ -226,3 +226,8 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   from data/elements.json; please add it (measured count of stars@cbca125 blocks/blocks.json blocks) and re-run.
 - 23:48 LEAD: requires narrowed to the 16 names the module uses (removed address, safeBox, panels: never called;
   added cv: SECTION C's tap test reads H.cv). Module changed since the testers' last copy: re-run mksite before the next run.
+- 23:55 TESTER (date -u): run 3 (Pixel 7, module of 23:37): spider layer PASS (OK, overview 15 of 15 drawn as
+  rings, readout "412 of 663 nodes had no key"), elements REFUSED PASS, card header = line_text for block:Gc, x309, x996
+  (the test's text-walk probe was wrong; fixed). FAIL: 606 line (counts.live_register), one-panel (fixed by LEAD at 23:47,
+  not in that copy), the spider row tap did not navigate within 120 s and the page then had no bar for 60 s (diagnostics
+  added: location, history.length, inspect().navigated). Re-running on the 23:48 module.

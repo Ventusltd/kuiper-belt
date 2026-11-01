@@ -1,0 +1,3 @@
+# WATCHER-B.md: one line per loop (Fable watcher B, integration; never edits a team's module; never posts ACCEPT)
+
+- 23:55 UTC · loop 1 · read all handoff files; admitted rows 1-3 (hello+loader, shell, card) stand; nothing else admissible (03 layers IN-PROGRESS no HANDOFF.md, tester REFUSED; 06 file no TEST.md; 05 TEST.md REFUSED). Integrator has an uncommitted 3-line popstate fix in index.html (sha 5617077b…; the shell's {kmb} pop no longer closes the card); no journey running on it, so WATCHER-B froze snapshot w1-fix (index 5617077b, modules.json 743c1760, order hello/kuiper-shell/line-card) and started journey-5 Pixel 7 on port 8590. ci_check: RESULT PASS (K1 659 files, 0 private). Load 57-69.

@@ -4,8 +4,8 @@
  * each value below. "Ventus" and "Cables & Connectivity(R)" are the mark of Ventus Ltd, used by its owner's
  * instruction of 1 Nov 2026; the Apache-2.0 licence of this code does not license the mark (LICENSE:139, s.6).
  *
- * requires (C8): DOM #c #o #top #hud #foot #keys (five [data-k]: n r / e Backspace) #lines #lyAll #lyFocus #lyFind
- *   #lineslist #card #bar #goto #gotoin, each present once; through window.KY when the loader exists (ROADMAP step 4,
+ * requires (C8): DOM #c #o #top #hud #foot #keys (five [data-k]: n r / e Backspace) #card #bar #goto #gotoin, each
+ *   present once (rev 2: #lines #lyAll #lyFocus #lyFind #lineslist are optional; Opus 3's layers module owns them); through window.KY when the loader exists (ROADMAP step 4,
  *   team-2/STEPS.md 4.2): safeBox card hud big sub cv gbox gin redraw. Engine functions edCard edFly edNext setPanel
  *   are module-scoped in index.html (type="module"), so the shell reaches them only through their own DOM controls
  *   (the #keys buttons and #lines rows, moved as the same nodes with their listeners) and the engine's keydown table.
@@ -54,7 +54,9 @@
   function $(sel) { return document.querySelectorAll(sel); }
 
   // ---------------------------------------------------------------- C8 the admission rule (LEAD)
-  var REQUIRED = ['#c', '#o', '#top', '#hud', '#foot', '#keys', '#lines', '#lyAll', '#lyFocus', '#lyFind', '#lineslist', '#card', '#bar', '#goto', '#gotoin'];
+  // rev 2 (Opus 3 REQUEST, handoff/03-layers/REQUESTS.md item 2): Edition 4's LINES nodes are not required; the layers
+  // module deletes or moves them. They are used when present and never judged.
+  var REQUIRED = ['#c', '#o', '#top', '#hud', '#foot', '#keys', '#card', '#bar', '#goto', '#gotoin'];
   var KEYS = ['n', 'r', '/', 'e', 'Backspace'];
   function missing() {
     var out = [];
@@ -238,17 +240,42 @@
     var had = !!state.open;
     setOpenState(name);
     // the Android back gesture closes the panel: one history entry per open panel (C7); same URL, hash kept
-    if (!had) { try { history.pushState({ kmb: name }, ''); historyDepth = 1; } catch (e) { historyDepth = 0; } }
+    if (!had && !(history.state && history.state.kmb)) { try { history.pushState({ kmb: name }, ''); historyDepth = 1; } catch (e) { historyDepth = 0; } }
+    else if (!had) { try { history.replaceState({ kmb: name }, ''); historyDepth = 1; } catch (e) {} }   // re-use our own entry, never stack two
     else { try { history.replaceState({ kmb: name }, ''); } catch (e) {} }
     var hook = onOpen[name]; if (hook) try { hook(menus[name].panel); } catch (e) {}
   }
+  // rev 2, the one owner of history (BLOCKER via the harness, 1 Nov 2026): the page's ANDROID BACK listener
+  // (index.html, NL-009 04-touch, Opus 4) reads every popstate as a back gesture and hides the card. The shell's own
+  // history.back() on a programmatic close is therefore flagged and swallowed in the capture phase before the page
+  // sees it (04-touch's edPopping idea, made reachable from a separate file); the page keeps owning the card's entry.
+  // Only our own {kmb} entry is ever popped; if the page pushed its entry above ours meanwhile, ours is handed to it.
   function closeAll(fromPop) {
     if (!state.open) return;
     setOpenState(null);
-    if (!fromPop && historyDepth) { historyDepth = 0; ignorePop = true; try { history.back(); } catch (e) { ignorePop = false; } }
+    if (!fromPop && historyDepth && history.state && history.state.kmb) {
+      selfPopUntil = Date.now() + 1500; try { history.back(); } catch (e) { selfPopUntil = 0; }
+    } else if (!fromPop && historyDepth) {
+      // the page's {kuiper} entry is above ours: leave the history to the page, and give it ours to clean up
+      handOver = true;
+    }
     historyDepth = 0;
   }
-  var onOpen = {}, ignorePop = false;
+  var onOpen = {}, selfPopUntil = 0, handOver = false;
+  function onPop(e) {
+    if (selfPopUntil && Date.now() < selfPopUntil) {
+      selfPopUntil = 0; e.stopImmediatePropagation();
+      // the page pushed its entry before our back() ran (Chrome queues the traversal): we landed on our own entry;
+      // re-label it as the page's, so the page's own clean-up (edPopping, re-arm) removes it with the card
+      if (history.state && history.state.kmb) { try { history.replaceState({ kuiper: 1 }, ''); } catch (x) {} }
+      try { dispatchEvent(new CustomEvent('kuiper-shell:closed', { detail: { self: true } })); } catch (x) {}
+      return;
+    }
+    selfPopUntil = 0;
+    if (handOver && history.state && history.state.kmb) { handOver = false; try { history.replaceState({ kuiper: 1 }, ''); } catch (x) {} }
+    // a back gesture that popped our entry closes the panel and nothing under it (an open card stays)
+    if (state.open && historyDepth) { historyDepth = 0; closeAll(true); e.stopImmediatePropagation(); }
+  }
   function wire() {
     bar.addEventListener('click', function (e) {
       var t = e.target.closest('.gm-title'); if (!t || !bar.contains(t)) return;
@@ -272,7 +299,7 @@
     var cv = document.getElementById('c');
     cv.addEventListener('pointerdown', function () { if (state.open) closeAll(false); });
     // the back gesture
-    addEventListener('popstate', function () { if (ignorePop) { ignorePop = false; return; } if (state.open) { historyDepth = 0; closeAll(true); } });
+    addEventListener('popstate', onPop, true);                     // capture: Chrome runs it before the page's listener
     addEventListener('resize', measure);
     // a system font scale changes the titles' size without a resize: the overflow rule follows the measured widths
     try { var ro = new ResizeObserver(function () { measure(); }); [].forEach.call(bar.querySelectorAll('.gm-title,.ventus-brand'), function (n) { ro.observe(n); }); } catch (e) {}
@@ -437,17 +464,22 @@
     P.view.appendChild(link('Learn the Kuiper', '../../learn-the-kuiper/'));
 
     // ---- SCOPE: the focus (STEPS.md C5 SCOPE; GridAtlas Scope MB:1666-1669)
-    var focus = document.getElementById('lyFocus').closest('label');
-    focus.classList.add('gm-check'); moveNode(P.scope, focus);   // gridatlas + data centres only (IX:730)
+    // rev 2: a proxy, not a moved node (Opus 3 owns #lyFocus). One tap toggles whichever #lyFocus exists, Edition 4's or
+    // the layers module's, through its own change listener; the row shows the state each time SCOPE opens.
+    var focusRow = row('[ ] gridatlas + data centres only', function () {
+      var f = document.getElementById('lyFocus'); if (f) f.click(); return true;   // keep SCOPE open to show the new state
+    });
+    function focusLabel() { var f = document.getElementById('lyFocus'); focusRow.firstChild.nodeValue = (f && f.checked ? '[x]' : '[ ]') + ' gridatlas + data centres only'; focusRow.disabled = !f; }
+    focusRow.addEventListener('click', function () { setTimeout(focusLabel, 0); });
+    P.scope.appendChild(focusRow); onOpen.scope = focusLabel;
     moveNode(P.scope, hinted(key('n'), 'n'));                    // new code (IX:616)
     moveNode(P.scope, hinted(key('r'), 'r'));                    // random line (IX:615)
     P.scope.appendChild(row('one repository or one period', function () { run('/'); }, '/'));   // IX:604-613
 
     // ---- WAFER: the verified-lines layer, whole (its row delegation lives on #lines, IX:733-734); step 3's group
     group(P.wafer, 'layers', 'layers (Opus 3, kuiper.layers.v1)');
-    var lines = document.getElementById('lines');
-    lines.classList.remove('gm-panel');                          // one of the shell's six panels no longer; ids unchanged
-    moveNode(P.wafer, lines);
+    var lines = document.getElementById('lines');                // rev 2: optional (Opus 3's patch deletes it)
+    if (lines) { lines.classList.remove('gm-panel'); moveNode(P.wafer, lines); }
     // a picked row or a next/previous closes the panel first (capture: before #lines' own handler stops the event)
     P.wafer.addEventListener('click', function (e) {
       if (e.target.closest('#lines [data-i], #lines [data-k]')) closeAll(false);
@@ -551,11 +583,11 @@
   // The engine's synchronous part ends by building Edition 4's #bar (index.html:698-704); until then nothing is
   // judged. After the limit the failure names what never came.
   function whenEngine(go) {
-    if (document.getElementById('bar') && document.getElementById('lines')) return go();
+    if (document.getElementById('bar')) return go();
     var t = setInterval(function () {
       state.attempts++;
-      if (document.getElementById('bar') && document.getElementById('lines')) { clearInterval(t); go(); return; }
-      if (state.attempts >= RETRY_MAX) { clearInterval(t); loudFailure('the engine never built #bar and #lines (' + RETRY_MAX + ' tries every ' + RETRY_MS + ' ms): missing ' + missing().join(', ')); }
+      if (document.getElementById('bar')) { clearInterval(t); go(); return; }
+      if (state.attempts >= RETRY_MAX) { clearInterval(t); loudFailure('the engine never built #bar (' + RETRY_MAX + ' tries every ' + RETRY_MS + ' ms): missing ' + missing().join(', ')); }
     }, RETRY_MS);
     return undefined;
   }

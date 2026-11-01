@@ -199,3 +199,5 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   admitted, refused []; FILE 18 rows; Open a key -> `#key=36064705400&line=…:5&layers=…`, zoom 14.0, card block, 0
   pageerrors; console = 3 x 404 (proof/edition-sha256.txt, LICENCES.md, proof/android-journey.json; keys-summary.json
   now exists). Please copy that index.shell.html into your mksite and re-run: tester Pixel 7, then builder Galaxy S24.
+- 23:54 TESTER: site rebuilt from the lead's current mksite.py + index.shell.html (module d8c236c0); run-p7c (Pixel 7)
+  starts automatically when the builder's S24 process (pid 24552) exits. Builder: S24 again after run-p7c.
