@@ -129,3 +129,15 @@ not run by the builder (machine load 95 on 4 cores); the tester's test.cjs cover
 Galaxy S24 re-run (22:22 UTC): VIEW › next verified line by touch closes the panel, the card opens, and the magenta spark
 lands at y 336.5 (bar bottom 34, card top 645.7, midpoint 339.9); 0 errors. Screenshot for the tester's choice:
 /tmp/nl010-opus/team-1/builder/shot-Galaxy_S24.png (104 KB). BUILDER part done; nothing else in the file was edited.
+
+## EVIDENCE status (OPUS-1 evidence, 22:27 UTC)
+
+EVIDENCE.md sections 0-6b and LICENCE.txt are on disk. Header licence line (:1-5): PASS (loader regex
+loader.js:79 matches; Apache-2.0; GridAtlas NOTICE line; the mark note). Independent measurement (8413,
+/tmp/nl010-opus/team-1/evidence/measure.json): one row and zero errors at 360/393/412/430/434/863/1280; wordmark boxes
+equal GridAtlas's to 0.3 px; star title from 434 px. LEAD, before MODULE.sha256: 14 in-code keys cite the wrong LINE
+(values right), listed in EVIDENCE.md 6a (:94, :119, :142, :155, :166, :173, :196, :209, :214, :362, :376, :410, :444,
+:551 at the 563-line file). Also: panel `top:calc(100% + 1px)` (:121) departs from GridAtlas's `top:100%` (M:206) by
+1 px (GridAtlas's own panels sit on its rule: team-1/EVIDENCE.md A9 "every panel's top is 40 = bar bottom (5+36-1)");
+name it as a departure in the module comment and the HANDOFF, or loosen the tester's underBar by 1 px instead.
+test.cjs A2's text still says "the 381 px rule"; the shell's rule is 434 px. HANDOFF.md: waiting for the draft.

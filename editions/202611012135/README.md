@@ -2,6 +2,36 @@
 
 Under construction by the NL-010 Opus teams. Not yet published; the pointer still names Edition 4.
 
+## What changed from Edition 4
+
+Edition 4 is `../202611012027/`. Edition 5 is the same engine and the same `keys.json` (byte-identical, sha256
+`1c293c33…242b`), with a hook table, a loader and stamped modules admitted one at a time by the integrator (Opus team
+10) in the order the roadmap proved: 4 loader, 1 shell, 2 card, 3 layers, 6 file, 5 See Through, 7 apps, 8 drift,
+9 law (neural-link FIXES/NL-010/ROADMAP.md, "Integration order"). Each admission is a row in
+`proof/handoff/10-integration/ADMISSIONS.md` with the Android journey run after it.
+
+### Modules admitted (in `modules.json` order)
+
+None yet.
+
+### Modules refused
+
+None yet.
+
+### NL-009 round-1 findings folded in
+
+| finding | folded in by | where | state |
+|---|---|---|---|
+| 01 bar | Opus 1 (shell) | `modules/202611012143-kuiper-shell.js` | waiting for admission |
+| 02 card | Opus 2 (card) | `modules/202611012143-line-card.js` | waiting for admission |
+| 03 camera | Opus 10 (base) | `index.html` | not on disk yet |
+| 04 touch | Opus 4 (loader patch) | `index.html` (hook table patch) | waiting for admission |
+| 05 lines | Opus 3 (layers) | `modules/202611012141-layers.js` | waiting for admission |
+| 06 see-through | Opus 1 (bar entry), Opus 5 (See Through) | the two modules | waiting for admission |
+| 07 perf | Opus 10 (base) | `index.html`, `keys-min.json`, `tools/edition_min.py` | applied: list rows `content-visibility:auto`; the page loads `keys-min.json` (1,558,451 bytes, 17 fields) and falls back to `keys.json`. The card law keeps `line_text` whole, so the file is 8.8 % smaller than `keys.json`, not 07's 86 %: one placed record's line is 1,240,449 characters. |
+| 08 type | Opus 1 (shell) | `modules/202611012143-kuiper-shell.js` | waiting for admission |
+| 09 robust | Opus 4 (loader patch) | `index.html` (hook table patch) | waiting for admission |
+
 ## The card law
 
 The line of code is the header. Every card opens with the line itself, verbatim from the key; the key is the second row; every name a person gave the line comes after.

@@ -135,6 +135,14 @@ function sparksFn(keys) {
   return { total: keys.length, onCanvas, green, first, cam: { x: +c.x.toFixed(3), y: +c.y.toFixed(3), zoom: c.zoom } };
 }
 // the wafer from a screenshot: lit pixels (luminance > 34) inside the wafer's disc, below yMin (bar, alert strip)
+async function engineShot(S) {   // the engine's own pixels: hide the DOM layers above the canvases for one screenshot, then restore them
+  await S.page.evaluate(() => { window.__t3hid = [...document.querySelectorAll('body > *:not(canvas):not(script):not(style)')].filter(e => getComputedStyle(e).visibility !== 'hidden').map(e => { e.style.setProperty('visibility', 'hidden', 'important'); return e; }); });
+  const png = await S.png(); await S.page.evaluate(() => { (window.__t3hid || []).forEach(e => e.style.removeProperty('visibility')); window.__t3hid = null; }); return png; }
+async function alertCover(page) {   // the share of the wafer's disc that #refuse covers on screen (measured, reported, not gated: team-2 test 4 asks only that it is visible)
+  return page.evaluate(() => { let c = null; try { c = window.KY && KY.cam ? { x: KY.cam.x, y: KY.cam.y, zoom: KY.cam.zoom } : null; } catch (e) {} let SP = null; try { SP = KY.hooks.SPACE; } catch (e) {}
+    const el = document.getElementById('refuse'); if (!c || !SP || !el) return null; const r = el.getBoundingClientRect(); const ox = -c.x * c.zoom + innerWidth / 2, oy = innerHeight / 2 + c.y * c.zoom, R = Math.sqrt(SP) * c.zoom;
+    let tot = 0, cov = 0; for (let y = Math.floor(oy - R); y <= oy + R; y += 2) for (let x = Math.floor(ox - R); x <= ox + R; x += 2) { if ((x - ox) ** 2 + (y - oy) ** 2 > R * R) continue; tot++; if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) cov++; }
+    return { refuseRect: [Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom)], discCoveredFraction: +(cov / Math.max(1, tot)).toFixed(3) }; }); }
 async function waferDisc(page, png, yMin) {
   return page.evaluate(async ({ b64, yMin }) => {
     let c = null; try { c = window.KY && KY.cam ? { x: KY.cam.x, y: KY.cam.y, zoom: KY.cam.zoom } : null; } catch (e) {}
@@ -324,10 +332,10 @@ async function runDevice(browser, deviceName, shots) {
       p = await S.until(q => q.hasLayers && S.settled(q), STATE_MAX); await sleep(FIXED_WAIT); p = await S.probe();
       const on0 = (p.inspect || {}).on, landed = p.url.href, h1 = p;
       let after = null;
-      if (p.hasLayers) { await S.openPanel(); after = await S.tapRow('periods'); await sleep(800); after = await S.probe(); }
-      const ok = JSON.stringify(on0) === JSON.stringify(['periods', 'lines']) && after && after.url.layers === 'lines' && JSON.stringify((after.inspect || {}).on) === JSON.stringify(['lines']) && after.marker === h1.marker && after.historyLength === h1.historyLength && S.errors.length === 0;
-      record(id, name, ok, { opened: url, landed, pointer: id === 't6-pointer' ? { liveTarget: target, substitutions: nSub } : undefined, onAtLoad: on0, afterUntick: after && { url: after.url.layers, href: after.url.href, on: (after.inspect || {}).on }, sameDocument: after && after.marker === h1.marker, historyLength: after && [h1.historyLength, after.historyLength], ...errFree(S) },
-        ok ? (id === 't6-pointer' && target !== STAMP ? 'pointer still names ' + target + ' (Edition 4); measured with the stamp moved' : '') : why(!p.hasLayers && 'KY.layers absent at ' + landed, JSON.stringify(on0) !== '["periods","lines"]' && 'on at load ' + JSON.stringify(on0), after && after.url.layers !== 'lines' && 'after untick the URL says layers=' + after.url.layers, after && after.marker !== h1.marker && 'reloaded', S.errors.length && S.errors.length + ' console error(s): ' + S.errors[0].text));
+      let h1b = h1; if (p.hasLayers) { await S.openPanel(); h1b = await S.probe(); after = await S.tapRow('periods'); await sleep(800); after = await S.probe(); }   // h1b: after the panel opened (opening it may push the back-gesture entry)
+      const ok = JSON.stringify(on0) === JSON.stringify(['periods', 'lines']) && after && after.url.layers === 'lines' && JSON.stringify((after.inspect || {}).on) === JSON.stringify(['lines']) && after.marker === h1.marker && after.historyLength === h1b.historyLength && S.errors.length === 0;
+      record(id, name, ok, { opened: url, landed, pointer: id === 't6-pointer' ? { liveTarget: target, substitutions: nSub } : undefined, onAtLoad: on0, afterUntick: after && { url: after.url.layers, href: after.url.href, on: (after.inspect || {}).on }, sameDocument: after && after.marker === h1.marker, historyLength: after && { atLoad: h1.historyLength, panelOpen: h1b.historyLength, afterUntick: after.historyLength }, ...errFree(S) },
+        ok ? (id === 't6-pointer' && target !== STAMP ? 'pointer still names ' + target + ' (Edition 4); measured with the stamp moved' : '') : why(!p.hasLayers && 'KY.layers absent at ' + landed, JSON.stringify(on0) !== '["periods","lines"]' && 'on at load ' + JSON.stringify(on0), after && after.url.layers !== 'lines' && 'after untick the URL says layers=' + after.url.layers, after && after.marker !== h1.marker && 'reloaded', after && after.historyLength !== h1b.historyLength && 'history.length ' + h1b.historyLength + ' -> ' + after.historyLength + ' on the untick (a push, not replaceState)', after && JSON.stringify((after.inspect || {}).on) !== '["lines"]' && 'on after untick ' + JSON.stringify((after.inspect || {}).on), S.errors.length && S.errors.length + ' console error(s): ' + S.errors[0].text));
       await S.close();
     }
 
@@ -354,7 +362,7 @@ async function runDevice(browser, deviceName, shots) {
       const F = await open('F-keys-404', ED_URL, { routes: [[keysRe, r => r.fulfill({ status: 404, contentType: 'text/plain', body: 'not found' })]], allow: [/keys\.json/] });
       p = await F.until(F.settled, STATE_MAX); await sleep(FIXED_WAIT); p = await F.probe();
       const lr = F.row(p, 'lines');
-      const png = await F.png(); const disc = png ? await waferDisc(F.page, png, Math.max(p.bar ? p.bar.bottom : 0, p.refuse && p.refuse.visible ? p.refuse.rect.bottom : 0)) : { error: 'screenshot failed' };
+      const png = await engineShot(F); const disc = png ? await waferDisc(F.page, png, p.bar ? p.bar.bottom : 0) : { error: 'screenshot failed' }; const cover = await alertCover(F.page);
       const cam0 = p.cam; await F.page.evaluate(() => { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); });
       await F.page.keyboard.press('e'); await sleep(2500); const pe = await F.probe();
       const noFly = cam0 && pe.cam && Math.abs(cam0.x - pe.cam.x) < 1e-6 && Math.abs(cam0.y - pe.cam.y) < 1e-6 && cam0.zoom === pe.cam.zoom && !pe.card;
@@ -362,8 +370,8 @@ async function runDevice(browser, deviceName, shots) {
       const pageErrors = F.errors.filter(e => e.kind === 'pageerror').length;
       const t4 = lr && /FAIL · keys\.json HTTP 404/.test(lr.text) && /KEYS\.JSON DID NOT LOAD/.test((p.big || '').toUpperCase()) && alertOk && disc.litFraction > 0.03 && pageErrors === 0 && F.errors.length === 0 && noFly;
       await F.openPanel(); await F.intoView('lines'); await sleep(400); shots.FAIL = shots.FAIL || await F.shot('fail-keys-404'); const pf = await F.probe();
-      record('t4-keys-404', 'test 4: keys.json HTTP 404 -> lines row FAIL · keys.json HTTP 404, #big KEYS.JSON DID NOT LOAD, #refuse[role=alert] visible, wafer still drawn, pageerror 0, e does not fly', t4,
-        { row: lr && lr.text, big: p.big, refuse: p.refuse, wafer: disc, camBefore: cam0, camAfterE: pe.cam, cardAfterE: pe.card, pageErrors, ...errFree(F), allowedErrors: F.allowed.map(e => e.text + ' ' + e.url) },
+      record('t4-keys-404', 'test 4: keys.json HTTP 404 -> lines row FAIL · keys.json HTTP 404, #big KEYS.JSON DID NOT LOAD, #refuse[role=alert] visible, wafer still drawn (engine pixels, DOM layers hidden for the shot), pageerror 0, e does not fly', t4,
+        { row: lr && lr.text, big: p.big, refuse: p.refuse, alertCoversWafer: cover, wafer: disc, camBefore: cam0, camAfterE: pe.cam, cardAfterE: pe.card, pageErrors, ...errFree(F), allowedErrors: F.allowed.map(e => e.text + ' ' + e.url) },
         t4 ? '' : why(!(lr && /FAIL · keys\.json HTTP 404/.test(lr.text)) && 'lines row: ' + (lr && lr.text), !/KEYS\.JSON DID NOT LOAD/.test((p.big || '').toUpperCase()) && '#big: ' + p.big, !alertOk && '#refuse: ' + JSON.stringify(p.refuse), !(disc.litFraction > 0.03) && 'wafer not drawn: ' + JSON.stringify(disc), pageErrors && pageErrors + ' pageerror(s)', F.errors.length && F.errors.length + ' unexpected console error(s): ' + F.errors[0].text, !noFly && 'e moved the camera or opened a card'));
       for (const r of pf.rows) if (r.status) seen.add(r.status);
       await F.close();
@@ -374,11 +382,11 @@ async function runDevice(browser, deviceName, shots) {
       const G = await open('G-keys-tampered', ED_URL, { routes: [[keysRe, r => r.fulfill({ status: 200, contentType: 'application/json', body: TAMPERED.buf })]] });
       p = await G.until(G.settled, STATE_MAX); await sleep(FIXED_WAIT); p = await G.probe();
       const lr = G.row(p, 'lines'); const sp = await G.page.evaluate(sparksFn, PLACED_KEYS);
-      const png = await G.png(); const disc = png ? await waferDisc(G.page, png, Math.max(p.bar ? p.bar.bottom : 0, p.refuse && p.refuse.visible ? p.refuse.rect.bottom : 0)) : { error: 'screenshot failed' };
+      const png = await engineShot(G); const disc = png ? await waferDisc(G.page, png, p.bar ? p.bar.bottom : 0) : { error: 'screenshot failed' }; const cover = await alertCover(G.page);
       const alertOk = p.refuse && p.refuse.role === 'alert' && p.refuse.visible && p.refuse.rect.top >= 0 && p.refuse.rect.bottom <= p.viewport.h;
       const t5 = lr && /FAIL · sha256 mismatch/.test(lr.text) && sp.green === 0 && sp.onCanvas > 0 && alertOk && disc.litFraction > 0.03 && G.errors.length === 0;
       record('t5-keys-tampered', 'test 5: keys.json with one byte changed (same length, valid JSON) -> FAIL · sha256 mismatch, zero sparks at the 344 places, alert visible, wafer still drawn, zero console errors', t5,
-        { tamper: { offset: TAMPERED.offset, from: TAMPERED.from, to: TAMPERED.to, sha256Served: TAMPERED.sha, sha256Original: TAMPERED.shaOriginal }, row: lr && lr.text, sparks: sp, refuse: p.refuse, big: p.big, wafer: disc, ...errFree(G) },
+        { tamper: { offset: TAMPERED.offset, from: TAMPERED.from, to: TAMPERED.to, sha256Served: TAMPERED.sha, sha256Original: TAMPERED.shaOriginal }, row: lr && lr.text, sparks: sp, refuse: p.refuse, alertCoversWafer: cover, big: p.big, wafer: disc, ...errFree(G) },
         t5 ? '' : why(!(lr && /FAIL · sha256 mismatch/.test(lr.text)) && 'lines row: ' + (lr && lr.text), sp.green && sp.green + ' green sparks drawn from tampered data', !alertOk && '#refuse: ' + JSON.stringify(p.refuse), !(disc.litFraction > 0.03) && 'wafer not drawn: ' + JSON.stringify(disc), G.errors.length && G.errors.length + ' console error(s): ' + G.errors[0].text));
       await G.close();
     }
@@ -411,8 +419,10 @@ async function runDevice(browser, deviceName, shots) {
 // ------------------------------------------------------------------ test 9: device-independent, from disk
 function staticChecks() {
   const steps = []; const rec = (id, name, pass, measured, note) => { steps.push({ id, name, pass: !!pass, status: pass ? 'PASS' : 'FAIL', measured, note: note || '' }); process.stderr.write(`[static] ${pass ? 'PASS' : 'FAIL'} ${id}${note ? ' — ' + note : ''}\n`); };
-  let ci = null; try { ci = cp.execFileSync('python3', ['tools/ci_check.py'], { cwd: REPO, encoding: 'utf8', timeout: 300000, stdio: ['ignore', 'pipe', 'pipe'] }); } catch (e) { ci = String(e.stdout || '') + String(e.stderr || '') + ' (exit ' + e.status + ')'; }
-  rec('t9-ci', 'test 9: python3 tools/ci_check.py prints RESULT: PASS', /RESULT: PASS/.test(ci), { tail: ci.trim().split('\n').slice(-5) }, /RESULT: PASS/.test(ci) ? '' : ci.trim().split('\n').slice(-1)[0]);
+  let ci = null, tries = 0;
+  while (tries++ < 4) { try { ci = cp.execFileSync('python3', ['tools/ci_check.py'], { cwd: REPO, encoding: 'utf8', timeout: 300000, stdio: ['ignore', 'pipe', 'pipe'] }); } catch (e) { ci = String(e.stdout || '') + String(e.stderr || '') + ' (exit ' + e.status + ')'; }
+    if (!/FileNotFoundError[^\n]*\.ci-|FileExistsError[^\n]*\.ci-/.test(ci)) break; cp.execFileSync('sleep', [String(5 + Math.floor(Math.random() * 20))]); }   // another run's temp file at the repo root (tools/ci_check.py:77)
+  rec('t9-ci', 'test 9: python3 tools/ci_check.py prints RESULT: PASS', /RESULT: PASS/.test(ci), { tail: ci.trim().split('\n').slice(-5), tries }, /RESULT: PASS/.test(ci) ? '' : ci.trim().split('\n').slice(-1)[0]);
   const mods = fs.readdirSync(path.join(ED_DIR, 'modules')).filter(f => /^\d{12}-layers\.js$/.test(f));
   let nc = null; if (mods.length === 1) { try { cp.execFileSync(process.execPath, ['--check', path.join(ED_DIR, 'modules', mods[0])], { stdio: 'pipe' }); nc = 'exit 0'; } catch (e) { nc = String(e.stderr || e.message).split('\n').slice(0, 4).join(' '); } }
   const modBytes = mods.length === 1 ? fs.readFileSync(path.join(ED_DIR, 'modules', mods[0])) : null;
