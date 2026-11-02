@@ -1,0 +1,13 @@
+edition_check: editions/202611020825 (repository e10-base)
+E1 PASS: 9 script blocks in 9 editions/*/index.html and 7 modules/*.js parse (node --check)
+E2 PASS: 202611020825: 6 records hash as recorded, 1 reference(s), 7 of 7 files in modules/ admitted
+E3 PASS: every listed file matches and every file is listed (202610311905 51, 202611010114 9, 202611012022 10, 202611012027 8, 202611012135 188, 202611020326 11, 202611020446 11, 202611020528 13, 202611020629 19, 202611020825 22)
+E4 PASS: the pointer names 202611020825 in its three places, folder and proof exist; forwards location.search + location.hash
+E5 PASS: 202611020825 keys.json byte-identical to editions/202611020629 (1c293c33...)
+E6 FAIL: 202611020825: reference modules/202611012145-loader.js: hook-table block differs from index.html
+E7 FAIL: 202611020825: drift: writes #hud (one DRIFT line per frame, appended), no literal in the file; 202611020825: apps: writes #card (element card), no literal in the file; 202611020825: apps: writes history entry {kyApps}, no literal in the file; 202611020825: apps: writes layers elements, spider (via KY.modules.layers.api.register), no literal in the file
+E8 PASS: 6 admitted modules parse and register exactly once
+E9 NOT EVALUATED: 202611020825: 21 of 21 clones the recorded heads need are not under <snapshots> (cvaa, data-centres-gb, data-grid-gb, data-gridatlas ...): drift not re-computed here
+NOT EVALUATED:
+  - E9: 202611020825: 21 of 21 clones the recorded heads need are not under <snapshots> (cvaa, data-centres-gb, data-grid-gb, data-gridatlas ...): drift not re-computed here
+RESULT: FAIL

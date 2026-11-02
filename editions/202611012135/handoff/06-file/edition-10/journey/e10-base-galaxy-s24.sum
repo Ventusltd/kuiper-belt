@@ -1,0 +1,16 @@
+[Galaxy S24] PASS load
+[Galaxy S24] PASS modules — 6 admitted: hello, kuiper-shell, line-card, drift, apps, layers
+[Galaxy S24] PASS edition-open
+[Galaxy S24] PASS edition-close
+[Galaxy S24] PASS lines-open
+[Galaxy S24] PASS lines-filter
+[Galaxy S24] PASS lines-pick
+[Galaxy S24] PASS card-details
+[Galaxy S24] PASS card-close
+[Galaxy S24] PASS key-e-1
+[Galaxy S24] PASS key-e-2
+[Galaxy S24] PASS key-e-3
+[Galaxy S24] PASS pinch-drag
+[Galaxy S24] PASS spark-tap
+[Galaxy S24] PASS whole-wafer
+[Galaxy S24] PASS see-through — same-tab → http://127.0.0.1:8606/e10-base/see-through/202611020012/

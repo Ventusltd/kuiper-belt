@@ -109,3 +109,59 @@ rebuilding. The tester therefore does not sign "zero console errors". The module
 console error, no pageerror on either device); the hand-off is acceptable for admission on that disclosed condition,
 and G6 plus A3's sha256 check must be re-run, by this test.cjs, on the assembled edition once that file exists. If the
 lead or the integrator reads the caller's rule strictly, the hand-off waits for that file and one re-run.
+
+## Revision 202611020832 on Kuiper Edition 10 (tester and lead OPUS-6, 2026-11-02, times from `date -u`)
+
+- Module: `handoff/06-file/202611020832-file.js`, sha256 `5fc4e307dbe089b2b2a35e7e09b22c0e6322da30e9764e0cec56a801d1a06c05`,
+  60,855 bytes (= MODULE.sha256 = MODULE.json; the same sha printed at the start and the end of every run,
+  `edition-10/test-runs.load`, `edition-10/journey/*.load`).
+- Page: a snapshot of main 35ef064 (`git archive`), `editions/202611020825` byte-copied (23 files, git blob ids equal to
+  main's), plus the module and `edition-10/modules.json` (main's manifest + `file` last in `order` + the MODULE.json record
+  appended last; every other byte unchanged). Nothing else added: the module reads only files Edition 10 ships. Served by
+  `python3 -m http.server`. Admitted: hello, kuiper-shell, line-card, drift, apps, layers, file (7), refused none.
+- Test: `edition-10/test.cjs` = test.cjs with Edition 10's changes, each named in its header: the module's new seven
+  EVIDENCE rows; E' always a step (PASS when all seven are 200); A1 measures that `Open an app ▸` hands over to step 7's
+  launcher when apps is admitted, then reopens FILE to measure the rows; G2 reads the pointer's `location.search +
+  location.hash` form and the URL it committed; A5 builds the engine's `#lineslist` before calling layers' `open(i)`.
+  Pixel 7 08:52:49-08:59:42Z, Galaxy S24 08:59:42-09:07:07Z, one at a time, load average under 5 on 4 cores.
+
+| | Pixel 7 | Galaxy S24 |
+|---|---|---|
+| steps | 35 PASS, 1 NOT EVALUATED, 0 FAIL | 35 PASS, 1 NOT EVALUATED, 0 FAIL |
+| E' (all seven EVIDENCE files 200, content-length = the row) | PASS | PASS |
+| A1 rows ≥ 44 px, 6.1 order, four headings; editions newest first (10 rows + `editions/`) | PASS | PASS |
+| A1 `Open an app ▸` opens the apps launcher and closes FILE | PASS | PASS |
+| A2 Open a key 36064705400 (zoom 14, the line as the card header, spark in the clear band) | PASS | PASS |
+| A3, A4 (6), A5 (3), A6 (2), A7 (3), A8 (2), G1, G2 (2), G3, G5 | PASS | PASS |
+| G4 Open an app → See Through | NOT EVALUATED (the test's own rule: apps admitted, its launcher is step 7's) | the same |
+| pageerror / console errors / evidence 404s | 0 / 0 / 0 | 0 / 0 / 0 |
+
+What failed first on Edition 10 with 202611012231 (Pixel 7 08:31Z, kept in the lead's scratch, not a run of record) and
+why: (1) FILE's rows measured 13-30 px: the shipped shell's rev 3 gives its row look only to a panel's direct children
+(kuiper-shell.js 202611020243:139-148); (2) Open a key / a pasted line opened no card: Edition 10's lines are the
+engine's (layers.js 202611020637:765 ENGINE), the engine builds `#lineslist` only when its panel opens
+(index.html:782, :810), and layers' `api.open(i)` clicks a row of it (layers.js:814) and returns false while it is empty;
+(3) A1 apps and G3/G2/A5 were the test's, not the module's (the launcher hand-off, the new pointer form, the same empty
+list). The revision fixes (1) and (2) in the module (#ky-file-css; openIndex() dispatches `input` on `#lyFind` as the
+shell's own onOpen.wafer does, kuiper-shell.js:520, then opens again; a row hidden by a filter flies to its key and says
+so) and changes the EVIDENCE rows (E'). edition_check on the snapshot (`edition-10/edition-check-e10-file.txt`): E1 E2
+E4 E5 E8 PASS; E6 and E7 list nothing of file's (the same entries as the base, `edition-check-e10-base.txt`); E3 lists
+the new modules.json and the module only because main's proof/edition-sha256.txt is cut without them (the harness
+re-cuts at ship); E9 NOT EVALUATED here (no clones under the snapshot root), the same on the base.
+
+**journey-6.cjs** (neural-link FIXES/NL-010/tools/controller/journey-6.cjs, unchanged; crun6.sh's method on port 8606;
+chromium `--use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist`; one device at a
+time; outputs in `edition-10/journey/`, snapshot hashes in `snapshot-e10-{base,file}.sha256`):
+
+| run | Pixel 7 | Galaxy S24 |
+|---|---|---|
+| Edition 10 base (main 35ef064 byte copy) | 16/16, 6 admitted, none refused (09:07:08-09:15:25Z) | 16/16, 6 admitted, none refused (09:15:29-09:22:15Z) |
+| Edition 10 + file 5fc4e307 | 16/16, 7 admitted, none refused (09:22:19-09:30:32Z) | 16/16, 7 admitted, none refused (09:30:37-09:37:33Z) |
+
+No red step added; no step HARNESS-LIMITED (no screenshot failed); 0 page errors in all four; each run logs the same 2
+console entries for the blocked external basemap request (ERR_TUNNEL_CONNECTION_FAILED), with and without file.
+spark-tap opens card 323 (1.8 px from the tap) on both phones in both runs.
+
+**Verdict (revision 202611020832).** Admissible on Edition 10: every gate of test.cjs PASSES on both phones (G4 NOT
+EVALUATED by the test's own rule while apps owns `Open an app`, and its hand-off measured PASS in A1), E' PASS, zero
+console errors and zero page errors in the module's test, and journey-6 equal to the base on both phones.
