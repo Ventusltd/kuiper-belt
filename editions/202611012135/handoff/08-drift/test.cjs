@@ -87,9 +87,11 @@ async function linesPick(page, ok) {
       : [...document.querySelectorAll('#bar button, #bar a, #bar [role=button]')].find(x => x.textContent.trim().toUpperCase() === 'LINES');
     if (!b) return null; const r = b.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
   const isOpen = await page.evaluate(() => { const l = document.querySelector('#lines'); return !!(l && l.getBoundingClientRect().height > 0); });
-  // from a closed LINES, as the journey starts its lines steps: close it first if it is open, then open it with a tap
-  if (t && isOpen) { await page.touchscreen.tap(t[0], t[1]); await sleep(1500); await page.evaluate(() => document.activeElement && document.activeElement.blur && document.activeElement.blur()); }
-  if (t) { await page.touchscreen.tap(t[0], t[1]); await sleep(1500); }
+  // LINES open already (after the drift section was used, scrolled to its end): back to the panel's top, as a finger
+  // would swipe, so the filter box is on screen; closed: open it with a tap
+  if (t && !isOpen) { await page.touchscreen.tap(t[0], t[1]); await sleep(1500); }
+  else await page.evaluate(() => { const l = document.querySelector('#lines'); if (l) l.scrollTop = 0; });
+  await sleep(500);
   await page.evaluate(() => { const i = document.querySelector('#lyFind'); if (i && i.value) { i.value = ''; i.dispatchEvent(new Event('input', { bubbles: true })); } }); await sleep(500);
   const f = await page.evaluate(() => { const i = document.querySelector('#lyFind'); if (!i) return null; const r = i.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
   if (f) { await page.touchscreen.tap(f[0], f[1]); await sleep(300); await page.keyboard.type('acceptance', { delay: 30 }); await sleep(900); }

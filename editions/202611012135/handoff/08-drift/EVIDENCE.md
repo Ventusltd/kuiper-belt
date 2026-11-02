@@ -53,7 +53,7 @@ sha256, the 18 hooks (each one is used, and no hook is used that is not listed),
 
 | file | bytes | sha256 | header licence line |
 |---|---|---|---|
-| `editions/202611012135/modules/202611012325-drift.js` | 22,637 | `df511ccb7ae6596aea29827d2eca5eb531b95b46af3699a4d101c53b22976dd7` (= MODULE.sha256, = MODULE.json) | line 1 `Apache-2.0 (kuiper-belt code)`; name, stamp, requires, provides present (:1, :18-20) |
+| `editions/202611012135/modules/202611020240-drift.js` | 23,124 | `f03b78350694362f0d0203647231c9809661a0aac7392f6fd776f519ce391480` (= MODULE.sha256, = MODULE.json; revision 04:14, section I) | line 1 `Apache-2.0 (kuiper-belt code)`; name, stamp, requires, provides present (:1, :18-20) |
 | `editions/202611012135/data/drift.json` | 118,553 | `388103129b904a4a038d18adc26b703c144dede2d09497d13fe6223b30b5d103` (= MODULE.sha256) | `licence` field `CC BY 4.0 (kuiper-belt data); quotes no line text` |
 | `tools/drift.py` | 26,522 | `29fdb05e5717aee41a5b0ed149b715bf4d997cdbee045bef90da9dd7a6b6080e` (= MODULE.sha256 since about 00:24Z; the HANDOFF's posted file list predates it, verdict item 3) | line 2 `Apache-2.0 (kuiper-belt code)` |
 | `handoff/08-drift/drift_test.py` (tester) | being edited | n/a | line 2 `Apache-2.0` |
@@ -322,3 +322,13 @@ opens. The tester's two-line patch was applied. With no shell WAFER panel, the s
 before #lineslist; the WAFER-panel path is kept for when the shell returns. Module sha256 df511ccb… (22,637 bytes).
 test.cjs (the tester's current version), both devices: RESULT: PASS 49 of 49 pre-integration (TEST.md). The
 one-row bar check is NOT EVALUATED without the shell: the page's own #bar is three rows, unchanged by drift.
+
+## I. Revision 202611020240 (04:14 UTC): the section moves after #lineslist
+
+The controller withdrew df511ccb at 02:25 (#10 comment 6567584787). The DRIFT section sat between #lyFind and
+#lineslist and broke the journey's `lines-pick`. New file `modules/202611020240-drift.js`, sha256 f03b7835…1480,
+23,124 bytes: one collapsed 44 px row after #lineslist. Measured on these bytes:
+- test.cjs: 57 of 57 PASS on Pixel 7 and Galaxy S24. The first row after the "acceptance" filter is data-i 39 at
+  191.2 px with and without drift, and a tap on it opens the card.
+- the controller's journey-6.cjs (modules.json routed to [hello, line-card, drift]): 14 of 16 on both phones, with
+  `lines-pick` and `card-details` green. The 2 reds are the base's `load` and `see-through`, ADMISSIONS.md row 0.
