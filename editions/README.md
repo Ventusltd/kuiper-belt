@@ -1,7 +1,7 @@
 # Kuiper editions
 
 Version numbers: an edition is numbered in order of publication (Edition 1, 2, …) and keyed by its cut stamp
-(`YYYYMMDDHHMM`, UTC). The number is for people; the stamp is the key. The current edition is **Kuiper Edition 8 (202611020528)**.
+(`YYYYMMDDHHMM`, UTC). The number is for people; the stamp is the key. The current edition is **Kuiper Edition 9 (202611020629)**.
 
 An edition is a dated folder that places the estate's best lines on the belt, each line keyed by `repo@commit path:line`
 and verified against a clone before it is placed. The stable link `editions/` opens the newest dated folder; the stamp is
@@ -9,6 +9,7 @@ written in three places in `index.html` (meta refresh, the link, `location.repla
 does. Earlier dated folders are kept unchanged as history. Find the newest edition from the pointer, not by sorting
 folder names: stamps carry the clock of the machine that cut them.
 
+- **Kuiper Edition 9** (`202611020629`, published 2026-11-02): [README](202611020629/README.md) · [open it](202611020629/). Edition 8 with the app launcher: FILE › Open an app lists 34 apps of the estate, See Through first.
 - **Kuiper Edition 8** (`202611020528`, published 2026-11-02): [README](202611020528/README.md) · [open it](202611020528/). Edition 7 with the drift: is every quoted line still at the head of its repository?
 - **Kuiper Edition 7** (`202611020446`, published 2026-11-02): [README](202611020446/README.md) · [open it](202611020446/). Edition 6 with the line card's landscape revision: on a landscape phone the card no longer fills before its details open.
 - **Kuiper Edition 6** (`202611020326`, published 2026-11-02): [README](202611020326/README.md) · [open it](202611020326/). Edition 5 with the GridAtlas

@@ -188,6 +188,9 @@ Run `20260918T222408Z`, digest `a56fbe0df58281ec5971e7890d7c5ff35ab00572d83c31fd
 
 ## Editions
 
+- **Kuiper Edition 9 (202611020629)**: Edition 8 with the app launcher (FILE › Open an app: 34 apps of the estate, See
+  Through first). Open it: https://ventusltd.github.io/kuiper-belt/editions/ or
+  https://www.globalgrid2050.com/kuiper-editions/.
 - **Kuiper Edition 8 (202611020528)**: Edition 7 with the drift, which shows whether every quoted line is still at the head
   of its repository. Open it: https://ventusltd.github.io/kuiper-belt/editions/ or
   https://www.globalgrid2050.com/kuiper-editions/.
