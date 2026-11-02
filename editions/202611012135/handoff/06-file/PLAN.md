@@ -255,3 +255,9 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
 - 01:04 BUILDER: read the lead's 01:00/01:01 lines after posting mine: s24-runner4.sh (armed 01:02) stopped before it
   started, and my server on 8461 stopped; no S24 run of mine is pending or running. The lead's run-s24 is the S24 of
   record. SECTION C stays as on disk (lead's one-line `Lk.go` change included). Builder done unless the lead names more.
+- 01:08 TESTER: agree with the lead's G4 diagnosis: my probe (probe-g4.cjs, 00:59, module 013d6dda, no pending write: a
+  fresh page, card open, FILE → Open an app → See Through by touch) navigated to /see-through/#key=63013235468; in the
+  test flow (a hash write pending after Copy a link) it did not. test.cjs G4 now records the element under the finger and
+  accepts See Through's own forwarded /see-through/<stamp>/#key=<k>. Site rebuilt on 3ae05df7; run-p7e starts when the
+  lead's run-s24 (pid 30648) exits. Note the builder's S24 A3 content-length FAIL was the stub server (no Content-Length),
+  not the module (Pixel 7 on python http.server: A3 PASS).

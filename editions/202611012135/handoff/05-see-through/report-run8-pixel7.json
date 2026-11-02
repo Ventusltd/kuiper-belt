@@ -1,0 +1,1065 @@
+{
+ "base": "http://127.0.0.1:8450/",
+ "edition": "http://127.0.0.1:8450/editions/202611012135/",
+ "stamp": "202611012135",
+ "titleMinPx": 434,
+ "mode": "preview",
+ "preview": {
+  "base": "index.html on disk (hook table and loader already integrated)",
+  "ids": [
+   "kuiper-shell",
+   "line-card",
+   "file",
+   "see-through"
+  ],
+  "patches": [
+   {
+    "patch": "none (integrated)",
+    "ok": true
+   }
+  ],
+  "manifest": [
+   {
+    "id": "kuiper-shell",
+    "path": "modules/202611012143-kuiper-shell.js",
+    "sha256": "4c0e831490afc439ad29a33b6a174ca3554c270895db467941d015c6b02f83be",
+    "requires": [
+     "safeBox",
+     "card",
+     "hud",
+     "big",
+     "sub",
+     "cv",
+     "gbox",
+     "gin",
+     "redraw"
+    ],
+    "provides": [
+     "kuiper-shell",
+     "menuBar"
+    ]
+   },
+   {
+    "id": "line-card",
+    "path": "modules/202611012143-line-card.js",
+    "sha256": "e2baeaaaf244ad0b7ab6c2e8f727d0cc5a39a1f1b3765b26db00d36fc957c065",
+    "requires": [
+     "card",
+     "esc",
+     "fmt",
+     "address",
+     "describe",
+     "sel",
+     "lit",
+     "redraw",
+     "gbox"
+    ],
+    "provides": [
+     "line-card"
+    ]
+   },
+   {
+    "id": "file",
+    "path": "modules/202611012231-file.js",
+    "sha256": "d8c236c0186bb35df1514c8c2c13b11303296614036b8c33ada866f6d06cf9da",
+    "requires": [
+     "keyPlace",
+     "address",
+     "describe",
+     "goKey",
+     "lightTime",
+     "home",
+     "flyTo",
+     "safeBox",
+     "fmt",
+     "card",
+     "gbox",
+     "gin",
+     "SPACE",
+     "N",
+     "repos",
+     "wafer",
+     "cv",
+     "ov",
+     "hud",
+     "big",
+     "panels",
+     "draw",
+     "redraw",
+     "cam",
+     "lit",
+     "sel",
+     "layers"
+    ],
+    "provides": [
+     "file",
+     "link"
+    ]
+   },
+   {
+    "id": "see-through",
+    "path": "modules/202611012141-see-through.js",
+    "sha256": "87a88e488fdf8433e2dcb3c31b9dfcf11726d5761509d996017ebbe08f6ce873",
+    "requires": [
+     "wafer",
+     "keyPlace",
+     "address",
+     "describe",
+     "goKey",
+     "fmt",
+     "esc",
+     "cv",
+     "ov",
+     "o2",
+     "hud",
+     "card",
+     "gin",
+     "repos",
+     "SPACE",
+     "cam",
+     "sel",
+     "redraw",
+     "draw"
+    ],
+    "provides": [
+     "see-through"
+    ]
+   }
+  ]
+ },
+ "hasLoader": true,
+ "manifestListsSeeThrough": false,
+ "outdir": "/tmp/nl010-opus/team-5/lead/run8",
+ "generatedAt": "2026-11-02T00:12:49.875Z",
+ "static": {
+  "module": {
+   "pass": true,
+   "file": "editions/202611012135/modules/202611012141-see-through.js",
+   "bytes": 26000,
+   "sha256": "87a88e488fdf8433e2dcb3c31b9dfcf11726d5761509d996017ebbe08f6ce873",
+   "moduleSha256File": "87a88e488fdf8433e2dcb3c31b9dfcf11726d5761509d996017ebbe08f6ce873",
+   "headerFirstLine": "/* kuiper module see-through, generation 202611012141 (UTC), CERN-OHL-S-2.0 (the whole file; ROADMAP 9.8: never Apache-2.0)",
+   "licence": "CERN-OHL-S-2.0",
+   "licenceInHeader": {
+    "namedOnLine1": true,
+    "copiesSeeThroughCode": true,
+    "cernWhenCopied": true
+   },
+   "generation": {
+    "fileName": "202611012141",
+    "header": "202611012141",
+    "registration": "202611012141"
+   },
+   "kyRegisterCalls": 1,
+   "nodeCheck": "ok",
+   "note": ""
+  },
+  "data": {
+   "pass": true,
+   "file": "editions/202611012135/data/see-through.json",
+   "bytes": 666940,
+   "sha256": "440950711a148eb019b7309ea1a0610219c096742893ce8d7c1f81be18d479a6",
+   "features": 5800,
+   "distinctJ": 5800,
+   "waferSpace": 63340120796,
+   "fileSpace": 63340120796,
+   "keyMismatches": 0,
+   "firstBad": [],
+   "beyondSpace": 0,
+   "remapFailures": 0,
+   "spaceMismatches": 0,
+   "coordinatesChecked": 0,
+   "placementFailures": 0,
+   "odblAttribution": true,
+   "note": ""
+  }
+ },
+ "devices": [
+  {
+   "device": "Galaxy S24",
+   "viewport": {
+    "width": 360,
+    "height": 780
+   },
+   "dpr": 3,
+   "mode": "preview",
+   "url": "http://127.0.0.1:8450/editions/202611012135/",
+   "startedAt": "2026-11-02T00:12:51.652Z",
+   "steps": [
+    {
+     "id": "load",
+     "name": "load the edition: the see-through module admitted, zero console errors",
+     "pass": true,
+     "ms": 19285,
+     "measured": {
+      "ky": {
+       "schema": "kuiper.hooks.v1",
+       "shim": false,
+       "frozen": true,
+       "admitted": true,
+       "generation": "202611012141",
+       "sha256": "87a88e488fdf8433e2dcb3c31b9dfcf11726d5761509d996017ebbe08f6ce873",
+       "apiKeys": [
+        "link",
+        "starKey",
+        "remap",
+        "inspect",
+        "readHash"
+       ],
+       "inspect": {
+        "id": "see-through",
+        "generation": "202611012141",
+        "form": "strip",
+        "parent": "kuiper-star-strip",
+        "entry": {
+         "x": 9,
+         "y": 729,
+         "w": 112.53125,
+         "h": 44
+        },
+        "href": "../../see-through/",
+        "layer": {
+         "status": "OK",
+         "why": "",
+         "row": "OK · 5,800 of 5,800 · See Through 202610050609 (its sky 59,637,070,538 until the patch) · SPACE 63,340,120,796 · names © OpenStreetMap contributors, ODbL",
+         "placed": 5800,
+         "total": 5800,
+         "space": 63340120796,
+         "wafer": 63340120796,
+         "inView": 5800,
+         "on": true
+        },
+        "mounted": "kuiper-shell",
+        "registered": "own",
+        "bytes": 666940,
+        "sha256": "",
+        "linkRead": "none",
+        "note": "",
+        "rowsAdded": 0,
+        "starTap": null,
+        "errors": []
+       },
+       "layers": null,
+       "refused": [
+        {
+         "id": "file",
+         "why": "missing hook layers",
+         "t_ms": 10682
+        }
+       ],
+       "admittedIds": [
+        "kuiper-shell",
+        "line-card",
+        "see-through"
+       ]
+      },
+      "consoleErrors": [],
+      "viewport": {
+       "w": 360,
+       "h": 780,
+       "dpr": 3
+      }
+     },
+     "note": ""
+    },
+    {
+     "id": "entry",
+     "name": "the entry: the 44 px chip bottom-left, the bar one row",
+     "pass": true,
+     "ms": 14398,
+     "measured": {
+      "form": "strip",
+      "entry": {
+       "tag": "a",
+       "cls": "gm-title",
+       "text": "SEE THROUGH",
+       "hrefAttr": "../../see-through/",
+       "hrefResolved": "http://127.0.0.1:8450/see-through/",
+       "target": null,
+       "role": "button",
+       "title": "See Through: from the stars to one substation in 3D",
+       "ariaLabel": "See Through: from the stars to one substation in 3D",
+       "sentenceOk": true,
+       "rect": {
+        "left": 9,
+        "top": 729,
+        "right": 121.5,
+        "bottom": 773,
+        "width": 112.5,
+        "height": 44
+       },
+       "background": "rgba(80, 220, 240, 0.16)",
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "11px",
+       "fontWeight": "400",
+       "textTransform": "uppercase",
+       "parentId": "kuiper-star-strip",
+       "parentClass": "",
+       "inBar": false,
+       "inStrip": true,
+       "firstOfSideLeft": false,
+       "firstTitleInBar": false,
+       "hitOk": true,
+       "hitAt": "#kuiper-star"
+      },
+      "count": 1,
+      "sideLeft": true,
+      "strip": {
+       "rect": {
+        "left": 8,
+        "top": 728,
+        "right": 122.5,
+        "bottom": 772,
+        "width": 114.5,
+        "height": 44
+       },
+       "position": "fixed",
+       "children": 1
+      },
+      "bar": {
+       "rect": {
+        "left": 0,
+        "top": 0,
+        "right": 360,
+        "bottom": 34,
+        "width": 360,
+        "height": 34
+       },
+       "scrollWidth": 360,
+       "clientWidth": 360
+      },
+      "titles": [
+       {
+        "text": "File",
+        "star": false,
+        "rect": {
+         "left": 0,
+         "top": 0,
+         "right": 34.6,
+         "bottom": 34,
+         "width": 34.6,
+         "height": 34
+        }
+       },
+       {
+        "text": "Edit",
+        "star": false,
+        "rect": {
+         "left": 34.6,
+         "top": 0,
+         "right": 69.2,
+         "bottom": 34,
+         "width": 34.6,
+         "height": 34
+        }
+       },
+       {
+        "text": "View",
+        "star": false,
+        "rect": {
+         "left": 69.2,
+         "top": 0,
+         "right": 103.7,
+         "bottom": 34,
+         "width": 34.6,
+         "height": 34
+        }
+       },
+       {
+        "text": "Scope",
+        "star": false,
+        "rect": {
+         "left": 239.3,
+         "top": 0,
+         "right": 279.6,
+         "bottom": 34,
+         "width": 40.2,
+         "height": 34
+        }
+       },
+       {
+        "text": "Wafer",
+        "star": false,
+        "rect": {
+         "left": 279.6,
+         "top": 0,
+         "right": 319.8,
+         "bottom": 34,
+         "width": 40.2,
+         "height": 34
+        }
+       },
+       {
+        "text": "About",
+        "star": false,
+        "rect": {
+         "left": 319.8,
+         "top": 0,
+         "right": 360,
+         "bottom": 34,
+         "width": 40.2,
+         "height": 34
+        }
+       }
+      ],
+      "otherMaxWidth": 40.2,
+      "screenshot": "galaxy-s24/01-entry.png"
+     },
+     "note": ""
+    },
+    {
+     "id": "layer",
+     "name": "the stars layer: 5,800 records placed by the law, 0 remap failures",
+     "pass": true,
+     "ms": 6604,
+     "measured": {
+      "data": {
+       "pass": true,
+       "file": "editions/202611012135/data/see-through.json",
+       "bytes": 666940,
+       "sha256": "440950711a148eb019b7309ea1a0610219c096742893ce8d7c1f81be18d479a6",
+       "features": 5800,
+       "distinctJ": 5800,
+       "waferSpace": 63340120796,
+       "fileSpace": 63340120796,
+       "keyMismatches": 0,
+       "firstBad": [],
+       "beyondSpace": 0,
+       "remapFailures": 0,
+       "spaceMismatches": 0,
+       "coordinatesChecked": 0,
+       "placementFailures": 0,
+       "odblAttribution": true,
+       "note": ""
+      },
+      "keysCheckedInPage": 5800,
+      "lawMismatches": 0,
+      "remap": {
+       "checked": 5800,
+       "remapFailures": 0,
+       "identityFailures": 0,
+       "starKeyMismatches": 0,
+       "firstBad": []
+      },
+      "layer": {
+       "status": "OK",
+       "why": "",
+       "row": "OK · 5,800 of 5,800 · See Through 202610050609 (its sky 59,637,070,538 until the patch) · SPACE 63,340,120,796 · names © OpenStreetMap contributors, ODbL",
+       "placed": 5800,
+       "total": 5800,
+       "space": 63340120796,
+       "wafer": 63340120796,
+       "inView": 5800,
+       "on": true
+      },
+      "row": "OK · 5,800 of 5,800 · See Through 202610050609 (its sky 59,637,070,538 until the patch) · SPACE 63,340,120,796 · names © OpenStreetMap contributors, ODbL",
+      "registry": null
+     },
+     "note": ""
+    },
+    {
+     "id": "tap",
+     "name": "tap the entry: See Through opens in the same tab on the same host; back returns to the edition",
+     "pass": false,
+     "ms": 731371,
+     "measured": {
+      "navigated": true,
+      "sameTab": true,
+      "url": "http://127.0.0.1:8450/see-through/202610050609/",
+      "sameHost": true,
+      "title": "See Through",
+      "landing": "galaxy-s24/02-landing.png",
+      "backUrl": "http://127.0.0.1:8450/editions/202611012135/",
+      "backIsEdition": true,
+      "backEntryCount": 0,
+      "backOpenPanels": [],
+      "backAdmitted": false,
+      "screenshot": "galaxy-s24/03-back.png"
+     },
+     "note": "after back #kuiper-star count 0"
+    },
+    {
+     "id": "spark",
+     "name": "a deep link from a spark: the card row is ../../see-through/#key=<key>; a touch lands there with that hash; back returns",
+     "pass": true,
+     "ms": 484331,
+     "measured": {
+      "cardIndex": 1,
+      "body": {
+       "key": 36064705400,
+       "title": "Bytes on disk are the bytes that ship",
+       "repo": "data-centres-gb"
+      },
+      "link": {
+       "text": "see this line among the stars",
+       "hrefAttr": "../../see-through/#key=36064705400",
+       "hrefResolved": "http://127.0.0.1:8450/see-through/#key=36064705400",
+       "target": null,
+       "rect": {
+        "left": 12,
+        "top": 622,
+        "right": 312,
+        "bottom": 667,
+        "width": 300,
+        "height": 45
+       },
+       "hitOk": true,
+       "hitAt": "a"
+      },
+      "documented": "../../see-through/#key=36064705400",
+      "apiLink": "../../see-through/#key=36064705400",
+      "landed": "http://127.0.0.1:8450/see-through/202611020012/#key=36064705400",
+      "landedHash": "#key=36064705400",
+      "backUrl": "http://127.0.0.1:8450/editions/202611012135/",
+      "screenshots": {
+       "card": "galaxy-s24/04-spark-card.png",
+       "landing": "FAILED: page.screenshot: Timeout 180000ms exceeded."
+      }
+     },
+     "note": ""
+    },
+    {
+     "id": "errors",
+     "name": "zero console errors, page errors and failed requests on every page",
+     "pass": true,
+     "ms": 0,
+     "measured": {
+      "errors": [],
+      "externalUnreachable": [
+       {
+        "where": "tab",
+        "kind": "request",
+        "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+        "text": "net::ERR_TUNNEL_CONNECTION_FAILED"
+       },
+       {
+        "where": "tab",
+        "kind": "console",
+        "url": "http://127.0.0.1:8450/see-through/202610050609/",
+        "resource": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+        "text": "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED"
+       },
+       {
+        "where": "tab",
+        "kind": "request",
+        "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+        "text": "net::ERR_TUNNEL_CONNECTION_FAILED"
+       },
+       {
+        "where": "tab",
+        "kind": "console",
+        "url": "http://127.0.0.1:8450/see-through/202611020012/#key=36064705400",
+        "resource": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+        "text": "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED"
+       }
+      ]
+     },
+     "note": ""
+    }
+   ],
+   "consoleErrors": [],
+   "externalUnreachable": [
+    {
+     "where": "tab",
+     "kind": "request",
+     "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+     "text": "net::ERR_TUNNEL_CONNECTION_FAILED"
+    },
+    {
+     "where": "tab",
+     "kind": "console",
+     "url": "http://127.0.0.1:8450/see-through/202610050609/",
+     "resource": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+     "text": "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED"
+    },
+    {
+     "where": "tab",
+     "kind": "request",
+     "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+     "text": "net::ERR_TUNNEL_CONNECTION_FAILED"
+    },
+    {
+     "where": "tab",
+     "kind": "console",
+     "url": "http://127.0.0.1:8450/see-through/202611020012/#key=36064705400",
+     "resource": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+     "text": "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED"
+    }
+   ],
+   "pass": false,
+   "passed": 5,
+   "failed": 1,
+   "finishedAt": "2026-11-02T00:33:47.641Z",
+   "shots": {
+    "entry": "/tmp/nl010-opus/team-5/lead/run8/galaxy-s24/01-entry.png",
+    "landing": "/tmp/nl010-opus/team-5/lead/run8/galaxy-s24/02-landing.png",
+    "back": "/tmp/nl010-opus/team-5/lead/run8/galaxy-s24/03-back.png",
+    "spark-card": "/tmp/nl010-opus/team-5/lead/run8/galaxy-s24/04-spark-card.png"
+   }
+  },
+  {
+   "device": "Pixel 7 @393",
+   "viewport": {
+    "width": 393,
+    "height": 839
+   },
+   "dpr": 2.625,
+   "mode": "preview",
+   "url": "http://127.0.0.1:8450/editions/202611012135/",
+   "startedAt": "2026-11-02T00:37:06.303Z",
+   "steps": [
+    {
+     "id": "load",
+     "name": "load the edition: the see-through module admitted, zero console errors",
+     "pass": true,
+     "ms": 38454,
+     "measured": {
+      "ky": {
+       "schema": "kuiper.hooks.v1",
+       "shim": false,
+       "frozen": true,
+       "admitted": true,
+       "generation": "202611012141",
+       "sha256": "87a88e488fdf8433e2dcb3c31b9dfcf11726d5761509d996017ebbe08f6ce873",
+       "apiKeys": [
+        "link",
+        "starKey",
+        "remap",
+        "inspect",
+        "readHash"
+       ],
+       "inspect": {
+        "id": "see-through",
+        "generation": "202611012141",
+        "form": "strip",
+        "parent": "kuiper-star-strip",
+        "entry": {
+         "x": 9,
+         "y": 788,
+         "w": 112.53125,
+         "h": 44
+        },
+        "href": "../../see-through/",
+        "layer": {
+         "status": "OK",
+         "why": "",
+         "row": "OK · 5,800 of 5,800 · See Through 202610050609 (its sky 59,637,070,538 until the patch) · SPACE 63,340,120,796 · names © OpenStreetMap contributors, ODbL",
+         "placed": 5800,
+         "total": 5800,
+         "space": 63340120796,
+         "wafer": 63340120796,
+         "inView": 5800,
+         "on": true
+        },
+        "mounted": "kuiper-shell",
+        "registered": "own",
+        "bytes": 666940,
+        "sha256": "",
+        "linkRead": "none",
+        "note": "",
+        "rowsAdded": 0,
+        "starTap": null,
+        "errors": []
+       },
+       "layers": null,
+       "refused": [
+        {
+         "id": "file",
+         "why": "missing hook layers",
+         "t_ms": 30845
+        }
+       ],
+       "admittedIds": [
+        "kuiper-shell",
+        "line-card",
+        "see-through"
+       ]
+      },
+      "consoleErrors": [],
+      "viewport": {
+       "w": 393,
+       "h": 839,
+       "dpr": 2.625
+      }
+     },
+     "note": ""
+    },
+    {
+     "id": "entry",
+     "name": "the entry: the 44 px chip bottom-left, the bar one row",
+     "pass": true,
+     "ms": 1226,
+     "measured": {
+      "form": "strip",
+      "entry": {
+       "tag": "a",
+       "cls": "gm-title",
+       "text": "SEE THROUGH",
+       "hrefAttr": "../../see-through/",
+       "hrefResolved": "http://127.0.0.1:8450/see-through/",
+       "target": null,
+       "role": "button",
+       "title": "See Through: from the stars to one substation in 3D",
+       "ariaLabel": "See Through: from the stars to one substation in 3D",
+       "sentenceOk": true,
+       "rect": {
+        "left": 9,
+        "top": 788,
+        "right": 121.5,
+        "bottom": 832,
+        "width": 112.5,
+        "height": 44
+       },
+       "background": "rgba(80, 220, 240, 0.16)",
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "11px",
+       "fontWeight": "400",
+       "textTransform": "uppercase",
+       "parentId": "kuiper-star-strip",
+       "parentClass": "",
+       "inBar": false,
+       "inStrip": true,
+       "firstOfSideLeft": false,
+       "firstTitleInBar": false,
+       "hitOk": true,
+       "hitAt": "#kuiper-star"
+      },
+      "count": 1,
+      "sideLeft": true,
+      "strip": {
+       "rect": {
+        "left": 8,
+        "top": 787,
+        "right": 122.5,
+        "bottom": 831,
+        "width": 114.5,
+        "height": 44
+       },
+       "position": "fixed",
+       "children": 1
+      },
+      "bar": {
+       "rect": {
+        "left": 0,
+        "top": 0,
+        "right": 393,
+        "bottom": 34,
+        "width": 393,
+        "height": 34
+       },
+       "scrollWidth": 393,
+       "clientWidth": 393
+      },
+      "titles": [
+       {
+        "text": "File",
+        "star": false,
+        "rect": {
+         "left": 0,
+         "top": 0,
+         "right": 34.6,
+         "bottom": 34,
+         "width": 34.6,
+         "height": 34
+        }
+       },
+       {
+        "text": "Edit",
+        "star": false,
+        "rect": {
+         "left": 34.6,
+         "top": 0,
+         "right": 69.2,
+         "bottom": 34,
+         "width": 34.6,
+         "height": 34
+        }
+       },
+       {
+        "text": "View",
+        "star": false,
+        "rect": {
+         "left": 69.2,
+         "top": 0,
+         "right": 103.7,
+         "bottom": 34,
+         "width": 34.6,
+         "height": 34
+        }
+       },
+       {
+        "text": "Scope",
+        "star": false,
+        "rect": {
+         "left": 272.3,
+         "top": 0,
+         "right": 312.6,
+         "bottom": 34,
+         "width": 40.2,
+         "height": 34
+        }
+       },
+       {
+        "text": "Wafer",
+        "star": false,
+        "rect": {
+         "left": 312.6,
+         "top": 0,
+         "right": 352.8,
+         "bottom": 34,
+         "width": 40.2,
+         "height": 34
+        }
+       },
+       {
+        "text": "About",
+        "star": false,
+        "rect": {
+         "left": 352.8,
+         "top": 0,
+         "right": 393,
+         "bottom": 34,
+         "width": 40.2,
+         "height": 34
+        }
+       }
+      ],
+      "otherMaxWidth": 40.2,
+      "screenshot": "pixel-7-393/01-entry.png"
+     },
+     "note": ""
+    },
+    {
+     "id": "layer",
+     "name": "the stars layer: 5,800 records placed by the law, 0 remap failures",
+     "pass": true,
+     "ms": 1600,
+     "measured": {
+      "data": {
+       "pass": true,
+       "file": "editions/202611012135/data/see-through.json",
+       "bytes": 666940,
+       "sha256": "440950711a148eb019b7309ea1a0610219c096742893ce8d7c1f81be18d479a6",
+       "features": 5800,
+       "distinctJ": 5800,
+       "waferSpace": 63340120796,
+       "fileSpace": 63340120796,
+       "keyMismatches": 0,
+       "firstBad": [],
+       "beyondSpace": 0,
+       "remapFailures": 0,
+       "spaceMismatches": 0,
+       "coordinatesChecked": 0,
+       "placementFailures": 0,
+       "odblAttribution": true,
+       "note": ""
+      },
+      "keysCheckedInPage": 5800,
+      "lawMismatches": 0,
+      "remap": {
+       "checked": 5800,
+       "remapFailures": 0,
+       "identityFailures": 0,
+       "starKeyMismatches": 0,
+       "firstBad": []
+      },
+      "layer": {
+       "status": "OK",
+       "why": "",
+       "row": "OK · 5,800 of 5,800 · See Through 202610050609 (its sky 59,637,070,538 until the patch) · SPACE 63,340,120,796 · names © OpenStreetMap contributors, ODbL",
+       "placed": 5800,
+       "total": 5800,
+       "space": 63340120796,
+       "wafer": 63340120796,
+       "inView": 5800,
+       "on": true
+      },
+      "row": "OK · 5,800 of 5,800 · See Through 202610050609 (its sky 59,637,070,538 until the patch) · SPACE 63,340,120,796 · names © OpenStreetMap contributors, ODbL",
+      "registry": null
+     },
+     "note": ""
+    },
+    {
+     "id": "tap",
+     "name": "tap the entry: See Through opens in the same tab on the same host; back returns to the edition",
+     "pass": true,
+     "ms": 270689,
+     "measured": {
+      "navigated": true,
+      "sameTab": true,
+      "url": "http://127.0.0.1:8450/see-through/202611020012/",
+      "sameHost": true,
+      "title": "See Through",
+      "landing": "pixel-7-393/02-landing.png",
+      "backUrl": "http://127.0.0.1:8450/editions/202611012135/",
+      "backIsEdition": true,
+      "backEntryCount": 1,
+      "backOpenPanels": [],
+      "backAdmitted": true,
+      "screenshot": "pixel-7-393/03-back.png"
+     },
+     "note": ""
+    },
+    {
+     "id": "spark",
+     "name": "a deep link from a spark: the card row is ../../see-through/#key=<key>; a touch lands there with that hash; back returns",
+     "pass": true,
+     "ms": 191155,
+     "measured": {
+      "cardIndex": 1,
+      "body": {
+       "key": 36064705400,
+       "title": "Bytes on disk are the bytes that ship",
+       "repo": "data-centres-gb"
+      },
+      "link": {
+       "text": "see this line among the stars",
+       "hrefAttr": "../../see-through/#key=36064705400",
+       "hrefResolved": "http://127.0.0.1:8450/see-through/#key=36064705400",
+       "target": null,
+       "rect": {
+        "left": 12,
+        "top": 681,
+        "right": 345,
+        "bottom": 726,
+        "width": 333,
+        "height": 45
+       },
+       "hitOk": true,
+       "hitAt": "a"
+      },
+      "documented": "../../see-through/#key=36064705400",
+      "apiLink": "../../see-through/#key=36064705400",
+      "landed": "http://127.0.0.1:8450/see-through/202611020012/#key=36064705400",
+      "landedHash": "#key=36064705400",
+      "backUrl": "http://127.0.0.1:8450/editions/202611012135/",
+      "screenshots": {
+       "card": "pixel-7-393/04-spark-card.png",
+       "landing": "pixel-7-393/05-deep-link-landing.png"
+      }
+     },
+     "note": ""
+    },
+    {
+     "id": "errors",
+     "name": "zero console errors, page errors and failed requests on every page",
+     "pass": true,
+     "ms": 0,
+     "measured": {
+      "errors": [],
+      "externalUnreachable": [
+       {
+        "where": "tab",
+        "kind": "request",
+        "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+        "text": "net::ERR_TUNNEL_CONNECTION_FAILED"
+       },
+       {
+        "where": "tab",
+        "kind": "console",
+        "url": "http://127.0.0.1:8450/see-through/202611020012/",
+        "resource": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+        "text": "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED"
+       },
+       {
+        "where": "tab",
+        "kind": "request",
+        "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+        "text": "net::ERR_TUNNEL_CONNECTION_FAILED"
+       },
+       {
+        "where": "tab",
+        "kind": "console",
+        "url": "http://127.0.0.1:8450/see-through/202611020012/#key=36064705400",
+        "resource": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+        "text": "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED"
+       }
+      ]
+     },
+     "note": ""
+    }
+   ],
+   "consoleErrors": [],
+   "externalUnreachable": [
+    {
+     "where": "tab",
+     "kind": "request",
+     "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+     "text": "net::ERR_TUNNEL_CONNECTION_FAILED"
+    },
+    {
+     "where": "tab",
+     "kind": "console",
+     "url": "http://127.0.0.1:8450/see-through/202611020012/",
+     "resource": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+     "text": "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED"
+    },
+    {
+     "where": "tab",
+     "kind": "request",
+     "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+     "text": "net::ERR_TUNNEL_CONNECTION_FAILED"
+    },
+    {
+     "where": "tab",
+     "kind": "console",
+     "url": "http://127.0.0.1:8450/see-through/202611020012/#key=36064705400",
+     "resource": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+     "text": "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED"
+    }
+   ],
+   "pass": true,
+   "passed": 6,
+   "failed": 0,
+   "finishedAt": "2026-11-02T00:45:29.427Z",
+   "shots": {
+    "entry": "/tmp/nl010-opus/team-5/lead/run8/pixel-7-393/01-entry.png",
+    "landing": "/tmp/nl010-opus/team-5/lead/run8/pixel-7-393/02-landing.png",
+    "back": "/tmp/nl010-opus/team-5/lead/run8/pixel-7-393/03-back.png",
+    "spark-card": "/tmp/nl010-opus/team-5/lead/run8/pixel-7-393/04-spark-card.png",
+    "deep-link-landing": "/tmp/nl010-opus/team-5/lead/run8/pixel-7-393/05-deep-link-landing.png"
+   }
+  }
+ ],
+ "pass": false,
+ "summary": [
+  {
+   "device": "Galaxy S24",
+   "viewport": {
+    "width": 360,
+    "height": 780
+   },
+   "passed": 5,
+   "failed": 1,
+   "failedSteps": [
+    "tap"
+   ],
+   "consoleErrors": 0,
+   "form": "strip"
+  },
+  {
+   "device": "Pixel 7 @393",
+   "viewport": {
+    "width": 393,
+    "height": 839
+   },
+   "passed": 6,
+   "failed": 0,
+   "failedSteps": [],
+   "consoleErrors": 0,
+   "form": "strip"
+  }
+ ],
+ "img": [
+  {
+   "file": "02-entry-strip-galaxy-s24.png",
+   "bytes": 89782,
+   "under300KB": true
+  },
+  {
+   "file": "03-landing-see-through-galaxy-s24.png",
+   "bytes": 136631,
+   "under300KB": true
+  }
+ ]
+}
