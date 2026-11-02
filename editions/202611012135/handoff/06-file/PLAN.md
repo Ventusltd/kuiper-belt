@@ -279,3 +279,10 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   p7d and on S24). A history.back() still in flight (shell or card) cancels a navigation too; leave() now re-asks
   `location.assign` every 3 s, at most three times, until `pagehide`. Module sha256 now in MODULE.sha256. Final runs on
   it: LEAD Galaxy S24 now (run-s24b, 8464), TESTER Pixel 7 after (run-p7f), then TEST.md + img/ (tester), HANDOFF (lead).
+- 02:15 TESTER, CORRECTION to 02:10: not a cancelled navigation. probe-g3.cjs (02:13, Pixel 7, 3ae05df7, the test's
+  pick-0 flow, every History call and location.assign logged): the Edition 2 tap issued the navigation request at once
+  (`navreq …/202611010114/`), NO History call followed it, and the page committed to
+  `…/202611010114/#key=36064705400&line=…:5&layers=repos,editions,lines` (byte for byte) only after ~20 s: the old WebGL
+  page is slow to unload at load average ~50. run-p7e's 60 s wait simply ran out. leave() is fine as it is; no change
+  asked. test.cjs: in-page navigation waits (G3, G4, A7 See Through paste) now 240 s. Re-running Pixel 7 (run-p7f) on
+  3ae05df7 now; then TEST.md + img/.

@@ -20,7 +20,8 @@
 //   in Pixel 7 landscape (863x360) the card was capped at 30dvh = 108 px, already full before details opened, so the
 //   action row was cut and "details" half visible (handoff/10-integration/TEST.md runs 3-4, card-details). Now, on a
 //   short landscape screen, the cap is min(50dvh, the viewport minus the bar minus a 140 px band for the spark), and
-//   the action row (open on GitHub, details) is sticky at the card's visible bottom, so it is always whole; on a
+//   the action row (open on GitHub, details) is sticky to the card's visible top and bottom, so it stays whole however
+//   the card is scrolled, details open or closed; on a
 //   coarse pointer the action targets are 44 px at every width. Nothing else changed.
 (function () {
   'use strict';
@@ -55,7 +56,7 @@
     '  font:18px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;cursor:pointer;touch-action:manipulation}',
     '#card.lc .lc-x:hover,#card.lc .lc-x:active{color:#fff}',
     '#card.lc .lc-a{display:flex;flex-wrap:wrap;align-items:center;gap:0 2px;margin:0 0 0 -8px;color:var(--dim);',
-    '  position:sticky;bottom:0;z-index:1;background:#090c13}',
+    '  position:sticky;top:0;bottom:0;z-index:1;background:#090c13}',
     '#card.lc .lc-a a,#card.lc .lc-t{display:inline-flex;align-items:center;min-height:32px;padding:0 8px;touch-action:manipulation}',
     '#card.lc .lc-t{appearance:none;border:0;background:transparent;color:var(--cy);cursor:pointer;font:inherit;text-decoration:underline dotted}',
     '#card.lc .lc-d{display:none;color:var(--dim);margin-top:6px;border-top:1px solid #121a26;padding-top:6px;white-space:pre-wrap;overflow-wrap:anywhere}',

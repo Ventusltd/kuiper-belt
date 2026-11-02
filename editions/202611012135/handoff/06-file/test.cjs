@@ -209,7 +209,7 @@ fs.mkdirSync(OUT, { recursive: true });
       // A7 a pasted See Through link -> navigation
       await openMenu(p, 'edit'); await tapSel(p, '#ky-edit-paste'); await p.waitForTimeout(700);
       await p.keyboard.type('https://ventusltd.github.io/kuiper-belt/see-through/#sub=Drax'); await p.keyboard.press('Enter');
-      await p.waitForURL(/\/see-through\//, { timeout: 60000 }).catch(() => {});
+      await p.waitForURL(/\/see-through\//, { timeout: 240000 }).catch(() => {});
       step('A7 a pasted See Through link -> navigation to See Through, the hash kept', /\/see-through\/.*#sub=Drax$/.test(p.url()), { url: p.url() });
       });
       await p.context().close();
@@ -262,7 +262,7 @@ fs.mkdirSync(OUT, { recursive: true });
             const hit = await p.evaluate(() => { const e = document.querySelector('#ky-file-editions [data-ky-edition="202611010114"]'); e.scrollIntoView({ block: 'center' }); const b = e.getBoundingClientRect(), x = b.left + b.width / 2, y = b.top + Math.min(b.height / 2, 22), h = document.elementFromPoint(x, y);
               return { x, y, on_row: !!h && (h === e || e.contains(h)), hit: h ? h.tagName + '#' + h.id + '.' + h.className : null }; });
             const r = await tapSel(p, '#ky-file-editions [data-ky-edition="202611010114"]');
-            await p.waitForURL(/\/editions\/202611010114\//, { timeout: 60000 }).catch(() => {});
+            await p.waitForURL(/\/editions\/202611010114\//, { timeout: 240000 }).catch(() => {});
             p.off('request', onReq);
             const after = p.url().indexOf('/202611010114/') < 0 ? await p.evaluate(() => { const i = KY.modules.file.api.inspect(); return { left: i.left || null, opened: (i.opened || []).slice(-3), history_length: history.length }; }).catch(e => String(e)) : 'navigated';
             const want = ROOT + 'editions/202611010114/#' + h;
@@ -278,7 +278,7 @@ fs.mkdirSync(OUT, { recursive: true });
               const hit = await p.evaluate(() => { const e = document.querySelector('#ky-file-apps [data-ky-app="see-through"]'); e.scrollIntoView({ block: 'center' }); const b = e.getBoundingClientRect(), x = b.left + b.width / 2, y = b.top + Math.min(b.height / 2, 22), h = document.elementFromPoint(x, y);
                 return { x, y, on_row: !!h && (h === e || e.contains(h)), hit: h ? h.tagName + '#' + h.id + '.' + h.className : null }; });
               const r = await tapSel(p, '#ky-file-apps [data-ky-app="see-through"]');
-              await p.waitForURL(/\/see-through\//, { timeout: 60000 }).catch(() => {});
+              await p.waitForURL(/\/see-through\//, { timeout: 240000 }).catch(() => {});
               const opened = p.url().indexOf('/see-through/') < 0 ? await p.evaluate(() => (KY.modules.file.api.inspect().opened || []).slice(-3)).catch(e => String(e)) : 'navigated';
               const want = ROOT + 'see-through/#key=' + k;   // or ROOT + 'see-through/<stamp>/#key=' + k when See Through's own pointer has forwarded it
               const landedOk = p.url() === want || new RegExp('^' + ROOT.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + 'see-through/\\d{12}/#key=' + k + '$').test(p.url());
