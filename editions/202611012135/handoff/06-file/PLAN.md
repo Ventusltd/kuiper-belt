@@ -202,3 +202,62 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
 - 23:54 TESTER: site rebuilt from the lead's current mksite.py + index.shell.html (module d8c236c0); run-p7c (Pixel 7)
   starts automatically when the builder's S24 process (pid 24552) exits. Builder: S24 again after run-p7c.
 - 00:01 EVIDENCE: I am ending my run. The tests are still queued (run-p7c, then S24) and I cannot wait them out on this machine. My verdict on HANDOFF.md stays HOLD until the five points in EVIDENCE.md §10 are in. LEAD: before posting, check that (a) TEST.md reads PASS on Pixel 7 and Galaxy S24 with the 404s on their own line, (b) the sha TEST.md hashed = MODULE.sha256 = the sha in HANDOFF.md, and (c) if that sha is not d8c236c0…, you re-key EVIDENCE.md's header and line numbers with `grep -n` (method in the EVIDENCE.md header; shift helper /tmp/nl010-opus/team-6/evidence/shift.py <file> <first-moved-line> <delta>).
+- 00:11 BUILDER: my S24 run on the pre-rev-3 page (started 23:38:52, module d8c236c0) was still in A6/A7 after 32 min
+  (shots 01 panel 23:40, 02 open key 23:42, PNG 720 x 1688 saved 23:43 = 360 x 2 wide); stopped at 00:10 so run-p7c could
+  start (it did, pid 30204). Re-armed: Galaxy S24 starts when pid 30204 and every other 06-file test.cjs have ended, site
+  rebuilt then from the lead's mksite.py + index.shell.html and the module on disk, no timeout this time (the whole
+  test takes ~30 min per device at this load: the lead's run1 23:00:32-23:29:10). Out: /tmp/nl010-opus/team-6/builder/
+  s24.json, s24.log, s24.start (the module and page sha256 it ran on), s24/shots.
+- 00:12 LEAD → BUILDER: your S24 run (module d8c236c0, test 23:32, site with loader rev 3 and the shim: a valid run) was
+  killed by your own `timeout 1700` at 23:59 after A2 (s24-runner.out: exit 137). The whole test takes ~30 min per device
+  at load 70. When run-p7c (pid 30204, started 00:11) ends, run Galaxy S24 again WITHOUT the timeout (or with 3600), same
+  site. TESTER: TEST.md from run-p7c + that S24 run; MODULE.sha256 stays d8c236c0… unless a FAIL needs a module fix.
+- 00:22 LEAD: run-p7c PASSED M, A1 x3, A3, A2 x3, then the harness stopped at A6: no download in 120 s. Cause in the
+  module (SECTION C, lead's change, BUILDER please note): the capture waited only 4 s for a frame and then refused with
+  the BLANK words; at load 70 the screenshot before it alone took > 180 s, so no frame came in 4 s. Now CAPTURE_WAIT_MS
+  = 30000 and a capture with no frame says its own words (`the wafer drew no frame in 30 s, so no image was taken; try
+  again`), never the blank words (the image was never read, so it is not "blank"). Module sha256 now in MODULE.sha256.
+  TESTER: rebuild the site and re-run Pixel 7 (run-p7d); please put A6 (and each later block) in its own try so one
+  timeout does not end the page's remaining steps. BUILDER: Galaxy S24 right after, no timeout wrapper.
+- 00:22 BUILDER: noted the 30 s capture wait and NOFRAME words (I had reached the same cause from run-p7c and went to
+  make the same one-line change; yours was already on disk, mine did not apply, nothing of mine changed). My S24 run of
+  00:18 (old module d8c236c0) is stopped. Re-armed (s24-runner3.sh): waits for run-p7d to appear (up to 15 min) and end,
+  then rebuilds the site from your mksite.py + index.shell.html and the module on disk and runs Galaxy S24, no timeout.
+- 00:24 TESTER: run-p7c (module d8c236c0) Pixel 7: M, A1 x3 (the inert row now >= 44 px), A3, A2 x3 PASS; then the
+  export's download wait (120 s) ran out at load average 73 on 4 cores and the screenshot of 02 timed out (180 s): test
+  fixed, not the module: every block now in its own try (blk), A6 waits 300 s and records the row's words on a timeout,
+  screenshot timeouts go to `shot_errors` (not pageerror), report.partial.json written after every step. run-p7d on
+  module 013d6dda started 00:24. BUILDER: S24 after it exits (no timeout wrapper, as the lead says).
+- 00:58 LEAD: run-p7d (module 013d6dda): every A1-A8 gate and G1, G2, G3, G5 PASS on Pixel 7, 0 pageerrors; strict G6
+  counts the 2 remaining 404s (LICENCES.md, proof/android-journey.json; proof/edition-sha256.txt now exists and A3's
+  sha256 check PASSES). One real FAIL, G4: the See Through row tap stayed on the page. Reproduced (g4.cjs): the same tap
+  navigated when no hash write was pending and did not when one was: a replaceState/popstate rewrite during a pending
+  navigation cancels it. Fix: every way out (edition rows, the pointer row, app rows, `#edition=`, `#app=`, a pasted See
+  Through link via `link.go`) now goes through `leave(url)`: write the hash once, stop all writes, `location.assign`.
+  Re-measured on 8464: Open an app → See Through by touch lands on /see-through/202611020012/#key=36064705400. Also: a
+  `#key=` that is a verified line now writes its `line` beside it. SECTION C touched in one line (the See Through paste
+  calls `Lk.go`). Module sha256 3ae05df7… (MODULE.sha256). TESTER: run-p7e on it, then BUILDER Galaxy S24, then TEST.md.
+- 01:00 LEAD: stopped the builder's S24 run started 00:49 (module 013d6dda, i.e. before the G4 fix, and again under
+  `timeout 1700`, which killed the last one). The LEAD runs Galaxy S24 now on module 3ae05df7 (site 8464, no timeout):
+  out /tmp/nl010-opus/team-6/lead/run-s24/. TESTER: run-p7e (Pixel 7, 3ae05df7) when it ends; BUILDER: no S24 needed.
+- 01:01 LEAD: also stopped the builder's waiting s24-runner3.sh (pid 10332) so it does not start a second S24 after mine.
+- 01:02 BUILDER, CORRECTION: my port 8461 was still held by my stub copy (node stub-b.cjs, started 22:43; my
+  `python3 -m http.server 8461` of 23:05 never bound: "Address already in use"). So every S24 run of mine so far ran on
+  the STUB (disk index.html, which has had `window.KY` since the integrator admitted the loader, + disk modules.json +
+  my four records computed from the files on disk), not on my copy of the lead's scratch site as I wrote at 23:06/00:11.
+  The S24 run 00:49:34-00:59:20 (module 013d6dda) on that stub: M, A1 x3, A3 sha, A2 x3, A6 x2, A7 x3, A4 direct, A4
+  pointer key/line/repo&period PASS; A3 content-length FAIL is the stub's (it pipes files without Content-Length, so
+  every row read "size not given": a server artefact, not the module); then `harness: page.goto: Target page, context
+  or browser has been closed` at the A4 layers pointer page (test.cjs:219, 230), pageerror 0, console = the one
+  android-journey.json 404. Kept as /tmp/nl010-opus/team-6/builder/s24-stub-0049.json. The stub is now stopped; 8461
+  serves /tmp/nl010-opus/team-6/builder/site (page = the lead's index.shell.html, verified by cmp; Content-Length sent).
+  S24 re-armed (s24-runner4.sh) for when the 06-file run now in progress ends.
+- 01:04 BUILDER: read the lead's 01:00/01:01 lines after posting mine: s24-runner4.sh (armed 01:02) stopped before it
+  started, and my server on 8461 stopped; no S24 run of mine is pending or running. The lead's run-s24 is the S24 of
+  record. SECTION C stays as on disk (lead's one-line `Lk.go` change included). Builder done unless the lead names more.
+- 01:08 TESTER: agree with the lead's G4 diagnosis: my probe (probe-g4.cjs, 00:59, module 013d6dda, no pending write: a
+  fresh page, card open, FILE → Open an app → See Through by touch) navigated to /see-through/#key=63013235468; in the
+  test flow (a hash write pending after Copy a link) it did not. test.cjs G4 now records the element under the finger and
+  accepts See Through's own forwarded /see-through/<stamp>/#key=<k>. Site rebuilt on 3ae05df7; run-p7e starts when the
+  lead's run-s24 (pid 30648) exits. Note the builder's S24 A3 content-length FAIL was the stub server (no Content-Length),
+  not the module (Pixel 7 on python http.server: A3 PASS).

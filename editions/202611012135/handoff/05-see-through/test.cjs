@@ -476,7 +476,10 @@ function buildPreview() {
   // uses the skeleton's index.html (git show) and says so in report.preview.base
   try { cp.execFileSync('patch', ['--dry-run', '-s', '--forward', '-p3', '-d', dir, '-i', path.join(__dirname, '..', PATCHES[''])], { stdio: 'pipe' }); }
   catch (e) { try { fs.writeFileSync(path.join(dir, 'index.html'), cp.execFileSync('git', ['-C', ROOT, 'show', '96736f5:editions/' + STAMP + '/index.html'])); base = 'kuiper-belt@96736f5 editions/' + STAMP + '/index.html (the file on disk refused the loader patch)'; } catch (e2) { /* the patch below records the refusal */ } }
-  for (const key of ['', 'line-card', 'layers']) { if (key && !ids.includes(key)) continue; const pf = path.join(__dirname, '..', PATCHES[key]);
+  // the integrator has landed the hook table and loader in index.html: the page on disk is the base, no patch is applied
+  const integrated = fs.readFileSync(path.join(EDDIR, 'index.html'), 'utf8').includes('kuiper.hooks.v1');
+  if (integrated) { fs.copyFileSync(path.join(EDDIR, 'index.html'), path.join(dir, 'index.html')); base = 'index.html on disk (hook table and loader already integrated)'; applied.push({ patch: 'none (integrated)', ok: true }); }
+  for (const key of (integrated ? [] : ['', 'line-card', 'layers'])) { if (key && !ids.includes(key)) continue; const pf = path.join(__dirname, '..', PATCHES[key]);
     if (!fs.existsSync(pf)) { applied.push({ patch: PATCHES[key], ok: false, why: 'missing' }); continue; }
     try { const args = ['-s', '--forward', '--no-backup-if-mismatch', '-r', '-', '-p3', '-d', dir, '-i', pf];   // all hunks or none: a dry run first
       cp.execFileSync('patch', ['--dry-run'].concat(args), { stdio: 'pipe' }); cp.execFileSync('patch', args, { stdio: 'pipe' }); applied.push({ patch: PATCHES[key], ok: true }); }

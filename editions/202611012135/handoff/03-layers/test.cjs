@@ -252,12 +252,13 @@ async function runDevice(browser, deviceName, shots) {
     const ln = A.row(p, 'lines'), edr = A.row(p, 'editions');
     const linesText = ln ? ln.text : '';
     const edOk = edr && /OK · \d+ of \d+ placed, \d+ beyond the rim/.test(edr.text);
-    const t2 = !!(p.panel && p.panel.visible) && pr.top >= p.bar.bottom - 1 && pr.left <= 0.5 && pr.right >= p.viewport.w - 0.5
+    const shellInset = p.modules.some(m => /shell/.test(m)) ? 4.5 : 0.5;   // harness ruling: the shell's 4 px inset is the shell's design, accepted
+    const t2 = !!(p.panel && p.panel.visible) && pr.top >= p.bar.bottom - 1 && pr.left <= shellInset && pr.right >= p.viewport.w - shellInset
       && rowsMeasured.length === 7 && rowsMeasured.every(r => r.h >= 44 && r.covers && r.state) && /OK · 344 of 346/.test(linesText) && edOk;
     shots.OK = shots.OK || await A.shot('ok');
     record('t2-panel', 'test 2: #layers under the bar, full width, every row >= 44 px with its input over it and a state tag; lines OK · 344 of 346; editions OK · n of m placed, k beyond the rim', t2,
       { panel: p.panel, barBottom: p.bar && p.bar.bottom, viewportW: p.viewport.w, rows: rowsMeasured, lines: linesText, editions: edr && edr.text },
-      t2 ? '' : why(!(p.panel && p.panel.visible) && 'panel not visible', pr && pr.top < p.bar.bottom - 1 && 'panel top ' + pr.top + ' above bar bottom ' + p.bar.bottom, pr && (pr.left > 0.5 || pr.right < p.viewport.w - 0.5) && 'panel ' + pr.left + '..' + pr.right + ' not full width ' + p.viewport.w,
+      t2 ? '' : why(!(p.panel && p.panel.visible) && 'panel not visible', pr && pr.top < p.bar.bottom - 1 && 'panel top ' + pr.top + ' above bar bottom ' + p.bar.bottom, pr && (pr.left > shellInset || pr.right < p.viewport.w - shellInset) && 'panel ' + pr.left + '..' + pr.right + ' not full width ' + p.viewport.w,
         rowsMeasured.filter(r => !(r.h >= 44)).map(r => r.id + ' ' + r.h + ' px').join(', '), rowsMeasured.filter(r => !r.covers).map(r => r.id + ' input does not cover row').join(', '),
         !/OK · 344 of 346/.test(linesText) && 'lines row: ' + linesText, !edOk && 'editions row: ' + (edr && edr.text)));
     // test 2 continued: the list scrolls inside the panel; the count line; the filter and its clear control
@@ -318,6 +319,16 @@ async function runDevice(browser, deviceName, shots) {
       { rows: apps.map(r => r && [r.id, r.status, r.why]), order, firstOfApps: firstApp, fontPx: { seeThrough: st && st.maxFont, largestOtherRow: otherMax, largestInPanel: p.panel && p.panel.maxFont } },
       t8 ? '' : why(apps.some(r => !appOk(r)) && 'app rows: ' + apps.map(r => r ? r.id + '=' + r.text : 'missing').join(' | '), !elementsRefused && 'elements row is not REFUSED · licence…', firstApp !== 'see-through' && 'first of THE APPS is ' + firstApp, st && !(st.maxFont > otherMax) && 'see-through label ' + st.maxFont + ' px, another row ' + otherMax + ' px', st && p.panel && st.maxFont < p.panel.maxFont && 'something in the panel is larger: ' + p.panel.maxFont + ' px'));
     await A.closePanel();
+    { const e1 = A.errors.length, h = await A.probe();
+      await A.page.evaluate(() => { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); });
+      await A.page.keyboard.press('e'); await sleep(2500); const withCard = (await A.probe()).card;
+      await A.page.keyboard.press('Escape'); await sleep(800);
+      await A.page.keyboard.press('e'); await sleep(2500);
+      await A.page.evaluate(() => history.back()); await sleep(1500); const after = await A.probe();
+      const ok = withCard && A.errors.length === e1 && after.marker === h.marker && /\/editions\/202611012135\//.test(after.url.href);
+      record('a-escape-back', 'REVIEW 6566289513: e opens a card; Escape, e and one back gesture (history.back) on the cut page: no page error, the page stays', ok,
+        { cardAfterE: withCard, newErrors: A.errors.slice(e1), sameDocument: after.marker === h.marker, href: after.url.href },
+        ok ? '' : why(!withCard && 'e opened no card', A.errors.length !== e1 && (A.errors.length - e1) + ' new error(s): ' + A.errors[e1].text, after.marker !== h.marker && 'the page was left or reloaded: ' + after.url.href)); }
     p = await A.probe();
     record('a-console', 'scenario A: zero console errors, zero page errors, zero failed requests', A.errors.length === 0, errFree(A, { keysJsonRequests: Object.entries(A.requests).filter(([u]) => /keys\.json/.test(u)) }), A.errors.length ? A.errors.length + ' error(s): ' + A.errors[0].text : '');
     await A.close();
@@ -454,6 +465,12 @@ function staticChecks() {
   // data files other steps own (apps.json step 7, drift.json step 8, …) are not layers of the seven records: listed, not gated
   rec('t9-hashes', 'test 9: every data file a record names (editions.json, keys.json, see-through.json, …) hashes to the record\'s sha256 and bytes; data/*.json no record names are listed', hashOk && L.some(r => r.source && r.source.file), { hashes, dataFiles, unrecorded },
     why2(!hashOk && 'mismatch: ' + JSON.stringify(hashes.filter(h => !h.ok).map(h => [h.id, h.file, h.exists ? 'sha ' + String(h.sha256).slice(0, 12) + ' vs ' + String(h.record).slice(0, 12) + ', bytes ' + h.bytes + ' vs ' + h.recordBytes : 'missing'])), unrecorded.length && 'listed, not a layer source: data/' + unrecorded.join(', data/')));
+  { const page = OVR_INDEX ? OVR_INDEX.toString('utf8') : fs.readFileSync(path.join(ED_DIR, 'index.html'), 'utf8'), mod = modBytes ? modBytes.toString('utf8') : '';
+    const has = re => ({ module: re.test(mod), page: re.test(page) });
+    const want = { band96: has(/MINBAND\s*=\s*96\b|minBand\s*[:=]\s*96\b|\b96\b[^\n]{0,80}band|band[^\n]{0,80}\b96\b/i), keeper: has(/ResizeObserver/), flyDuration: has(/tween\.dur\s*=|\.dur\s*=\s*|\bdur(ation)?\s*:\s*[^,}\n]*(dist|reduce)/i), contentVisibility: has(/#lineslist\s*\.ln\s*\{[^}]*content-visibility\s*:\s*auto/) };
+    const ok = Object.values(want).every(w => w.module || w.page);
+    rec('t9-carried', 'REVIEW 6566289513 (admission 4): the 96 px band rule, the card-resize keeper (ResizeObserver), the fly duration by distance and 07-perf content-visibility on #lineslist .ln survive the cut, in layers.js or the served page (found by pattern, as the REVIEW measured)', ok,
+      { found: want, page: OVR_INDEX ? '--index ' + flags['--index'] : 'index.html on disk' }, ok ? '' : 'missing: ' + Object.entries(want).filter(([, w]) => !(w.module || w.page)).map(([k]) => k).join(', ')); }
   const msf = path.join(HERE, 'MODULE.sha256'); let ms = null; if (fs.existsSync(msf)) ms = fs.readFileSync(msf, 'utf8');
   const msOk = ms && modBytes && ms.includes(sha256(modBytes)) && ms.includes(mods[0]);
   rec('t9-module-sha', 'hand-off: MODULE.sha256 names the module file and its measured sha256', !!msOk, { file: ms && ms.trim(), measured: modBytes && sha256(modBytes) }, ms ? (msOk ? '' : 'MODULE.sha256 does not match the module bytes') : 'no MODULE.sha256 in handoff/03-layers/');
@@ -477,7 +494,7 @@ function writeTestMd(out) {
   const L = [];
   L.push('# Opus team 3, step 3 the layer registry: TEST.md');
   L.push('');
-  L.push((out.preIntegration ? '**PRE-INTEGRATION RUN** (served with ' + [OVR_INDEX && '--index ' + flags['--index'], OVR_MANIFEST && '--manifest ' + flags['--manifest']].filter(Boolean).join(', ') + '): not a hand-off pass. ' : '') + 'Verdict: **' + (out.pass ? 'PASS' : 'FAIL') + '** — written by `test.cjs` at ' + out.generatedAt + ' from ' + out.url + ' (kuiper-belt ' + out.head + ').');
+  L.push((out.preIntegration ? '**PRE-INTEGRATION RUN** (served with ' + (out.overrides || []).join(', ') + '): not a hand-off pass. ' : '') + 'Verdict: **' + (out.pass ? 'PASS' : 'FAIL') + '** — written by `test.cjs` at ' + out.generatedAt + ' from ' + out.url + ' (kuiper-belt ' + out.head + ').');
   L.push('');
   L.push('Run: `node editions/' + STAMP + '/handoff/03-layers/test.cjs http://127.0.0.1:8432/ /tmp/nl010-opus/team-3/tester/out --handoff` from the repository root served by `python3 -m http.server 8432 --bind 127.0.0.1`. Playwright, harness GL flags, `devices[\'Pixel 7\']` and `devices[\'Galaxy S24\']`, real touch (`page.touchscreen.tap`), 6.5 s after load. Failures are served by Playwright routes only (keys.json 404, keys.json with byte ' + TAMPERED.offset + ' changed `' + TAMPERED.from + '`→`' + TAMPERED.to + '` (sha256 ' + TAMPERED.sha.slice(0, 12) + '… against ' + TAMPERED.shaOriginal.slice(0, 12) + '…), cosmos/wafer.tsv 404, cosmos/wafer.tsv and keys.json held to show WAIT and LOAD); no file on disk is changed. The one allowed console line in F and H is Chromium\'s own `Failed to load resource … 404` for the file served 404.');
   L.push('');
@@ -501,10 +518,18 @@ function writeTestMd(out) {
   fs.writeFileSync(path.join(HERE, 'TEST.md'), L.join('\n') + '\n');
 }
 
+// --md-only: rewrite TEST.md and img/ from an earlier run's <outdir>/report.json and screenshots, without running again
+if (flags['--md-only']) {
+  const out = JSON.parse(fs.readFileSync(path.join(OUT, 'report.json'), 'utf8')); const d0 = path.join(OUT, slug(out.devices[0].device));
+  const pick = re => { const f = fs.existsSync(d0) ? fs.readdirSync(d0).find(x => re.test(x)) : null; return f ? path.join(d0, f) : null; };
+  out.images = writeImages({ WAIT: pick(/-wait\.png$/), OK: pick(/-ok\.png$/), FAIL: pick(/-fail-keys-404\.png$/), REFUSED: pick(/-refused-wafer-404\.png$/) });
+  if (out.preIntegration && !OVR_INDEX && !OVR_MANIFEST) { flags['--index'] = '(see report.json)'; }
+  writeTestMd(out); console.log('TEST.md written from ' + path.join(OUT, 'report.json')); process.exit(0);
+}
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
   let head = null; try { head = cp.execFileSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: REPO, encoding: 'utf8' }).trim(); } catch (e) {}
-  const out = { url: ED_URL, outdir: OUT, head, preIntegration: PRE, generatedAt: new Date().toISOString(), devices: [], static: [] };
+  const out = { url: ED_URL, outdir: OUT, head, preIntegration: PRE, overrides: [flags['--index'] && '--index ' + flags['--index'], flags['--manifest'] && '--manifest ' + flags['--manifest']].filter(Boolean), generatedAt: new Date().toISOString(), devices: [], static: [] };
   const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   const shots = {};
   try { for (const d of DEVICES) { const s = d === DEVICES[0] ? shots : {}; out.devices.push(await runDevice(browser, d, s)); fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(out, null, 1)); } }

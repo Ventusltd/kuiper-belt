@@ -1,0 +1,14 @@
+LICENCE: Opus team 12 "See Through hash reader" (see-through/202611020012/, see-through/index.html, see-through/README.md)
+
+Keys: kb@aa04b3b = kuiper-belt@aa04b3b61a61cf35ad024d51dac34a5eb743e295; kb@018b46a = kuiper-belt@018b46aed50f28f7b1882a0dcaba6593ce522beb.
+
+| brought in | what the folder takes | licence as the files state it | key | note |
+|---|---|---|---|---|
+| See Through 202610050609 (the app) | the whole folder copied; descent.js extended (hash reader, writer, way home, sky read); kuiper-law.js SPACE re-lifted | CERN-OHL-S v2 | kb@018b46a see-through/202610050609/LICENSE.md:3-6; NOTICE.md:3-4; licences/globalgrid2050-CERN-OHL-S-2.0.txt | the additions are CERN-OHL-S v2 as the rest of the file (kb@aa04b3b see-through/202611020012/descent.js:12, :15); LICENSE.md, NOTICE.md, licences/ byte-identical (EVIDENCE.md section 5, 7) |
+| OpenStreetMap substation names and footprints | carried unchanged in grid-data.js and data/ | ODbL 1.0 | kb@018b46a see-through/202610050609/NOTICE.md:16, :22-27 | unchanged; on-screen credit unchanged |
+| kuiper-belt cosmos/wafer-meta.json, wafer.tsv, repos.tsv | read at run time (fetch), one number (address_space 63,340,120,796) frozen in kuiper-law.js:40 | CC BY 4.0 (generated data) | kuiper-belt@018b46a README.md:156-157; kuiper-belt@96736f5 cosmos/wafer-meta.json:4 | a number with its key, not a copy of code |
+| the Kuiper engine's repository walk and find rule | method restated (k += gap; k0 = k; k += lines; exact then includes) | Apache-2.0 | kb@018b46a editions/202611012027/index.html:203-205, :612 | a method, cited by key in descent.js:950, :957; no engine line copied |
+| MapLibre GL JS, joystick.js | vendor/ carried unchanged | BSD-3-Clause; as before | see-through/202610050609/NOTICE.md:38-39; vendor/MAPLIBRE-LICENSE.txt | unchanged |
+
+Hand-off folder files: EVIDENCE.md, PLAN.md, LICENCE.txt, img/*.png CC BY 4.0 (documentation, kuiper-belt README.md:157);
+test.cjs Apache-2.0 (kuiper-belt code). No third-party code, font or image is added.

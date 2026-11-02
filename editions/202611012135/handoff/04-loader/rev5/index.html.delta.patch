@@ -1,0 +1,88 @@
+--- a/editions/202611012135/index.html
++++ b/editions/202611012135/index.html
+@@ -787,16 +787,15 @@
+   if (openPanel) setPanel(openPanel); else if (card.style.display === 'block') { card.style.display = 'none'; edSel = -1; target = null; dirty = true; } });
+ cv.addEventListener('pointerdown', () => { if (openPanel) { setPanel(openPanel); moved = 99; } });   // the dismissing tap does nothing else
+ for (const el of [cv, ov, bar]) el.addEventListener('contextmenu', e => e.preventDefault());        // a long press on the wafer or the bar is not a menu
+-// ANDROID BACK (Edition 5). While a panel or the card is open the page holds one extra history entry, so the
+-// back gesture closes the layer instead of leaving the page; with nothing open, back leaves as it should. The
+-// entry follows the state on every redraw (every open or close sets dirty), so no close path is forgotten.
+-let edHist = false, edPopping = false;
++// ANDROID BACK (Edition 5, NL-009 04-touch; rev 5: through KY.nav, the page's one owner of history state, below).
++// While a panel or the card is open the edition holds one history entry (owner 'edition'), so the back gesture closes
++// the layer instead of leaving the page; with nothing open, back leaves as it should. The entry follows the state on
++// every redraw (every open or close sets dirty), so no close path is forgotten; another owner's back never closes it.
++let edHist = false;
+ function edSync(){ const open = !!openPanel || card.style.display === 'block';
+-  if (open && !edHist) { try { history.pushState({ kuiper:1 }, ''); } catch (e) {} edHist = true; }
+-  else if (!open && edHist) { edHist = false; if (history.state && history.state.kuiper) { edPopping = true; history.back(); } } }
+-addEventListener('popstate', () => {
+-  if (edPopping) { edPopping = false; edHist = !!(history.state && history.state.kuiper); edSync(); return; }   // our own back(): close nothing, re-arm if a layer opened meanwhile
+-  edHist = false; if (openPanel) setPanel(openPanel); if (card.style.display === 'block') { card.style.display = 'none'; edSel = -1; target = null; dirty = true; } });
++  if (open && !(edHist && kyNavHas('edition'))) edHist = kyNavPush('edition');
++  else if (!open && edHist) { edHist = false; kyNavBack('edition'); } }
++function edBack(){ edHist = false; if (openPanel) setPanel(openPanel); if (card.style.display === 'block') { card.style.display = 'none'; edSel = -1; target = null; dirty = true; } }
+ { const _draw = draw; draw = function(){ _draw(); edSync(); }; }
+ elTop.classList.add('open');                                   // the long subtitle is readable once the panel is open
+ // the safe rectangle now starts under the bar, and the hidden panels take no room
+@@ -836,7 +835,7 @@
+ // may reach is in window.KY, built here after every wrap of the edition layer and frozen; the loader admits the
+ // modules of modules.json in `order`, each only when its bytes hash as recorded and every hook it requires exists,
+ // and refuses in words while the rest runs. Apache-2.0 (kuiper-belt). The same bytes, between the same two marker
+-// lines, are modules/202611012145-loader.js (the reviewable reference; it is never fetched). Lessons, cited:
++// lines, are modules/202611020103-loader.js (the reviewable reference; it is never fetched). Lessons, cited:
+ // gridatlas@5ec7f62 atlas/index.html:39-44 (no-store, schema), :65-67 (missing id refused), :78-81 (hash in the
+ // browser), :82-83 (one blob script per cartridge), :104-114 (one published state); menu-bar.js:37-38 (never twice);
+ // atlas/modules/202610291043-uk-lightning-overlay.js:393-400 (one frozen API). The anti-lesson: learn-the-kuiper
+@@ -844,7 +843,7 @@
+ const KY_EDITION = '202611012135';
+ const KY_NAMES = Object.freeze(['keyPlace', 'address', 'describe', 'findBy', 'flyTo', 'home', 'homeCamera', 'safeBox',
+   'lightTime', 'showNew', 'goKey', 'fmt', 'words', 'esc', 'cv', 'ov', 'o2', 'hud', 'big', 'sub', 'card', 'gbox', 'gin',
+-  'SPACE', 'N', 'repos', 'commits', 'wafer', 'cam', 'lit', 'sel', 'redraw', 'draw', 'panels', 'refuse']);
++  'SPACE', 'N', 'repos', 'commits', 'wafer', 'cam', 'lit', 'sel', 'redraw', 'draw', 'panels', 'refuse', 'nav']);
+ const kyDraw = [], kyLines = [];
+ let kyAdmitting = null, kyInstalling = null;
+ function kyLine(t){ kyLines.push(t); if (!N) hud.textContent += '\n' + t; dirty = true; }
+@@ -854,6 +853,32 @@
+     if (kyLines.length) hud.textContent += '\nMODULES · ' + kyLines.join('\n');
+     for (const d of kyDraw.slice()) { try { d.fn(o2, KY); }
+       catch (e) { kyDraw.splice(kyDraw.indexOf(d), 1); kyLine(d.id + ' draw threw ' + (e && e.message || e) + ' · painter removed'); } } }; }
++// ONE OWNER OF HISTORY (rev 5): every layer that holds a history entry for the Android back gesture pushes it through
++// KY.nav (the edition's card and panels as owner 'edition', the shell as 'kuiper-shell'). A back the page starts is
++// marked self (event.kuiperSelf) and never read as the user's gesture; a user's back calls the handler of the owner
++// whose entry it removed, and nobody else's. An entry is ours when its state carries kuiperDepth; a foreign state is
++// left alone (never reconciled), so a module still pushing its own entries degrades to the Edition 4 behaviour.
++const kyNav = { stack: [], self: 0, pending: [], handlers: {} };
++function kyDepth(){ const s = history.state; return s == null ? 0 : (typeof s.kuiperDepth === 'number' ? s.kuiperDepth : null); }
++function kyNavReconcile(){ const d = kyDepth(), lost = []; if (d === null) return lost;
++  while (kyNav.stack.length && kyNav.stack[kyNav.stack.length - 1].depth > d) lost.push(kyNav.stack.pop()); return lost; }
++function kyNavPush(owner){ if (kyNav.self > 0) { if (!kyNav.pending.includes(owner)) kyNav.pending.push(owner); return true; }
++  kyNavReconcile(); const top = kyNav.stack[kyNav.stack.length - 1], depth = Math.max(top ? top.depth : 0, kyDepth() || 0) + 1;
++  try { history.pushState({ kuiper: 1, kuiperDepth: depth, owner }, ''); } catch (e) { return false; }
++  kyNav.stack.push({ owner, depth, live: true }); return true; }
++function kyNavTrim(){ const top = kyNav.stack[kyNav.stack.length - 1];
++  if (top && !top.live && kyNav.self === 0 && kyDepth() === top.depth) { kyNav.self++; history.back(); } }
++function kyNavBack(owner){ const i = kyNav.pending.indexOf(owner); if (i >= 0) { kyNav.pending.splice(i, 1); return; }
++  for (let j = kyNav.stack.length - 1; j >= 0; j--) if (kyNav.stack[j].owner === owner && kyNav.stack[j].live) { kyNav.stack[j].live = false; break; }
++  kyNavTrim(); }
++function kyNavHas(owner){ kyNavReconcile(); return kyNav.pending.includes(owner) || kyNav.stack.some(x => x.live && x.owner === owner); }
++kyNav.handlers.edition = edBack;
++addEventListener('popstate', e => { const gone = kyNavReconcile();
++  if (kyNav.self > 0) { kyNav.self--; e.kuiperSelf = true;                 // our own back(): close nothing; re-arm what it took by accident
++    for (const o of gone.filter(g => g.live).map(g => g.owner).concat(kyNav.pending.splice(0))) kyNavPush(o); }
++  else for (const g of gone) if (g.live && kyNav.handlers[g.owner]) { try { kyNav.handlers[g.owner](e); } catch (x) { kyLine(g.owner + ' back handler threw ' + (x && x.message || x)); } }
++  kyNavTrim(); });
++const kyOwner = o => { if (typeof o !== 'string' || !/^[a-z0-9-]+$/.test(o) || o === 'edition') throw new TypeError('KY.nav: the owner is the module id'); return o; };
+ const KY_STATE = { schema: 'kuiper.modules.v1', edition: KY_EDITION, hooks: 'kuiper.hooks.v1', order: [], admitted: [],
+   refused: [], failures: [], done: false, timings: { loader_start_ms: Math.round(performance.now()) } };
+ const KY_MODULES = {};
+@@ -882,6 +907,9 @@
+     set: setPanel, place: placePanels }),
+   refuse(text, slot){ if (typeof slot !== 'string' || !/^[a-z0-9-]+$/.test(slot) || slot === 'engine' || slot === 'modules')
+       throw new TypeError('KY.refuse(text, slot): slot is the module id; engine and modules are the page\'s'); refuse(String(text || ''), slot); },
++  nav: Object.freeze({ push(owner){ return kyNavPush(kyOwner(owner)); }, back(owner){ kyNavBack(kyOwner(owner)); },
++    onBack(owner, fn){ if (typeof fn !== 'function') throw new TypeError('KY.nav.onBack needs a function'); kyNav.handlers[kyOwner(owner)] = fn; },
++    has(owner){ return kyNavHas(kyOwner(owner)); }, isSelf(e){ return !!(e && e.kuiperSelf); }, get depth(){ return kyDepth(); } }),
+   names: KY_NAMES,
+   register(m){ if (!kyAdmitting) { kyLine('a registration outside admission ignored: ' + (m && m.id)); return false; }
+     if (kyAdmitting.reg) { kyAdmitting.twice = true; return false; } kyAdmitting.reg = m; return true; },

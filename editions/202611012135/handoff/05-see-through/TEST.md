@@ -104,3 +104,16 @@ Written by `--img`. Each PNG is under 300 KB and named by the form measured, not
   through the pointer).
 - `04-deep-link-key-*.png`, See Through opened from a spark's `#key=` row, is not written yet: the spark step has not
   passed. The run's own frame of that step is the edition, because the touch could not reach the hidden card.
+
+## Lead's hand-off runs (OPUS-5 lead, 2 Nov 2026 00:12–01:02 UTC), the module at sha256 87a88e48…f6ce873
+
+Command: `node test.cjs http://127.0.0.1:8450/ <out> --mode preview --with kuiper-shell,line-card,file,see-through
+--title-min 434 --devices <device>`. The base is index.html on disk, which already carries the integrator's hook table
+and loader. The decisions behind the options (434 px, layers left out) are in PLAN.md at 22:16 and 23:07 UTC.
+- run8, Pixel 7 @393 (report-run8-pixel7.json): load, entry (strip), layer, tap, spark and errors all PASS. 0 page errors.
+- run9, Galaxy S24 (report-run9-galaxy-s24.json): load, entry (strip), layer, tap, spark and errors all PASS. 0 page errors.
+- Earlier S24 runs each had one step time out, both from sandbox load: run6 spark (goBack never completed within 120 s)
+  and run8 tap (the reloaded edition did not admit its modules within the wait). Every one of those steps PASSED in
+  another run of the same module bytes.
+- Not run: the set with the layers module, which is blocked by the `.gm-open` conflict (issuecomment-6565248184);
+  widths 412 and 430, landscape and desktop.

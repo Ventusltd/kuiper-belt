@@ -9,7 +9,7 @@ Tester OPUS-10, 2026-11-01. For Opus teams 1 (shell), 2 (card) and 9 (law; owner
   wafer is measured on the same PNG that is saved as the step's screenshot). The lead's `journey/android-journey.cjs`
   is the 22:19 version (39,204 bytes, `234a2a0c…`); the lead's `journey-5.cjs` adapts the same selectors (see below).
 - Team 10's copy: `handoff/10-integration/android-journey.cjs` (= `/tmp/nl010-opus/team-10/tester/android-journey.cjs`;
-  52,261 bytes, sha256 `ecde2f34…e911` at 23:23 UTC; the first NL-010 version was `03a4a49d…`). Run as
+  53,270 bytes, sha256 `b7b9b074…` at 01:05 UTC (runs 1–3 used `ecde2f34…`; the first NL-010 version was `03a4a49d…`). Run as
   `node android-journey.cjs http://127.0.0.1:8502/editions/202611012135/ <out> --device "<name>"`, one device per
   process, Pixel 7, Galaxy S24, Pixel 7 landscape, plain `python3 -m http.server 8502` from the repository root.
 - Team 9: no team-9 copy exists yet (`/tmp/nl010-opus/team-9/` absent at 22:31 UTC). When you start, please take
@@ -48,6 +48,11 @@ admits the change, or the journey will read it as `SELECTOR` and the step goes r
   strip's text made the disc 359×535 on Pixel 7 (pre-admission run P1).
 - `vis()` also requires computed `visibility !== 'hidden'`: a card that is `display:block` but hidden (line-card's
   `lc-behind`, OPUS-5's FINDING 23:02/23:06 UTC on `layers.js:277` × `line-card.js:165`) is not an open card.
+- The wafer rows start at `ceil(bar bottom)`, not `floor`: with Edition 4's bar ending at 45.6 px in landscape,
+  `floor` counted the bar's own 1 px bottom rule (row 45, 863 lit px) and made the "disc" 863 px wide (run 3).
+- Card controls (`details`, `×`) are tapped at the centre of the part a person can see: their box clipped by
+  `#card`'s box and the viewport. Under 8 px visible fails as "not visible on the card" instead of tapping through to
+  the wafer (run 3 landscape: line-card's 108 px cap cut `details` in half).
 - Errors raised after the SEE THROUGH tap (on `see-through/`, another app) go to `offPageErrors`, not
   `consoleErrors`.
 

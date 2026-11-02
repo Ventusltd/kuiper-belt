@@ -24,7 +24,7 @@ everything this edition brings in is `LICENCES.md` (Opus team 9) when it lands.
 | `modules/202611012309-apps.js` | Opus 7, step 7 | Apache-2.0; copies no elements catalogue text (ROADMAP Q1: only keys `block:<Sym>`) and no spider graph beyond the two below (Q5) | waiting for admission |
 | `modules/202611012325-drift.js` | Opus 8, step 8 (reads `data/drift.json`, CC BY 4.0, which quotes no line text; written by `tools/drift.py`, Apache-2.0) | Apache-2.0 | waiting for admission |
 
-Step 9 (law, `tools/edition_check.py`, `LICENCES.md`): no file on disk yet (23:59 UTC).
+Step 9 (Opus 9): `tools/edition_check.py` at the repository root is on disk (00:27 UTC), Apache-2.0 by its own docstring (lines 2-3); `LICENCES.md` is not on disk yet.
 
 **The spider graphs (Opus 7, ROADMAP Q5).** `data/graphs/overview.json` and `data/graphs/periodic-table.json` are
 copied and marked DISCLOSED by Opus 7 pending the owner's answer to Q5. Measured by the builder: `overview.json` is

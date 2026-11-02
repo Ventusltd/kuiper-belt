@@ -11,7 +11,7 @@
  "format": "kuiper.drift.v1",
  "module_registers": true,
  "source": {"file": "data/drift.json", "bytes": 118553, "features": 346, "sha256": "388103129b904a4a038d18adc26b703c144dede2d09497d13fe6223b30b5d103", "owner": "Opus team 8 (step 8) writes it with tools/drift.py"},
- "licence": "CC BY 4.0 (kuiper-belt generated data, README.md:155-156); quotes no line text",
+ "licence": "CC BY 4.0 (kuiper-belt generated data, README.md:156-157); quotes no line text",
  "requires": ["wafer", "keyPlace", "commits", "repos", "SPACE", "o2", "cam", "card"],
  "deeplink": {"param": "layers", "value": "drift"},
  "module": "202611012325-drift.js"

@@ -1,0 +1,10 @@
+{
+ "file": "modules/202611020103-loader.js",
+ "generation": "202611020103",
+ "sha256": "db3a00e6615ee47aa2907c9548e70f5d7613da71462b51b250c57fb93d983e22",
+ "bytes": 16351,
+ "role": "loader reference rev 5 (optional): the hook table and loader block of index.html with KY.nav, byte-identical between the marker lines; never fetched",
+ "licence": "Apache-2.0",
+ "team": "04",
+ "step": 4
+}
