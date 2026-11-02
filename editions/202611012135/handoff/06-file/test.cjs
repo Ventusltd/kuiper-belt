@@ -198,9 +198,9 @@ fs.mkdirSync(OUT, { recursive: true });
       }); await blk('A4 direct', async () => {
       // A4 direct (hashchange on the open page)
       const direct = {};
-      await p.evaluate(() => { location.hash = '#repo=gridatlas&period=2026-07'; }); await settle(p, 6000);
+      await p.evaluate(() => { location.hash = '#repo=gridatlas&period=2026-07'; }); await settle(p, 6000); await p.waitForFunction(() => KY.lit.repo >= 0 && KY.lit.K && KY.lit.K[0] >= 0, null, { timeout: 90000, polling: 500 }).catch(() => {});   // a loaded machine: wait for the light, measure after
       direct.repoPeriod = await p.evaluate(() => { const r = KY.hooks.repos[KY.lit.repo]; return { repo: r && r.name, K: KY.lit.K, hash: location.hash }; });
-      await p.evaluate(k => { location.hash = '#key=' + k; }, KEY0); await settle(p, 8000);
+      await p.evaluate(k => { location.hash = '#key=' + k; }, KEY0); await settle(p, 8000); await p.waitForFunction(() => Math.abs(KY.cam.zoom - 14) < 0.01, null, { timeout: 90000, polling: 500 }).catch(() => {});   // the fly may outlast 8 s under load
       direct.key = await sel(p);
       step('A4 direct: repo&period lights gridatlas over July 2026; key opens the line', direct.repoPeriod.repo === 'gridatlas' && direct.repoPeriod.K && direct.repoPeriod.K[0] >= 0
         && direct.key.header === bodies[0].line_text && Math.abs(direct.key.zoom - 14) < 0.01, direct);

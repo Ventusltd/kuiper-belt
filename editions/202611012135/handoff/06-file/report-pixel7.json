@@ -1,0 +1,788 @@
+{
+ "url": "http://127.0.0.1:8462/editions/202611012135/",
+ "stamp": "202611012135",
+ "pointer": "routed",
+ "started": "2026-11-02T02:15:58.935Z",
+ "devices": {
+  "Pixel 7": {
+   "steps": [
+    {
+     "id": "M admitted",
+     "result": "PASS",
+     "measured": {
+      "admitted": [
+       "kuiper-shell",
+       "line-card",
+       "layers",
+       "file"
+      ],
+      "refused": [],
+      "SPACE": 63340120796
+     }
+    },
+    {
+     "id": "A1 one panel under the bar, rows >= 44 px, 6.1 order, four headings",
+     "result": "PASS",
+     "measured": {
+      "panelTop": 34,
+      "barBottom": 34,
+      "order": [
+       "Open",
+       "Open a key…",
+       "python tools/key.py <k>",
+       "Open a line…",
+       "Open an edition ▸",
+       "Open an app ▸",
+       "Link",
+       "Copy a link to this view",
+       "Copy the key",
+       "Copy python tools/key.py <k>",
+       "Evidence",
+       "keys.json · the register of verified lines",
+       "proof/edition-sha256.txt · sha256 of every file but itself",
+       "proof/keys-summary.json · the key.py round trips",
+       "modules.json · the admitted modules and their hashes",
+       "LICENCES.md · the licence register",
+       "proof/android-journey.json · the Android journey",
+       "README.md · this edition",
+       "Export",
+       "⤓ Save an image of this view",
+       "⎙ Print"
+      ],
+      "heights": [
+       23.5,
+       44,
+       44,
+       44,
+       44,
+       44,
+       23.5,
+       44,
+       44,
+       44,
+       23.5,
+       44.3,
+       59.2,
+       44.3,
+       44.3,
+       44.3,
+       44.3,
+       44.3,
+       23.5,
+       44,
+       44
+      ],
+      "sub_rows": [
+       {
+        "ed": "202611012135",
+        "app": null,
+        "lit": false,
+        "inert": true,
+        "h": 44
+       },
+       {
+        "ed": "202611012027",
+        "app": null,
+        "lit": false,
+        "inert": false,
+        "h": 44
+       },
+       {
+        "ed": "202611012022",
+        "app": null,
+        "lit": false,
+        "inert": false,
+        "h": 44
+       },
+       {
+        "ed": "202611010114",
+        "app": null,
+        "lit": false,
+        "inert": false,
+        "h": 44
+       },
+       {
+        "ed": "202610311905",
+        "app": null,
+        "lit": false,
+        "inert": false,
+        "h": 44
+       },
+       {
+        "ed": "pointer",
+        "app": null,
+        "lit": false,
+        "inert": false,
+        "h": 44
+       },
+       {
+        "ed": null,
+        "app": "see-through",
+        "lit": true,
+        "inert": false,
+        "h": 44
+       },
+       {
+        "ed": null,
+        "app": "learn-the-kuiper",
+        "lit": false,
+        "inert": false,
+        "h": 44
+       }
+      ],
+      "under_44": []
+     }
+    },
+    {
+     "id": "A1 editions: every stamp newest first, the pointer last, this one inert",
+     "result": "PASS",
+     "measured": {
+      "edList": [
+       "202611012135",
+       "202611012027",
+       "202611012022",
+       "202611010114",
+       "202610311905",
+       "pointer"
+      ]
+     }
+    },
+    {
+     "id": "A1 apps: See Through first and lit",
+     "result": "PASS",
+     "measured": {
+      "apps": [
+       {
+        "ed": null,
+        "app": "see-through",
+        "lit": true,
+        "inert": false,
+        "h": 44
+       },
+       {
+        "ed": null,
+        "app": "learn-the-kuiper",
+        "lit": false,
+        "inert": false,
+        "h": 44
+       }
+      ]
+     }
+    },
+    {
+     "id": "A3 every present EVIDENCE file 200 with content-length = the row",
+     "result": "PASS",
+     "measured": {
+      "a3": [
+       {
+        "p": "keys.json",
+        "status": 200,
+        "len": "1709129",
+        "row": "1709129",
+        "hint": "1,709,129 bytes",
+        "download": true
+       },
+       {
+        "p": "proof/edition-sha256.txt",
+        "status": 404,
+        "len": "335",
+        "row": null,
+        "hint": "missing · HTTP 404",
+        "download": true
+       },
+       {
+        "p": "proof/keys-summary.json",
+        "status": 200,
+        "len": "9828",
+        "row": "9828",
+        "hint": "9,828 bytes",
+        "download": true
+       },
+       {
+        "p": "modules.json",
+        "status": 200,
+        "len": "3553",
+        "row": "3553",
+        "hint": "3,553 bytes",
+        "download": true
+       },
+       {
+        "p": "LICENCES.md",
+        "status": 200,
+        "len": "14994",
+        "row": "14994",
+        "hint": "14,994 bytes",
+        "download": true
+       },
+       {
+        "p": "proof/android-journey.json",
+        "status": 200,
+        "len": "57668",
+        "row": "57668",
+        "hint": "57,668 bytes",
+        "download": true
+       },
+       {
+        "p": "README.md",
+        "status": 200,
+        "len": "11667",
+        "row": "11667",
+        "hint": "11,667 bytes",
+        "download": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "A3 all seven files present",
+     "result": "NOT EVALUATED",
+     "measured": {
+      "missing": [
+       "proof/edition-sha256.txt"
+      ],
+      "why": "written by the integrator (proof/*) and Opus 9 (LICENCES.md) at assembly"
+     }
+    },
+    {
+     "id": "A3 sha256(keys.json) = edition-sha256.txt",
+     "result": "NOT EVALUATED",
+     "measured": {
+      "why": "proof/edition-sha256.txt HTTP 404"
+     }
+    },
+    {
+     "id": "A2 Open a key: hash, header = bodies[0].line_text, zoom 14, spark in the clear space",
+     "result": "PASS",
+     "measured": {
+      "hash": "#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+      "header_equal": true,
+      "zoom": 13.999999999999991,
+      "spark": [
+       206,
+       367.60937499994185
+      ],
+      "barBottom": 34,
+      "cardTop": 701.21875,
+      "band_centre_dy": 0
+     }
+    },
+    {
+     "id": "A2 SPACE refused in words, camera unchanged",
+     "result": "PASS",
+     "measured": {
+      "refusal": "key 63340120796 is not on this wafer (SPACE 63340120796)",
+      "cam0": [
+       -31644.85262322351,
+       187248.28604743813,
+       13.999999999999991
+      ],
+      "cam1": [
+       -31644.85262322351,
+       187248.28604743813,
+       13.999999999999991
+      ]
+     }
+    },
+    {
+     "id": "A2 Copy python tools/key.py <k> -> clipboard",
+     "result": "PASS",
+     "measured": {
+      "clip": "python tools/key.py 36064705400"
+     }
+    },
+    {
+     "id": "A6 Save an image: PNG, not one colour, innerWidth x min(dpr,2) wide, the stamp strip within 5 %",
+     "result": "PASS",
+     "measured": {
+      "file": "Pixel_7-kuiper-202611012135-20261102T0216Z.png",
+      "bytes": 111433,
+      "w": 824,
+      "h": 1806,
+      "expectW": 824,
+      "colours": 3,
+      "foot": 14113,
+      "ref": 14113,
+      "lines": [
+       "Kuiper edition 202611012135 · 2026-11-02 02:16 UTC",
+       "code Apache-2.0, text and data CC BY 4.0",
+       "http://127.0.0.1:8462/editions/202611012135/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines"
+      ]
+     }
+    },
+    {
+     "id": "A6 a cleared #c is refused in words, no file",
+     "result": "PASS",
+     "measured": {
+      "row": "the image came back blank; try again after the wafer has drawn",
+      "download": false
+     }
+    },
+    {
+     "id": "A7 a pasted Kuiper link -> the line",
+     "result": "PASS",
+     "measured": {
+      "open": true,
+      "index": 0,
+      "header": "# Every digest in this repository is taken over git blob content, which is LF,",
+      "hash": "#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+      "zoom": 13.999999999999996,
+      "card": "block"
+     }
+    },
+    {
+     "id": "A7 Backspace clears key line repo period, keeps layers",
+     "result": "PASS",
+     "measured": {
+      "hash": "#layers=repos,editions,lines"
+     }
+    },
+    {
+     "id": "A4 direct: repo&period lights gridatlas over July 2026; key opens the line",
+     "result": "PASS",
+     "measured": {
+      "repoPeriod": {
+       "repo": "gridatlas",
+       "K": [
+        161906.2701997671,
+        169281.27433357772
+       ],
+       "hash": "#repo=gridatlas&period=2026-07&layers=repos,editions,lines"
+      },
+      "key": {
+       "open": true,
+       "index": 0,
+       "header": "# Every digest in this repository is taken over git blob content, which is LF,",
+       "hash": "#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=periods,repos,editions,lines",
+       "zoom": 13.999999999999996,
+       "card": "block"
+      }
+     }
+    },
+    {
+     "id": "A7 a pasted See Through link -> navigation to See Through, the hash kept",
+     "result": "PASS",
+     "measured": {
+      "url": "http://127.0.0.1:8462/see-through/#sub=Drax"
+     }
+    },
+    {
+     "id": "A4 pointer #key: zoom 14 at the key, the card",
+     "result": "PASS",
+     "measured": {
+      "open": true,
+      "index": 0,
+      "header": "# Every digest in this repository is taken over git blob content, which is LF,",
+      "hash": "#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+      "zoom": 13.999999999999991,
+      "card": "block"
+     }
+    },
+    {
+     "id": "A4 pointer #line: that body, the spark between the bar and the card",
+     "result": "PASS",
+     "measured": {
+      "open": true,
+      "index": 0,
+      "header": "# Every digest in this repository is taken over git blob content, which is LF,",
+      "hash": "#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+      "zoom": 13.999999999999991,
+      "card": "block",
+      "s": [
+       206,
+       367.60937499994185
+      ],
+      "top": 34,
+      "bot": 701.21875
+     }
+    },
+    {
+     "id": "A4 pointer #repo&period: gridatlas lit, July 2026 lit",
+     "result": "PASS",
+     "measured": {
+      "repo": "gridatlas",
+      "K": [
+       161906.2701997671,
+       169281.27433357772
+      ]
+     }
+    },
+    {
+     "id": "A4 pointer #layers=lines,see-through&key=…: the asked layers on, no other layer but a mirrored repos, camera at the key",
+     "result": "PASS",
+     "measured": {
+      "see_through_admitted": false,
+      "extras": [
+       "repos"
+      ],
+      "on": [
+       "repos",
+       "lines",
+       "see-through"
+      ],
+      "zoom": 13.999999999999991,
+      "hash": "#key=63035688574&line=5ca4b13a0dbf5aec50e333f8cea1412d5851d489:178&layers=repos,lines,see-through",
+      "states": {
+       "periods": "OK",
+       "repos": "OK",
+       "editions": "OK",
+       "lines": "OK",
+       "see-through": "EMPTY",
+       "elements": "REFUSED",
+       "spider": "EMPTY"
+      },
+      "lit_repo": 46
+     }
+    },
+    {
+     "id": "A4 pointer #edition=…&key=…: the URL is that edition with the rest of the hash",
+     "result": "PASS",
+     "measured": {
+      "url": "http://127.0.0.1:8462/editions/202611010114/#key=36064705400"
+     }
+    },
+    {
+     "id": "A4 pointer #app=see-through&sub=Drax: the URL is See Through with #sub=Drax",
+     "result": "PASS",
+     "measured": {
+      "url": "http://127.0.0.1:8462/see-through/#sub=Drax"
+     }
+    },
+    {
+     "id": "G2 the routed pointer lands on this edition with the hash byte for byte",
+     "result": "PASS",
+     "measured": {
+      "forwarded": [
+       {
+        "hash": "#key=36064705400",
+        "landed": "http://127.0.0.1:8462/editions/202611012135/#key=36064705400",
+        "ok": true
+       },
+       {
+        "hash": "#line=0048802883266c68d5bdb6f5add0074e8b5b729d:5",
+        "landed": "http://127.0.0.1:8462/editions/202611012135/#line=0048802883266c68d5bdb6f5add0074e8b5b729d:5",
+        "ok": true
+       },
+       {
+        "hash": "#repo=gridatlas&period=2026-07",
+        "landed": "http://127.0.0.1:8462/editions/202611012135/#repo=gridatlas&period=2026-07",
+        "ok": true
+       },
+       {
+        "hash": "#layers=lines,see-through&key=63035688574",
+        "landed": "http://127.0.0.1:8462/editions/202611012135/#layers=lines,see-through&key=63035688574",
+        "ok": true
+       },
+       {
+        "hash": "#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+        "landed": "http://127.0.0.1:8462/editions/202611012135/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+        "ok": true
+       },
+       {
+        "hash": "#key=62818257048&line=27c9cffeaf2ff01ddd1c8abf756e83ce1d014bca:236&layers=repos,editions,lines",
+        "landed": "http://127.0.0.1:8462/editions/202611012135/#key=62818257048&line=27c9cffeaf2ff01ddd1c8abf756e83ce1d014bca:236&layers=repos,editions,lines",
+        "ok": true
+       },
+       {
+        "hash": "#key=62884837350&line=ea77ddffe77046731f57fd8c1e904a47cc3ac561:25&layers=repos,editions,lines",
+        "landed": "http://127.0.0.1:8462/editions/202611012135/#key=62884837350&line=ea77ddffe77046731f57fd8c1e904a47cc3ac561:25&layers=repos,editions,lines",
+        "ok": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "G3 Open an edition by touch: ../202611010114/#<hash>, the copied link's hash byte for byte",
+     "result": "PASS",
+     "measured": {
+      "landed": "http://127.0.0.1:8462/editions/202611010114/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+      "want": "http://127.0.0.1:8462/editions/202611010114/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+      "copied_hash": "#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+      "row_h": 44,
+      "hit": {
+       "x": 212.5,
+       "y": 433,
+       "on_row": true,
+       "hit": "A#.gm-row"
+      },
+      "navigation_requests": [
+       "http://127.0.0.1:8462/editions/202611010114/"
+      ],
+      "after": "navigated"
+     }
+    },
+    {
+     "id": "A5 round trip (e)",
+     "result": "PASS",
+     "measured": {
+      "link": "http://127.0.0.1:8462/editions/202611012135/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+      "before": 0,
+      "after": 0,
+      "header_equal": true
+     }
+    },
+    {
+     "id": "G4 Open an app by touch: See Through first and lit, lands on ../../see-through/#key=<the open key>",
+     "result": "PASS",
+     "measured": {
+      "landed": "http://127.0.0.1:8462/see-through/#key=62818257048",
+      "want": "http://127.0.0.1:8462/see-through/#key=62818257048",
+      "first": {
+       "app": "see-through",
+       "lit": true
+      },
+      "row_h": 44,
+      "hit": {
+       "x": 212.5,
+       "y": 433,
+       "on_row": true,
+       "hit": "A#.gm-row ky-lit"
+      },
+      "opened": "navigated"
+     }
+    },
+    {
+     "id": "A5 round trip (edPlaced[43])",
+     "result": "PASS",
+     "measured": {
+      "link": "http://127.0.0.1:8462/editions/202611012135/#key=62818257048&line=27c9cffeaf2ff01ddd1c8abf756e83ce1d014bca:236&layers=repos,editions,lines",
+      "before": 43,
+      "after": 43,
+      "header_equal": true
+     }
+    },
+    {
+     "id": "A5 round trip (edPlaced[307])",
+     "result": "PASS",
+     "measured": {
+      "link": "http://127.0.0.1:8462/editions/202611012135/#key=62884837350&line=ea77ddffe77046731f57fd8c1e904a47cc3ac561:25&layers=repos,editions,lines",
+      "before": 307,
+      "after": 307,
+      "header_equal": true
+     }
+    },
+    {
+     "id": "A2 clipboard refused -> the command in a selected read-only field",
+     "result": "PASS",
+     "measured": {
+      "value": "python tools/key.py 36064705400",
+      "readOnly": true,
+      "selected": true,
+      "focused": true,
+      "h": 44
+     }
+    },
+    {
+     "id": "G5 Copy a link to this view, clipboard denied -> the link in a selected read-only 44 px field, never silent",
+     "result": "PASS",
+     "measured": {
+      "value": "http://127.0.0.1:8462/editions/202611012135/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+      "url": "http://127.0.0.1:8462/editions/202611012135/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+      "readOnly": true,
+      "selected": true,
+      "focused": true,
+      "h": 44,
+      "why": null,
+      "open": "file"
+     }
+    },
+    {
+     "id": "A8 back with a panel open closes the panel, stays on the page",
+     "result": "PASS",
+     "measured": {
+      "openBefore": "scope",
+      "afterPanel": {
+       "open": null,
+       "url": "http://127.0.0.1:8462/editions/202611012135/#repo=Kuiper-belt&layers=periods,repos,editions,lines"
+      }
+     }
+    },
+    {
+     "id": "A8 three module link writes add no history entry (replaceState)",
+     "result": "PASS",
+     "measured": {
+      "lenBefore": 9,
+      "lenAfter": {
+       "len": 9,
+       "hash": "#key=36064705400&repo=gridatlas&period=2026-07&layers=periods,repos,editions,lines"
+      },
+      "hl": {
+       "len": 8,
+       "writes": 4
+      }
+     }
+    },
+    {
+     "id": "G1 every grammar example: parse -> serialise -> parse byte-identical, nothing refused",
+     "result": "PASS",
+     "measured": {
+      "serialiser": "link.format (pure)",
+      "out": [
+       {
+        "ex": "#key=36064705400",
+        "f1": {
+         "key": "36064705400"
+        },
+        "s1": "key=36064705400",
+        "f2": {
+         "key": "36064705400"
+        },
+        "s2": "key=36064705400",
+        "nav": [],
+        "refused": [],
+        "canonical": true,
+        "identical": true
+       },
+       {
+        "ex": "#line=0048802883266c68d5bdb6f5add0074e8b5b729d:5",
+        "f1": {
+         "line": "0048802883266c68d5bdb6f5add0074e8b5b729d:5"
+        },
+        "s1": "line=0048802883266c68d5bdb6f5add0074e8b5b729d:5",
+        "f2": {
+         "line": "0048802883266c68d5bdb6f5add0074e8b5b729d:5"
+        },
+        "s2": "line=0048802883266c68d5bdb6f5add0074e8b5b729d:5",
+        "nav": [],
+        "refused": [],
+        "canonical": true,
+        "identical": true
+       },
+       {
+        "ex": "#repo=gridatlas&period=2026-07",
+        "f1": {
+         "repo": "gridatlas",
+         "period": "2026-07"
+        },
+        "s1": "repo=gridatlas&period=2026-07",
+        "f2": {
+         "repo": "gridatlas",
+         "period": "2026-07"
+        },
+        "s2": "repo=gridatlas&period=2026-07",
+        "nav": [],
+        "refused": [],
+        "canonical": true,
+        "identical": true
+       },
+       {
+        "ex": "#layers=lines,see-through&key=63035688574",
+        "f1": {
+         "layers": "lines,see-through",
+         "key": "63035688574"
+        },
+        "s1": "key=63035688574&layers=lines,see-through",
+        "f2": {
+         "key": "63035688574",
+         "layers": "lines,see-through"
+        },
+        "s2": "key=63035688574&layers=lines,see-through",
+        "nav": [],
+        "refused": [],
+        "canonical": false,
+        "identical": true
+       },
+       {
+        "ex": "#edition=202611010114&key=36064705400",
+        "f1": {
+         "edition": "202611010114",
+         "key": "36064705400"
+        },
+        "s1": "key=36064705400",
+        "f2": {
+         "key": "36064705400"
+        },
+        "s2": "key=36064705400",
+        "nav": [
+         "edition"
+        ],
+        "refused": [],
+        "canonical": false,
+        "identical": true
+       },
+       {
+        "ex": "#app=see-through&sub=Drax",
+        "f1": {
+         "app": "see-through",
+         "sub": "Drax"
+        },
+        "s1": "",
+        "f2": {},
+        "s2": "",
+        "nav": [
+         "app",
+         "sub"
+        ],
+        "refused": [],
+        "canonical": false,
+        "identical": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "G2 the real pointer editions/index.html forwards every example's hash byte for byte",
+     "result": "PASS",
+     "measured": {
+      "pointer_target": "202611012027",
+      "results": [
+       {
+        "ex": "#key=36064705400",
+        "landed": "http://127.0.0.1:8462/editions/202611012027/#key=36064705400",
+        "ok": true
+       },
+       {
+        "ex": "#line=0048802883266c68d5bdb6f5add0074e8b5b729d:5",
+        "landed": "http://127.0.0.1:8462/editions/202611012027/#line=0048802883266c68d5bdb6f5add0074e8b5b729d:5",
+        "ok": true
+       },
+       {
+        "ex": "#repo=gridatlas&period=2026-07",
+        "landed": "http://127.0.0.1:8462/editions/202611012027/#repo=gridatlas&period=2026-07",
+        "ok": true
+       },
+       {
+        "ex": "#layers=lines,see-through&key=63035688574",
+        "landed": "http://127.0.0.1:8462/editions/202611012027/#layers=lines,see-through&key=63035688574",
+        "ok": true
+       },
+       {
+        "ex": "#edition=202611010114&key=36064705400",
+        "landed": "http://127.0.0.1:8462/editions/202611012027/#edition=202611010114&key=36064705400",
+        "ok": true
+       },
+       {
+        "ex": "#app=see-through&sub=Drax",
+        "landed": "http://127.0.0.1:8462/editions/202611012027/#app=see-through&sub=Drax",
+        "ok": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "zero pageerror",
+     "result": "PASS",
+     "measured": []
+    },
+    {
+     "id": "zero console errors (strict)",
+     "result": "FAIL",
+     "measured": {
+      "other": [],
+      "evidence_404": [
+       "http://127.0.0.1:8462/editions/202611012135/proof/edition-sha256.txt"
+      ],
+      "allow_missing_evidence": false
+     }
+    }
+   ],
+   "errors": [],
+   "expected_404": [
+    "http://127.0.0.1:8462/editions/202611012135/proof/edition-sha256.txt"
+   ],
+   "other_console": [],
+   "pass": false
+  }
+ },
+ "finished": "2026-11-02T02:38:20.662Z",
+ "pass": false
+}

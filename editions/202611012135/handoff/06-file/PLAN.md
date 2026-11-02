@@ -286,3 +286,14 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   page is slow to unload at load average ~50. run-p7e's 60 s wait simply ran out. leave() is fine as it is; no change
   asked. test.cjs: in-page navigation waits (G3, G4, A7 See Through paste) now 240 s. Re-running Pixel 7 (run-p7f) on
   3ae05df7 now; then TEST.md + img/.
+- 02:36 LEAD: the tester's trace shows G3 was a slow unload (~20 s at load ~50), not a cancelled navigation, so the
+  02:14 retry in leave() is withdrawn (re-asking location.assign every 3 s would restart such a slow navigation). The
+  module is back to 3ae05df7… byte for byte (kb@67aa0c0's file; MODULE.sha256 and MODULE.json rewritten; EVIDENCE.md
+  back to its 3ae05df7 keys). That is the module run-s24 (Galaxy S24) and run-p7e/run-p7f (Pixel 7) tested. The lead's
+  run-s24b was on the withdrawn 4568e3e5 and is not a run of record (its one new FAIL, A4 direct, was the camera not yet
+  flown 8 s after the hash: zoom 0.00055 with the card open and the hash right; a load-timing measure, noted for TEST.md).
+- 02:39 TESTER: run-p7f (Pixel 7, module 3ae05df7, test.cjs 69f636fa) 34 PASS, 2 NOT EVALUATED (A3 edition-sha256.txt
+  absent), strict G6 FAIL on exactly one console 404 (proof/edition-sha256.txt, being rewritten by team 10), 0 pageerror;
+  G3 PASS (navigation request seen, landed byte for byte), G4 PASS. test.cjs now 4afaa6d6 (A4 direct waits for the light
+  and the fly up to 90 s after its fixed 6/8 s, the lead's s24b timing note). Tester's own Galaxy S24 run (run-s24t) on
+  3ae05df7 + 4afaa6d6 now, so both devices of record run the final test.cjs; TEST.md and img/ written meanwhile.

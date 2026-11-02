@@ -9,10 +9,8 @@ The numbers from browser runs are the lead's and builder's measurements (PLAN.md
 - `kb@96736f5` = kuiper-belt, Edition 5 skeleton (the HOOKS.md line numbers); `kb@a72c175` = the newest commit of
   `editions/202611012135/index.html` (`git log -- index.html`). Lines 1–623 are identical at the two commits
   (`git diff 96736f5 a72c175` changes only from :624). `ED5` = `editions/202611012135/` on branch edition/202611012135.
-- The module: `ED5 modules/202611012231-file.js`, 828 lines, 58,976 bytes, sha256
-  `4568e3e5ac6a41b3dfb6ae285f6ada90ced183c18ca4197e9639fb256dd2e648` (re-keyed again by the lead at 02:16 UTC: 3ae05df7
-  → 4568e3e5 replaces :128-129 by :128-136 (leave() retries), so every line from :130 moved down by 7 (shift.py 130 7);
-  `grep -n` spot-check: build :774, copyText :420, writeNow :137. Before that: RE-KEYED BY THE LEAD at 01:05 UTC from the
+- The module: `ED5 modules/202611012231-file.js`, 821 lines, 58,399 bytes, sha256
+  `3ae05df7dc0848534831539c7a60f38cc18e2aeb04a489250d346274a6f626e5` (RE-KEYED BY THE LEAD at 01:05 UTC from the
   evidence officer's d8c236c0 keys with the officer's shift.py: d8c236c0 → 3ae05df7 inserts 5 lines after :124, 1 after
   :126, 4 at :270, 1 after :336, 1 after :374 (`diff` of kb@febdd99 and kb@67aa0c0); spot-checked by `grep -n`: build
   :767, fillEditions :707, heading :625, copyText :413, COPIED_MS :383, showPayload :399, exportRows :527;
@@ -28,29 +26,29 @@ The numbers from browser runs are the lead's and builder's measurements (PLAN.md
 
 | GridAtlas fact | Key (ga@5ec7f62 menu-bar.js unless named) | In the Kuiper module |
 |---|---|---|
-| The six menus, in order: `['File', 'Edit', 'View', 'Scope', 'Grid', 'About']` | :31 | The shell owns the names (Opus 1); FILE fills `.gm-group[data-group="file"]` (kuiper-shell.js:404), `build` :774-791 |
+| The six menus, in order: `['File', 'Edit', 'View', 'Scope', 'Grid', 'About']` | :31 | The shell owns the names (Opus 1); FILE fills `.gm-group[data-group="file"]` (kuiper-shell.js:404), `build` :767-784 |
 | Why File exists: "we are heading towards a grid OS in our website the menus must be neat, it should allow AI and humans to develop and use" (the architect, 2026-09-05) | :616-618 (comment :614-621) | The roadmap's goal sentence; module header :2 |
-| File lists the engine's maths, FETCHED from `ENGINE_GRAPH_URL` and opened at `ENGINE_VIEW_URL` | :629-632; fetch :641-647 | OPEN rows: key, line, edition, app (:653-689). No fetch at install (6.2): editions.json only when `Open an edition ▸` opens (`fillEditions` :714-738) |
+| File lists the engine's maths, FETCHED from `ENGINE_GRAPH_URL` and opened at `ENGINE_VIEW_URL` | :629-632; fetch :641-647 | OPEN rows: key, line, edition, app (:646-682). No fetch at install (6.2): editions.json only when `Open an edition ▸` opens (`fillEditions` :707-731) |
 | Each engine node is `<a role="button" target="_blank" rel="noopener">` | :744-749 | Departure, as the roadmap asks: no `target="_blank"` (`grep -c _blank` = 0, `window.open` = 0); same tab, back returns |
-| A failed fetch adds no group and no error ("Deliberately silent") | :758-763 | Departure: the Kuiper says the failure in the row (`the editions list did not load: …` :736; `missing · HTTP <status>` :760) because 09-robust asks for a missing file to be a test FAIL, not a silent 404 |
-| The one runnable command `RUN_COMMAND = 'git clone https://github.com/Ventusltd/ventus-grid-engine' + ' && cd ventus-grid-engine && node verify.mjs'`, under the group "Run the engine yourself · offline, no dependencies" | :707-711 | `python tools/key.py <k>` (row `ky-file-key-cmd` :663-665; `Copy python tools/key.py <k>` :694). The engine's own card already ends with it: "the text itself:  python tools/key.py " + a.k (kb@a72c175 ED5 index.html:292; kb@018b46a index.html, same `describe`) |
-| Copy with `navigator.clipboard.writeText`, label `✓ Copied — paste it into a terminal`; otherwise the button shows `⧉ ` + the command | :716-733 (writeText :724-726, labels :719-721) | `copyText` :420-433: `✓ Copied` for 4,000 ms (`COPIED_MS` :390); refused or absent → `showPayload` :406-419, a read-only 44 px field holding the payload, focused and selected |
+| A failed fetch adds no group and no error ("Deliberately silent") | :758-763 | Departure: the Kuiper says the failure in the row (`the editions list did not load: …` :729; `missing · HTTP <status>` :753) because 09-robust asks for a missing file to be a test FAIL, not a silent 404 |
+| The one runnable command `RUN_COMMAND = 'git clone https://github.com/Ventusltd/ventus-grid-engine' + ' && cd ventus-grid-engine && node verify.mjs'`, under the group "Run the engine yourself · offline, no dependencies" | :707-711 | `python tools/key.py <k>` (row `ky-file-key-cmd` :656-658; `Copy python tools/key.py <k>` :687). The engine's own card already ends with it: "the text itself:  python tools/key.py " + a.k (kb@a72c175 ED5 index.html:292; kb@018b46a index.html, same `describe`) |
+| Copy with `navigator.clipboard.writeText`, label `✓ Copied — paste it into a terminal`; otherwise the button shows `⧉ ` + the command | :716-733 (writeText :724-726, labels :719-721) | `copyText` :413-426: `✓ Copied` for 4,000 ms (`COPIED_MS` :383); refused or absent → `showPayload` :399-412, a read-only 44 px field holding the payload, focused and selected |
 | "A control that silently does nothing is worse than one that shows its own payload." | :728-730 | Same rule: no branch of `copyText` returns without the payload copied or shown |
-| Rows ≥ 44 px: `min-height:44px` | :221 | `.ky-file-form{…min-height:44px…}` :605; payload field `min-height:44px` :401; GO 56 px wide :610 |
-| Group headings by `appendGroup(panel, text)` | :584 | `heading()` :632 with four groups: Open, Link, Evidence, Export (:653, :690, :698, :708) |
-| Export, the architect's words: "allow the user to export screenshot prints via file save or file print and they should produce beautiful slides …" (2026-09-05) | :797-799 | EXPORT group: `Save an image of this view`, `Print` (`exportRows` :534-540) |
-| THE IMAGE MUST NOT BE BLANK: a WebGL canvas without preserveDrawingBuffer reads empty after compositing, so capture INSIDE a render frame and check before offering; "Handing someone an empty PNG that looks like a successful save is worse than refusing." | :804-810 | `capturePainter` :458-468 is a `KY.draw.add` painter at order 1e9 (:589), so it reads `#c` in the same task the wafer was drawn. The Kuiper's context is `{ antialias:false, alpha:false, … }` with no preserveDrawingBuffer (kb@a72c175 ED5 index.html:122) |
-| THE CREDIT MUST TRAVEL WITH THE ARTEFACT | :812-816 | the foot `footLines` :456: the edition name + UTC time, `code Apache-2.0, text and data CC BY 4.0` (:391, from kb@018b46a editions/README.md:27), the link that reopens the view |
-| `exportStamp()` = `toISOString().replace('T',' ').slice(0,16) + ' UTC'` | :817-820 | `utcStamp` :444, same expression (method, not copied as a function) |
+| Rows ≥ 44 px: `min-height:44px` | :221 | `.ky-file-form{…min-height:44px…}` :598; payload field `min-height:44px` :394; GO 56 px wide :603 |
+| Group headings by `appendGroup(panel, text)` | :584 | `heading()` :625 with four groups: Open, Link, Evidence, Export (:646, :683, :691, :701) |
+| Export, the architect's words: "allow the user to export screenshot prints via file save or file print and they should produce beautiful slides …" (2026-09-05) | :797-799 | EXPORT group: `Save an image of this view`, `Print` (`exportRows` :527-533) |
+| THE IMAGE MUST NOT BE BLANK: a WebGL canvas without preserveDrawingBuffer reads empty after compositing, so capture INSIDE a render frame and check before offering; "Handing someone an empty PNG that looks like a successful save is worse than refusing." | :804-810 | `capturePainter` :451-461 is a `KY.draw.add` painter at order 1e9 (:582), so it reads `#c` in the same task the wafer was drawn. The Kuiper's context is `{ antialias:false, alpha:false, … }` with no preserveDrawingBuffer (kb@a72c175 ED5 index.html:122) |
+| THE CREDIT MUST TRAVEL WITH THE ARTEFACT | :812-816 | the foot `footLines` :449: the edition name + UTC time, `code Apache-2.0, text and data CC BY 4.0` (:384, from kb@018b46a editions/README.md:27), the link that reopens the view |
+| `exportStamp()` = `toISOString().replace('T',' ').slice(0,16) + ' UTC'` | :817-820 | `utcStamp` :437, same expression (method, not copied as a function) |
 | `attributionText(doc)` | :822-826 | the licence line above (the Kuiper has no third-party map tiles to credit) |
-| `looksBlank(canvas)`: a 40×40 probe, blank when every alpha is 0; a tainted canvas (throws) is NOT blank | :1082-1096 (tainted :1091-1095) | `looksBlank` :435-443: a 160×160 probe, blank when every pixel is ONE colour, because the Kuiper's canvas is opaque (`alpha:false`) so a lost frame reads one colour, not transparent; a throw → not blank (:442). Departure stated at :381-386 |
-| Capture inside a frame: `map.once('render', grab); map.triggerRepaint()` | :1120-1137 | `capture()` :469-476 asks `KYc.redraw()` and waits for the painter (4,000 ms cap, `CAPTURE_WAIT_MS` :390) |
-| `saveImage`: refusal said on the control, `⊘ The map could not be captured — use Print instead` | :1139-1165 (refusal :1154) | `the image came back blank; try again after the wafer has drawn` (`BLANK_WORDS` :392), said in the row's second line (`say` :489-492); no file |
+| `looksBlank(canvas)`: a 40×40 probe, blank when every alpha is 0; a tainted canvas (throws) is NOT blank | :1082-1096 (tainted :1091-1095) | `looksBlank` :428-436: a 160×160 probe, blank when every pixel is ONE colour, because the Kuiper's canvas is opaque (`alpha:false`) so a lost frame reads one colour, not transparent; a throw → not blank (:435). Departure stated at :374-379 |
+| Capture inside a frame: `map.once('render', grab); map.triggerRepaint()` | :1120-1137 | `capture()` :462-469 asks `KYc.redraw()` and waits for the painter (4,000 ms cap, `CAPTURE_WAIT_MS` :383) |
+| `saveImage`: refusal said on the control, `⊘ The map could not be captured — use Print instead` | :1139-1165 (refusal :1154) | `the image came back blank; try again after the wafer has drawn` (`BLANK_WORDS` :385), said in the row's second line (`say` :482-485); no file |
 | `appendExport`: group "Export this view", three controls: `#gridatlas-export-print` "⎙ Print · or save as PDF", `#gridatlas-export-pdf` (in-page PDF writer), `#gridatlas-export-image` "⤓ Save an image of this view" | :1350-1390 | two controls: `#kuiper-export-image` "⤓ Save an image of this view", `#kuiper-export-print` "⎙ Print"; no PDF writer copied (the browser's print-to-PDF), as ROADMAP 6.1 says |
-| EACH CONTROL IS NAMED, BECAUSE ITS LABEL IS NOT A NAME: `id` + `data-gm-export="print\|pdf\|image"` | :1354-1365 (attributes :1366-1367, :1374-1375, :1382-1383) | `id` + `data-ky-export="image\|print"` (:535-538); rows by id `ky-file-*`, EDIT row `ky-edit-paste`, evidence `data-ky-evidence` |
+| EACH CONTROL IS NAMED, BECAUSE ITS LABEL IS NOT A NAME: `id` + `data-gm-export="print\|pdf\|image"` | :1354-1365 (attributes :1366-1367, :1374-1375, :1382-1383) | `id` + `data-ky-export="image\|print"` (:528-531); rows by id `ky-file-*`, EDIT row `ky-edit-paste`, evidence `data-ky-evidence` |
 | What File holds in the live page: the search bar `move(panels.File, ready.nodes.search)`, the engine's Export button `move(panels.File, ready.nodes.exportButton)`, the engine modules and the export group | :1662, :1663, :1586, :1587 | — (the Kuiper's search is the find box, in EDIT, per 6.5) |
 | …the engine's Export button is `#btn-export` "⬇ Export CSV"; the search is `#search-input` "Search project name..." + `#search-btn` GO | required nodes :146, :148; ga@5ec7f62 atlas/releases/202608300453-atlas-v9/index.html:44, :47, :51 | — |
-| Edit ← status button, View ← fullscreen, Scope ← radius/area/zone/measure | :1664, :1665, :1666-1669 | — (EDIT/VIEW are Opus 1's; this module adds one EDIT row, `Paste a link…`, `pasteRow` :571-576, wired at :788) |
+| Edit ← status button, View ← fullscreen, Scope ← radius/area/zone/measure | :1664, :1665, :1666-1669 | — (EDIT/VIEW are Opus 1's; this module adds one EDIT row, `Paste a link…`, `pasteRow` :564-569, wired at :781) |
 
 ## 2. GridAtlas's `?repd_ref=` deep link (the lesson for "copy a link")
 
@@ -65,7 +63,7 @@ The numbers from browser runs are the lead's and builder's measurements (PLAN.md
 | GridAtlas reads no hash: `git grep -l 'location\.hash'` over `atlas/*.js *.mjs *.html` → 0 files | ga@5ec7f62 atlas/ (measured 23:10) |
 
 The Kuiper's mapping (module SECTION A): written on every change by `history.replaceState(history.state, '', path +
-search + '#' + hashText())` (`writeNow` :137-145), never `pushState`; read on arrival after `KY.hooks.wafer` resolves (:812)
+search + '#' + hashText())` (`writeNow` :130-138), never `pushState`; read on arrival after `KY.hooks.wafer` resolves (:805)
 and on `popstate` and `hashchange` through one reader, `seen` (:334-346); identity exact by rule (`RULES` :66-76: `key ^\d{1,15}$ < SPACE`, `line ^[0-9a-f]{40}:\d+$`,
 …). The departure, query → hash, is ROADMAP R3 and is written in GRAMMAR.md "Why the hash" with these keys.
 
@@ -87,13 +85,13 @@ This module is the first hash reader in the engine. The table below gives what i
 | `home()` → `homeCamera()` → `flyTo` | ED5 :277, :272; live :249 |
 | `SPACE` and `N` set from cosmos/wafer.tsv: `N = issued; SPACE = k` | ED5 :198, :208 |
 | The find box `#goto`/`#gotoin` and its grammar on Enter: period `^(20\d\d)(?:-(\d\d))?(?:-(\d\d))?$` → `lightTime`; `new …` → `showNew`; digits → `goKey(Math.min(SPACE-1, Number(q)))`; else a repository by exact lower-case name, then `includes` | ED5 :604-613; live :577-585 |
-| The engine CLAMPS a digit string to `SPACE-1`; FILE's `Open a key…` REFUSES it in words, `key <k> is not on this wafer (SPACE <n>)` (module :656-658, :298), as ROADMAP 6.1 asks. These are two different behaviours for two different controls, and the difference is intended | ED5 :611 vs module :658 |
+| The engine CLAMPS a digit string to `SPACE-1`; FILE's `Open a key…` REFUSES it in words, `key <k> is not on this wafer (SPACE <n>)` (module :649-651, :291), as ROADMAP 6.1 asks. These are two different behaviours for two different controls, and the difference is intended | ED5 :611 vs module :651 |
 | Single keys: `r` random issued line → `goKey`; `n` → `showNew(24)`; `/` opens the box; `Backspace` clears and `home()` | ED5 :614-618; live :586-590 |
 | `lightTime(y, m, d)` | ED5 :554; live :526 |
-| The placeholder today: "a key, or a repository name to send light through" (the module sets "a key, a repository, a period, or a pasted link", :543, :563) | live :64 |
+| The placeholder today: "a key, or a repository name to send light through" (the module sets "a key, a repository, a period, or a pasted link", :536, :556) | live :64 |
 | The verified-lines predicate `b.on_wafer && b.verified && Number.isFinite(b.key) && b.key >= 0 && b.key < SPACE` | ED5 :636 at kb@a72c175 (:632 at kb@96736f5); copied unchanged into layers.js `loadLines` (ED5 modules/202611012141-layers.js:417) and the module's `loadBodies` (:164) |
 | The Edition 4 card and fly (`edCard`, `edFly`) moved out of the page into Opus 3's layers module: `api.open(i)` = `openLine(i); fly(lines.placed[i])`; `fly(b)` = `H.flyTo(aim(b, 14), 14)`, re-aimed one frame later | ED5 modules/202611012141-layers.js:687, :491-496 |
-| What the module calls to fly to a key: a placed verified line → `KY.modules.layers.api.open(i)` (:175-181); any other key → `H.goKey(k)` (:284) | module :297-302 |
+| What the module calls to fly to a key: a placed verified line → `KY.modules.layers.api.open(i)` (:175-181); any other key → `H.goKey(k)` (:284) | module :290-295 |
 
 The Kuiper's own hash precedents, which the grammar copies:
 
@@ -121,7 +119,7 @@ The Kuiper's own hash precedents, which the grammar copies:
 
 ## 5. The hook table: every name in `requires`, and what it is
 
-`requires` (module :9-10 header, :824-825 registration; the two lists are identical, 27 names since kb@513c2f1). The admissible set is
+`requires` (module :9-10 header, :817-818 registration; the two lists are identical, 27 names since kb@513c2f1). The admissible set is
 the 28 hooks ∪ `cam lit sel redraw draw panels refuse` ∪ the `provides` of modules earlier in `order`
 (ED5 handoff/04-loader/HOOKS.md "The rest of window.KY"). Engine lines are kb@96736f5 = kb@a72c175 for :1-623.
 
@@ -137,15 +135,15 @@ the 28 hooks ∪ `cam lit sel redraw draw panels refuse` ∪ the `provides` of m
 | flyTo | hook 5 | :253 (patched with the reduced-motion wrap, 04-loader index.html.patch:223) | not called directly (goKey, layers.fly) |
 | safeBox | hook 8 | :262, wrapped :726 | not called directly |
 | card | hook 21 | :124 | `H.card` (watcher `watchCard` :294-308, :259) |
-| gbox, gin | hooks 22-23 | :604 | `watchFind` :309-328, `wireFind` :554-564, `openPaste` :565-570 |
+| gbox, gin | hooks 22-23 | :604 | `watchFind` :309-328, `wireFind` :547-557, `openPaste` :558-563 |
 | SPACE, N | hooks 24-25 | :198, :208 | `H.SPACE` (rules, refusals); N unused |
 | repos | hook 26 | :198, :202 | `findRepo` :184-189 |
-| wafer | hook 28 (the promise) | after :208 (04-loader index.html.patch:59) | `H.wafer.then(readLocation)` :812 |
-| cv, ov | hooks 15-16 | :121 | the capture `Hc.cv`, `Hc.ov` :460-466 |
-| hud | hook 18 | :123 | `readout()` :794 |
-| big | hook 19 | :123 | `editionName()` :445-450 |
-| panels | extra | `KY.panels.add` (:710 PANELS) | the fallback FILE panel when no shell :780 |
-| draw | extra | `KY.draw.add(fn, order)`, the one wrap of draw (:332; patch :269-274) | the capture painter (order 1e9) :589, the readout (order 40) :809 |
+| wafer | hook 28 (the promise) | after :208 (04-loader index.html.patch:59) | `H.wafer.then(readLocation)` :805 |
+| cv, ov | hooks 15-16 | :121 | the capture `Hc.cv`, `Hc.ov` :453-459 |
+| hud | hook 18 | :123 | `readout()` :787 |
+| big | hook 19 | :123 | `editionName()` :438-443 |
+| panels | extra | `KY.panels.add` (:710 PANELS) | the fallback FILE panel when no shell :773 |
+| draw | extra | `KY.draw.add(fn, order)`, the one wrap of draw (:332; patch :269-274) | the capture painter (order 1e9) :582, the readout (order 40) :802 |
 | redraw | extra | sets `dirty` | :139, :260, :462 |
 | cam | extra | :243-245 | declared, not used |
 | lit, sel | extras | :243 | `KY.lit.repo = r.i; KY.sel.target = null` :259 |
@@ -154,7 +152,7 @@ the 28 hooks ∪ `cam lit sel redraw draw panels refuse` ∪ the `provides` of m
 Findings for the lead (§9 item 2):
 
 - RESOLVED at kb@513c2f1. Used but NOT in `requires`: `fmt` (hook 12, :125). It is called as `H.fmt` through `fmt()` (:59), in `measureEvidence`
-  (:761). It is in the 28-hook table, so the loader always provides it, but the module's own law is that `requires`
+  (:754). It is in the 28-hook table, so the loader always provides it, but the module's own law is that `requires`
   names what it uses.
 - In `requires` but never used: `keyPlace address describe flyTo safeBox N cam`. They are admissible and do no harm,
   and they come from the roadmap's list. They are kept, and the header names them.
@@ -168,11 +166,11 @@ Findings for the lead (§9 item 2):
 | Check | Result | Key |
 |---|---|---|
 | Header line 1 is `/* kuiper module file, generation 202611012231 (UTC), Apache-2.0 (kuiper-belt)` | matches the loader's regex `^\/\* kuiper module ([a-z0-9-]+), generation (\d{12}) \(UTC\),` with id `file`, generation `202611012231` | ED5 modules/202611012145-loader.js:84-86; HOOKS.md "Header line 1" |
-| The stamp written three times: file name `202611012231-file.js`, header `202611012231`, registration `GEN = '202611012231'` (:28, :823) | equal | module :1, :28, :823 |
-| `schema: 'kuiper.module.v1'`, `id: 'file'`, `provides: ['file', 'link']` (the id is in provides) | as HOOKS.md "The registration a module makes" | module :823-827 |
-| One `KY.register` call; returns early when no hook table (`if (!window.KY …) return`) | yes (one call, `grep -c 'KY.register('` = 1 outside comments) | module :29, :823 |
+| The stamp written three times: file name `202611012231-file.js`, header `202611012231`, registration `GEN = '202611012231'` (:28, :816) | equal | module :1, :28, :816 |
+| `schema: 'kuiper.module.v1'`, `id: 'file'`, `provides: ['file', 'link']` (the id is in provides) | as HOOKS.md "The registration a module makes" | module :816-820 |
+| One `KY.register` call; returns early when no hook table (`if (!window.KY …) return`) | yes (one call, `grep -c 'KY.register('` = 1 outside comments) | module :29, :816 |
 | Licence line: Apache-2.0, kuiper-belt code; GridAtlas method credited with its keys; "No GridAtlas bytes are copied verbatim but the words of two row labels" | correct. Every GridAtlas line it cites (:707-733, :794-834, :1082-1097, :1120-1137, :1354-1365) was re-read (§1) | module :1-7; kb@018b46a LICENSE (Apache 2.0), README.md:156-157 |
-| CERN-OHL-S v2: no See Through code is copied (the module calls `KY.modules['see-through'].api.link`, and its own fallback builds a hash string) | none needed | module :211-226 |
+| CERN-OHL-S v2: no See Through code is copied (the module calls `KY.modules['see-through'].api.link`, and its own fallback builds a hash string) | none needed | module :204-219 |
 | No `target="_blank"`, no `window.open`, no `innerHTML`, no `eval`/`new Function` | 0 / 0 / 0 / 0 (`grep -c`, 23:15) | module |
 | Network: three `fetch` sites, none at install: `keys.json` (only to resolve or write a `line`, or to test a key for a line), `data/editions.json` (on opening `Open an edition ▸`), HEAD of the seven evidence files (on first opening FILE) | as the header says | module :162, :705, :746 |
 
@@ -199,10 +197,10 @@ this writer wrote (the last 64, `written` and `mine` :332-333) is written over, 
 
 ## 9. Review findings for the lead (keys, not opinions)
 
-1. RESOLVED at kb@513c2f1 (both comments now read `:817-820`). Wrong key in SECTION C: the comment at :382 and the `utcStamp` comment at :444 cite `exportStamp` as GridAtlas
+1. RESOLVED at kb@513c2f1 (both comments now read `:817-820`). Wrong key in SECTION C: the comment at :375 and the `utcStamp` comment at :437 cite `exportStamp` as GridAtlas
    `:813-816`. Those lines are the "credit must travel" comment. `function exportStamp()` is ga@5ec7f62 menu-bar.js
    :817-820 (LICENCE.txt already has it right). Change both to `:817-820`.
-2. RESOLVED at kb@513c2f1 (header, registration, MODULE.json). `requires` should name `fmt` (§5). One word in the header (:9) and in the registration (:824).
+2. RESOLVED at kb@513c2f1 (header, registration, MODULE.json). `requires` should name `fmt` (§5). One word in the header (:9) and in the registration (:817).
 3. `requires`, header :9 and HOOKS.md: `refuse` (rev 3) is available. The module puts refusals in `#hud` (`say` :138)
    and does not call `KY.refuse`. That is allowed. I record it because 09-robust found that READOUT can be hidden (its
    finding 1); the FILE rows also say each refusal on the row itself.

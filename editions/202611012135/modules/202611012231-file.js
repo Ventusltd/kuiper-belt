@@ -125,15 +125,8 @@
   // leave(url): the page is navigating away; the hash is written once, now, and nothing writes after it (a replaceState
   // or popstate rewrite during a pending navigation can cancel it in Chromium: measured, Open an app tap on Pixel 7 that
   // stayed on the page at 00:5x while the same tap navigated when no write was pending)
-  // A history traversal still in flight (the shell's or the card's history.back(), asynchronous) can also cancel it
-  // (measured: Open an edition by touch stayed on the page in one Pixel 7 run of three), so the navigation is asked
-  // again every 3 s, at most three times, until the page is actually left (pagehide).
-  var leaving = false, gone = false;
-  addEventListener('pagehide', function () { gone = true; });
-  function leave(url) {
-    writeNow(); leaving = true; clearTimeout(wTimer); st.left = url; st.leave_tries = 1; location.assign(url);
-    (function again(n) { setTimeout(function () { if (gone || n > 3) return; st.leave_tries = n + 1; location.assign(url); again(n + 1); }, 3000); })(1);
-  }
+  var leaving = false;
+  function leave(url) { writeNow(); leaving = true; clearTimeout(wTimer); st.left = url; location.assign(url); }
   function writeNow() {
     clearTimeout(wTimer); wTimer = null;
     if (leaving) return;
