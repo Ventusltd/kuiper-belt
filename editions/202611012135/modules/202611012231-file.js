@@ -364,7 +364,7 @@
     format: function (f) { return hashText(f || {}); },              // the pure serialiser: no state, no layers sync (tester G1)
     parse: function (search, hash) { return parse(search, hash); },
     set: function (k, v) { if (FIELDS.indexOf(k) < 0) return false; if (v != null && !RULES[k](String(v))) return false; setField(k, v); writeSoon(); return true; },
-    clear: function (keep) { clear(keep); }, flush: function () { writeNow(); },
+    clear: function (keep) { clear(keep); }, flush: function () { writeNow(); }, go: function (url) { leave(String(url)); },
     url: function () { syncLayers(); var h = hashText(); return location.origin + location.pathname + (h ? '#' + h : ''); },
     inspect: function () { return { fields: JSON.parse(JSON.stringify(st.fields)), last_read: st.last_read, last_written: st.last_written, refused: st.refused.slice() }; }
   });
@@ -540,7 +540,7 @@
       var r = Lk.read(t);
       if (!r) { st.pastes.push({ text: t, ok: false, why: 'not a link' }); return false; }
       st.pastes.push({ text: t, ok: true, target: r.target || 'kuiper', fields: r.fields, refused: r.refused });
-      if (r.target === 'see-through' || r.target === 'other') { location.href = r.url; return true; }   // navigation, same tab
+      if (r.target === 'see-through' || r.target === 'other') { if (typeof Lk.go === 'function') Lk.go(r.url); else location.href = r.url; return true; }   // navigation, same tab (lead: through link.go, so no write cancels it)
       if (typeof Lk.apply === 'function') Lk.apply(r.fields, { from: 'paste' });
       return true;
     }
