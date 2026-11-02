@@ -38,7 +38,7 @@ LAWS.md:111-124, L8). A quotation of one line with its key is a citation, not a 
 | code-generator | nothing copied; one spider graph not fetched | **none in repository** | code-generator@857ea81: 59 tracked files, no LICENSE, NOTICE or COPYING | `DISCLOSED` (Q5) |
 | OSM-derived and DESNZ/DUKES material quoted by the verified lines | quotations with keys in `keys.json` (byte-identical to Edition 4, sha256 `1c293c33...`) | ODbL 1.0; OGL v3 | kuiper-belt@018b46a editions/202611012027/NOTICE.md:7-10 ("A quote here is a citation with its key, not a relicensing") | unchanged since Edition 2 |
 
-## B. The modules in `modules/`, line 1 of each file as on disk (00:40 UTC)
+## B. The modules in `modules/`, line 1 of each file as on disk (00:30 UTC)
 
 | file | team | licence on line 1 | state (modules.json) |
 |---|---|---|---|
@@ -59,7 +59,7 @@ and in team 7's LICENCE.txt.
 
 ## C. Each team's row, as handed in (`handoff/NN-*/LICENCE.txt`)
 
-Each file is that team's row of this register, kept in its hand-off folder and named here by its sha256 (00:40 UTC).
+Each file is that team's row of this register, kept in its hand-off folder and named here by its sha256 (00:30 UTC).
 The licence keys each row rests on are the ones re-read in section A; team-specific keys were re-read by that team's
 evidence officer as its file says.
 
@@ -74,7 +74,7 @@ evidence officer as its file says.
 | 07 apps | `handoff/07-apps/LICENCE.txt` (8,015, `b062b2c14155`) | module and tools Apache-2.0; apps.json CC BY 4.0, each row its target's licence; 25 globalgrid2050 rows quoted (CERN-OHL-S v2); elements keys only (DISCLOSED, Q1); overview.json copied (Apache-2.0, testcode); periodic-table.json copied from stars (DISCLOSED, Q5); 156 + 17 GPL + 48 unstated-licence `line_text` quotations in elements.json | **periodic-table.json: copy blocked by the rule while DISCLOSED** (A); the 17 GPL and 48 unstated one-line quotations are citations with keys, the owner to confirm (team 7's own note) |
 | 08 drift | `handoff/08-drift/LICENCE.txt` (2,595, `c2f129ba3373`) | tools/drift.py, the module, tests Apache-2.0; drift.json CC BY 4.0, quotes no line text | agrees with A |
 | 09 law | `handoff/09-law/LICENCE.txt` | `tools/edition_check.py`, the tests and the journey script Apache-2.0; `editions/LAW.md` and this register CC BY 4.0; copies nothing from outside kuiper-belt except the journey script, which is neural-link's own NL-009 work adapted by team 10 | agrees with A |
-| 10 integration | none on disk at 00:40 UTC | index.html, keys.json, modules.json, README.md, NOTICE.md, proof/ | `NOT EVALUATED`: no LICENCE.txt in handoff/10-integration/ |
+| 10 integration | none on disk at 00:30 UTC | index.html, keys.json, modules.json, README.md, NOTICE.md, proof/ | `NOT EVALUATED`: no LICENCE.txt in handoff/10-integration/ |
 
 ## D. Open, for the owner (never answered by an agent)
 

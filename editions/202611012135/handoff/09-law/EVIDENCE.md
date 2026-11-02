@@ -70,7 +70,7 @@ target at `9adcc00`, kuiper-belt see-through/index.html:7, :11, :12): identical.
 
 ## 3. The tool's measurements (tools/edition_check.py on the folder as it stands)
 
-Run at 00:29 UTC on the working tree of `edition/202611012135` (HEAD `9adcc00`), `python3 tools/edition_check.py`,
+Run at 00:28 UTC on the working tree of `edition/202611012135` (HEAD `9adcc00`), `python3 tools/edition_check.py`,
 26 s (E9's drift re-run 12 s of it): E1 PASS (4 script blocks in 4 pages, 9 modules), E2 PASS with 6 files pending
 admission NOT EVALUATED, **E3 FAIL**, E4 PASS, E5 PASS (`1c293c33...` both sides), **E6 FAIL**, E7 PASS, E8 PASS, E9
 PASS (drift.json re-computed byte-identical, 118,553 bytes, sha256 `388103129b90...`, = handoff/08-drift/MODULE.sha256).
@@ -89,7 +89,7 @@ PASS (drift.json re-computed byte-identical, 118,553 bytes, sha256 `388103129b90
 - `test_real_folder.py` (lead): a copy of this repository made clean (admitted modules only, references dropped,
   sha256 list cut): clean copy `RESULT: PASS` under `--strict` with nothing NOT EVALUATED; 18 one-change cases each
   make their check FAIL with the law's words (`refused: sha256 mismatch`, `refused: stamp mismatch`, `refused: missing
-  hook noSuchHook`, ...); pointer.patch applied and the pointer moved to Edition 5 makes E4 PASS. 20 of 20 at 00:30 UTC
+  hook noSuchHook`, ...); pointer.patch applied and the pointer moved to Edition 5 makes E4 PASS. 20 of 20 at 00:29 UTC
   (`TEST-REAL-RESULTS.json`).
 - `test_edition_check.py` (builder): the same law on a synthetic repository with a stub drift tool, so it runs on a
   GitHub runner; its result is in TEST.md.

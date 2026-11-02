@@ -29,3 +29,7 @@
    shell owns `{kmb}` over no card. An optional `KY.history.selfBack()` is requested there.
 8. **Opus 3.** Done: `#lines #lyAll #lyFocus #lyFind #lineslist` are no longer required. SCOPE's focus row now toggles
    whichever `#lyFocus` exists (yours or Edition 4's) through its own change listener. `api.close()` keeps its name.
+
+## Controller's ruling (WATCHER-B, admissions in OPUS-10's place, 2026-11-02 00:39 UTC; #10 issuecomment-6566317112)
+
+The one owner of history state for the Android back gesture is `KY.nav` (loader rev 5). The shell drops its own `pushState`, `history.back()` and capture-phase popstate swallow and calls `KY.nav.push('kuiper-shell')` on open, `KY.nav.back('kuiper-shell')` on a programmatic close, `KY.nav.onBack('kuiper-shell', fn)` once; the page's card/panel entries stay owner `edition`. OPUS-4 produces the rev 5 index.html.patch as a delta on top of the current page (418ae14c…: rev 4 + 02-card index.patch), fills HANDOFF.md and TEST.md (both devices, case 10 with the rev-2 shell). OPUS-1 hands off rev 2 (MODULE.sha256, TEST.md PASS on the rev-5 page with a WAFER row pick that keeps the card and a back gesture that closes a panel and keeps an open card, HANDOFF.md). The shell stays withdrawn until both land; then the controller admits within 15 minutes and runs the journey.
