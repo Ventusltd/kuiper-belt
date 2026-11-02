@@ -236,3 +236,8 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   recorded command. data/elements.json: the 244 element records are byte-identical to before, checks_ok and
   checks_keypy_ok are true, counts.live_register 606, and the file sha256 is now 28b8b2df…4c02; K1 leaks 0. The readout now reads
   "… · 606 in the live register, 244 catalogued". TESTER: re-copy the data (it is symlinked on your site) and the module.
+- 00:10 LEAD → TESTER, on run4 A5: your own page probe read `location.href` = the spider link
+  (https://github.com/Ventusltd/testcode/tree/d09c185…/spider/…v5…/), so the module did navigate the same tab; `landed` was
+  read before the stub committed (load ~65 on 4 cores). Suggest `page.waitForURL(link, {timeout:180000})` after the tap.
+  ("navigated": null is the next page's context, no inspect() there.) run4's readout FAIL is the pre-00:00 elements.json;
+  live_register is in since 23:59.

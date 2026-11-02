@@ -69,7 +69,11 @@ def main():
     tsv_path = os.path.join(root, 'cosmos', 'repos.tsv')
     os.makedirs(a.scratch, exist_ok=True)
     tmp = tempfile.mkdtemp(prefix='drift-test-', dir=a.scratch)
-    results = []
+    results, infos = [], []
+
+    def info(msg):
+        infos.append(msg)
+        print('INFO ' + msg, flush=True)
 
     def ok(name, cond, detail):
         results.append({'test': name, 'pass': bool(cond), 'detail': detail})
@@ -82,7 +86,9 @@ def main():
     base = open(target, 'rb').read()
     D = json.loads(base)
     bodies = json.load(open(keys_path, encoding='utf-8'))['bodies']
-    tsv = [l.rstrip('\n').split('\t')[1] for l in open(tsv_path, encoding='utf-8') if l.strip() and not l.startswith('#')]
+    tsv_raw = [l.rstrip('\n').split('\t')[1] for l in open(tsv_path, encoding='utf-8') if l.strip() and not l.startswith('#')]
+    tsv = {x.lower() for x in tsv_raw}         # GitHub repository names are case-insensitive (repos.tsv: Kuiper-belt)
+    case_only = sorted({b['repo'] for b in bodies if b['repo'] not in tsv_raw and b['repo'].lower() in tsv})
 
     def clone(repo):
         d = os.path.join(estate, repo)
@@ -148,15 +154,21 @@ def main():
     # ---------------------------------------------------------------- P3 ground truth, independently
     keyed = {b['id']: b for b in bodies}
     shows, bad, n = {}, [], collections.Counter()
-    heads_now = {}
+    held, moved_since = {}, []         # the recorded head, held by the clone; and where origin/HEAD is now
     for repo in repos:
-        d = clone(repo)
-        if d:
+        d, h = clone(repo), (D['heads'].get(repo) or {}).get('sha')
+        if d and h:
+            rc, _, _ = sh(['git', 'cat-file', '-e', h + '^{commit}'], cwd=d)
+            held[repo] = h if rc == 0 else None
             rc, out, _ = sh(['git', 'rev-parse', '-q', '--verify', 'refs/remotes/origin/HEAD^{commit}'], cwd=d)
-            heads_now[repo] = out.decode().strip() if rc == 0 else None
-    for repo, h in D['heads'].items():
-        if h.get('sha') and heads_now.get(repo) != h['sha']:
-            bad.append((repo, 'head %s in drift.json, clone origin/HEAD now %s' % (h['sha'][:12], (heads_now.get(repo) or '-')[:12])))
+            now = out.decode().strip()
+            if now != h:
+                moved_since.append('%s %s -> %s' % (repo, h[:12], now[:12]))
+                rc, out, _ = sh(['git', 'merge-base', '--is-ancestor', h, now], cwd=d)
+                if rc != 0:
+                    bad.append((repo, 'recorded head %s is not an ancestor of origin/HEAD %s' % (h[:12], now[:12])))
+        elif h:
+            bad.append((repo, 'a head recorded without a clone'))
 
     def show(d, spec):
         if spec not in shows:
@@ -171,8 +183,8 @@ def main():
             continue
         cl, d, text = r['class'], clone(r['repo']), k.get('line_text')
         n[cl] += 1
-        verifiable = bool(d and heads_now.get(r['repo']) and text and k.get('on_wafer') is not False
-                          and k.get('key') is not None and r['repo'] in tsv)
+        verifiable = bool(d and held.get(r['repo']) and r.get('head') == held.get(r['repo']) and text and k.get('on_wafer') is not False
+                          and k.get('key') is not None and r['repo'].lower() in tsv)
         if cl == 'UNVERIFIED':
             why = r.get('reason') or ''
             if verifiable:
@@ -216,8 +228,11 @@ def main():
         if cl == 'FILE_GONE' and rc_e == 0:
             bad.append((r['id'], 'FILE_GONE but git cat-file -e finds the path'))
     ok('P3 ground truth by git show', not bad and sum(n.values()) == len(bodies),
-       '%s re-derived from %d `git show` blobs at the heads (each head = the clone\'s origin/HEAD now); %d disagreements%s' % (
-           dict(n), len(shows), len(bad), (': ' + '; '.join('%s %s' % x for x in bad[:4])) if bad else ''))
+       '%s re-derived from %d `git show` blobs at the recorded heads (each held by its clone and an ancestor of its '
+       'origin/HEAD); %d disagreements%s' % (dict(n), len(shows), len(bad),
+                                            (': ' + '; '.join('%s %s' % x for x in bad[:4])) if bad else ''))
+    info('heads moved since drift.json was written (fetched later; the drift is as of its recorded heads): %s'
+         % ('; '.join(moved_since) or 'none'))
 
     # ---------------------------------------------------------------- P4 the five counts (data half)
     c = collections.Counter(r['class'] for r in D['rows'])
@@ -229,14 +244,14 @@ def main():
        ' / '.join('%d %s' % (c[k], k) for k in CLASSES) + '; ' + st)
     readme = os.path.join(HERE, 'README.md')
     if os.path.exists(readme):
-        t = open(readme, encoding='utf-8').read()
+        t = re.sub(r'\s+', ' ', open(readme, encoding='utf-8').read())
         want = '%d SAME, %d MOVED, %d GONE, %d FILE_GONE, %d UNVERIFIED' % tuple(c[k] for k in CLASSES)
         sh_txt = '%d SAME / %d (rows %d − UNVERIFIED %d)' % (c['SAME'], den, len(D['rows']), c['UNVERIFIED'])
         ok('P4 README paragraph = drift.json', want in t and sh_txt in t, '"%s" %s; "%s" %s' % (
             want, 'present' if want in t else 'ABSENT', sh_txt, 'present' if sh_txt in t else 'ABSENT'))
 
     # ---------------------------------------------------------------- P5 the law
-    stray_repo = sorted(x for x in ({r['repo'] for r in D['rows']} | set(D['heads'])) if x not in tsv)
+    stray_repo = sorted(x for x in ({r['repo'] for r in D['rows']} | set(D['heads'])) if x.lower() not in tsv)
     order = [b['id'] for b in bodies] == [r['id'] for r in D['rows']]
     stray_key = [r['id'] for r in D['rows'] if r['id'] not in keyed or keyed[r['id']].get('key') != r['key']
                  or keyed[r['id']]['path'] != r['path'] or int(keyed[r['id']]['line']) != r['line']
@@ -259,9 +274,10 @@ def main():
     textkeys = [k for r in D['rows'] for k in r if k in ('line_text', 'quote', 'text')]
     ok('P5 drift.json inside the law', not stray_repo and not stray_key and order and len(D['rows']) == len(bodies)
        and not quoted and not textkeys,
-       '%d rows = %d bodies in keys.json order: %s; repositories outside repos.tsv: %s; keys outside keys.json: %s; '
-       'line texts quoted: %d' % (len(D['rows']), len(bodies), order, stray_repo or 'none', stray_key[:3] or 'none',
-                                  len(quoted) + len(textkeys)))
+       '%d rows = %d bodies in keys.json order: %s; repositories outside repos.tsv: %s (matched by case only: %s); '
+       'keys outside keys.json: %s; line texts quoted: %d' % (len(D['rows']), len(bodies), order, stray_repo or 'none',
+                                                              case_only or 'none', stray_key[:3] or 'none',
+                                                              len(quoted) + len(textkeys)))
 
     # (i) what the tool opens, under strace (observe mode, the mode that cuts an edition, and --heads mode)
     allowed_files = {os.path.realpath(p) for p in (tsv_path, keys_path, tool, target)}
@@ -274,7 +290,7 @@ def main():
             rc, so, se = run_tool(['--estate', estate, '--out', o] + extra,
                                   prefix=['strace', '-f', '-qq', '-e', 'trace=open,openat,openat2,connect,socket',
                                           '-o', tr])
-            here_home, sockets, sysfiles = set(), [], set()
+            here_home, sockets, sysfiles, listed = set(), [], set(), set()
             for line in open(tr, errors='replace'):
                 if re.search(r'\b(socket|connect)\(', line) and ' = -1' not in line:
                     if 'AF_UNIX' not in line or 'connect(' in line:
@@ -287,23 +303,32 @@ def main():
                     continue                     # relative opens are resolved by git inside its clone (cwd)
                 rp = os.path.realpath(p)
                 if rp.startswith('/home/user'):
-                    here_home.add(rp)
+                    if 'O_DIRECTORY' in line and rp in (os.path.realpath(estate), os.path.dirname(os.path.realpath(tool))):
+                        listed.add(rp)
+                    else:
+                        here_home.add(rp)
                 else:
                     sysfiles.add(rp.split('/')[1])
             out_real = os.path.realpath(o)
-            stray = sorted(p for p in here_home if p not in allowed_files and not p.startswith(out_real)
+            allowed = allowed_files if extra else allowed_files - {os.path.realpath(target)}
+            stray = sorted(p for p in here_home if p not in allowed and not p.startswith(out_real)
                            and not any(p == cd or p.startswith(cd + '/') for cd in clone_dirs)
                            and not p.startswith(os.path.realpath(tmp)))
             in_clones = sorted({cd for cd in clone_dirs if any(p.startswith(cd + '/') for p in here_home)})
             ok('P5 reads (%s, strace)' % mode, rc == 0 and not stray and not sockets,
                'exit %d; opened under /home/user: %d files = repos.tsv, keys.json, tools/drift.py%s + %d clones; '
-               'outside it only system dirs %s; sockets: %d; stray: %s' % (
+               'directories listed: %s; outside /home/user only system dirs %s; sockets: %d; stray: %s' % (
                    rc, len(here_home), ', data/drift.json (the recorded heads)' if extra else '', len(in_clones),
-                   sorted(sysfiles), len(sockets), stray[:5] or 'none'))
+                   sorted(listed) or 'none', sorted(sysfiles), len(sockets), stray[:5] or 'none'))
             if mode == 'observe' and os.path.exists(o):
                 ob = open(o, 'rb').read()
-                print('INFO observe-now vs data/drift.json: %s (the clones %s been fetched since the cut)' % (
-                    'byte-identical' if ob == base else 'differ', 'have not' if ob == base else 'may have'), flush=True)
+                O = json.loads(ob)
+                diff = [(x['id'][:12], x['repo'], x['class'], y['class']) for x, y in zip(D['rows'], O['rows'])
+                        if x['class'] != y['class']]
+                info('observing the heads now instead of the recorded ones: %s; counts now %s; rows whose class '
+                     'would change: %d %s' % ('byte-identical' if ob == base else 'differs',
+                                              ' / '.join('%d %s' % (v, k) for k, v in O['summary']['counts'].items()),
+                                              len(diff), diff[:6]))
     else:
         ok('P5 reads (strace)', False, 'strace not installed: the read trace was not measured')
 
@@ -324,7 +349,7 @@ def main():
     shutil.rmtree(tmp, ignore_errors=True)
     fails = [x for x in results if not x['pass']]
     summary = {'drift_json_sha256': sha(base), 'tool_sha256': sha(open(tool, 'rb').read()),
-               'keys_json_sha256': sha(open(keys_path, 'rb').read()), 'counts': dict(c), 'results': results,
+               'keys_json_sha256': sha(open(keys_path, 'rb').read()), 'counts': dict(c), 'results': results, 'info': infos,
                'result': 'FAIL' if fails else 'PASS'}
     if a.json:
         with open(a.json, 'w') as f:

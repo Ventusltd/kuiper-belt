@@ -57,7 +57,8 @@ fs.mkdirSync(OUT, { recursive: true });
   let allPass = true;
   for (const DEV of DEVICES) {
     const R = report.devices[DEV] = { steps: [], errors: [], expected_404: [], other_console: [] };
-    const step = (id, pass, measured) => { R.steps.push({ id, result: pass === null ? 'NOT EVALUATED' : (pass ? 'PASS' : 'FAIL'), measured }); if (pass === false) allPass = false; };
+    const step = (id, pass, measured) => { R.steps.push({ id, result: pass === null ? 'NOT EVALUATED' : (pass ? 'PASS' : 'FAIL'), measured }); if (pass === false) allPass = false;
+      try { fs.writeFileSync(path.join(OUT, 'report.partial.json'), JSON.stringify(report, null, 1)); } catch (e) {} };   // a killed run keeps what it measured
     const slug = DEV.replace(/[^A-Za-z0-9]+/g, '_');
     async function newPage(opts) {
       const ctx = await browser.newContext({ ...devices[DEV], acceptDownloads: true });

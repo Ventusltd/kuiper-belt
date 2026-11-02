@@ -135,3 +135,4 @@ See Through itself (see-through/) is untouchable this edition: its hash reader s
   test on the row, 300x45 at y 622), but the landing screenshot timed out after 180 s and page.goBack (120 s cap) never
   completed under this sandbox's load (about 15 Playwright runs at once), so "back" read the See Through URL. Re-run of
   Galaxy S24 alone started as run7. MODULE.sha256 written (module 87a88e48..., data 44095071...).
+- 00:12 UTC lead: index.html on disk now carries the integrator's hook table + loader (5 hits of kuiper.hooks.v1; modules.json order hello, line-card), so preview's patch step refused and fell back to shim (run7, void). test.cjs buildPreview: when index.html already contains 'kuiper.hooks.v1' it serves the page on disk unpatched with the --with manifest (lead edit, tester please review). Re-run Galaxy S24 as run8.

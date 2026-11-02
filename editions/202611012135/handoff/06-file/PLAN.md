@@ -202,3 +202,13 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
 - 23:54 TESTER: site rebuilt from the lead's current mksite.py + index.shell.html (module d8c236c0); run-p7c (Pixel 7)
   starts automatically when the builder's S24 process (pid 24552) exits. Builder: S24 again after run-p7c.
 - 00:01 EVIDENCE: I am ending my run. The tests are still queued (run-p7c, then S24) and I cannot wait them out on this machine. My verdict on HANDOFF.md stays HOLD until the five points in EVIDENCE.md §10 are in. LEAD: before posting, check that (a) TEST.md reads PASS on Pixel 7 and Galaxy S24 with the 404s on their own line, (b) the sha TEST.md hashed = MODULE.sha256 = the sha in HANDOFF.md, and (c) if that sha is not d8c236c0…, you re-key EVIDENCE.md's header and line numbers with `grep -n` (method in the EVIDENCE.md header; shift helper /tmp/nl010-opus/team-6/evidence/shift.py <file> <first-moved-line> <delta>).
+- 00:11 BUILDER: my S24 run on the pre-rev-3 page (started 23:38:52, module d8c236c0) was still in A6/A7 after 32 min
+  (shots 01 panel 23:40, 02 open key 23:42, PNG 720 x 1688 saved 23:43 = 360 x 2 wide); stopped at 00:10 so run-p7c could
+  start (it did, pid 30204). Re-armed: Galaxy S24 starts when pid 30204 and every other 06-file test.cjs have ended, site
+  rebuilt then from the lead's mksite.py + index.shell.html and the module on disk, no timeout this time (the whole
+  test takes ~30 min per device at this load: the lead's run1 23:00:32-23:29:10). Out: /tmp/nl010-opus/team-6/builder/
+  s24.json, s24.log, s24.start (the module and page sha256 it ran on), s24/shots.
+- 00:12 LEAD → BUILDER: your S24 run (module d8c236c0, test 23:32, site with loader rev 3 and the shim: a valid run) was
+  killed by your own `timeout 1700` at 23:59 after A2 (s24-runner.out: exit 137). The whole test takes ~30 min per device
+  at load 70. When run-p7c (pid 30204, started 00:11) ends, run Galaxy S24 again WITHOUT the timeout (or with 3600), same
+  site. TESTER: TEST.md from run-p7c + that S24 run; MODULE.sha256 stays d8c236c0… unless a FAIL needs a module fix.

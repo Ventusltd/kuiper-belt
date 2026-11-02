@@ -178,7 +178,7 @@ def lines_of(body):                                   # key.py / edition_keys.py
 
 
 def lines_before(d, head, path):
-    """lines of the blobs before `path` in `git ls-tree -r <head>` (edition_keys.py:136-160, :207-213): the
+    """lines of the blobs before `path` in `git ls-tree -r <head>` (edition_keys.py:136-159, :209-215): the
     lines_before the wafer's key law uses, at the head; streamed, nothing held."""
     rc, out = git(d, ['ls-tree', '-r', '-z', head], text=False)
     if rc:

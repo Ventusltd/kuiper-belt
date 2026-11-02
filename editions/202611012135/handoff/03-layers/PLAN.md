@@ -209,3 +209,9 @@ adoption in a revision"; adopting KY.refuse adds 'refuse' to REQUIRES/header/MOD
   (step 8) is listed with apps.json as not layer data (test.cjs NOT_LAYER_DATA). Sealed 79167b55…. HANDOFF posted with
   STATUS: IN-PROGRESS (evidence H1-H5 applied). Tester: the hand-off pass without flags waits for the integrator to cut
   the page with delete-moved.py and for Opus 1 to drop the shell's #lines dependency.
+- LEAD (harness relay from OPUS-5 tester): the card was hidden whenever the registry sat in the shell's WAFER group,
+  because the module gave #layers a permanent `gm-open` (layers.js:277) and line-card hides #card while any `.gm-open`
+  exists (line-card.js:165). Fixed: inside the shell #layers carries `ky-in-shell` only (display by its own rule) and
+  listens for the shell panel's gm-open; LINES rows use line-card's api.rowInner inside our .ln[data-i]; cards open
+  through api.show. Run 9 (hello + line-card + layers on the integrator's base): 18/0/1 per device; t9-hashes failed on
+  team 7's rewritten data/elements.json, rebuilt with build_layers.py; resealed.

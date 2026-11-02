@@ -103,3 +103,5 @@ Not a loader defect; the step-4 acceptance (full-rev4, hello + probes) is what g
   `KY.nav.onBack('kuiper-shell', closeAll)` and drop its own pushState/back/capture listener.
 - Lead harness case 11 checks it (self back keeps the card; a person's back with another owner on top calls only that
   owner; a second back closes the card; `edition` reserved).
+- **Tester:** your full-rev4 run is 93/93 PASS on both devices (out/full-rev4/report.json, 00:05 UTC). Please re-run
+  on rev 5 (the 04-touch back probes T6* exercise the rewritten ANDROID BACK); `KY.names.length` is 36 now.

@@ -312,7 +312,7 @@ async function runDevice(browser, DEV) {
       { layer: sl, overview: go, overlay_px_off: px0, overlay_px_on: px1 });
     step('A5 the readout names how many periodic-table nodes had no key (663 nodes, 2,481 edges)', !!nokeyLine && gp.nodes === 663 && gp.edges === 2481 && Number.isFinite(noKey) && nokeyLine.replace(/,/g, '').includes(String(noKey)),
       { line: nokeyLine, periodic: gp });
-    await shot(p, 'spider-layer');
+    await closeMenus(p); await sleep(SETTLE); await shot(p, 'spider-layer');   // the wafer with the chords, no panel over it
     // ------------------------------------------------------------------ A4 card from the periodic-table panel (if any)
     await closeLauncher(p); await closeMenus(p);
     await openMenu(p, 'file'); await tapSel(p, '#ky-file-open-app'); await sleep(3000);
@@ -337,6 +337,7 @@ async function runDevice(browser, DEV) {
         const lt = String(e.line_text);
         // the first visible line is the line at the key (text-node walk or rendered text), the next begins with block:<Sym>
         const first = c.w1 === lt.trim() || c.i1 === lt.trim(), second = c.w2 === e.sym || (c.i2 || '').split(/\s/)[0] === e.sym;
+        if (!cards.length) await shot(p, 'element-card');
         cards.push({ sym: e.sym, open: c.open, first, second, header_equal: c.header === lt, sym_span: c.sym, w1: short(c.w1, 80), w2: short(c.w2, 60), i1: short(c.i1, 80), i2: short(c.i2, 60), h: c.rect, ok: c.open && first && second && c.header === lt && c.sym === e.sym });
       }
       step('A4 card from the periodic-table panel: first line = line_text, second = block:<Sym> (3 elements)', cards.length === 3 && cards.every(c => c.ok), { rows: nEl, cards });
