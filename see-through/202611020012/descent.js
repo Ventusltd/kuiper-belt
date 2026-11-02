@@ -916,6 +916,7 @@
   function readLink() {
     if (!S) return;
     var f = linkFields(); S.linkIn = f; S.ring = null; S.repoLit = null; S.repoN = -1; S.linkSub = -1;
+    S.note.textContent = ''; if (S.T < 0) S.input.value = '';     // a re-read (hashchange) starts clean; every branch that names a substation fills the box again
     if (f.repo) linkRepo(f.repo, f);
     if (f.key != null) linkKey(f.key, f.space);
     // NL-010 team 12: key with space is the identity, sub is a search. When the key names a substation (the link this page
@@ -929,17 +930,18 @@
   function linkKey(kv, sv) {
     if (!/^\d{1,15}$/.test(kv)) { S.note.textContent = 'LINK FIELD KEY NOT UNDERSTOOD'; return; }
     var k = +kv, pre = '';
-    if (sv != null && /^\d{1,15}$/.test(sv) && +sv !== S.SPACE) {     // the SPACE remap: a star key cut under another sky
+    if (sv != null && !/^\d{1,15}$/.test(sv)) pre = 'LINK FIELD SPACE NOT UNDERSTOOD · ';   // named, then ignored (STEPS 5.5)
+    else if (sv != null && +sv !== S.SPACE && +sv > 0) {     // the SPACE remap: any of the 20,000 DRAW THE GRID keys cut under another sky
       var sp = +sv, j = Math.floor(k * NRULE / sp), hit = -1;
-      for (var d = -1; d <= 1; d++) if (j + d >= 0 && j + d < NSUB && Math.floor((j + d + 0.5) * sp / NRULE) === k) hit = j + d;
-      if (hit >= 0) { pre = 'STAR KEY REMAPPED · SKY ' + fmt(sp) + ' → ' + fmt(S.SPACE) + ' · '; k = keyOfSub(hit); }
+      for (var d = -1; d <= 1; d++) if (j + d >= 0 && j + d < NRULE && Math.floor((j + d + 0.5) * sp / NRULE) === k) hit = j + d;
+      if (hit >= 0) { pre = 'STAR KEY REMAPPED · SKY ' + fmt(sp) + ' → ' + fmt(S.SPACE) + ' · '; k = Math.floor((hit + 0.5) * S.SPACE / NRULE); }
     }
-    if (k >= S.SPACE) { S.note.textContent = pre + 'KEY ' + fmt(k) + ' IS BEYOND THIS SKY'; return; }
+    if (k >= S.SPACE) { S.note.textContent = pre + 'KEY ' + fmt(k) + ' IS BEYOND THIS SKY (SPACE ' + fmt(S.SPACE) + ')'; return; }
+    S.ring = window.KuiperLaw.place(k);          // one amber ring at the key's place, for every key on this sky (STEPS 5.5)
     for (var i = 0; i < NSUB; i++) if (S.subKey[i] === k) {
       S.input.value = D0.names[i] || ''; S.linkSub = i;
       S.note.textContent = pre + 'THE STAR THAT LANDS ON ' + nameOf(i).toUpperCase() + '. PRESS GO'; return;
     }
-    S.ring = window.KuiperLaw.place(k);
     S.note.textContent = pre + 'KEY ' + fmt(k) + ' · A LINE OF CODE, NOT A SUBSTATION';
   }
   function linkRepo(name, f) {

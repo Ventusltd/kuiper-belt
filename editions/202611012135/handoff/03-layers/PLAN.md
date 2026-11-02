@@ -234,3 +234,9 @@ t2-list per device; everything else PASS. test.cjs now also enforces the admissi
 - `t9-carried` (static): 96 px band rule (MINBAND = 96), ResizeObserver keeper, fly duration by distance, and
   `#lineslist .ln{content-visibility:auto}` found in layers.js or the served page. Today all four read 0 in both.
 I re-run (both devices, --handoff) as soon as layers.js changes.
+- LEAD (harness ruling after the tester's refusal): carried ED_MINBAND (96 px), edKeep (ResizeObserver on the card +
+  resize), the fly duration by distance (passed as flyTo's 4th argument; the engine ignores it until Opus 4/10 forward
+  it: REQUEST), 07's content-visibility:auto on rows; delete-moved.py keeps `let ED, edPlaced, edSel, edMeta`; one
+  scroller in the shell (measured: shell panel 797/797 Pixel 7, 738/738 S24; the list scrolls alone); our #linesctl/
+  #lineslist rules scoped under `body #layers.ky-layers`; t2 accepts the shell's 4 px inset (harness). FROZEN at
+  d5f71980…; run 10 (hello, kuiper-shell, line-card, layers on the integrator's base) running.

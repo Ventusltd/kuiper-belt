@@ -1,5 +1,5 @@
---- a/editions/202611012135/index.html	2026-11-02 01:23:38.052783150 +0000
-+++ b/editions/202611012135/index.html	2026-11-02 01:23:38.104705903 +0000
+--- a/editions/202611012135/index.html	2026-11-02 01:30:21.124617704 +0000
++++ b/editions/202611012135/index.html	2026-11-02 01:30:21.208799452 +0000
 @@ -67,12 +67,6 @@
      z-index:11;background:#090c13f2;border:1px solid #1d6470;border-radius:0 0 6px 6px;padding:10px 12px;pointer-events:auto;text-align:left}
    #hud{right:0;left:auto;max-width:min(560px,96vw)} #foot{border-top:1px solid #1d6470}
