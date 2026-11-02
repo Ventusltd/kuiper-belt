@@ -16,3 +16,4 @@ neural-link FIXES/NL-010/tools/controller/{snap6.sh, crun6.sh, poll6.sh, state6.
 - 05:36Z loop 9: Edition 8 (main 87031c6, 202611020528) shipped from E6-G2 (6569860419). Keeping rows on the E6-G2 tree here. No hand-off change 05:26-05:36Z; apps waits for tester E'; layers waits for a revision.
 - 05:57Z loop 10: no hand-off change 05:36-05:56Z (machine idle, load 0). Checked Edition 8 at main 87031c6 against E6-G2: every module file byte-identical; only the stamp differs (modules.json edition, index.html labels, drift data edition fields).
 - 06:17Z loop 11: no hand-off change 05:56-06:17Z; no new comment on #10 since 6569860419.
+- 06:28Z loop 12: apps fa01e012 ADMITTED on E6-G2 (ruling 6570518733): P7 16/16, S24 16/16 on e6-apps; tree == snapshot. GREEN E6-G3 = commit b553b1f1420e87e312e47a2aaa41ecc8daa82227.

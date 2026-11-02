@@ -12,6 +12,7 @@ Evidence: neural-link FIXES/NL-010/evidence/controller-2/<snapshot>/.
 |---|---|---|---|---|---|---|---|
 | E6-G1 | 04:15 | hello ee2130b5, kuiper-shell 2045c51a, line-card 8ec117f9 (202611020212) | e6d6f8edf3fd… | 0d881f4855fb… | 16/16 (03:38-03:55, load 12) | 15/16 + whole-wafer HARNESS-LIMITED (frame bbox 39,266-320,547, 282×282, ratio 1.00; script timeout 180 s) = 16/16 (03:56-04:11, load 12) | **84f1c1ed25838dd0afa0a1c8c852f4565991b4c2** (harness commit 04:14Z; its folder bytes verified equal to the journeyed snapshot; its message says "not a GREEN state" because it landed before this row was confirmed) |
 | E6-G2 | 04:58 | hello ee2130b5, kuiper-shell 2045c51a, line-card 8ec117f9, drift f03b7835 (202611020240) + data/drift.json 7b6f8ee0 (stamp 202611020326) | e6d6f8edf3fd… | 114f3655b9ab… | 16/16 (04:42:32-04:50:23, load 1-4) | 16/16 (04:50:23-04:57:46, load 4) | **553e58d702f8f7c3e00d15f0f65266f9492fc65f** |
+| E6-G3 | 06:28 | hello ee2130b5, kuiper-shell 2045c51a, line-card 8ec117f9, drift f03b7835 + data/drift.json 7b6f8ee0, apps fa01e012 (202611012309) + data/apps.json 027f6614, elements.json e204cb41, graphs/overview.json 124aa35e, graphs/periodic-table.json b8482044 | e6d6f8edf3fd… | da1fd7a16153… | 16/16 (05:10:09-05:18:23) | 16/16 (05:18:23-05:25:31) | **b553b1f1420e87e312e47a2aaa41ecc8daa82227** |
 
 Notes:
 - E6-G1: line-card 8ec117f9 admitted under the harness's written instruction 6568562808 ("admits the card revision
@@ -25,3 +26,8 @@ Notes:
   (04:5x): the harness regenerates data/drift.json for the stamp of the folder it ships. Open: E7 FAIL on the drift record
   ("#hud (one DRIFT line per frame, appended)"), E6 FAIL as for E6-G1. Edition 7 (main 4ee309d, 202611020446) shipped
   from E6-G1.
+- E6-G3: apps admitted on the team-7 tester's verdict (handoff/07-apps/TEST.md: PASS for every team-7 gate) with E'
+  NOT APPLICABLE by harness ruling 6570518733 (E' concerns file.js, which is not admitted; it carries to File's admission).
+  A4's spark tap NOT EVALUATED (elements layer refused until the owner answers Q1, the module's own intended state).
+  Edition 8 (main 87031c6, 202611020528) shipped from E6-G2. Open: E7 FAIL on three apps record entries and the drift
+  entry; E6 FAIL as for E6-G1; apps.json and elements.json carry "edition": "202611012135" (apps.js does not check it).
