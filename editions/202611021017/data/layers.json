@@ -1,0 +1,241 @@
+{
+ "schema": "kuiper.layers.v1",
+ "edition": "202611021017",
+ "substrate": "kuiper.wafer.v1",
+ "licence": "CC BY 4.0 (kuiper-belt data, README.md:156-157)",
+ "built_by": "tools/build_layers.py",
+ "order": [
+  "periods",
+  "repos",
+  "editions",
+  "lines",
+  "see-through",
+  "elements",
+  "spider"
+ ],
+ "layers": [
+  {
+   "id": "periods",
+   "key": "layer:periods",
+   "label": "periods",
+   "group": "THE WAFER",
+   "colour": "#22ee77",
+   "meaning": "energised: a period lit by a query, one annular band",
+   "draws": "band (engine shader u_litK)",
+   "preload": true,
+   "on": false,
+   "format": "engine",
+   "source": {
+    "engine": "../../cosmos/wafer.tsv"
+   },
+   "licence": "CC BY 4.0 (kuiper-belt generated data, README.md:157)",
+   "requires": [
+    "wafer",
+    "lightTime",
+    "lit",
+    "commits"
+   ],
+   "deeplink": {
+    "param": "layers",
+    "value": "periods"
+   },
+   "module": "202611020637-layers.js"
+  },
+  {
+   "id": "repos",
+   "key": "layer:repos",
+   "label": "repositories",
+   "group": "THE WAFER",
+   "colour": "#22ee77",
+   "meaning": "energised: the lit repository's commits",
+   "draws": "the lit repository (engine shader u_litRepo)",
+   "preload": true,
+   "on": false,
+   "format": "engine",
+   "source": {
+    "engine": "../../cosmos/repos.tsv"
+   },
+   "licence": "CC BY 4.0 (kuiper-belt generated data, README.md:157); repository names only",
+   "requires": [
+    "wafer",
+    "repos",
+    "lit"
+   ],
+   "deeplink": {
+    "param": "layers",
+    "value": "repos"
+   },
+   "module": "202611020637-layers.js"
+  },
+  {
+   "id": "editions",
+   "key": "layer:editions",
+   "label": "editions",
+   "group": "THE WAFER",
+   "colour": "#ffb000",
+   "meaning": "attention: a boundary, the cut of an edition",
+   "draws": "one ring per edition at the first commit at or after its cut; a tick at the rim for those beyond",
+   "preload": true,
+   "on": true,
+   "format": "kuiper.editions.v1",
+   "source": {
+    "file": "data/editions.json",
+    "bytes": 3328,
+    "features": 11,
+    "sha256": "3095078708429e79bd6b648fac91ee0596a90288ac7c5bef5bf7b996145a8c16"
+   },
+   "licence": "CC BY 4.0 (kuiper-belt data)",
+   "requires": [
+    "wafer",
+    "findBy",
+    "commits",
+    "o2",
+    "cam"
+   ],
+   "deeplink": {
+    "param": "layers",
+    "value": "editions"
+   },
+   "module": "202611020637-layers.js"
+  },
+  {
+   "id": "lines",
+   "key": "layer:lines",
+   "label": "verified lines",
+   "group": "THE EVIDENCE",
+   "colour": "#22ee77",
+   "meaning": "energised: a line verified against a clone",
+   "draws": "points",
+   "preload": true,
+   "on": true,
+   "format": "edition-keys.v1",
+   "source": {
+    "file": "keys-min.json",
+    "bytes": 1558451,
+    "features": 346,
+    "sha256": "e153dfa45d3028577462002d229000c4a313fb1a76052801edc29cf8ceceb10d",
+    "note": "NL-009 07 perf: 17 of the 36 fields, written from keys.json by tools/edition_min.py (the integrator's); line_text kept whole",
+    "fallback": {
+     "file": "keys.json",
+     "bytes": 1709129,
+     "features": 346,
+     "sha256": "1c293c337b4c3c8442c12746ce3cd08d920c763344f18333f75e73aa9fc7242b"
+    }
+   },
+   "licence": "CC BY 4.0 (kuiper-belt generated data, README.md:157); each quoted line keeps its repository's licence (editions/202611012027/NOTICE.md:7-10)",
+   "requires": [
+    "wafer",
+    "keyPlace",
+    "address",
+    "o2",
+    "card",
+    "flyTo",
+    "safeBox"
+   ],
+   "deeplink": {
+    "param": "layers",
+    "value": "lines"
+   },
+   "module": "202611020637-layers.js"
+  },
+  {
+   "id": "see-through",
+   "key": "layer:see-through",
+   "label": "See Through stars",
+   "group": "THE APPS",
+   "star": true,
+   "colour": "#2ee6e6",
+   "meaning": "the instrument: a star that deep-links into See Through",
+   "draws": "points",
+   "preload": false,
+   "on": false,
+   "format": "code-feature-collection.v1",
+   "module_registers": true,
+   "source": {
+    "file": null,
+    "bytes": 0,
+    "features": 0,
+    "sha256": "",
+    "owner": "Opus team 5 (step 5) writes it with handoff/05-see-through/build-see-through-json.py"
+   },
+   "licence": "ODbL-1.0 for the substation names (OpenStreetMap contributors, see-through/202610050609/NOTICE.md:22-25); keys CC BY 4.0; See Through itself (CERN-OHL-S-2.0, see-through/202610050609/LICENSE.md:6) is linked, not copied",
+   "state": {
+    "status": "EMPTY",
+    "why": "awaiting step 5: the see-through module registers this layer; Edition 9 carries no data/see-through.json"
+   },
+   "requires": [
+    "keyPlace",
+    "o2"
+   ],
+   "deeplink": {
+    "param": "layers",
+    "value": "see-through"
+   },
+   "module": "202611012141-see-through.js"
+  },
+  {
+   "id": "elements",
+   "key": "layer:elements",
+   "label": "periodic table",
+   "group": "THE APPS",
+   "colour": "#c9d3e6",
+   "meaning": "the record: one mark per block:<Sym>",
+   "draws": "points",
+   "preload": false,
+   "on": false,
+   "format": "kuiper.elements.v1",
+   "module_registers": true,
+   "source": {
+    "file": "data/elements.json",
+    "bytes": 165622,
+    "features": 244,
+    "sha256": "e204cb414d38d4c174083f55a46a57179fd48b4c8ed8248a7ba0f995601964d5",
+    "owner": "Opus team 7 (step 7) writes it with tools/element_keys.py"
+   },
+   "licence": "UNSETTLED: elements@f7a92fb has no LICENSE, owner question Q1",
+   "requires": [
+    "keyPlace",
+    "o2"
+   ],
+   "deeplink": {
+    "param": "layers",
+    "value": "elements"
+   },
+   "module": "apps"
+  },
+  {
+   "id": "spider",
+   "key": "layer:spider",
+   "label": "spider graphs",
+   "group": "THE APPS",
+   "colour": "#c9d3e6",
+   "meaning": "the record: graph nodes as marks, edges as chords",
+   "draws": "points and key-pair chords",
+   "preload": false,
+   "on": false,
+   "format": "code-feature-collection.v1",
+   "module_registers": true,
+   "source": {
+    "file": null,
+    "bytes": 0,
+    "features": 0,
+    "sha256": "",
+    "owner": "Opus team 7 (step 7) writes data/graphs/*.json"
+   },
+   "licence": "Apache-2.0 for the spider code (testcode@d09c185 LICENSE:2); graph data: ventus-grid-engine Apache-2.0, stars and code-generator none in repository (DISCLOSED, owner Q5), spiders NOT EVALUATED",
+   "state": {
+    "status": "EMPTY",
+    "why": "awaiting step 7 keys (Opus team 7, data/graphs/*.json as code-feature-collection.v1)"
+   },
+   "requires": [
+    "keyPlace",
+    "o2"
+   ],
+   "deeplink": {
+    "param": "layers",
+    "value": "spider"
+   },
+   "module": "apps"
+  }
+ ]
+}
