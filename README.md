@@ -188,6 +188,9 @@ Run `20260918T222408Z`, digest `a56fbe0df58281ec5971e7890d7c5ff35ab00572d83c31fd
 
 ## Editions
 
+- **Kuiper Edition 12 (202611021201)**: Edition 11 with See Through as the star player (its 5,800 stars on the wafer, each
+  a link into See Through). Open it: https://ventusltd.github.io/kuiper-belt/editions/ or
+  https://www.globalgrid2050.com/kuiper-editions/.
 - **Kuiper Edition 11 (202611021017)**: Edition 10 with the GridAtlas File menu (open a key, a line or an app, and the
   edition's evidence). Open it: https://ventusltd.github.io/kuiper-belt/editions/ or
   https://www.globalgrid2050.com/kuiper-editions/.

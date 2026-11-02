@@ -1,7 +1,7 @@
 # Kuiper editions
 
 Version numbers: an edition is numbered in order of publication (Edition 1, 2, …) and keyed by its cut stamp
-(`YYYYMMDDHHMM`, UTC). The number is for people; the stamp is the key. The current edition is **Kuiper Edition 11 (202611021017)**.
+(`YYYYMMDDHHMM`, UTC). The number is for people; the stamp is the key. The current edition is **Kuiper Edition 12 (202611021201)**.
 
 An edition is a dated folder that places the estate's best lines on the belt, each line keyed by `repo@commit path:line`
 and verified against a clone before it is placed. The stable link `editions/` opens the newest dated folder; the stamp is
@@ -9,6 +9,7 @@ written in three places in `index.html` (meta refresh, the link, `location.repla
 does. Earlier dated folders are kept unchanged as history. Find the newest edition from the pointer, not by sorting
 folder names: stamps carry the clock of the machine that cut them.
 
+- **Kuiper Edition 12** (`202611021201`, published 2026-11-02): [README](202611021201/README.md) · [open it](202611021201/). Edition 11 with See Through as the star player: its 5,800 stars drawn on the wafer, each a link into See Through.
 - **Kuiper Edition 11** (`202611021017`, published 2026-11-02): [README](202611021017/README.md) · [open it](202611021017/). Edition 10 with the GridAtlas File menu: open a key, a line or an app, and the edition's evidence.
 - **Kuiper Edition 10** (`202611020825`, published 2026-11-02): [README](202611020825/README.md) · [open it](202611020825/). Edition 9 with the layers registry: seven layers switched on and off as GridAtlas does.
 - **Kuiper Edition 9** (`202611020629`, published 2026-11-02): [README](202611020629/README.md) · [open it](202611020629/). Edition 8 with the app launcher: FILE › Open an app lists 34 apps of the estate, See Through first.

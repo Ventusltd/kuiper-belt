@@ -1,0 +1,455 @@
+{
+ "schema": "kuiper.modules.v1",
+ "edition": "202611021201",
+ "hooks": "kuiper.hooks.v1",
+ "order": [
+  "hello",
+  "kuiper-shell",
+  "line-card",
+  "drift",
+  "apps",
+  "layers",
+  "file",
+  "see-through"
+ ],
+ "modules": [
+  {
+   "id": "hello",
+   "generation": "202611012145",
+   "path": "modules/202611012145-hello.js",
+   "sha256": "ee2130b56e74ef3ec26a91aa2a177579c5fddcb8c48c17aa111f9fa8dbf7dd53",
+   "bytes": 1303,
+   "byte_budget": 4096,
+   "requires": [
+    "keyPlace",
+    "cam",
+    "draw",
+    "redraw"
+   ],
+   "provides": [
+    "hello"
+   ],
+   "reads": [],
+   "writes": [
+    "window.KY.modules.hello",
+    "#ky-hello"
+   ],
+   "creates_controls": "none",
+   "licence": "Apache-2.0",
+   "team": "04",
+   "step": 4,
+   "proof": "handoff/04-loader/"
+  },
+  {
+   "id": "kuiper-shell",
+   "generation": "202611020243",
+   "path": "modules/202611020243-kuiper-shell.js",
+   "sha256": "2045c51ae1ac844aef98fd7de330d947caf704fcbb935098938ce0caf0758bdf",
+   "bytes": 49071,
+   "byte_budget": 65536,
+   "requires": [
+    "safeBox",
+    "card",
+    "hud",
+    "big",
+    "sub",
+    "cv",
+    "gbox",
+    "gin",
+    "redraw"
+   ],
+   "provides": [
+    "kuiper-shell",
+    "menuBar"
+   ],
+   "reads": [
+    "#bar",
+    "#keys",
+    "#hud",
+    "#top",
+    "#foot",
+    "#card",
+    "#goto",
+    "#lines",
+    "#lyFocus",
+    "#lyFind",
+    "history.state"
+   ],
+   "writes": [
+    "window.KY.modules.kuiper-shell",
+    "window.__KUIPER_SHELL__",
+    "#kuiper-menu-bar",
+    "#kuiper-menu-bar-css",
+    "#kuiper-star-strip",
+    "#kuiper-menu-bar-failure",
+    "history.pushState",
+    "#bar.kmb-superseded"
+   ],
+   "creates_controls": "the bar: six titles FILE EDIT VIEW SCOPE WAFER ABOUT, their panels, the star slot",
+   "licence": "Apache-2.0",
+   "team": "01",
+   "step": 1,
+   "proof": "handoff/01-shell/"
+  },
+  {
+   "id": "line-card",
+   "generation": "202611020212",
+   "path": "modules/202611020212-line-card.js",
+   "sha256": "8ec117f9dd436965e17fb860d5c12c485479cb3bdfdb6a845d924c65cc240fe3",
+   "bytes": 15925,
+   "byte_budget": 32768,
+   "requires": [
+    "card",
+    "esc",
+    "fmt",
+    "address",
+    "describe",
+    "sel",
+    "lit",
+    "redraw",
+    "gbox"
+   ],
+   "provides": [
+    "line-card"
+   ],
+   "reads": [],
+   "writes": [
+    "window.KY.modules.line-card",
+    "#card",
+    "#ky-line-card-style",
+    "[data-owner=\"line-card\"][data-law=\"L11\"]"
+   ],
+   "creates_controls": "none (the card's own close and details buttons inside #card)",
+   "licence": "Apache-2.0",
+   "team": "02",
+   "step": 2,
+   "proof": "handoff/02-card/edition-6/"
+  },
+  {
+   "id": "drift",
+   "generation": "202611020240",
+   "path": "modules/202611020240-drift.js",
+   "sha256": "f03b78350694362f0d0203647231c9809661a0aac7392f6fd776f519ce391480",
+   "bytes": 23124,
+   "byte_budget": 65536,
+   "requires": [
+    "wafer",
+    "keyPlace",
+    "o2",
+    "ov",
+    "cv",
+    "card",
+    "esc",
+    "fmt",
+    "commits",
+    "repos",
+    "SPACE",
+    "hud",
+    "flyTo",
+    "cam",
+    "sel",
+    "draw",
+    "redraw",
+    "panels"
+   ],
+   "provides": [
+    "drift"
+   ],
+   "reads": [
+    "data/drift.json",
+    "keys-min.json",
+    "keys.json"
+   ],
+   "writes": [
+    "window.KY.modules.drift",
+    "#ky-drift",
+    "#ky-drift-css",
+    "#card .ky-drift-cl",
+    "#hud (one DRIFT line per frame, appended)"
+   ],
+   "creates_controls": "the drift section: one collapsed 44 px row after #lineslist (LINES panel; the shell's WAFER panel only when the page has no #lineslist), holding five class filters (44 px) and the list of the chosen class; a tap on an amber MOVED spark opens its card",
+   "licence": "Apache-2.0",
+   "team": "08",
+   "step": 8,
+   "proof": "handoff/08-drift/"
+  },
+  {
+   "id": "apps",
+   "generation": "202611012309",
+   "path": "modules/202611012309-apps.js",
+   "sha256": "fa01e012d81b32edf0287536e27a11075313dcd96d18c2409e21fb997bd0d481",
+   "bytes": 42561,
+   "byte_budget": 65536,
+   "requires": [
+    "wafer",
+    "keyPlace",
+    "flyTo",
+    "esc",
+    "fmt",
+    "cv",
+    "o2",
+    "hud",
+    "card",
+    "repos",
+    "commits",
+    "SPACE",
+    "cam",
+    "sel",
+    "redraw",
+    "draw"
+   ],
+   "provides": [
+    "apps"
+   ],
+   "reads": [
+    "data/apps.json",
+    "data/elements.json",
+    "data/graphs/overview.json",
+    "data/graphs/periodic-table.json"
+   ],
+   "writes": [
+    "#ky-apps",
+    "#ky-apps-css",
+    "#card (element card)",
+    "history entry {kyApps}",
+    "layers elements, spider (via KY.modules.layers.api.register)"
+   ],
+   "creates_controls": "launcher panel #ky-apps (34 rows + 1 check row), periodic-table keys view (244 rows); no bar title",
+   "licence": "Apache-2.0 (kuiper-belt code)",
+   "team": "Opus 7",
+   "step": 7,
+   "proof": "handoff/07-apps/TEST.md",
+   "optional": [
+    "kuiper-shell",
+    "layers",
+    "file",
+    "line-card"
+   ]
+  },
+  {
+   "id": "layers",
+   "file": "202611020637-layers.js",
+   "generation": "202611020637",
+   "path": "modules/202611020637-layers.js",
+   "sha256": "c8fccccf212a66cf9c37e02a260eed212bd1ad2548c52b13fbf6024bd5d22486",
+   "bytes": 64237,
+   "byte_budget": 98304,
+   "requires": [
+    "wafer",
+    "keyPlace",
+    "address",
+    "describe",
+    "findBy",
+    "flyTo",
+    "safeBox",
+    "fmt",
+    "esc",
+    "cv",
+    "o2",
+    "hud",
+    "big",
+    "sub",
+    "card",
+    "gbox",
+    "repos",
+    "commits",
+    "N",
+    "SPACE",
+    "lightTime",
+    "cam",
+    "lit",
+    "sel",
+    "redraw",
+    "draw",
+    "panels",
+    "refuse"
+   ],
+   "provides": [
+    "layers"
+   ],
+   "reads": [
+    "data/layers.json",
+    "data/editions.json",
+    "keys-min.json",
+    "keys.json",
+    "location.hash",
+    "location.search"
+   ],
+   "writes": [
+    "window.KY.modules.layers",
+    "#layers",
+    "#ky-layers-style",
+    "#lyAll",
+    "#big",
+    "#sub",
+    "#hud",
+    "#card",
+    "history.replaceState",
+    "KY.lit.repo",
+    "KY.lit.period",
+    "KY.sel.target"
+   ],
+   "creates_controls": "7 input[data-ky-layer=layer:<id>] (the originals, one per data/layers.json record) in #layers; on a page whose engine owns the lines (#lyAll), nothing else: #layers sits in the engine's LINES block before #lineslist and #lyAll follows the lines row; on a cut page also #lyFocus, #lyFind, #lyClear, next/prev buttons and #lineslist rows",
+   "data": {
+    "edition": "202611021201",
+    "files": [
+     "data/layers.json",
+     "data/editions.json"
+    ],
+    "built_by": "tools/build_layers.py --edition 202611021201"
+   },
+   "licence": "Apache-2.0",
+   "team": 3,
+   "step": 3,
+   "proof": "handoff/03-layers/"
+  },
+  {
+   "id": "file",
+   "generation": "202611020832",
+   "path": "modules/202611020832-file.js",
+   "sha256": "5fc4e307dbe089b2b2a35e7e09b22c0e6322da30e9764e0cec56a801d1a06c05",
+   "bytes": 60855,
+   "byte_budget": 98304,
+   "requires": [
+    "keyPlace",
+    "address",
+    "describe",
+    "goKey",
+    "lightTime",
+    "home",
+    "flyTo",
+    "safeBox",
+    "fmt",
+    "card",
+    "gbox",
+    "gin",
+    "SPACE",
+    "N",
+    "repos",
+    "wafer",
+    "cv",
+    "ov",
+    "hud",
+    "big",
+    "panels",
+    "draw",
+    "redraw",
+    "cam",
+    "lit",
+    "sel",
+    "layers"
+   ],
+   "provides": [
+    "file",
+    "link"
+   ],
+   "reads": [
+    "location.search",
+    "location.hash",
+    "keys.json",
+    "data/editions.json",
+    "keys-min.json",
+    "proof/edition-sha256.txt",
+    "modules.json",
+    "data/layers.json",
+    "NOTICE.md",
+    "README.md",
+    "KY.modules.apps",
+    "#lyFind",
+    "#lineslist"
+   ],
+   "writes": [
+    "history.replaceState",
+    "location.hash",
+    "window.KY.modules.file",
+    "#ky-file",
+    "#ky-edit-paste",
+    "data-owner",
+    "#ky-file-css",
+    "#ky-file-print-css",
+    "#ky-file-print",
+    "#kuiper-export-image",
+    "#gotoin",
+    "KY.lit.repo",
+    "KY.sel.target"
+   ],
+   "creates_controls": "FILE rows: Open a key (field+GO), its key.py copy row, Open a line (field+GO), Open an edition, Open an app, Copy a link to this view, Copy the key, Copy python tools/key.py <k>, seven EVIDENCE downloads, Save an image (#kuiper-export-image), Print; EDIT: Paste a link (#ky-edit-paste)",
+   "licence": "Apache-2.0",
+   "team": "06",
+   "step": 6,
+   "proof": "handoff/06-file/"
+  },
+  {
+   "id": "see-through",
+   "generation": "202611021026",
+   "path": "modules/202611021026-see-through.js",
+   "sha256": "ad9d2d6130492722dc151d1141c4445ec0c43ca94b52e1eedad1631985e1bd35",
+   "bytes": 13356,
+   "byte_budget": 32768,
+   "requires": [
+    "keyPlace",
+    "SPACE",
+    "wafer",
+    "cam",
+    "o2",
+    "fmt",
+    "esc",
+    "redraw",
+    "draw",
+    "layers"
+   ],
+   "provides": [
+    "see-through"
+   ],
+   "reads": [
+    "data/see-through.json"
+   ],
+   "writes": [
+    "window.KY.modules.see-through",
+    "#ky-see-through-css",
+    "#ky-st-chip"
+   ],
+   "creates_controls": "none in the bar, the panels or the card; the registry's own row input[data-ky-layer=layer:see-through] is the layer's one control; with the layer on, a tap on a star shows a#ky-st-chip under the bar, a link into See Through at that star",
+   "data": {
+    "edition": "202611021201",
+    "files": [
+     {
+      "file": "data/see-through.json",
+      "sha256": "1b91c2d5116a1bef531b99ad91b0b041a8bd7b402fe3d854d36209f02666661c",
+      "bytes": 666705,
+      "features": 5800,
+      "licence": "ODbL-1.0 for the substation names (OpenStreetMap contributors, see-through/202611020012/NOTICE.md); keys CC BY 4.0"
+     }
+    ],
+    "built_by": "handoff/05-see-through/202611021026-build-see-through-json.py --edition 202611021201 --see-through see-through/202611020012"
+   },
+   "licence": "Apache-2.0",
+   "team": "05",
+   "step": 5,
+   "proof": "handoff/05-see-through/",
+   "optional": [
+    "kuiper-shell",
+    "file"
+   ]
+  }
+ ],
+ "references": [
+  {
+   "file": "modules/202611012145-loader.js",
+   "generation": "202611012145",
+   "sha256": "25a16f1d3c3f44d17e5649555ca0cdb11637af0e5c334a7addefa1a166b86e78",
+   "bytes": 13206,
+   "role": "loader reference: the hook table and loader block of index.html, byte-identical between the marker lines; never fetched",
+   "licence": "Apache-2.0",
+   "team": "04",
+   "step": 4
+  }
+ ],
+ "contracts": {
+  "module_sha256_required": true,
+  "order_explicit": true,
+  "engine_mutation_forbidden": true,
+  "stamp_in_name_equals_generation": true,
+  "hooks_frozen": true
+ }
+}
