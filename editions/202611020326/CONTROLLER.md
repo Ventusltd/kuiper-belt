@@ -12,3 +12,4 @@ neural-link FIXES/NL-010/tools/controller/{snap6.sh, crun6.sh, poll6.sh, state6.
 - 04:42Z loop 5: drift f03b7835 with Edition 5 data: P7 16/16, S24 16/16 but drift refuses the data (edition ≠ page), E9 FAIL: not admitted; tree reverted to E6-G1. Re-run on e6-drift-b with tools/drift.py data for 202611020326 (7b6f8ee0, E9 PASS) since 04:42Z. Posted 6569246963.
 - 04:58Z loop 6: drift f03b7835 ADMITTED with 202611020326 data: P7 16/16, S24 16/16. GREEN E6-G2 = commit 553e58d. Edition 7 (main 4ee309d) shipped from E6-G1. Queue: layers refused (spark-tap), file blocked on layers, apps E' not evaluated, see-through REFUSED.
 - 05:10Z loop 7: no hand-off change 04:59-05:09Z. Apps fa01e012 put under journey as a CANDIDATE on snapshot e6-apps (E6-G2 + apps, manifest da1fd7a1) while waiting for its tester's E' ruling; not in the tree.
+- 05:26Z loop 8: apps CANDIDATE on e6-apps: P7 16/16, S24 16/16; waits for tester E' ruling (posted). Tree = E6-G2.
