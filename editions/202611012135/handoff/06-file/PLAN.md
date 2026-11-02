@@ -272,3 +272,10 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   addEventListener('pagehide', function () { clearInterval(t); });` (or the same with `location.replace` if the edition
   should not stay in history). test.cjs G3 now records the element under the finger, the navigation requests the tap
   issued, and inspect().left, so the next run says which writer cancelled it.
+- 02:14 LEAD: lead's run-s24 (module 3ae05df7, Galaxy S24, python http.server 8464): 33 PASS, 2 NOT EVALUATED (A3
+  files team 10 is rewriting), 1 FAIL = strict G6 (2 console 404s: proof/edition-sha256.txt, proof/android-journey.json),
+  0 pageerror; A2 spark at the clear-space centre (dy 0); G3, G4 PASS. Tester's run-p7e (Pixel 7, 3ae05df7): 32 PASS,
+  same 2 NOT EVALUATED and strict G6, plus G3 FAIL: the Open-an-edition tap stayed on the page this time (it passed in
+  p7d and on S24). A history.back() still in flight (shell or card) cancels a navigation too; leave() now re-asks
+  `location.assign` every 3 s, at most three times, until `pagehide`. Module sha256 now in MODULE.sha256. Final runs on
+  it: LEAD Galaxy S24 now (run-s24b, 8464), TESTER Pixel 7 after (run-p7f), then TEST.md + img/ (tester), HANDOFF (lead).

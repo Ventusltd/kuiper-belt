@@ -2,8 +2,8 @@
  "id": "file",
  "generation": "202611012231",
  "path": "modules/202611012231-file.js",
- "sha256": "3ae05df7dc0848534831539c7a60f38cc18e2aeb04a489250d346274a6f626e5",
- "bytes": 58399,
+ "sha256": "4568e3e5ac6a41b3dfb6ae285f6ada90ced183c18ca4197e9639fb256dd2e648",
+ "bytes": 58976,
  "byte_budget": 98304,
  "requires": [
   "keyPlace",

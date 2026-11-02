@@ -4,8 +4,7 @@
  "hooks": "kuiper.hooks.v1",
  "order": [
   "hello",
-  "line-card",
-  "layers"
+  "line-card"
  ],
  "modules": [
   {
@@ -68,71 +67,6 @@
    "team": "02",
    "step": 2,
    "proof": "handoff/02-card/"
-  },
-  {
-   "id": "layers",
-   "file": "202611012141-layers.js",
-   "generation": "202611012141",
-   "path": "modules/202611012141-layers.js",
-   "sha256": "d5f719806a31c9105f57c1b22edafe4e0f30c4313355c16e9b8fcd5b147d874c",
-   "bytes": 56352,
-   "byte_budget": 98304,
-   "requires": [
-    "wafer",
-    "keyPlace",
-    "address",
-    "describe",
-    "findBy",
-    "flyTo",
-    "safeBox",
-    "fmt",
-    "esc",
-    "cv",
-    "o2",
-    "hud",
-    "big",
-    "sub",
-    "card",
-    "gbox",
-    "repos",
-    "commits",
-    "N",
-    "SPACE",
-    "lightTime",
-    "cam",
-    "lit",
-    "sel",
-    "redraw",
-    "draw",
-    "panels",
-    "refuse"
-   ],
-   "provides": [
-    "layers"
-   ],
-   "reads": [
-    "data/layers.json",
-    "editions.json",
-    "keys.json",
-    "location.hash",
-    "location.search"
-   ],
-   "writes": [
-    "#layers",
-    "#refuse",
-    "#big",
-    "#sub",
-    "#card",
-    "history.replaceState",
-    "KY.lit.repo",
-    "KY.lit.period",
-    "KY.sel.target"
-   ],
-   "creates_controls": "7 input[data-ky-layer=layer:<id>] (the originals); #lyFocus, #lyFind, #lyClear, next/prev buttons, #lineslist rows",
-   "licence": "Apache-2.0",
-   "team": 3,
-   "step": 3,
-   "proof": "handoff/03-layers/"
   }
  ],
  "references": [
