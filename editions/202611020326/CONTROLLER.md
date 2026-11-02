@@ -14,3 +14,4 @@ neural-link FIXES/NL-010/tools/controller/{snap6.sh, crun6.sh, poll6.sh, state6.
 - 05:10Z loop 7: no hand-off change 04:59-05:09Z. Apps fa01e012 put under journey as a CANDIDATE on snapshot e6-apps (E6-G2 + apps, manifest da1fd7a1) while waiting for its tester's E' ruling; not in the tree.
 - 05:26Z loop 8: apps CANDIDATE on e6-apps: P7 16/16, S24 16/16; waits for tester E' ruling (posted). Tree = E6-G2.
 - 05:36Z loop 9: Edition 8 (main 87031c6, 202611020528) shipped from E6-G2 (6569860419). Keeping rows on the E6-G2 tree here. No hand-off change 05:26-05:36Z; apps waits for tester E'; layers waits for a revision.
+- 05:57Z loop 10: no hand-off change 05:36-05:56Z (machine idle, load 0). Checked Edition 8 at main 87031c6 against E6-G2: every module file byte-identical; only the stamp differs (modules.json edition, index.html labels, drift data edition fields).
