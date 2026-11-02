@@ -1,4 +1,4 @@
-/* kuiper module line-card, generation 202611012143 (UTC), Apache-2.0 (kuiper-belt) */
+/* kuiper module line-card, generation 202611020212 (UTC), Apache-2.0 (kuiper-belt) */
 // requires: card esc fmt address describe sel lit redraw gbox · provides: line-card · schema kuiper.card.v1
 // reads: nothing fetched (bodies are handed in by the page or a module) · writes: #card (its content, classes, aria),
 //   #ky-line-card-style, the empty [data-owner="line-card"] slot of the ABOUT panel, window.KY.modules.line-card
@@ -16,10 +16,17 @@
 // NL-009 round 1 patch 02-card (FABLE-02) folded in: bottom sheet on a phone, 44 px targets, 12 px type, 34dvh cap,
 //   safe-area padding, swipe-down / Escape / × close, scroll contained, steps behind an open panel.
 // The module never wraps an engine function: the page (or a module) calls api.show(body, {index, of, onclose}).
+// Revision 202611020212 (Edition 6) of 202611012143 (admitted in Edition 5, kuiper-belt main a432b43), one defect fixed:
+//   in Pixel 7 landscape (863x360) the card was capped at 30dvh = 108 px, already full before details opened, so the
+//   action row was cut and "details" half visible (handoff/10-integration/TEST.md runs 3-4, card-details). Now, on a
+//   short landscape screen, the cap is min(50dvh, the viewport minus the bar minus a 140 px band for the spark), and
+//   the action row (open on GitHub, details) is sticky to the card's visible top and bottom, so it stays whole however
+//   the card is scrolled, details open or closed; on a
+//   coarse pointer the action targets are 44 px at every width. Nothing else changed.
 (function () {
   'use strict';
   var LAW = 'The line of code is the header. Every card opens with the line itself, verbatim from the key; the key is the second row; every name a person gave the line comes after.';
-  var STAMP = '202611012143';
+  var STAMP = '202611020212';
   // a line longer than this is laid out unwrapped and scrolls sideways inside the header; every byte stays in it.
   // Measured for the 1,240,449-character line (kuiper-belt estate-network.json:1, key 63,013,167,769), Pixel 7 and
   // Galaxy S24 emulation in one container: wrapped 9,313 ms (lead, once); unwrapped 1.4-3.6 s to show and lay out at
@@ -48,7 +55,8 @@
     '#card.lc .lc-x{position:absolute;right:0;top:0;width:44px;height:44px;border:0;color:#8fb3bd;background:transparent;padding:0;',
     '  font:18px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;cursor:pointer;touch-action:manipulation}',
     '#card.lc .lc-x:hover,#card.lc .lc-x:active{color:#fff}',
-    '#card.lc .lc-a{display:flex;flex-wrap:wrap;align-items:center;gap:0 2px;margin:0 0 -4px -8px;color:var(--dim)}',
+    '#card.lc .lc-a{display:flex;flex-wrap:wrap;align-items:center;gap:0 2px;margin:0 0 0 -8px;color:var(--dim);',
+    '  position:sticky;top:0;bottom:0;z-index:1;background:#090c13}',
     '#card.lc .lc-a a,#card.lc .lc-t{display:inline-flex;align-items:center;min-height:32px;padding:0 8px;touch-action:manipulation}',
     '#card.lc .lc-t{appearance:none;border:0;background:transparent;color:var(--cy);cursor:pointer;font:inherit;text-decoration:underline dotted}',
     '#card.lc .lc-d{display:none;color:var(--dim);margin-top:6px;border-top:1px solid #121a26;padding-top:6px;white-space:pre-wrap;overflow-wrap:anywhere}',
@@ -63,6 +71,7 @@
     '#lineslist .lc-rn{display:block}',
     '#lineslist .lc-rt ~ i{color:var(--dim);font-style:normal}',
     '#lineslist .lc-rt ~ i.lc-none{color:var(--am)}',
+    '@media (pointer:coarse){ #card.lc .lc-a a,#card.lc .lc-t{min-height:44px} }',
     '@media (max-width:640px){',
     '  #card.lc{left:0;right:0;bottom:0!important;max-width:none;max-height:34vh;max-height:34dvh;font-size:12px;line-height:1.5;',
     '    border-left:0;border-right:0;border-bottom:0;border-radius:12px 12px 0 0}',
@@ -72,6 +81,13 @@
     '  #card.lc .lc-x{height:48px}',
     '  #card.lc .lc-a a,#card.lc .lc-t{min-height:44px}',
     '  #card.lc .lc-d{font-size:11px}',
+    '}',
+    /* last, so it also wins over the phone rules on a narrow phone on its side. A short landscape screen: cap by the height that is there, keep a band for the spark */
+    '@media (orientation:landscape) and (max-height:500px){',
+    '  #card.lc{bottom:0!important;max-height:min(50vh,calc(100vh - var(--barh,46px) - 140px));',
+    '    max-height:min(50dvh,calc(100dvh - var(--barh,46px) - 140px))}',
+    '  #card.lc .lc-in{padding-bottom:env(safe-area-inset-bottom,0px)}',
+    '  #card.lc .lc-h{max-height:4.5em}',
     '}'
   ].join('\n');
 

@@ -88,10 +88,10 @@
   },
   {
    "id": "line-card",
-   "generation": "202611012143",
-   "path": "modules/202611012143-line-card.js",
-   "sha256": "e2baeaaaf244ad0b7ab6c2e8f727d0cc5a39a1f1b3765b26db00d36fc957c065",
-   "bytes": 14509,
+   "generation": "202611020212",
+   "path": "modules/202611020212-line-card.js",
+   "sha256": "8ec117f9dd436965e17fb860d5c12c485479cb3bdfdb6a845d924c65cc240fe3",
+   "bytes": 15925,
    "byte_budget": 32768,
    "requires": [
     "card",
@@ -118,7 +118,7 @@
    "licence": "Apache-2.0",
    "team": "02",
    "step": 2,
-   "proof": "handoff/02-card/"
+   "proof": "handoff/02-card/edition-6/"
   }
  ],
  "references": [
