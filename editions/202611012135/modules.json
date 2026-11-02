@@ -5,7 +5,7 @@
  "order": [
   "hello",
   "line-card",
-  "see-through"
+  "layers"
  ],
  "modules": [
   {
@@ -70,60 +70,69 @@
    "proof": "handoff/02-card/"
   },
   {
-   "id": "see-through",
+   "id": "layers",
+   "file": "202611012141-layers.js",
    "generation": "202611012141",
-   "path": "modules/202611012141-see-through.js",
-   "sha256": "87a88e488fdf8433e2dcb3c31b9dfcf11726d5761509d996017ebbe08f6ce873",
-   "bytes": 26000,
-   "byte_budget": 65536,
+   "path": "modules/202611012141-layers.js",
+   "sha256": "d5f719806a31c9105f57c1b22edafe4e0f30c4313355c16e9b8fcd5b147d874c",
+   "bytes": 56352,
+   "byte_budget": 98304,
    "requires": [
     "wafer",
     "keyPlace",
     "address",
     "describe",
-    "goKey",
+    "findBy",
+    "flyTo",
+    "safeBox",
     "fmt",
     "esc",
     "cv",
-    "ov",
     "o2",
     "hud",
+    "big",
+    "sub",
     "card",
-    "gin",
+    "gbox",
     "repos",
+    "commits",
+    "N",
     "SPACE",
+    "lightTime",
     "cam",
+    "lit",
     "sel",
     "redraw",
-    "draw"
+    "draw",
+    "panels",
+    "refuse"
    ],
    "provides": [
-    "see-through"
+    "layers"
    ],
    "reads": [
-    "data/see-through.json",
-    "location.hash"
+    "data/layers.json",
+    "editions.json",
+    "keys.json",
+    "location.hash",
+    "location.search"
    ],
    "writes": [
-    "window.KY.modules.see-through",
-    "#kuiper-star",
-    "#ky-see-through-css",
-    "#ky-st-apps",
-    "KY.draw.add"
+    "#layers",
+    "#refuse",
+    "#big",
+    "#sub",
+    "#card",
+    "history.replaceState",
+    "KY.lit.repo",
+    "KY.lit.period",
+    "KY.sel.target"
    ],
-   "creates_controls": "the SEE THROUGH entry a#kuiper-star, mounted only through the shell's api.mountStar (title from 434 px, else the shell's bottom-left strip)",
-   "licence": "CERN-OHL-S-2.0",
-   "team": "05",
-   "step": 5,
-   "proof": "handoff/05-see-through/",
-   "data": [
-    {
-     "path": "data/see-through.json",
-     "sha256": "440950711a148eb019b7309ea1a0610219c096742893ce8d7c1f81be18d479a6",
-     "bytes": 666940,
-     "licence": "ODbL-1.0 (names, (c) OpenStreetMap contributors)"
-    }
-   ]
+   "creates_controls": "7 input[data-ky-layer=layer:<id>] (the originals); #lyFocus, #lyFind, #lyClear, next/prev buttons, #lineslist rows",
+   "licence": "Apache-2.0",
+   "team": 3,
+   "step": 3,
+   "proof": "handoff/03-layers/"
   }
  ],
  "references": [

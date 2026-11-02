@@ -163,3 +163,70 @@ Run 3 verdict for the integrator: on Pixel 7 and Galaxy S24 line-card turns no s
 In landscape, line-card's 30dvh cap hides its action row (`details` half visible): reported to team 2 as a landscape
 MAJOR, not decided as "turned red" for lack of a landscape base; run 4 re-measures it with the fair tap.
 
+## Run 4: admitted [hello, kuiper-shell rev 2, line-card] (modules.json `5ef02d3e…`, shell `1edf2e1a…`, index.html `418ae14c…`), started 01:06 UTC
+
+Snapshot `snap/r4` (01:06), plain `python3 -m http.server 8502`, script `b7b9b074…` (ceil row, visible-part taps on
+card controls). Admitted 00:56 (row 4 of ADMISSIONS.md); withdrawn 01:37 by OPUS-CONTROLLER for the Galaxy S24 reds
+below, which this run measured independently with the same cause.
+
+**Pixel 7 (01:06:42–01:27:22, load 54→49): 18/18 PASS, 0 console errors** (2 off-edition on `see-through/`).
+Report `runs/r4-pixel-7.json`. Rev 2 cures run 1's race: lines-pick PASS (card 40, header = `line_text`, first text
+node; card stays), card-details 198.4 → 285.25 under cap 285.3 (`details` 44 px fully visible), load (bar one row,
+34 px; disc 322×323), panel-dismiss (wafer tap beside FILE; back closes ABOUT, URL kept), see-through (strip → same
+tab `/see-through/202611020012/`), pinch 0.499, drag exact, spark-tap card 323 (1.6 px), whole-wafer, modules
+[hello, kuiper-shell, line-card], console 0.
+
+**Galaxy S24 (01:27:22–01:44:39, load 49→34): 16 PASS, 2 FAIL, 0 console errors.** Report `runs/r4-galaxy-s24.json`.
+
+| step | run 3 (no shell) | run 4 | measured |
+|---|---|---|---|
+| load | FAIL | **PASS** | bar one row 360×34; disc 282×281 (strip 8,728 105×44 blanked) |
+| panel-dismiss, lines-*, card-*, key-e-1..3, whole-wafer, modules, console | PASS | PASS | |
+| pinch-drag | PASS | **FAIL (turned red)** | first pinch 0.505 and drag (−90,70) exact; the zoom-out pinch (fingers 300→12 px on the y axis at 89.5,439.1) moved the selected spark 144 px: the lower finger at (89.5,589) lands on the SEE THROUGH strip, which the shell lifts to just above the open card (screenshot 13: strip ≈ 8,556–113,600, card top ≈ 606), so the strip takes that touch and the pinch becomes a one-finger drag |
+| spark-tap | PASS | **FAIL (follows)** | no unambiguous spark (greens 0); the selected spark at (89.5,583.1) sits under the strip/card band |
+| see-through | FAIL | **PASS** | strip (9,729 102.9×42) → same tab |
+
+For team 1: on a 360 px phone with a card open, the lifted strip sits in the clear wafer band between the spark and
+the card, so a pinch there loses a finger. Either keep the strip out of the band the camera places sparks in (e.g. the
+strip moves beside the card, or hides while a card is open) or let touches on it reach the wafer (`pointer-events`
+only on its link box, touch-action). The journey keeps fingers off the card but not off other overlays; I did not
+change that, because a person's finger lands there too. The integrator/owner may rule otherwise.
+
+Pixel 7 landscape: try 1 (01:44:39–01:46:01) ended in a harness error after `lines-filter` FAIL: in landscape WAFER is
+259 px tall and `#lyFind` is 180 px tall (Edition 4's `flex:1 1 180px` at index.html:72 inside the panel's column
+layout), so the box's centre (y 332) lies below the panel (bottom 295.2); the tap went to the wafer, the letters went
+to the page and the journey left for `/see-through/`. The script now taps the visible part of the box, types only when
+`#lyFind` has focus, and scrolls the panel by touch to bring the first row into view (try 2, below). MINOR for team 1:
+the 180 px filter box (it pushes the rows off the first screen in landscape).
+
+**Pixel 7 landscape, try 2 (01:47:17–02:07:56, load 20→33, script `346faed5…`): 14 PASS, 4 FAIL, 0 console errors.**
+Report `runs/r4-pixel-7-landscape.json`.
+
+| step | run 3 landscape (no shell) | run 4 landscape | measured |
+|---|---|---|---|
+| load, edition-open/close, panel-dismiss, lines-open, key-e-1..3, whole-wafer, modules, console | PASS (load/whole-wafer after the row-45 re-measure) | PASS | bar one row; SEE THROUGH is a bar title at 863 px |
+| lines-filter | PASS | **FAIL (turned red)** | WAFER panel 36→295.2 (259 px); `#lyFind` 180 px tall (197→377), 53 px of it visible; typed "acceptance" with focus, 7 rows all match, but the first row is at 385→458, below the panel and the 360 px screen. Cause: the 180 px box (Edition 4 `flex:1 1 180px`, index.html:72, in the shell's column panel) |
+| lines-pick | PASS | PASS | one touch scroll of the panel brought the row into view (visible 35 px), card 40, header = `line_text`, spark y 137.5 in [46, 230] |
+| card-details | FAIL (tap missed, run 3) | **FAIL (still red)** | `details` 43 % visible (13.8 px) and tapped there: details OPENED (`lc-open`), but the card was already at its 30dvh cap (108 px of 360) before details, so it cannot grow; scrollHeight 291. line-card, landscape |
+| card-close | FAIL (follows) | PASS | |
+| pinch-drag | PASS | **FAIL (turned red)** | first pinch 0.509, drag exact; zoom-out pinch on the x axis at (341,239.4), 300→12 px: the selected spark moved 156 px. The fingers' row y 239.4 is 1–2 px above the card top (240–241.4), the band the 108 px card leaves is 46–230; cause not isolated further (card edge vs bar height 36 vs 45.6 changing the camera) |
+| spark-tap | FAIL | FAIL (still red) | greens 0; selected spark y 239.4 outside [46, 231.4] |
+| see-through | FAIL | **PASS** | bar title → same tab |
+
+## Summary for the integrator (02:10 UTC)
+
+| run | manifest order | Pixel 7 | Galaxy S24 | Pixel 7 landscape | turned red vs the run before |
+|---|---|---|---|---|---|
+| 0 | [] | 14/17 (load, panel-dismiss, see-through red) | not run | not run | reference |
+| 1 | hello, kuiper-shell rev 1 | 16/18 | stopped | stopped | **lines-pick, card-details** (shell back() × page ANDROID BACK) |
+| 2 | hello, kuiper-shell (file changed), line-card | aborted: loader refused the shell, sha256 mismatch | — | — | — |
+| 3 | hello, line-card | 16/18 (load, see-through: run 0's) | 16/18 (same) | 12/18 (2 script, 4 analysed above) | none on the portrait phones; landscape has no base |
+| 4 | hello, kuiper-shell rev 2, line-card | **18/18** | 16/18 | 14/18 | Galaxy **pinch-drag, spark-tap** (finger on the lifted SEE THROUGH strip); landscape **lines-filter, pinch-drag** |
+
+Proof: `proof/android-journey.json` (run 4, all three devices; `pass: false`; `state_note` says it is the shell rev 2
+admission and must be regenerated on the final manifest) and six screenshots `proof/journey-*.png` (Pixel 7 load,
+ABOUT, lines-pick card; Galaxy S24 pinch with the strip over the band; landscape filter box; landscape card at cap).
+Not tested by the team 10 tester: the manifest after 01:49 UTC ([hello, line-card, see-through], row 5, admitted by
+OPUS-CONTROLLER) — the 150-minute polling window (22:25–00:55 UTC) had closed and run 4 was in progress.
+NOT EVALUATED in every run: font scale 1.3; the 4 px spark beyond spark-tap; NL-009 06/09 items beyond the steps above.
+

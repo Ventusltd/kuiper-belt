@@ -287,17 +287,29 @@ async function runDevice(browser, deviceName) {
       { panel: lp, rows: p.lines.rows, firstRow: p.lines.firstRow, find: p.lines.find, screenshot: await shot('lines-open') }, lp.visible ? (p.lines.rows ? '' : 'no rows') : 'LINES did not open');
 
     // 5 filter "acceptance"
-    if (p.lines.find) { await tapRect(p.lines.find); await sleep(300); await page.keyboard.type('acceptance', { delay: 30 }); await sleep(600); }
+    // NL-010: tap the part of the filter box a person can see (inside the LINES/WAFER panel's box and the viewport); type only
+    // when the box took the focus, so letters never fall through to the engine's single-key commands
+    const clipTo = (r, box, vp) => { if (!r || !box) return null; const t = Math.max(r.top, box.top, 0), b = Math.min(r.bottom, box.bottom, vp.h), l = Math.max(r.left, box.left, 0), rr = Math.min(r.right, box.right, vp.w); return { left: l, top: t, right: rr, bottom: b, width: +(rr - l).toFixed(1), height: +(b - t).toFixed(1) }; };
+    const findVis = clipTo(p.lines.find, p.panels.lines.rect, p.viewport);
+    let findFocused = false;
+    if (findVis && findVis.height >= 8 && findVis.width >= 8) { await tapRect(findVis); await sleep(300); findFocused = await page.evaluate(() => document.activeElement && document.activeElement.id === 'lyFind'); if (findFocused) { await page.keyboard.type('acceptance', { delay: 30 }); await sleep(600); } }
     p = await probe();
     const rowsMatch = await page.evaluate(() => [...document.querySelectorAll('#lineslist .ln[data-i]')].every(r => /acceptance/i.test(r.textContent)));
     const findVisible = p.lines.find && p.lines.find.bottom <= p.viewport.h && p.lines.firstRow && p.lines.firstRow.bottom <= p.viewport.h;
     record('lines-filter', 'type "acceptance": the list narrows to matching rows, input and first row on screen', p.lines.rows > 0 && rowsMatch && p.lines.findValue === 'acceptance' && findVisible,
-      { rows: p.lines.rows, allRowsMatch: rowsMatch, findValue: p.lines.findValue, firstRow: p.lines.firstRow, firstRowText: p.lines.firstRowText, pageScrollY: p.viewport.scrollY, activeElement: p.activeElement, screenshot: await shot('lines-filter') },
+      { findBox: p.lines.find, findVisiblePart: findVis, findFocused, rows: p.lines.rows, allRowsMatch: rowsMatch, findValue: p.lines.findValue, firstRow: p.lines.firstRow, firstRowText: p.lines.firstRowText, pageScrollY: p.viewport.scrollY, activeElement: p.activeElement, screenshot: await shot('lines-filter') },
       p.lines.rows ? (rowsMatch ? (findVisible ? '' : 'filter input or first row off screen (keyboard/visual viewport)') : 'rows do not all match') : 'no rows match');
 
     // 6 tap the first row
     const before = p;
-    if (p.lines.firstRow) await tapRect(p.lines.firstRow);
+    // NL-010: when the first row is below the panel's visible box (landscape), scroll the panel by touch as a person would, then tap the row's visible part
+    let rowScroll = 0, rowVis = clipTo(p.lines.firstRow, p.panels.lines.rect, p.viewport);
+    for (let k = 0; k < 4 && p.lines.firstRow && p.lines.firstRow.width > 0 && !(rowVis && rowVis.height >= 20); k++) {
+      const pr = p.panels.lines.rect, x = (pr.left + pr.right) / 2, y0 = Math.min(pr.bottom, p.viewport.h) - 12, y1 = Math.max(pr.top + 12, y0 - 140);
+      await touch('touchStart', [[x, y0]]); for (let i = 1; i <= 10; i++) { await touch('touchMove', [[x, y0 + (y1 - y0) * i / 10]]); await sleep(25); } await touch('touchEnd', []); await sleep(500);
+      p = await probe(); rowScroll++; rowVis = clipTo(p.lines.firstRow, p.panels.lines.rect, p.viewport);
+    }
+    if (rowVis && rowVis.height >= 8) await tapRect(rowVis);
     await sleep(150); const early = await probe(); p = await settle();
     const cs6 = clearSpace(p), cap6 = cardUnderCap(p);
     const flew = early.magenta && p.magenta ? +Math.hypot(early.magenta.x - p.magenta.x, early.magenta.y - p.magenta.y).toFixed(1) : null;
@@ -305,7 +317,7 @@ async function runDevice(browser, deviceName) {
     const hdr6 = !p.card.lineCard ? { checked: false, why: 'Edition 4 card (no #card.lc)' } : { checked: true, header: p.card.header == null ? null : p.card.header.slice(0, 160), headerLength: p.card.header == null ? null : p.card.header.length, lineTextLength: lb6 && lb6.line_text != null ? lb6.line_text.length : null, equalsLineText: !!lb6 && p.card.header === lb6.line_text, headerIsFirstText: p.card.headerIsFirst };
     hdr6.ok = !hdr6.checked || (hdr6.equalsLineText && hdr6.headerIsFirstText);
     record('lines-pick', 'tap the first row: LINES closes, camera flies, card opens, spark in the clear space, the header is the line of code', !p.panels.lines.visible && p.card.open && cs6.ok && cap6.ok && hdr6.ok,
-      { linesVisible: p.panels.lines.visible, card: { open: p.card.open, rect: p.card.rect, index: p.card.index, total: p.card.total, title: p.card.title, ...cap6 }, cardHeader: hdr6, clear: cs6, sparkMovedAfterTapPx: flew, rowTapped: before.lines.firstRowText, screenshot: await shot('lines-pick') },
+      { linesVisible: p.panels.lines.visible, card: { open: p.card.open, rect: p.card.rect, index: p.card.index, total: p.card.total, title: p.card.title, ...cap6 }, cardHeader: hdr6, clear: cs6, sparkMovedAfterTapPx: flew, rowTapped: before.lines.firstRowText, rowVisiblePart: rowVis, panelScrollsBeforeTap: rowScroll, screenshot: await shot('lines-pick') },
       [p.panels.lines.visible ? 'LINES still open' : '', p.card.open ? '' : 'no card', cs6.ok ? '' : cs6.why, cap6.ok ? '' : 'card over its cap', hdr6.ok ? '' : 'card header is not the line of code (equals line_text ' + hdr6.equalsLineText + ', first text ' + hdr6.headerIsFirstText + ')'].filter(Boolean).join('; '));
 
     // 7 details

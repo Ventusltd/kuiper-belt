@@ -261,3 +261,14 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   accepts See Through's own forwarded /see-through/<stamp>/#key=<k>. Site rebuilt on 3ae05df7; run-p7e starts when the
   lead's run-s24 (pid 30648) exits. Note the builder's S24 A3 content-length FAIL was the stub server (no Content-Length),
   not the module (Pixel 7 on python http.server: A3 PASS).
+- 02:10 TESTER → LEAD: run-p7e (Pixel 7, module 3ae05df7, started 01:35, load average ~50): G3 FAILED this time (it PASSED
+  on 013d6dda in run-p7d and on 3ae05df7 in your S24): after the Edition 2 row tap the page stayed on
+  `…/202611012135/#key=36064705400&line=…:5&layers=repos,editions,lines` for 60 s (want `…/202611010114/#<the same hash>`).
+  leave() stops THIS module's writes, but the page still has three other history writers that can cancel a pending
+  location.assign on a slow server: index.html edSync (pushState / history.back on every redraw when a card or legacy
+  panel opens or closes, :678-680), kuiper-shell (pushState/replaceState {kmb} :250-252, stepOver history.back :264) and
+  layers.js writeURL (replaceState :630, e.g. when REPOS is mirrored on). Suggest leave() re-issues the navigation until
+  the page actually goes: `location.assign(url); var t = setInterval(function () { location.assign(url); }, 1500);
+  addEventListener('pagehide', function () { clearInterval(t); });` (or the same with `location.replace` if the edition
+  should not stay in history). test.cjs G3 now records the element under the finger, the navigation requests the tap
+  issued, and inspect().left, so the next run says which writer cancelled it.

@@ -1,0 +1,228 @@
+{
+ "device": "Pixel 7",
+ "base": "http://127.0.0.1:8601",
+ "stamp": "202611020012",
+ "space": 63340120796,
+ "when": "2026-11-02T01:26:29.509Z",
+ "pass": false,
+ "n": 26,
+ "failed": 6,
+ "results": [
+  {
+   "name": "#sub=Drax flies to 1182 Drax, D 8",
+   "ok": true,
+   "got": {
+    "T": 1182,
+    "name": "Drax",
+    "D": 8
+   }
+  },
+  {
+   "name": "arrival writes #key=3744984642&space=63340120796&sub=Drax",
+   "ok": true,
+   "got": {
+    "hash": "#key=3744984642&space=63340120796&sub=Drax",
+    "link": "#key=3744984642&space=63340120796&sub=Drax",
+    "space": 63340120796,
+    "spaceSource": "wafer-meta"
+   }
+  },
+  {
+   "name": "spaceSource wafer-meta, space = cosmos address_space",
+   "ok": true,
+   "got": {
+    "space": 63340120796,
+    "src": "wafer-meta"
+   }
+  },
+  {
+   "name": "pointer forwards search+hash to 202611020012",
+   "ok": true,
+   "got": "http://127.0.0.1:8601/see-through/202611020012/?from=test#sub=Drax&view=kuiper"
+  },
+  {
+   "name": "#sub=Drax&view=kuiper: arrives at 1182 in the kuiper view",
+   "ok": true,
+   "got": {
+    "T": 1182,
+    "view": "kuiper",
+    "in3d": false
+   }
+  },
+  {
+   "name": "STAR KEY row: text, href ../../editions/#key=<k>, >= 44 px",
+   "ok": true,
+   "got": {
+    "text": "STAR KEY 3,744,984,642 · OPEN IT ON THE KUIPER",
+    "href": "../../editions/#key=3744984642",
+    "h": 44,
+    "x": 206,
+    "y": 657,
+    "vis": true
+   }
+  },
+  {
+   "name": "tap on the row opens the Kuiper at #key=<k> through the editions pointer",
+   "ok": false,
+   "got": "http://127.0.0.1:8601/editions/#key=3744984642"
+  },
+  {
+   "name": "back returns to See Through",
+   "ok": false,
+   "got": "http://127.0.0.1:8601/editions/#key=3744984642"
+  },
+  {
+   "name": "#sub=xyzzy refusal words, no flight",
+   "ok": true,
+   "got": {
+    "T": -1,
+    "name": "",
+    "note": "NO SUBSTATION NAME HERE CONTAINS THAT. TRY ANOTHER NAME"
+   }
+  },
+  {
+   "name": "#sub=Hinkley first substring match 1892",
+   "ok": true,
+   "got": {
+    "T": 1892,
+    "name": "Hinkley Point A Substation",
+    "note": ""
+   }
+  },
+  {
+   "name": "#sub=Cowley 201",
+   "ok": true,
+   "got": {
+    "T": 201,
+    "name": "Cowley Substation",
+    "note": ""
+   }
+  },
+  {
+   "name": "#key=36064705400: note, T -1, D 0, ring within 1 px of KuiperLaw.place(k)",
+   "ok": true,
+   "got": {
+    "note": "KEY 36,064,705,400 · A LINE OF CODE, NOT A SUBSTATION",
+    "D": 0,
+    "ringPx": 0,
+    "star1Px": 0
+   }
+  },
+  {
+   "name": "#key=<subKey 1182>: box Drax, THE STAR THAT LANDS ON DRAX",
+   "ok": true,
+   "got": {
+    "box": "Drax",
+    "note": "THE STAR THAT LANDS ON DRAX. PRESS GO"
+   }
+  },
+  {
+   "name": "#key=<SPACE>: IS BEYOND THIS SKY",
+   "ok": true,
+   "got": {
+    "note": "KEY 63,340,120,796 IS BEYOND THIS SKY"
+   }
+  },
+  {
+   "name": "#key=<old key>&space=59637070538: SPACE remap to the star of Drax",
+   "ok": true,
+   "got": {
+    "box": "Drax",
+    "note": "STAR KEY REMAPPED · SKY 59,637,070,538 → 63,340,120,796 · THE STAR THAT LANDS ON DRAX. PRESS GO"
+   }
+  },
+  {
+   "name": "#key=<subKey 1368>&space&sub=Drax: identity wins, flies to 1368 (the second Drax)",
+   "ok": true,
+   "got": {
+    "T": 1368,
+    "name": "Drax"
+   }
+  },
+  {
+   "name": "#repo=gridatlas: note count equals the count from wafer.tsv (167)",
+   "ok": true,
+   "got": {
+    "note": "GRIDATLAS · 167 OF 12,900 STARS",
+    "lit": 167
+   }
+  },
+  {
+   "name": "#repo=nosuchrepo refusal",
+   "ok": true,
+   "got": {
+    "note": "NO REPOSITORY CALLED NOSUCHREPO"
+   }
+  },
+  {
+   "name": "#sub=Cowley&view=sat: view after the flight",
+   "ok": false,
+   "got": {
+    "T": 201,
+    "view": "map"
+   }
+  },
+  {
+   "name": "#bogus=1: LINK FIELD BOGUS NOT UNDERSTOOD",
+   "ok": true,
+   "got": {
+    "note": "LINK FIELD BOGUS NOT UNDERSTOOD"
+   }
+  },
+  {
+   "name": "hashchange #sub=Drax on an open page flies",
+   "ok": true,
+   "got": {
+    "T": 1182
+   }
+  },
+  {
+   "name": "wafer-meta address_space adopted at run time",
+   "ok": true,
+   "got": {
+    "space": 63340121796,
+    "src": "wafer-meta",
+    "k1182": 3744984701
+   }
+  },
+  {
+   "name": "wafer-meta blocked: frozen sky",
+   "ok": true,
+   "got": {
+    "space": 63340120796,
+    "src": "frozen"
+   }
+  },
+  {
+   "name": "X at the stars (opened directly): aria-label \"back to the Kuiper\", lands on editions/",
+   "ok": false,
+   "got": {
+    "label": "back to the Kuiper",
+    "url": "about:blank"
+   }
+  },
+  {
+   "name": "X at the stars (from the Kuiper): history.back() to the edition",
+   "ok": false,
+   "got": "http://127.0.0.1:8601/see-through/202611020012/"
+  },
+  {
+   "name": "zero console errors apart from basemaps\\.cartocdn\\.com",
+   "ok": false,
+   "got": [
+    {
+     "hash": "",
+     "text": "Failed to load resource: net::ERR_FAILED",
+     "url": "http://127.0.0.1:8601/cosmos/wafer-meta.json"
+    }
+   ]
+  }
+ ],
+ "softRequestFailures": [
+  {
+   "hash": "#sub=Drax&view=kuiper",
+   "text": "requestfailed http://127.0.0.1:8601/editions/202611012027/ net::ERR_ABORTED",
+   "soft": true
+  }
+ ]
+}

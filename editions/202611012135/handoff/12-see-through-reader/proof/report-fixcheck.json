@@ -1,0 +1,100 @@
+{
+ "when": "2026-11-02T01:40:31.508Z",
+ "res": [
+  {
+   "n": "R1: #repo=nosuchrepo then #bogus=1 names bogus",
+   "ok": true,
+   "g": {
+    "T": -1,
+    "note": "LINK FIELD BOGUS NOT UNDERSTOOD",
+    "box": "",
+    "ring": null
+   }
+  },
+  {
+   "n": "#key=<star of Cowley>: box, note and an amber ring",
+   "ok": true,
+   "g": {
+    "T": -1,
+    "note": "THE STAR THAT LANDS ON COWLEY SUBSTATION. PRESS GO",
+    "box": "Cowley Substation",
+    "ring": {
+     "x": 225.388158168971,
+     "y": 410.130309226025,
+     "key": 638151717
+    }
+   }
+  },
+  {
+   "n": "R1: then #key=36064705400 clears the box",
+   "ok": true,
+   "g": {
+    "T": -1,
+    "note": "KEY 36,064,705,400 · A LINE OF CODE, NOT A SUBSTATION",
+    "box": "",
+    "ring": {
+     "x": 181.6522570681221,
+     "y": 267.4271730016247,
+     "key": 36064705400
+    }
+   }
+  },
+  {
+   "n": "BEYOND words with (SPACE n)",
+   "ok": true,
+   "g": {
+    "T": -1,
+    "note": "KEY 63,340,120,796 IS BEYOND THIS SKY (SPACE 63,340,120,796)",
+    "box": "",
+    "ring": null
+   }
+  },
+  {
+   "n": "non-integer space named",
+   "ok": true,
+   "g": {
+    "T": -1,
+    "note": "LINK FIELD SPACE NOT UNDERSTOOD · KEY 36,064,705,400 · A LINE OF CODE, NOT A SUBSTATION",
+    "box": "",
+    "ring": {
+     "x": 181.6522570681221,
+     "y": 267.4271730016247,
+     "key": 36064705400
+    }
+   }
+  },
+  {
+   "n": "remap of a non-substation star key (j 12,345) to this sky",
+   "ok": true,
+   "g": {
+    "T": -1,
+    "note": "STAR KEY REMAPPED · SKY 59,637,070,538 → 63,340,120,796 · KEY 39,098,273,064 · A LINE OF CODE, NOT A SUBSTATION",
+    "box": "",
+    "ring": {
+     "x": 61.28915208773361,
+     "y": 364.5490530099929,
+     "key": 39098273064
+    }
+   }
+  },
+  {
+   "n": "remap of the star of Drax",
+   "ok": true,
+   "g": {
+    "T": -1,
+    "note": "STAR KEY REMAPPED · SKY 59,637,070,538 → 63,340,120,796 · THE STAR THAT LANDS ON DRAX. PRESS GO",
+    "box": "Drax",
+    "ring": {
+     "x": 183.00587225630096,
+     "y": 452.5882911806679,
+     "key": 3744984642
+    }
+   }
+  },
+  {
+   "n": "0 page errors, 0 console errors apart from cartocdn",
+   "ok": true,
+   "g": []
+  }
+ ]
+}

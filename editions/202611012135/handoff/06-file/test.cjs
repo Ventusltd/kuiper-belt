@@ -258,11 +258,16 @@ fs.mkdirSync(OUT, { recursive: true });
             if (!(await p.evaluate(() => document.getElementById('ky-file-editions').classList.contains('ky-open')))) await tapSel(p, '#ky-file-open-edition');
             await p.waitForFunction(() => document.querySelector('#ky-file-editions[data-filled="ok"]'), null, { timeout: 60000 }).catch(() => {});
             const h = await p.evaluate(() => KY.modules.file.api.link.hashText());
+            const navReq = []; const onReq = rq => { if (rq.isNavigationRequest()) navReq.push(rq.url()); }; p.on('request', onReq);
+            const hit = await p.evaluate(() => { const e = document.querySelector('#ky-file-editions [data-ky-edition="202611010114"]'); e.scrollIntoView({ block: 'center' }); const b = e.getBoundingClientRect(), x = b.left + b.width / 2, y = b.top + Math.min(b.height / 2, 22), h = document.elementFromPoint(x, y);
+              return { x, y, on_row: !!h && (h === e || e.contains(h)), hit: h ? h.tagName + '#' + h.id + '.' + h.className : null }; });
             const r = await tapSel(p, '#ky-file-editions [data-ky-edition="202611010114"]');
             await p.waitForURL(/\/editions\/202611010114\//, { timeout: 60000 }).catch(() => {});
+            p.off('request', onReq);
+            const after = p.url().indexOf('/202611010114/') < 0 ? await p.evaluate(() => { const i = KY.modules.file.api.inspect(); return { left: i.left || null, opened: (i.opened || []).slice(-3), history_length: history.length }; }).catch(e => String(e)) : 'navigated';
             const want = ROOT + 'editions/202611010114/#' + h;
             step('G3 Open an edition by touch: ../202611010114/#<hash>, the copied link\'s hash byte for byte', p.url() === want && link.slice(link.indexOf('#')) === '#' + h && r.height >= 44,
-              { landed: p.url(), want, copied_hash: link.slice(link.indexOf('#')), row_h: Math.round(r.height) });
+              { landed: p.url(), want, copied_hash: link.slice(link.indexOf('#')), row_h: Math.round(r.height), hit, navigation_requests: navReq, after });
           } else {                                    // G4 Open an app by touch: See Through, first and lit, carries the key
             if (await p.evaluate(() => !!(KY.modules.apps && KY.modules.apps.api))) step('G4 Open an app by touch', null, { why: 'the apps module is admitted: Open an app opens its launcher (step 7 tests it)' });
             else {

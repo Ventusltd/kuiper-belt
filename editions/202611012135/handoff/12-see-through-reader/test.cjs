@@ -21,9 +21,10 @@
 //                                            >= 44 px, visible, resolving to <base>editions/#key=<k> (HEAD 200)
 //   C2 <stamp>/#key=<subKey 1182>&space=63340120796
 //                                            the selected star: T -1, D 0 (nothing moves), box "Drax", note
-//                                            "THE STAR THAT LANDS ON DRAX. PRESS GO"; sky = wafer-meta address_space
+//                                            "THE STAR THAT LANDS ON DRAX. PRESS GO", one amber ring at KuiperLaw.place(key)
+//                                            (state within 1 px, canvas pixels within 2 px, radius 10); sky = wafer-meta
 //   C3 <stamp>/#key=<subKey 201>             a star key in See Through's own sky without &space: box "Cowley Substation",
-//                                            note "THE STAR THAT LANDS ON COWLEY SUBSTATION. PRESS GO"; then, on the same page by
+//                                            note "THE STAR THAT LANDS ON COWLEY SUBSTATION. PRESS GO", the ring; then, on the same page by
 //                                            hashchange: #key=36064705400 (a line of code: note, one amber ring within 1 px
 //                                            of KuiperLaw.place, measured from the canvas pixels), #key=<SPACE> (beyond the
 //                                            sky), #key=<old key of 1182>&space=59637070538 (remap to Drax), #sub=xyzzy
@@ -144,6 +145,13 @@ function lawAt(k) {
     }
     const P = p => p.evaluate(probe);
     const setHash = async (p, h, ready) => { await p.evaluate(x => { location.hash = x; }, h); await p.waitForFunction(ready, null, { timeout: 60000, polling: 300 }).catch(() => {}); await sleep(2500); return P(p); };
+    // the amber ring of a #key: __descent.ring() within 1 px of the law's place; on the canvas an amber ring of radius 10 px
+    // centred within 2 px of it (a thresholded pixel centroid moves by up to ~2 px with anti-aliasing against the cyan stars);
+    // polled, because under load the first repaint after a link can lag
+    const ringAt = async (p, k) => { const law = await p.evaluate(lawAt, k), st = await p.evaluate(() => window.__descent.ring());
+      let a = { n: 0 }; for (let t = 0; t < 20 && a.n < 20; t++) { a = await p.evaluate(amberAt, { x: law.x, y: law.y, half: 16 }); if (a.n < 20) await sleep(1500); }
+      const sp = st ? Math.hypot(st.x - law.x, st.y - law.y) : 99, cp = a.n ? Math.hypot(a.x - law.x, a.y - law.y) : 99;
+      return { ok: sp <= 1 && cp <= 2 && a.n >= 20 && Math.abs(a.radius - 10) <= 1.5 && law.star1 <= 1, statePx: +sp.toFixed(3), canvasPx: +cp.toFixed(3), radiusPx: a.radius, amberPx: a.n, starCheckPx: +law.star1.toFixed(3) }; };
     const k1182 = keyOf(1182, SPACE), k201 = keyOf(201, SPACE), old1182 = keyOf(1182, OLD_SPACE);
     const arrived = () => { const s = window.__descent.state(); return s.T >= 0 && s.D > 7.99 && !s.flight; };
 
@@ -170,8 +178,8 @@ function lawAt(k) {
     s = await P(p);
     check('C2 #key=' + k1182 + '&space=' + SPACE + ': nothing moves (T -1, D 0), box "Drax", note "THE STAR THAT LANDS ON DRAX. PRESS GO"',
       s.T === -1 && s.D < 0.01 && s.box === 'Drax' && s.note === 'THE STAR THAT LANDS ON DRAX. PRESS GO' && s.space === SPACE && s.spaceSource === 'wafer-meta', { T: s.T, D: s.D, box: s.box, note: s.note, space: s.space, src: s.spaceSource, ring: s.ring });
-    const law2 = await p.evaluate(lawAt, k1182), amb2 = await p.evaluate(amberAt, { x: law2.x, y: law2.y, half: 16 });
-    report.findingRingOnStarKey = report.findingRingOnStarKey || { device: DEV, ring: s.ring, amberPx: amb2.n, note: 'STEPS 5.5 table: "one amber ring is drawn at KuiperLaw.place(key)" for any key at D 0; A3 asserts box and note only' };
+    const r2 = await ringAt(p, k1182);
+    check('C2 the selected star: one amber ring at KuiperLaw.place(' + k1182 + ') (STEPS 5.5 table)', r2.ok, r2);
     await shot(p, '02-key-space-selected-star');
     await done(p);
 
@@ -181,17 +189,15 @@ function lawAt(k) {
     const n201 = await p.evaluate(() => window.__descent.sub(201).name);
     check('C3 #key=' + k201 + ' (no &space): T -1, D 0, box "Cowley Substation", note "THE STAR THAT LANDS ON COWLEY SUBSTATION. PRESS GO"',
       n201 === 'Cowley Substation' && s.T === -1 && s.D < 0.01 && s.box === 'Cowley Substation' && s.note === 'THE STAR THAT LANDS ON COWLEY SUBSTATION. PRESS GO', { name201: n201, T: s.T, box: s.box, note: s.note });
+    const r3a = await ringAt(p, k201);
+    check('C3 the selected star: one amber ring at KuiperLaw.place(' + k201 + ')', r3a.ok, r3a);
     s = await setHash(p, '#key=36064705400', () => /LINE OF CODE/.test(window.__descent.state().note));
-    const law3 = await p.evaluate(lawAt, 36064705400);
-    let amb3 = { n: 0 };   // the canvas repaints on the page's own frame; under load the first repaint after the hashchange can lag
-    for (let t = 0; t < 20 && amb3.n < 20; t++) { amb3 = await p.evaluate(amberAt, { x: law3.x, y: law3.y, half: 16 }); if (amb3.n < 20) await sleep(1500); }
-    const rd = s.ring ? Math.hypot(s.ring.x - law3.x, s.ring.y - law3.y) : 99, pd = amb3.n ? Math.hypot(amb3.x - law3.x, amb3.y - law3.y) : 99;
-    check('C3 hashchange #key=36064705400: note "KEY 36,064,705,400 · A LINE OF CODE, NOT A SUBSTATION", T -1, D 0, one amber ring within 1 px of KuiperLaw.place(k) (__descent.ring()); on the canvas an amber ring of radius 10 px centred within 2 px of it (pixel centroid; anti-aliasing against the cyan stars moves a thresholded centroid by up to ~2 px)',
-      s.note === 'KEY 36,064,705,400 · A LINE OF CODE, NOT A SUBSTATION' && s.T === -1 && s.D < 0.01 && rd <= 1 && pd <= 2 && Math.abs(amb3.radius - 10) <= 1.5 && law3.star1 <= 1 && amb3.n >= 20,
-      { note: s.note, noteFit: s.noteFit, ringStatePx: +rd.toFixed(3), ringCanvasPx: +pd.toFixed(3), ringRadiusPx: amb3.radius, amberPx: amb3.n, starCheckPx: +law3.star1.toFixed(3) });
+    const r3 = await ringAt(p, 36064705400);
+    check('C3 hashchange #key=36064705400: note "KEY 36,064,705,400 · A LINE OF CODE, NOT A SUBSTATION", T -1, D 0, the box emptied, one amber ring at KuiperLaw.place(k)',
+      s.note === 'KEY 36,064,705,400 · A LINE OF CODE, NOT A SUBSTATION' && s.T === -1 && s.D < 0.01 && s.box === '' && r3.ok, { note: s.note, box: s.box, noteFit: s.noteFit, ring: r3 });
     await shot(p, '03-key-own-sky-amber-ring');
     s = await setHash(p, '#key=' + SPACE, () => /BEYOND/.test(window.__descent.state().note));
-    check('C3 hashchange #key=<SPACE>: "KEY ' + fmt(SPACE) + ' IS BEYOND THIS SKY"', s.note === 'KEY ' + fmt(SPACE) + ' IS BEYOND THIS SKY', { note: s.note });
+    check('C3 hashchange #key=<SPACE>: "KEY ' + fmt(SPACE) + ' IS BEYOND THIS SKY (SPACE ' + fmt(SPACE) + ')"', s.note === 'KEY ' + fmt(SPACE) + ' IS BEYOND THIS SKY (SPACE ' + fmt(SPACE) + ')' && s.ring === null, { note: s.note, ring: s.ring });
     s = await setHash(p, '#key=' + old1182 + '&space=' + OLD_SPACE, () => /REMAPPED/.test(window.__descent.state().note));
     check('C3 hashchange #key=' + old1182 + '&space=' + OLD_SPACE + ': remapped to the star of Drax', s.box === 'Drax' && s.note === 'STAR KEY REMAPPED · SKY ' + fmt(OLD_SPACE) + ' → ' + fmt(SPACE) + ' · THE STAR THAT LANDS ON DRAX. PRESS GO', { box: s.box, note: s.note });
     s = await setHash(p, '#sub=xyzzy', () => /NO SUBSTATION/.test(window.__descent.state().note));

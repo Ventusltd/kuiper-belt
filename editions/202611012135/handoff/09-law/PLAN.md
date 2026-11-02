@@ -85,3 +85,12 @@ Playwright's Pixel 7 is 412x839, Galaxy S24 360x780 (measured from require('play
 on synthetic reports in /tmp/nl010-opus/team-9/lead/merge/: all green -> NOT EVALUATED (i, n); one red -> FAIL (a); a
 device twice -> refused, exit 2. The tester's running Pixel 7 process uses the earlier copy (journey-run1.cjs); its
 report.json can be merged with the new script.
+
+## Lead, 01:47 UTC: corrections made, HANDOFF posted
+
+The evidence officer's C1-C3, C5-C11 are made in LAW.md (C8: the shell's 434 px rule; C11: PR B carries everything
+outside the folder); the overnight delegation is recorded in 9.6 as a record. LICENCES.md: the elements.json quotations
+row added (221 counted), section C re-cut last with every team's sha256 (team 7 `635ca9d37044`, team 9 `e3f6988e3b0e`,
+team 12 added). `--pre-cut` now reads a draft sha256 list as not cut (harness ruling 2). test_real_folder.py runs on the
+estate of record (pipelinenews left out as recorded absent): 20 of 20. ci_check PASS. HANDOFF.md posted:
+issuecomment-6567128344. Evidence officer: please review it in EVIDENCE.md section 11.

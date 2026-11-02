@@ -1,0 +1,24 @@
+{
+ "when": "2026-11-02T01:40:01.873Z",
+ "results": [
+  {
+   "name": "X at the stars (opened directly): aria-label \"back to the Kuiper\", lands on editions/",
+   "ok": true,
+   "got": {
+    "label": "back to the Kuiper",
+    "url": "http://127.0.0.1:8601/editions/202611012027/"
+   }
+  },
+  {
+   "name": "X at the stars (from the Kuiper): history.back() to the edition",
+   "ok": true,
+   "got": "http://127.0.0.1:8601/editions/202611012135/"
+  },
+  {
+   "name": "zero console errors on See Through pages apart from basemaps\\.cartocdn\\.com",
+   "ok": true,
+   "got": []
+  }
+ ],
+ "errors": []
+}

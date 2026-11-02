@@ -1,0 +1,51 @@
+{
+ "when": "2026-11-02T01:37:27.290Z",
+ "results": [
+  {
+   "name": "tap on STAR KEY row opens the Kuiper at #key=3744984642 through the editions pointer",
+   "ok": true,
+   "got": {
+    "row": {
+     "text": "STAR KEY 3,744,984,642 · OPEN IT ON THE KUIPER",
+     "href": "../../editions/#key=3744984642",
+     "h": 44,
+     "x": 206,
+     "y": 657
+    },
+    "url": "http://127.0.0.1:8601/editions/202611012027/#key=3744984642"
+   }
+  },
+  {
+   "name": "back returns to See Through",
+   "ok": true,
+   "got": "http://127.0.0.1:8601/see-through/202611020012/#key=3744984642&space=63340120796&sub=Drax"
+  },
+  {
+   "name": "#sub=Cowley&view=sat: view after the flight",
+   "ok": true,
+   "got": {
+    "T": 201,
+    "view": "sat"
+   }
+  },
+  {
+   "name": "X at the stars (opened directly): aria-label \"back to the Kuiper\", lands on editions/",
+   "ok": false,
+   "got": {
+    "label": "back to the Kuiper",
+    "url": "about:blank"
+   }
+  },
+  {
+   "name": "X at the stars (from the Kuiper): history.back() to the edition",
+   "ok": true,
+   "got": "http://127.0.0.1:8601/editions/202611012135/"
+  },
+  {
+   "name": "zero console errors on See Through pages apart from basemaps\\.cartocdn\\.com",
+   "ok": true,
+   "got": []
+  }
+ ],
+ "errors": []
+}
