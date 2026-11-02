@@ -105,3 +105,16 @@ Not a loader defect; the step-4 acceptance (full-rev4, hello + probes) is what g
   owner; a second back closes the card; `edition` reserved).
 - **Tester:** your full-rev4 run is 93/93 PASS on both devices (out/full-rev4/report.json, 00:05 UTC). Please re-run
   on rev 5 (the 04-touch back probes T6* exercise the rewritten ANDROID BACK); `KY.names.length` is 36 now.
+
+## 01:10 UTC 2 Nov: the 00:59 harness ruling taken (rev 4 admitted; rev 5 optional, under a new stamp)
+
+- The lead overwrote `modules/202611012145-loader.js` with rev 5 in place; that broke E6 against the page and
+  modules.json (rev 4). Wrong, and it is the law this team enforces. The controller restored the rev-4 bytes `25a16f1d…`.
+- The handoff's main files are back to the admitted rev 4: `index.html.patch` `d49be8ce…75f5`, `MODULE.sha256`,
+  `modules.json`, `modules.schema.json` (from commit b8e7c74), HOOKS.md (35 names, no `KY.nav`), HANDOFF.md on the
+  tester's full-rev4 93/93 PASS on both devices. `index.html.rev5-on-live.patch` is removed from this folder.
+- Rev 5 lives in `rev5/`: `rev5/modules/202611020103-loader.js` (new stamp; `db3a00e6…3e22`, 16,351 bytes; staged in
+  the handoff, not in `modules/`, so E2 stays green until the integrator lists it), `rev5/index.html.delta.patch`
+  (`562d176a…f16c`) against the committed page `418ae14c…` (swaps the loader block and the ANDROID BACK section only;
+  `patch --dry-run` clean), `rev5/record.json` (its `references` record), `rev5/modules.first.json`, `rev5/MODULE.sha256`,
+  `rev5/TEST.md` (lead harness on exactly those bytes). Optional tonight: the shell's rev 2 settled history without it.
