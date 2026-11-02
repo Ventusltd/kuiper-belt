@@ -131,11 +131,11 @@ function lawAt(k) {
       return page;
     }
     const done = async p => { await p.__b.close().catch(() => {}); };
-    async function shot(page, name) {   // CSS-pixel PNG; CDP fallback when the WebGL renderer holds Playwright's frame wait
+    async function shot(page, name, toImg = true) {   // CSS-pixel PNG; CDP fallback when the WebGL renderer holds Playwright's frame wait
       const file = path.join(OUT, slug(DEV) + '-' + name + '.png');
       try { await page.screenshot({ path: file, scale: 'css', timeout: 180000 }); }
-      catch (e) { try { const c = await page.context().newCDPSession(page); const r = await Promise.race([c.send('Page.captureScreenshot', { format: 'png' }), sleep(180000).then(() => null)]); if (r) fs.writeFileSync(file, Buffer.from(r.data, 'base64')); await c.detach().catch(() => {}); } catch (e2) { console.log('screenshot failed ' + name); return; } }
-      if (IMG && DEV === DEVICES[0] && fs.existsSync(file)) fs.copyFileSync(file, path.join(IMG, name + '.png'));
+      catch (e) { try { const c = await page.context().newCDPSession(page); const r = await Promise.race([c.send('Page.captureScreenshot', { format: 'png' }), sleep(180000).then(() => null)]); if (r) fs.writeFileSync(file, Buffer.from(r.data, 'base64')); else console.log('screenshot timed out ' + name); await c.detach().catch(() => {}); } catch (e2) { console.log('screenshot failed ' + name); return; } }
+      if (toImg && IMG && DEV === DEVICES[0] && fs.existsSync(file)) fs.copyFileSync(file, path.join(IMG, name + '.png'));
     }
     const P = p => p.evaluate(probe);
     const setHash = async (p, h, ready) => { await p.evaluate(x => { location.hash = x; }, h); await p.waitForFunction(ready, null, { timeout: 60000, polling: 300 }).catch(() => {}); await sleep(2500); return P(p); };
@@ -157,7 +157,7 @@ function lawAt(k) {
     const rowText = 'STAR KEY ' + fmt(k1182) + ' · OPEN IT ON THE KUIPER', rowAbs = BASE + 'editions/#key=' + k1182;
     check('C1 row "' + rowText + '": <a href="../../editions/#key=' + k1182 + '">, visible, >= 44 px, not covered', s.row && s.row.text === rowText && s.row.href === '../../editions/#key=' + k1182 && s.row.abs === rowAbs && s.row.vis && s.row.hit && s.row.h >= 44, s.row);
     check('C1 the row resolves to ' + rowAbs + ', HEAD 200', (await head(BASE + 'editions/')) === 200, { abs: s.row && s.row.abs });
-    await shot(p, '01-sub-drax-landing-star-key-row');
+    await shot(p, 'c1-sub-drax-landing', false);   // after the auto 3D rise SwiftShader may hold the frame; the hand-off image is C6's
     await done(p);
 
     // C2 #key=<subKey 1182>&space=<SPACE>: the selected star
@@ -223,6 +223,7 @@ function lawAt(k) {
     check('C6 pointer see-through/?via=pointer#sub=Drax&view=map forwards to ' + fwd + ' (search and hash kept; the hash then rewritten on arrival)',
       pnavs.includes(BASE + fwd) && s.href === BASE + 'see-through/' + STAMP + '/?via=pointer' + want1, { navs: pnavs, now: s.href });
     check('C6 arrival at 1182 in the map view (view field after the flight)', s.T === 1182 && s.view === 'map' && !s.in3d, { T: s.T, view: s.view, in3d: s.in3d });
+    await shot(p, '01-sub-drax-landing-star-key-row');
     if (s.row && s.row.vis) {
       const n0 = p.__navs.length; live = false;
       await p.touchscreen.tap(s.row.x, s.row.y);

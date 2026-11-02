@@ -70,7 +70,9 @@ const LAUNCH = ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-sw
 // handoff/04-loader/HOOKS.md and team-2/STEPS.md 4.2: Object.keys(KY.hooks), in this order (28 names)
 const HOOK_NAMES = ['keyPlace', 'address', 'describe', 'findBy', 'flyTo', 'home', 'homeCamera', 'safeBox', 'lightTime', 'showNew', 'goKey', 'fmt',
   'words', 'esc', 'cv', 'ov', 'o2', 'hud', 'big', 'sub', 'card', 'gbox', 'gin', 'SPACE', 'N', 'repos', 'commits', 'wafer'];
-const KY_EXTRA = ['cam', 'lit', 'sel', 'redraw', 'draw', 'panels', 'refuse', 'nav'];   // HOOKS.md: 35 names since rev 3, 36 since rev 5
+// KY.names beyond the 28: read from the published contract (HOOKS.md: "the 28 hooks + `cam lit sel redraw draw panels refuse`"),
+// so the test follows the revision the hand-off names (rev 4: 35 names; rev 5 adds nav)
+const KY_EXTRA = (() => { try { const m = /the 28 hooks \+ `([^`]+)`/.exec(fs.readFileSync(path.join(HERE, 'HOOKS.md'), 'utf8')); if (m) return m[1].trim().split(/\s+/); } catch (e) {} return ['cam', 'lit', 'sel', 'redraw', 'draw', 'panels', 'refuse']; })();
 const PROBE_GEN = '202611012200';
 
 // ------------------------------------------------------------------ 1. the scratch copy
@@ -369,7 +371,7 @@ async function runDevice(browser, deviceName, S) {
       keys: Object.keys(K.hooks), names_list: Array.from(K.names || []), alias: window.__KUIPER_MODULES__ === K.modules, schema: K.schema, edition: K.edition,
       writes_refused: (() => { try { K.hooks.flyTo = null; } catch (e) {} try { K.injected = 1; } catch (e) {} try { K.modules.x = 1; } catch (e) {} return typeof K.hooks.flyTo === 'function' && !('injected' in K); })() }; });
     check('c7.frozen', 'Object.isFrozen(window.KY) and of hooks, names, cam, lit, sel, draw, panels; writes do not land', ['KY', 'hooks', 'names', 'cam', 'lit', 'sel', 'draw', 'panels'].every(k => fr[k]) && fr.writes_refused, fr);
-    check('c7.hooks', 'Object.keys(KY.hooks) = the 28 names of HOOKS.md in order; KY.names = those + cam lit sel redraw draw panels refuse nav (36)', JSON.stringify(fr.keys) === JSON.stringify(HOOK_NAMES) && JSON.stringify(fr.names_list) === JSON.stringify([...HOOK_NAMES, ...KY_EXTRA]), { keys: fr.keys, names: fr.names_list });
+    check('c7.hooks', 'Object.keys(KY.hooks) = the 28 names of HOOKS.md in order; KY.names = those + the extras HOOKS.md lists (' + KY_EXTRA.join(' ') + ': ' + (28 + KY_EXTRA.length) + ')', JSON.stringify(fr.keys) === JSON.stringify(HOOK_NAMES) && JSON.stringify(fr.names_list) === JSON.stringify([...HOOK_NAMES, ...KY_EXTRA]), { keys: fr.keys, names: fr.names_list });
     check('c7.alias', "window.__KUIPER_MODULES__ === KY.modules; KY.schema 'kuiper.hooks.v1'; KY.edition = the stamp", fr.alias && fr.schema === 'kuiper.hooks.v1' && fr.edition === STAMP, { alias: fr.alias, schema: fr.schema, edition: fr.edition });
     const kr = await h.page.evaluate(async () => { const K = window.KY, rf = () => { const d = document.getElementById('refuse'); return d && getComputedStyle(d).display !== 'none' && d.getBoundingClientRect().height > 0 ? d.textContent : null; };
       const o = { has: typeof K.refuse === 'function' }; if (!o.has) return o;
@@ -380,7 +382,7 @@ async function runDevice(browser, deviceName, S) {
       return o; });
     check('c7.refuse', 'rev 3: KY.refuse(text, slot) shows its line in #refuse and clears it with empty text; slots engine and modules throw TypeError; KY.cam.atHome is settable', kr.has && /probe words/.test(kr.shown || '') && kr.cleared === null && kr.engine === 'TypeError' && kr.modules === 'TypeError' && kr.atHomeSet === true, kr);
     // rev 5: KY.nav, the one owner of history for the Android back gesture (HOOKS.md)
-    const nav = { api: await h.page.evaluate(() => { const n = window.KY.nav; if (!n) return null; let ed; try { n.push('edition'); ed = 'no throw'; } catch (e) { ed = e instanceof TypeError ? 'TypeError' : String(e); }
+    if (KY_EXTRA.includes('nav')) { const nav = { api: await h.page.evaluate(() => { const n = window.KY.nav; if (!n) return null; let ed; try { n.push('edition'); ed = 'no throw'; } catch (e) { ed = e instanceof TypeError ? 'TypeError' : String(e); }
       return { fns: ['push', 'back', 'onBack', 'has', 'isSelf'].filter(k => typeof n[k] === 'function'), edition: ed, frozen: Object.isFrozen(n) }; }) };
     if (nav.api) {
       nav.push = await h.page.evaluate(() => { window.__navCalls = 0; const n = window.KY.nav, d0 = n.depth; n.onBack('probe-x', () => { window.__navCalls++; }); n.push('probe-x'); return { d0, d1: n.depth, has: n.has('probe-x'), state: history.state }; });
@@ -391,7 +393,7 @@ async function runDevice(browser, deviceName, S) {
       nav.personBack = await h.page.evaluate(() => ({ alive: true, has: window.KY.nav.has('probe-x'), calls: window.__navCalls })).catch(() => ({ alive: false }));
     }
     check('c7.nav', "rev 5: KY.nav push/back/onBack/has/isSelf; 'edition' reserved (TypeError); a self back calls no handler; a person's back calls the owner's handler once and stays on the page",
-      !!nav.api && nav.api.fns.length === 5 && nav.api.edition === 'TypeError' && nav.push.has && nav.push.d1 === nav.push.d0 + 1 && !nav.selfBack.has && nav.selfBack.calls === 0 && nav.personBack.alive && !nav.personBack.has && nav.personBack.calls === 1, nav);
+      !!nav.api && nav.api.fns.length === 5 && nav.api.edition === 'TypeError' && nav.push.has && nav.push.d1 === nav.push.d0 + 1 && !nav.selfBack.has && nav.selfBack.calls === 0 && nav.personBack.alive && !nav.personBack.has && nav.personBack.calls === 1, nav); }
     const w = await wafer(h.page, s); check('c7.wafer', 'a whole wafer without modules: the wafer drawn, the bar present', waferOk(w) && s.bar && s.bar.visible, { wafer: w, bar: s.bar && s.bar.titles });
     await shot(h.page, 'c7-empty-manifest');
     errOk(h, 'c7'); await h.context.close();
@@ -600,7 +602,12 @@ function handoffCheck(S) {
     if (skel) { const sk = new Set(skel.split('\n')), out_ = new Set(S.html.split('\n')), minus = new Set(S.patchText.split('\n').filter(l => l.startsWith('-') && !l.startsWith('---')).map(l => l.slice(1)));
       const added = S.base.split('\n').filter(l => l.trim() && !sk.has(l)), lost = added.filter(l => !out_.has(l)), unnamed = lost.filter(l => !minus.has(l));
       out.runs.push({ check: 'the integrator\'s ' + added.length + ' lines since ' + first.slice(0, 7) + ' kept in the patched page (removals only where the patch names them)', removed_by_patch: lost.map(l => l.trim().slice(0, 160)), removed_unnamed: unnamed.map(l => l.trim().slice(0, 160)), ok: unnamed.length === 0 }); } }
-  if (S.integrated) out.runs.push({ check: 'the committed page is index.html.patch applied (patch -R --dry-run is clean)', patch_sha256: S.integrated.patch_sha256, out: S.integrated.out, ok: S.integrated.reverses_cleanly });
+  if (S.integrated) {   // the committed page may carry later teams' hunks too; the patch must apply cleanly to a page the integrator committed
+    const rel = path.relative(REPO, path.join(EDITION_DIR, 'index.html')), pf = path.join(HERE, 'index.html.patch'), hits = [];
+    for (const c of cp.spawnSync('git', ['-C', REPO, 'log', '--format=%h', '--', rel], { encoding: 'utf8' }).stdout.trim().split('\n').filter(Boolean)) {
+      const t = path.join(SCRATCH, 'base-' + c + '.html'); fs.writeFileSync(t, cp.spawnSync('git', ['-C', REPO, 'show', c + ':' + rel], { encoding: 'utf8', maxBuffer: 1 << 26 }).stdout);
+      if (cp.spawnSync('patch', ['--dry-run', '-s', '-o', '/dev/null', t, pf]).status === 0) hits.push(c + ' (' + sha(fs.readFileSync(t)).slice(0, 12) + ')'); }
+    out.runs.push({ check: 'index.html.patch applies cleanly to a page the integrator committed; the committed page carries its loader block (row above)', applies_to: hits, reverse_on_committed_page: S.integrated.reverses_cleanly ? 'clean' : S.integrated.out, ok: hits.length > 0 }); }
   const hello = S.manifest.modules.find(m => m.id === 'hello'), hb = fs.readFileSync(path.join(S.ed, hello.path));
   out.runs.push({ check: hello.path + ' = its record (sha256, bytes, generation = file name)', ok: sha(hb) === hello.sha256 && hb.length === hello.bytes && path.basename(hello.path).startsWith(hello.generation + '-') });
   out.pass = out.runs.every(r => r.ok); return out;

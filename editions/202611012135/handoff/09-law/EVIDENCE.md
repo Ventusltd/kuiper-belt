@@ -224,6 +224,14 @@ neural-link FIXES/NL-010/ROADMAP.md step 9 (:649-741) and team-5/STEPS.md 9.1-9.
 the same meaning, every key kept), ADDED (more than the roadmap, not weaker), and the corrections C1-C10 the lead
 should make before the HANDOFF.
 
+LAW.md was revised by the lead at 00:54 UTC (15,561 bytes, sha256 `68ce7b9e3bc7...` = MODULE.sha256 line 1): 9.4 now runs
+one device per process with the reports merged, and "a non-MINOR step not measured makes the gate `NOT EVALUATED`,
+never PASS" (LAW.md:116-117). Both are ADDED and stricter than the roadmap. The line numbers in the table below are
+those of the 00:27 version; from about :96 on they move down by 2. Re-checked at 01:16 UTC by `grep` on the 00:54
+version: C1-C11 are all still open (LAW.md:17 still "the owner accepts in writing, first line"; :20 still "menu-bar.js:8-17"
+without "publishes a missing hook"; :109 (m) still "fits on that row"; :130 still "menu-bar.js:15-17"; :153-155 still
+"a further additive commit").
+
 | roadmap sentence (ROADMAP.md line) | LAW.md | verdict |
 |---|---|---|
 | Goal 1: one written law: folder, pointer in three places and nowhere else, ci_check green, journey green, modules hashed, owner's ACCEPT on a served preview before the pointer moves, owner merges the pointer, rollback byte-exact, no folder deleted (:651-654) | :3, :10-13 | SAME; ADDED `edition_check` green |
@@ -288,7 +296,9 @@ C4-C7, C9-C11 are one-line key or fact fixes. No sentence of the roadmap is cont
 - `MODULE.sha256`: all eight digests re-computed by `sha256sum` and equal (tools/edition_check.py `13d1da026345...`,
   27,974 bytes; editions/LAW.md `66b2fa999252...`; LICENCES.md `9dfca7cad134...`, 13,292 bytes; check.yml
   `ac5b37ada96a...`; pointer.patch `c24184cefb32...`; android-journey.cjs `6f6627550649...`, 65,472 bytes;
-  test_real_folder.py `a1e0d98f713e...`; test_edition_check.py `33f98f862d75...`, 35,654 bytes).
+  test_real_folder.py `a1e0d98f713e...`; test_edition_check.py `33f98f862d75...`, 35,654 bytes). At 01:16 two entries had moved with the lead's revisions and MODULE.sha256 moved with them:
+  LAW.md `68ce7b9e3bc7...` (00:54), android-journey.cjs `f156bbbd1493...` (00:53, 68,384 bytes, the `--merge` mode); all
+  eight still equal.
 - `tools/edition_check.py` docstring line 2: "Apache-2.0 (kuiper-belt code)": the header licence line is right.
 - `python3 tools/edition_check.py` (evidence officer, 00:42:08-00:42:20 UTC, 12 s, HEAD moving from `3e0d8e7` to
   `aa04b3b` during the run; output `/tmp/nl010-opus/team-9/evidence/ec-run1.txt`): E1 PASS (4 script blocks, 9 modules);
@@ -329,11 +339,7 @@ C4-C7, C9-C11 are one-line key or fact fixes. No sentence of the roadmap is cont
    in force until the owner merges it, and the owner may rule otherwise. Recorded so that nobody reads LAW.md as having
    allowed R2.
 
-## 11. Review of the lead's HANDOFF
-
-See the last section of this file (written after the review).
-
-## 5. Re-run at 00:54 UTC (HEAD `7966a47`), the folder as it stands
+## 9a. (lead) Re-run at 00:54 UTC (HEAD `7966a47`), the folder as it stands
 
 `python3 tools/edition_check.py`: E1 PASS, E2 PASS (6 pending admission, NOT EVALUATED: layers, see-through,
 kuiper-shell, file, apps, drift), **E3 FAIL**, E4 PASS, E5 PASS, **E6 FAIL**, E7 PASS, E8 PASS, E9 PASS. E3 now: the
@@ -342,7 +348,7 @@ integrator's re-cut `proof/edition-sha256.txt` lists 26 files, every one matchin
 every file but itself; if the owner rules `handoff/` out, the change is one condition in E3's completeness loop,
 `tools/edition_check.py`, and one sentence in LAW.md 9.1). E6 unchanged (REQUESTS.md item 1).
 
-## 6. The journey gate, run by the team 9 tester (Pixel 7, `--law`, port 8492, 23 min 3 s, ended 00:54 UTC)
+## 9b. (lead) The journey gate, run by the team 9 tester (Pixel 7, `--law`, port 8492, 23 min 3 s, ended 00:54 UTC)
 
 `android-journey.cjs` (the copy before the builder's review, 65,472 bytes) on the folder as served: report
 `/tmp/nl010-opus/team-9/tester/journey1/report.json`; re-merged with the reviewed script (`--merge`) into
@@ -352,3 +358,28 @@ every file but itself; if the owner rules `handoff/` out, the change is one cond
 (NL-009 01-bar.md:18 measured 29.0 px), "see through" on the page 0 times; with WebGL disabled the page says so in words
 (27 visible words). These are the base page's known reds without the shell (ADMISSIONS.md row 0: `load`, `see-through`),
 reproduced independently. No proof/ file was written (proof/ is the integrator's).
+
+## 11. Review of the lead's HANDOFF (evidence officer)
+
+State at 01:16 UTC: **no HANDOFF on disk** (`handoff/09-law/HANDOFF.md` absent; nothing in `/tmp/nl010-opus/team-9/lead/`);
+no HANDOFF from OPUS-9 lead on issue #10 (the only OPUS-9 comments are the lead's FINDING on K1 and the tester's FINDINGs).
+The evidence officer signs off on a HANDOFF that meets all of these. Each one is a measurement in this file:
+
+1. It names every file of the hand-off with the sha256 in MODULE.sha256, re-computed at posting time (at 01:16 all eight
+   match: LAW.md `68ce7b9e3bc7`, edition_check.py `13d1da026345`, android-journey.cjs `f156bbbd1493`, ...).
+2. It quotes `edition_check.py`'s result as it is, `RESULT: FAIL` with E3 and E6 FAIL and E2 NOT EVALUATED, and says whose
+   files they are (team 10; REQUESTS.md 1-2); it does not call the tool's hand-off "green" on the folder. The tool's own
+   test is green: `test_real_folder.py` 20/20 and `test_edition_check.py` 67 tests OK (5 skipped).
+3. It quotes the journey as measured (section 9b: gate FAIL on (a) (b) (d) (k) (l) (m), the base page without the shell;
+   NOT EVALUATED (i) (n)) and does not call it a pass.
+4. It states LAW.md is "PASS with corrections" (section 8) and either carries C1, C2, C3 and C8 into LAW.md before posting
+   or lists them as open in the HANDOFF; "without softening a word" may not be claimed while C1-C3 are open.
+5. It lists the LICENCES.md fixes of section 10 items 2-3 (team 7's row sha `eb3b68f51cc0`, the line_text row, team 9's
+   own row sha) as done or open.
+6. It carries section 10 items 1, 4 and 5 (K1 on team 7's PNG; the branch content no PR admits, C11; the overnight plan's
+   R2 against LAW.md 9.6) as REQUESTs to their owners, never as decisions.
+7. It holds the envelope (PROTOCOL.md), ends with the footer, names no non-public token, and contains no ACCEPT.
+
+**Verdict at 01:16 UTC: HOLD.** Evidence: PASS (118 keys, two scripts, all PASS). LAW.md: PASS with corrections C1-C11,
+none made yet. LICENCES.md: three fixes open. HANDOFF: not yet written, so not reviewed. When it appears, the
+review is written below this line with the time and the HANDOFF's sha256.
