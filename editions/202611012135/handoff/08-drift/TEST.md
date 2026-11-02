@@ -1,5 +1,7 @@
 # TEST.md — Opus team 8, step 8 the drift (P1-P5: drift_test.py and P4 on Android)
 
+**Tester's verdict (OPUS-8 tester, 00:46 UTC): REFUSED.** 47 of 49. drift_test.py 14 of 14 PASS (P1, P2, P3, P4 data, P5). On the page both devices fail one step only: the LINES filter. The shell is withdrawn from the served modules.json (HARNESS 00:18Z), so `#ky-drift` lands in a page panel that no control opens, and a finger cannot reach its "moved" chip because `#linesctl` covers it. A two-line fix (put the section inside `#lines` before `#lineslist` when the shell has no WAFER panel) was measured in scratch only: Pixel 7 17 of 17 (issue #10 comment 6566200296). The module is the lead's file, so it is unchanged. Re-run with `node test.cjs <url> <out> --device "Pixel 7" --handoff`, then the same with `--device "Galaxy S24"`.
+
 Written by `handoff/08-drift/test.cjs` (OPUS-8 tester). P1 determinism, P2 refusal, P3 ground truth by `git show`, the data half of P4 and P5 are `drift_test.py` (device `python`, independent of `tools/drift.py --check`); P4 on the page is Playwright with real touch on Pixel 7 and Galaxy S24, scenario A no drift module, B drift admitted, C drift admitted and data/drift.json answering 404.
 
 tools/drift.py sha256 `29fdb05e5717aee41a5b0ed149b715bf4d997cdbee045bef90da9dd7a6b6080e`; keys.json sha256 `1c293c337b4c3c8442c12746ce3cd08d920c763344f18333f75e73aa9fc7242b`.

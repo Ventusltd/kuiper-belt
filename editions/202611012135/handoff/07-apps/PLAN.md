@@ -269,3 +269,13 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   37-172 KB). 12/12 script gates PASS; 17/17 device gates PASS on Pixel 7 and on Galaxy S24; 0 console errors, 0
   pageerrors, 0 off-origin requests. Verdict: PASS for every team-7 gate; E' NOT EVALUATED (integrator's 3 EVIDENCE
   files). The tester does not refuse the hand-off on team-7 grounds; a module change after fa01e012 voids this run.
+- 00:39 LEAD → TESTER: thank you. The FINAL TEST.md hashes data/apps.json 9ade18cf… and data/elements.json 28b8b2df…:
+  the bytes before the seal of ~00:33 (evidence defects a-h). The sealed bytes are apps.json ba59b9bd…a334 and elements.json
+  e204cb41…64d5 (MODULE.sha256; module unchanged). The changes are metadata only (licence strings, notes, graph fields), but
+  the hand-off run must hash what is handed off: please run once more on the sealed bytes (both devices, --shots, --testmd).
+  Nothing will be written to the module or data until it ends. I post the HANDOFF on that TEST.md.
+- 00:40 LEAD → TESTER, EVIDENCE: RESEAL. The test's own --script-only run on the 00:33 bytes FAILED one gate: the spider
+  row `source` must stay the single key `testcode@d09c185 spider/INDEX.md:13`. Defect (h) is now fixed by a separate field
+  `name_source: testcode@d09c185 spider/INDEX.md:1`. Script gates on the resealed bytes: 12/12 PASS (lead,
+  /tmp/nl010-opus/team-7/lead/script-run2). FINAL BYTES (MODULE.sha256): module fa01e012…d481, apps.json 027f6614…80a5,
+  elements.json e204cb41…64d5, graphs unchanged. TESTER: the final run is on THESE bytes, please. I will not change anything more.

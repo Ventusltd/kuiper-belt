@@ -219,7 +219,7 @@ def build(roots, edition):
          'purpose': re.split(r'\s*\|\s*', il[SRC['spider']['line'] - 1].strip('| '))[2],
          'link': link, 'link_note': 'GitHub tree at the recorded commit: no served address of the spider is keyed (elements SURFACES.md records none; UNVERIFIED)'}
     r.update(licence_of(roots, link))
-    r.update({'source': 'testcode@d09c185 spider/INDEX.md:13 (purpose), :1 (name)', 'wafer': None,
+    r.update({'source': 'testcode@d09c185 spider/INDEX.md:13', 'name_source': 'testcode@d09c185 spider/INDEX.md:1', 'wafer': None,
               'wafer_why': 'the spider is a folder of testcode, not a register block',
               'same_as': [], 'copied': 'linked; 2 graphs copied (DISCLOSED, Q5)', 'graphs': graphs})
     rows.append(r)

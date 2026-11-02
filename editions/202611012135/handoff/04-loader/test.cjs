@@ -479,9 +479,12 @@ async function runDevice(browser, deviceName, S) {
         check('T3', '04-touch T3 a 60 ms tap opens the card, a 900 ms hold does not, a 6 px jittered tap does, a 30 px drag does not', clean === 'block' && held !== 'block' && jit === 'block' && drag !== 'block', { clean, held, jitter: jit, drag30: drag }); }
       { await page.evaluate(() => { card.style.display = 'none'; }); const x = Math.round(W * 0.5), y = Math.round(H * 0.6);
         await touch('touchStart', [[x, y]]); await sleep(50); await touch('touchEnd', []); await sleep(120); await touch('touchStart', [[x, y]]); await sleep(50); await touch('touchEnd', []); await sleep(600);
-        const v = await VV(); await page.evaluate(() => { __ev.ups = []; __ev.clicks = []; }); await tapSel(page, '#bar .gm-title[data-panel="hud"]'); await sleep(500);
-        const lat = await page.evaluate(() => __ev.clicks.length && __ev.ups.length ? +(__ev.clicks[0][0] - __ev.ups[0][0]).toFixed(1) : null);
-        check('T4', '04-touch T4 a double tap does not zoom the page; a bar tap clicks at once (< 100 ms)', v.scale === 1 && lat !== null && lat < 100, { vv: v, pointerup_to_click_ms: lat });
+        // pointerup → click on a bar title, three taps, the median: one sample can land on a seconds-long SwiftShader frame
+        const v = await VV(), lats = [];
+        for (let i = 0; i < 3; i++) { await page.evaluate(() => { __ev.ups = []; __ev.clicks = []; }); await tapSel(page, '#bar .gm-title[data-panel="hud"]'); await sleep(600);
+          lats.push(await page.evaluate(() => __ev.clicks.length && __ev.ups.length ? +(__ev.clicks[0][0] - __ev.ups[0][0]).toFixed(1) : null)); }
+        const lat = lats.includes(null) ? null : [...lats].sort((a, b) => a - b)[1];
+        check('T4', '04-touch T4 a double tap does not zoom the page; a bar tap clicks at once (median of 3 < 100 ms)', v.scale === 1 && lat !== null && lat < 100, { vv: v, pointerup_to_click_ms: lats, median_ms: lat });
         await key('Escape'); await sleep(300); }
       { const put = (i, sx, sy) => page.evaluate(([i, sx, sy]) => { const b = __k.spark(i), g = __k.get(); __k.set({ zoom: 14, cx: b.x - (sx - g.W / 2) / 14, cy: b.y + (sy - g.H / 2) / 14 }); return __k.spark(i).s; }, [i, sx, sy]);
         await page.evaluate(() => { card.style.display = 'none'; edSel = -1; });
