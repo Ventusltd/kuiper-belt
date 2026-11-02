@@ -22,8 +22,9 @@ everything this edition brings in is `LICENCES.md` (Opus team 9) when it lands.
 | `modules/202611012141-see-through.js` | Opus 5, step 5 | **CERN-OHL-S v2, the whole file**: it copies See Through's star-key rule (`see-through/202610050609/descent.js:19, :963, :965`; licence `see-through/202610050609/LICENSE.md:3-7`, text `see-through/202610050609/licences/globalgrid2050-CERN-OHL-S-2.0.txt`). The Apache-2.0 engine is only called, never copied into it. | waiting for admission |
 | `modules/202611012231-file.js` | Opus 6, step 6 | Apache-2.0; GridAtlas's copy-or-show clipboard, export blank-check and travelling-stamp method (Apache-2.0, gridatlas@5ec7f62 atlas/modules/202609031958-menu-bar.js:707-733, :794-834, :1082-1097, :1120-1137, :1354-1365); no GridAtlas bytes copied but the words of two row labels (its header, lines 4-7) | waiting for admission |
 | `modules/202611012309-apps.js` | Opus 7, step 7 | Apache-2.0; copies no elements catalogue text (ROADMAP Q1: only keys `block:<Sym>`) and no spider graph beyond the two below (Q5) | waiting for admission |
+| `modules/202611012325-drift.js` | Opus 8, step 8 (reads `data/drift.json`, CC BY 4.0, which quotes no line text; written by `tools/drift.py`, Apache-2.0) | Apache-2.0 | waiting for admission |
 
-Steps 8 (drift) and 9 (law, `tools/edition_check.py`, `LICENCES.md`): no file on disk yet (23:18 UTC).
+Step 9 (law, `tools/edition_check.py`, `LICENCES.md`): no file on disk yet (23:59 UTC).
 
 **The spider graphs (Opus 7, ROADMAP Q5).** `data/graphs/overview.json` and `data/graphs/periodic-table.json` are
 copied and marked DISCLOSED by Opus 7 pending the owner's answer to Q5. Measured by the builder: `overview.json` is

@@ -80,3 +80,28 @@ the integrator decides (fix in the shell: close without `history.back()` racing 
 `edPopping`/a shared flag, or the page's listener ignores a popstate whose state is the shell's `{kmb}`).
 Load, panel-dismiss (wafer tap and back gesture), see-through now PASS (were red in run 0).
 
+**Run 1 final, Pixel 7 (23:23:45–23:59:21 UTC, load 57→68): 16 PASS, 2 FAIL, 0 console errors on the edition**
+(2 off-edition errors on `see-through/`: CARTO basemap `ERR_TUNNEL_CONNECTION_FAILED`). Report `runs/r1-pixel-7.json`.
+Galaxy S24 and Pixel 7 landscape were stopped unrun at 23:59 because line-card had been admitted at 23:33 and the
+integrator had patched index.html (`5617077b…`, the shell-pop guard at :799-801); run 2 covers all three devices on
+that state.
+
+| step | run 0 | run 1 Pixel 7 | measured |
+|---|---|---|---|
+| load | FAIL | **PASS** | bar one row: 6 titles top 0, 34 px, scroll 412/412; wafer disc 322×323 (strip box 8,787 105×44 blanked); 0 errors; 21.9 s |
+| edition-open (ABOUT) | PASS | PASS | `#kmb-panel-about` 34→833, scrolls inside (scrollTop 145, page 0) |
+| edition-close | PASS | PASS | |
+| panel-dismiss | FAIL | **PASS** | wafer tap (404,551) on `#c` beside FILE (bottom 262.5) closed it, no card; ABOUT + `history.back()` closed it, URL unchanged |
+| lines-open (WAFER) | PASS | PASS | 344 rows |
+| lines-filter | PASS | PASS | 7 rows, all match |
+| lines-pick | PASS | **FAIL (turned red)** | no card, no selected spark (shell `history.back()` × page ANDROID BACK) |
+| card-details | PASS | **FAIL (turned red)** | follows lines-pick |
+| card-close | PASS | PASS* | *no card was open; × size 0×0 (not measured) |
+| key-e-1..3 | PASS | PASS | cards 1, 2, 3 of 344, spark clear (y 377/352/352, card top 722/671/671) |
+| pinch-drag | PASS | PASS | ratio 0.502; drag (−90,70) → (−90,70) |
+| spark-tap | PASS | PASS | card 323 = nearest (1.9 px; second 29.7) |
+| whole-wafer (VIEW) | PASS | PASS | VIEW › whole wafer ⌫ (44 px row), panel and card closed, disc whole |
+| modules | PASS (empty) | PASS | admitted [hello, kuiper-shell], refused [], done, 0 page errors |
+| see-through | FAIL | **PASS** | strip link (9,788 102.9×42) → same tab `/see-through/202610050609/` |
+| console | — | PASS | 0 on the edition |
+

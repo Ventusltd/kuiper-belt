@@ -20,7 +20,7 @@
 const KY_EDITION = '202611012135';
 const KY_NAMES = Object.freeze(['keyPlace', 'address', 'describe', 'findBy', 'flyTo', 'home', 'homeCamera', 'safeBox',
   'lightTime', 'showNew', 'goKey', 'fmt', 'words', 'esc', 'cv', 'ov', 'o2', 'hud', 'big', 'sub', 'card', 'gbox', 'gin',
-  'SPACE', 'N', 'repos', 'commits', 'wafer', 'cam', 'lit', 'sel', 'redraw', 'draw', 'panels', 'refuse']);
+  'SPACE', 'N', 'repos', 'commits', 'wafer', 'cam', 'lit', 'sel', 'redraw', 'draw', 'panels', 'refuse', 'nav']);
 const kyDraw = [], kyLines = [];
 let kyAdmitting = null, kyInstalling = null;
 function kyLine(t){ kyLines.push(t); if (!N) hud.textContent += '\n' + t; dirty = true; }
@@ -30,6 +30,32 @@ function kyLine(t){ kyLines.push(t); if (!N) hud.textContent += '\n' + t; dirty 
     if (kyLines.length) hud.textContent += '\nMODULES · ' + kyLines.join('\n');
     for (const d of kyDraw.slice()) { try { d.fn(o2, KY); }
       catch (e) { kyDraw.splice(kyDraw.indexOf(d), 1); kyLine(d.id + ' draw threw ' + (e && e.message || e) + ' · painter removed'); } } }; }
+// ONE OWNER OF HISTORY (rev 5): every layer that holds a history entry for the Android back gesture pushes it through
+// KY.nav (the edition's card and panels as owner 'edition', the shell as 'kuiper-shell'). A back the page starts is
+// marked self (event.kuiperSelf) and never read as the user's gesture; a user's back calls the handler of the owner
+// whose entry it removed, and nobody else's. An entry is ours when its state carries kuiperDepth; a foreign state is
+// left alone (never reconciled), so a module still pushing its own entries degrades to the Edition 4 behaviour.
+const kyNav = { stack: [], self: 0, pending: [], handlers: {} };
+function kyDepth(){ const s = history.state; return s == null ? 0 : (typeof s.kuiperDepth === 'number' ? s.kuiperDepth : null); }
+function kyNavReconcile(){ const d = kyDepth(), lost = []; if (d === null) return lost;
+  while (kyNav.stack.length && kyNav.stack[kyNav.stack.length - 1].depth > d) lost.push(kyNav.stack.pop()); return lost; }
+function kyNavPush(owner){ if (kyNav.self > 0) { if (!kyNav.pending.includes(owner)) kyNav.pending.push(owner); return true; }
+  kyNavReconcile(); const top = kyNav.stack[kyNav.stack.length - 1], depth = Math.max(top ? top.depth : 0, kyDepth() || 0) + 1;
+  try { history.pushState({ kuiper: 1, kuiperDepth: depth, owner }, ''); } catch (e) { return false; }
+  kyNav.stack.push({ owner, depth, live: true }); return true; }
+function kyNavTrim(){ const top = kyNav.stack[kyNav.stack.length - 1];
+  if (top && !top.live && kyNav.self === 0 && kyDepth() === top.depth) { kyNav.self++; history.back(); } }
+function kyNavBack(owner){ const i = kyNav.pending.indexOf(owner); if (i >= 0) { kyNav.pending.splice(i, 1); return; }
+  for (let j = kyNav.stack.length - 1; j >= 0; j--) if (kyNav.stack[j].owner === owner && kyNav.stack[j].live) { kyNav.stack[j].live = false; break; }
+  kyNavTrim(); }
+function kyNavHas(owner){ kyNavReconcile(); return kyNav.pending.includes(owner) || kyNav.stack.some(x => x.live && x.owner === owner); }
+kyNav.handlers.edition = edBack;
+addEventListener('popstate', e => { const gone = kyNavReconcile();
+  if (kyNav.self > 0) { kyNav.self--; e.kuiperSelf = true;                 // our own back(): close nothing; re-arm what it took by accident
+    for (const o of gone.filter(g => g.live).map(g => g.owner).concat(kyNav.pending.splice(0))) kyNavPush(o); }
+  else for (const g of gone) if (g.live && kyNav.handlers[g.owner]) { try { kyNav.handlers[g.owner](e); } catch (x) { kyLine(g.owner + ' back handler threw ' + (x && x.message || x)); } }
+  kyNavTrim(); });
+const kyOwner = o => { if (typeof o !== 'string' || !/^[a-z0-9-]+$/.test(o) || o === 'edition') throw new TypeError('KY.nav: the owner is the module id'); return o; };
 const KY_STATE = { schema: 'kuiper.modules.v1', edition: KY_EDITION, hooks: 'kuiper.hooks.v1', order: [], admitted: [],
   refused: [], failures: [], done: false, timings: { loader_start_ms: Math.round(performance.now()) } };
 const KY_MODULES = {};
@@ -58,6 +84,9 @@ const KY = Object.freeze({
     set: setPanel, place: placePanels }),
   refuse(text, slot){ if (typeof slot !== 'string' || !/^[a-z0-9-]+$/.test(slot) || slot === 'engine' || slot === 'modules')
       throw new TypeError('KY.refuse(text, slot): slot is the module id; engine and modules are the page\'s'); refuse(String(text || ''), slot); },
+  nav: Object.freeze({ push(owner){ return kyNavPush(kyOwner(owner)); }, back(owner){ kyNavBack(kyOwner(owner)); },
+    onBack(owner, fn){ if (typeof fn !== 'function') throw new TypeError('KY.nav.onBack needs a function'); kyNav.handlers[kyOwner(owner)] = fn; },
+    has(owner){ return kyNavHas(kyOwner(owner)); }, isSelf(e){ return !!(e && e.kuiperSelf); }, get depth(){ return kyDepth(); } }),
   names: KY_NAMES,
   register(m){ if (!kyAdmitting) { kyLine('a registration outside admission ignored: ' + (m && m.id)); return false; }
     if (kyAdmitting.reg) { kyAdmitting.twice = true; return false; } kyAdmitting.reg = m; return true; },

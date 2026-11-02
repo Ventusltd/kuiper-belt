@@ -26,7 +26,7 @@ as reviewed (data and tools at 23:47 UTC, the module at 23:50); line numbers bel
 |---|---|---|
 | `editions/202611012135/modules/202611012309-apps.js` | fa01e012d81b32edf0287536e27a11075313dcd96d18c2409e21fb997bd0d481 (re-read 23:50, after the lead's requires fix) | 42,561 (`node --check` OK) |
 | `editions/202611012135/data/apps.json` | 9ade18cfdb582ac6d7beede7efe05906dfc6027d51d62b425211183ca6987fe7 | 32,460 |
-| `editions/202611012135/data/elements.json` | 781dc0d96cf9bb452fdbc1618257a36fcfdb29522b5691b6ea74babb45d3a620 | 165,383 |
+| `editions/202611012135/data/elements.json` | 28b8b2df02b5b7766ec31b2b04d14c5e7701f0198ab37b7f49c6d85a17184c02 (rebuilt 23:59 with `counts.live_register`; was 781dc0d9…a620) | |
 | `editions/202611012135/data/graphs/overview.json` | 124aa35e3eabafe15f3c90f82d1a38b7132fb7cdf23aba836a9757a84202df09 | 6,125 |
 | `editions/202611012135/data/graphs/periodic-table.json` | b84820447a0f8d18687f48f409e2a5442bc66c7f8b71d7ff1a171ecc7dc53a0e | 509,639 |
 | `tools/apps_registry.py` | caa40c002108284ad0be778d850e3868d2442e13ff3fd11f79ec5b27a1a6bd4e | (ast OK) |
@@ -249,7 +249,7 @@ The table: editions/202611012135/index.html:845-847 `KY_NAMES` (35 names), :862-
 Neighbour keys: layers.js (`modules/202611012141-layers.js`) :598-599 `admitRecord` returns `REFUSED · licence
 unsettled` when the record's licence begins `UNSETTLED`, and :128 "a refusal … is never lifted by registering";
 data/layers.json record `elements` carries `licence: "UNSETTLED: elements@f7a92fb has no LICENSE, owner question Q1"`
-and `source.sha256` 781dc0d9…a620 (= data/elements.json above); record `spider` still has `source.file: null` and
+and `source.sha256` 781dc0d9…a620 (the pre-23:59 data/elements.json: stale, defect c); record `spider` still has `source.file: null` and
 format `code-feature-collection.v1` (REQUESTS.md item 1 to Opus 3). file.js (`modules/202611012231-file.js`) :215
 reads `KY.modules.apps.api.list()`, :662-666 the FILE row "Open an app" (`#ky-file-open-app`) calls `api.open()`
 (PLAN.md quotes :652-654 and :213-221: file.js has grown since; these are the lines at 23:47).
@@ -287,8 +287,10 @@ Defects (handed to the lead in PLAN.md at 23:47; status at the verdict in sectio
 - (a) apps.json row 34 `purpose` cites neural-link FIXES/NL-010/BRIEF.md:9; "bring in periodic table" is BRIEF.md:8
   (tools/apps_registry.py:213).
 - (b) data/elements.json `register_note` keys 606 at `stars@cbca125 blocks/blocks.json:2`; the file is one line: `:1`.
-- (c) data/elements.json has no `counts.live_register`; apps.js:85 then prints "the live register not counted", so
-  the readout cannot say "606 in the live register, 244 catalogued" (ROADMAP 7.3; the tester checks it).
+- (c) FIXED by the builder (23:59): data/elements.json now carries `counts.live_register` 606 and
+  `live_register_source` stars@cbca125 blocks/blocks.json sha256 07675d74…a573 (re-measured =). Consequence: data/layers.json
+  record `elements` still holds `source.sha256` 781dc0d9…a620 (the old file); Opus 3 must re-record it or step 3's test 9
+  refuses the layer (REQUEST, REQUESTS.md item 1).
 - (d) FIXED by the lead (commit 57195d2, 23:49): `requires` named `safeBox`, `panels`, `address` (never called) and
   omitted `cv` (read); it now lists exactly the 16 names used.
 - (e) apps.json row 33 `graphs[1].copy_matches_source: true` beside 2 redacted tokens.

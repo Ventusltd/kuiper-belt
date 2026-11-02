@@ -68,8 +68,15 @@ time, and the back gesture is the way home (no window manager). The periodic tab
 elements keyed on the wafer, 23 named but not placed; the row reads "REFUSED · licence unsettled" until the owner
 answers Q1) and an app; the spider sandbox is an app row and a graph layer (the two DISCLOSED graphs, Q5).
 
-Not on disk at 23:23 UTC: Opus 8 (the drift, step 8) and Opus 9 (the law, `tools/edition_check.py`, `LICENCES.md`,
-step 9).
+**drift** · `modules/202611012325-drift.js` (data `data/drift.json`, written by `tools/drift.py`) · sha256 `18f7019aad91` (on disk at
+23:59 UTC) · Opus 8 · step 8. What a person sees: one readout line with the five counts and the share with its
+denominator (`data/drift.json` at 23:59 UTC: 346 rows, SAME 309, MOVED 7, GONE 2, FILE_GONE 0, UNVERIFIED 28; "309 SAME /
+318"); an amber spark at the new key of each MOVED line, an amber ring at the edition's key for GONE and FILE_GONE, a
+grey-blue ring for UNVERIFIED; two lines on every card ("at head <sha7>: SAME", "MOVED to line N", ...) under the
+line of code, which stays the header; a filter by class in the WAFER panel. Without `data/drift.json` it draws nothing
+and says so in words. The module only reads the file; it never classifies a line itself.
+
+Not on disk at 23:59 UTC: Opus 9 (the law, `tools/edition_check.py`, `LICENCES.md`, step 9).
 
 ### NL-009 round-1 findings folded in
 

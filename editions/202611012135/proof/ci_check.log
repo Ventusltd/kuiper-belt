@@ -1,0 +1,6 @@
+# python3 tools/ci_check.py, kuiper-belt working tree on edition/202611012135 (HEAD 0cd7910), run 2026-11-02 00:00 UTC by OPUS-10 evidence
+K1 privacy: 664 tracked files scanned, 0 match a private digest
+K2 sums: issued 45,735,836,396, meta 45,735,836,396, repositories 45,735,836,396, silent 17,604,284,400, commits 13344: agree
+K3 syntax: 19 tools, 5 pages
+K4 order: 0 commits out of order or overlapping; address space 63,340,120,796 vs 63,340,120,796
+RESULT: PASS

@@ -129,3 +129,9 @@ See Through itself (see-through/) is untouchable this edition: its hash reader s
   apps): static, load, layer, tap, errors PASS on both devices; entry PASS on S24, FAIL on Pixel 7 @393 (strip; R7 381 vs
   shell 434); spark FAIL on both (row correct `../../see-through/#key=36064705400`, but #card visibility:hidden: layers.js:277
   × line-card.js:165, FINDING 6565202316). TEST.md and img/01-03 written. Hand-off REFUSED until both pass.
+- 00:00 UTC lead: hand-off run6 (/tmp/nl010-opus/team-5/lead/run6/report.json; preview, kuiper-shell + line-card + file +
+  see-through, --title-min 434): Pixel 7 @393 load/entry/layer/tap/spark/errors all PASS; Galaxy S24 load/entry/layer/tap/
+  errors PASS, spark FAIL only on its last clause: the touch on the row landed on See Through with #key=36064705400 (hit
+  test on the row, 300x45 at y 622), but the landing screenshot timed out after 180 s and page.goBack (120 s cap) never
+  completed under this sandbox's load (about 15 Playwright runs at once), so "back" read the See Through URL. Re-run of
+  Galaxy S24 alone started as run7. MODULE.sha256 written (module 87a88e48..., data 44095071...).

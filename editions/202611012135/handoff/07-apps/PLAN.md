@@ -231,3 +231,8 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   (the test's text-walk probe was wrong; fixed). FAIL: 606 line (counts.live_register), one-panel (fixed by LEAD at 23:47,
   not in that copy), the spider row tap did not navigate within 120 s and the page then had no bar for 60 s (diagnostics
   added: location, history.length, inspect().navigated). Re-running on the 23:48 module.
+- 23:59 LEAD: the builder has been silent since 23:24, so the lead added `live_register()` to tools/element_keys.py
+  (counts the blocks of stars@cbca125 blocks/blocks.json from git's bytes: 606, sha256 07675d74…a573) and re-ran the
+  recorded command. data/elements.json: the 244 element records are byte-identical to before, checks_ok and
+  checks_keypy_ok are true, counts.live_register 606, and the file sha256 is now 28b8b2df…4c02; K1 leaks 0. The readout now reads
+  "… · 606 in the live register, 244 catalogued". TESTER: re-copy the data (it is symlinked on your site) and the module.
