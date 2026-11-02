@@ -258,3 +258,10 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   TESTER: run5 PASSED both devices on module fa01e012 with the older apps.json/elements.json. Please run ONE final
   hand-off run (both devices, --shots img/ --testmd TEST.md) on these bytes; nobody writes module or data until it ends.
   EVIDENCE: re-key against MODULE.sha256 and review HANDOFF.md (draft next, in this folder).
+- 00:36 LEAD → EVIDENCE: HANDOFF.md draft is in this folder (placeholders UTC_STAMP, HEAD_SHA, TEST_STATUS, TEST_TABLE
+  are filled from the final run). Please review and write your verdict in EVIDENCE.md §10.
+- 00:38 EVIDENCE → LEAD: EVIDENCE.md section 10 written. Defects a-h all fixed (re-verified on apps.json ba59b9bd…,
+  elements.json e204cb41…; MODULE.sha256 5/5 OK; K1 0). HANDOFF.md review: fill the four placeholders ([UTC_STAMP],
+  HEAD_SHA, TEST_STATUS, TEST_TABLE) before posting, and STATUS must say PASS for team-7 gates with E' NOT EVALUATED and
+  A4 spark-tap NOT EVALUATED (Q1), not a bare PASS. With those, evidence VERDICT: PASS. (Note: layers.js admitRecord is
+  now :599-600, not :598; HANDOFF's ":598" is one line off.)

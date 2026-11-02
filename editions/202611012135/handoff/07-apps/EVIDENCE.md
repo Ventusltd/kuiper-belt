@@ -1,6 +1,6 @@
 # Opus team 7 · step 7 "the OS of the estate, baby step one" · EVIDENCE
 
-Evidence officer OPUS-7 (evidence), written 2026-11-01 from 23:33 UTC (`date -u`; final stamp in section 10). Governing: neural-link
+Evidence officer OPUS-7 (evidence), written 2026-11-01 23:33 to 2026-11-02 00:37 UTC (`date -u`). Governing: neural-link
 FIXES/NL-010/OPUS-BRIEF.md, ROADMAP.md step 7 (lines 516-588), team-4/EVIDENCE.md E1-E5, this folder's PLAN.md.
 Law: no claim without a key `repo@sha path:line`; where a fact is an absence the key is the command that measured it;
 a gap is written `DISCLOSED` or `NOT EVALUATED`, never filled in. Every check below was re-run by this officer with
@@ -25,12 +25,12 @@ as reviewed (data and tools at 23:47 UTC, the module at 23:50); line numbers bel
 | file | sha256 | bytes |
 |---|---|---|
 | `editions/202611012135/modules/202611012309-apps.js` | fa01e012d81b32edf0287536e27a11075313dcd96d18c2409e21fb997bd0d481 (re-read 23:50, after the lead's requires fix) | 42,561 (`node --check` OK) |
-| `editions/202611012135/data/apps.json` | 9ade18cfdb582ac6d7beede7efe05906dfc6027d51d62b425211183ca6987fe7 | 32,460 |
-| `editions/202611012135/data/elements.json` | 28b8b2df02b5b7766ec31b2b04d14c5e7701f0198ab37b7f49c6d85a17184c02 (rebuilt 23:59 with `counts.live_register`; was 781dc0d9…a620) | |
+| `editions/202611012135/data/apps.json` | ba59b9bdec7fde337bdfa0aad27420cafd302f7ff1367c63a12974203921a334 (rebuilt by the lead after defects a, e, f, g, h; was 9ade18cf…7fe7; A1 re-run by this officer on it: section 10) | |
+| `editions/202611012135/data/elements.json` | e204cb414d38d4c174083f55a46a57179fd48b4c8ed8248a7ba0f995601964d5 (rebuilt after defects b, c; was 781dc0d9…a620, then 28b8b2df…4c02) | |
 | `editions/202611012135/data/graphs/overview.json` | 124aa35e3eabafe15f3c90f82d1a38b7132fb7cdf23aba836a9757a84202df09 | 6,125 |
 | `editions/202611012135/data/graphs/periodic-table.json` | b84820447a0f8d18687f48f409e2a5442bc66c7f8b71d7ff1a171ecc7dc53a0e | 509,639 |
-| `tools/apps_registry.py` | caa40c002108284ad0be778d850e3868d2442e13ff3fd11f79ec5b27a1a6bd4e | (ast OK) |
-| `tools/element_keys.py` | ba0217b8e99d1bf2373c6c72da503b619bb56d82a1b9138ddfa0383816212f57 | (ast OK) |
+| `tools/apps_registry.py` | 43b4207529e0b286… at the verdict (was caa40c00…bd4e) | (ast OK) |
+| `tools/element_keys.py` | 0264c65cabde0b25… at the verdict (was ba0217b8…2f57) | (ast OK) |
 | `editions/202611012135/index.html` (the integrator's, hook table rev 3) | 418ae14ca39bc92be028f852825da196fd634ec12bb48f8f538d0cf739564d05 | |
 
 If the lead rebuilds any of these after 23:47 the MODULE.sha256 / HANDOFF must carry the new digests; the keys of
@@ -246,7 +246,7 @@ The table: editions/202611012135/index.html:845-847 `KY_NAMES` (35 names), :862-
 | `hooks.fmt`, `hooks.esc`, `hooks.hud` | 43, 44, 548 | number format, HTML escape, the readout |
 | `KY.modules` | 41, 361 | optional neighbours: `layers` (register/get, apps.js:532), `kuiper-shell`, `line-card` (close), `file` |
 
-Neighbour keys: layers.js (`modules/202611012141-layers.js`) :598-599 `admitRecord` returns `REFUSED · licence
+Neighbour keys: layers.js (`modules/202611012141-layers.js`, as at 00:38) :599-600 `admitRecord` returns `REFUSED · licence
 unsettled` when the record's licence begins `UNSETTLED`, and :128 "a refusal … is never lifted by registering";
 data/layers.json record `elements` carries `licence: "UNSETTLED: elements@f7a92fb has no LICENSE, owner question Q1"`
 and `source.sha256` 781dc0d9…a620 (the pre-23:59 data/elements.json: stale, defect c); record `spider` still has `source.file: null` and
@@ -284,22 +284,53 @@ into the module; nothing vendored); purpose; Q1 and Q5 honoured with keys; GridA
 `provides: apps` present; the 16 names are all in `KY_NAMES` (index.html:845-847) and each is used (section 7).
 
 Defects (handed to the lead in PLAN.md at 23:47; status at the verdict in section 10):
-- (a) apps.json row 34 `purpose` cites neural-link FIXES/NL-010/BRIEF.md:9; "bring in periodic table" is BRIEF.md:8
+- (a) FIXED (apps.json ba59b9bd…: BRIEF.md:8). Was: apps.json row 34 `purpose` cites neural-link FIXES/NL-010/BRIEF.md:9; "bring in periodic table" is BRIEF.md:8
   (tools/apps_registry.py:213).
-- (b) data/elements.json `register_note` keys 606 at `stars@cbca125 blocks/blocks.json:2`; the file is one line: `:1`.
+- (b) FIXED (elements.json e204cb41…: "blocks/blocks.json:1, a one-line file"). Was: data/elements.json `register_note` keys 606 at `stars@cbca125 blocks/blocks.json:2`; the file is one line: `:1`.
 - (c) FIXED by the builder (23:59): data/elements.json now carries `counts.live_register` 606 and
   `live_register_source` stars@cbca125 blocks/blocks.json sha256 07675d74…a573 (re-measured =). Consequence: data/layers.json
   record `elements` still holds `source.sha256` 781dc0d9…a620 (the old file); Opus 3 must re-record it or step 3's test 9
   refuses the layer (REQUEST, REQUESTS.md item 1).
 - (d) FIXED by the lead (commit 57195d2, 23:49): `requires` named `safeBox`, `panels`, `address` (never called) and
   omitted `cv` (read); it now lists exactly the 16 names used.
-- (e) apps.json row 33 `graphs[1].copy_matches_source: true` beside 2 redacted tokens.
-- (f) apps.json top-level `licence` "CC BY 4.0" is not true of the 25 copied CERN-OHL-S v2 homepage lines.
-- (g) row `block:St` licence `NOT EVALUATED: no clone`: the register file's commit states GPL v3 (section 5).
-- (h) row 33 `source` cites INDEX.md:13; its `name` is INDEX.md:1.
+- (e) FIXED (`byte_for_byte: false`, `k1_redacted_tokens: 2`). Was: apps.json row 33 `graphs[1].copy_matches_source: true` beside 2 redacted tokens.
+- (f) FIXED (the field now names the CERN-OHL-S v2 and Apache-2.0 quoted lines). Was: apps.json top-level `licence` "CC BY 4.0" is not true of the 25 copied CERN-OHL-S v2 homepage lines.
+- (g) FIXED (`GPL-3.0`, key @d3b4c49 LICENSE:1). Was: row `block:St` licence `NOT EVALUATED: no clone`: the register file's commit states GPL v3 (section 5).
+- (h) FIXED (`source` names :13 purpose and :1 name). Was: row 33 `source` cites INDEX.md:13; its `name` is INDEX.md:1.
 - Noted, not a defect: the element card's two GitHub/catalogue links open with `target="_blank"` (apps.js:261-262);
   the launcher's app rows navigate in the same tab as 7.2 requires.
 
 ## 10. Review of the lead's HANDOFF, and the evidence officer's verdict
 
-(Written when HANDOFF.md is reviewed; see below.)
+Reviewed at 00:37 UTC (`date -u`): handoff/07-apps/HANDOFF.md (6,283 bytes, written 00:36), MODULE.sha256, MODULE.json,
+TEST.md, img/ (4 PNG: element-card 37,170 B, launcher 154,363 B, spider-layer 172,497 B, table-layer 101,471 B; all
+< 300 KB).
+
+Re-checked against the files at review: `sha256sum -c MODULE.sha256` = 5 of 5 OK (module fa01e012…d481, apps.json
+ba59b9bd…a334, elements.json e204cb41…64d5, both graphs as section 4); MODULE.json `requires` = the 16 names of
+apps.js:17/:24-25, all in `KY_NAMES`; A1 re-run by this officer on apps.json ba59b9bd…: 34 records, keys match the
+pattern, 7 `block:` keys = APPS.md:7-13 in order, 25 homepage rows = homepage_v134.html:32-56 (id, line, name, kind,
+purpose; link = href, or `source_href` = href, or `link_withheld`), 0 differences; K1 `leaks()` and the underscore token
+over every file under editions/202611012135/ and both tools = 0; defects a-h all fixed (section 9). TEST.md line 5:
+"PASS for every team-7 gate; NOT EVALUATED: E' (the EVIDENCE files of file.js that the integrator writes at assembly)".
+
+HANDOFF review (what must hold when it is posted):
+1. Four placeholders are unfilled: `[UTC_STAMP]`, `HEAD_SHA`, `TEST_STATUS`, `TEST_TABLE`. Fill them from `date -u`,
+   `git rev-parse HEAD` and TEST.md at posting time; do not post with any placeholder left.
+2. `STATUS` must carry TEST.md's own words: PASS for the team-7 gates with E' NOT EVALUATED and A4's spark-tap NOT
+   EVALUATED (Q1); not a bare PASS.
+3. Claims checked and true by key: 34 rows and their sources (sections 1-2); 16 requires, each used (section 7);
+   221 / 23 (12/4/6/1) and the readout with 606 (section 3, defect c); REFUSED by layers.js:599-600 / :128 (section 7);
+   overview 16/15 drawn as rings, periodic-table 663/2,481 (section 4; the 552 drawn / 412 unkeyed are the builder's
+   and the tester's measurement, TEST.md, not re-run here); the K1 history finding (section 8); 17 GPL and 48 DISCLOSED
+   `line_text` lines (section 5); "nothing goes off-origin at load" (section 4).
+4. Wording: "The app row links the v5 folder at GitHub" is accurate; TEST.md's "A5 the spider row opens the dashboard"
+   means it navigates to that GitHub folder, not a running dashboard (section 2); the HANDOFF does not overclaim it.
+5. The envelope and footer follow the brief (PROTOCOL envelope, ACTION REQUESTED, blank line, `---`, the generated
+   line). It posts no ACCEPT.
+
+VERDICT (evidence officer): PASS for evidence, keys and licences, on condition of items 1 and 2 above. Every claim in
+the HANDOFF has a key in this file or in TEST.md; every source licence is keyed or written DISCLOSED / NOT EVALUATED;
+the module header is correct (Apache-2.0, no See Through code, requires exact). Open for the owner: Q1 (elements), Q5
+(the two copied graphs), one-line GPL and unlicensed `line_text` quotes (section 5), and the K1 tokens already pushed in
+the branch history (section 8). Open for Opus 3: re-record data/elements.json e204cb41… and data/graphs/* in layers.json.

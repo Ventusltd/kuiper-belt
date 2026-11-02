@@ -649,7 +649,7 @@ function loaderMod(mod) {
     const name = path.basename(modFile);
     const html = flag('--html') ? fs.readFileSync(String(flag('--html')), 'utf8') : fs.readFileSync(path.join(EDITION_DIR, 'index.html'), 'utf8');
     const manifest = fs.readFileSync(path.join(EDITION_DIR, 'modules.json'), 'utf8');
-    if (html.includes('kuiper-shell') || manifest.includes('kuiper-shell')) { mod.mode = 'page'; mod.modeNote = html.includes('kuiper-shell') ? '(index.html names it)' : '(modules.json names it; the loader admits it)'; if (flag('--html')) mod.pageOpts = { htmlFile: String(flag('--html')), rewrite: h => h }; }
+    if (/<script[^>]+kuiper-shell\.js/.test(html) || /"id"\s*:\s*"kuiper-shell"/.test(manifest)) { mod.mode = 'page'; mod.modeNote = /<script[^>]+kuiper-shell\.js/.test(html) ? '(index.html names it)' : '(modules.json names it; the loader admits it)'; if (flag('--html')) mod.pageOpts = { htmlFile: String(flag('--html')), rewrite: h => h }; }
     else { mod.mode = 'inject'; mod.modeNote = `(neither index.html nor modules.json names it yet; served with \`<script defer src="modules/${name}"></script>\` before \`</body>\`, standing in for team 1's one script tag)`;
       mod.pageOpts = { ...(flag('--html') ? { htmlFile: String(flag('--html')) } : {}), rewrite: h => h.replace(/<\/body>/i, `<script defer src="modules/${name}"></script>\n</body>`) }; }
     // page mode through the manifest: when the integrator's record still carries an earlier sha256 of this module (a
@@ -663,7 +663,7 @@ function loaderMod(mod) {
       man.order = man.order.filter(x => x !== 'kuiper-shell'); const h = man.order.indexOf('hello'); man.order.splice(h + 1, 0, 'kuiper-shell');
       mod.mode = 'page'; mod.pageOpts = { ...(flag('--html') ? { htmlFile: String(flag('--html')) } : {}), rewrite: x => x, manifest: JSON.stringify(man) };
       mod.modeNote = `(--admit: modules.json served with handoff/01-shell/MODULE.json inserted, sha256 ${mod.sha256.slice(0, 12)}, order ${JSON.stringify(man.order)}; the page's loader admits it)`; } catch (e) { log('--admit failed: ' + e.message); } }
-    if (mod.mode === 'page' && !html.includes('kuiper-shell')) { try { const man = JSON.parse(manifest), rec = (man.modules || []).find(m => m && m.id === 'kuiper-shell');
+    if (mod.mode === 'page' && !/<script[^>]+kuiper-shell\.js/.test(html)) { try { const man = JSON.parse(manifest), rec = (man.modules || []).find(m => m && m.id === 'kuiper-shell');
       if (rec && rec.sha256 !== mod.sha256) { const was = rec.sha256; rec.sha256 = mod.sha256; rec.bytes = mod.bytes; mod.pageOpts = { ...mod.pageOpts, manifest: JSON.stringify(man) };
         mod.modeNote += ` — modules.json served with kuiper-shell sha256 ${mod.sha256.slice(0, 12)} (committed record ${was.slice(0, 12)}, an earlier revision)`; } } catch (e) {} }
     if (flag('--html')) mod.modeNote += ' — index.html replaced by ' + flag('--html');

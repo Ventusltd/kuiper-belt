@@ -654,6 +654,8 @@ class TRealCopy(unittest.TestCase):
         cls.root = os.path.join(cls.tmp, 'repo')
         os.makedirs(os.path.join(cls.root, 'tools'))
         shutil.copy2(TOOL, os.path.join(cls.root, 'tools', 'edition_check.py'))
+        if os.path.isfile(os.path.join(ROOT, 'tools', 'drift.py')):     # E9 then reads NOT EVALUATED (no estate), not FAIL
+            shutil.copy2(os.path.join(ROOT, 'tools', 'drift.py'), os.path.join(cls.root, 'tools', 'drift.py'))
         shutil.copytree(eds, os.path.join(cls.root, 'editions'))
         cls.base = cls.run_copy()
         cls.man = json.loads(read(os.path.join(cls.root, 'editions', cls.stamp, 'modules.json')))
