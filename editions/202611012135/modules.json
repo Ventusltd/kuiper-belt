@@ -4,7 +4,8 @@
  "hooks": "kuiper.hooks.v1",
  "order": [
   "hello",
-  "line-card"
+  "line-card",
+  "see-through"
  ],
  "modules": [
   {
@@ -67,6 +68,62 @@
    "team": "02",
    "step": 2,
    "proof": "handoff/02-card/"
+  },
+  {
+   "id": "see-through",
+   "generation": "202611012141",
+   "path": "modules/202611012141-see-through.js",
+   "sha256": "87a88e488fdf8433e2dcb3c31b9dfcf11726d5761509d996017ebbe08f6ce873",
+   "bytes": 26000,
+   "byte_budget": 65536,
+   "requires": [
+    "wafer",
+    "keyPlace",
+    "address",
+    "describe",
+    "goKey",
+    "fmt",
+    "esc",
+    "cv",
+    "ov",
+    "o2",
+    "hud",
+    "card",
+    "gin",
+    "repos",
+    "SPACE",
+    "cam",
+    "sel",
+    "redraw",
+    "draw"
+   ],
+   "provides": [
+    "see-through"
+   ],
+   "reads": [
+    "data/see-through.json",
+    "location.hash"
+   ],
+   "writes": [
+    "window.KY.modules.see-through",
+    "#kuiper-star",
+    "#ky-see-through-css",
+    "#ky-st-apps",
+    "KY.draw.add"
+   ],
+   "creates_controls": "the SEE THROUGH entry a#kuiper-star, mounted only through the shell's api.mountStar (title from 434 px, else the shell's bottom-left strip)",
+   "licence": "CERN-OHL-S-2.0",
+   "team": "05",
+   "step": 5,
+   "proof": "handoff/05-see-through/",
+   "data": [
+    {
+     "path": "data/see-through.json",
+     "sha256": "440950711a148eb019b7309ea1a0610219c096742893ce8d7c1f81be18d479a6",
+     "bytes": 666940,
+     "licence": "ODbL-1.0 (names, (c) OpenStreetMap contributors)"
+    }
+   ]
   }
  ],
  "references": [

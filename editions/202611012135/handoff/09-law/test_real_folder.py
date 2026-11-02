@@ -46,6 +46,24 @@ def cut_proof(ed):
     open(os.path.join(ed, 'proof', 'edition-sha256.txt'), 'w').write('\n'.join(sorted(rows, key=lambda r: r[66:])) + '\n')
 
 
+def estate_of_record(work, ed):
+    """the estate as drift.json recorded it: a folder of symlinks to every clone, leaving out each repository whose head
+    drift.json records as absent (sha null), so a clone made after the cut (pipelinenews at 00:56) does not change the
+    replay. The real folder's E9 is still judged against today's estate by tools/edition_check.py itself."""
+    D = json.load(open(os.path.join(ed, 'data', 'drift.json')))
+    absent = set(r.lower() for r, h in D.get('heads', {}).items() if isinstance(h, dict) and not h.get('sha'))
+    est = os.path.join(work, 'estate-of-record')
+    os.makedirs(est)
+    left = []
+    for n in sorted(os.listdir(ESTATE)):
+        if os.path.isdir(os.path.join(ESTATE, n, '.git')):
+            if n.lower() in absent:
+                left.append(n)
+            else:
+                os.symlink(os.path.join(ESTATE, n), os.path.join(est, n))
+    return est, left
+
+
 def build(base):
     for d in ('editions', 'cosmos', 'tools'):
         os.makedirs(os.path.join(base, d))
@@ -70,9 +88,12 @@ def build(base):
     return ed
 
 
+RUN_ESTATE = [ESTATE]
+
+
 def run(base, *extra):
     t = time.time()
-    r = subprocess.run([sys.executable, os.path.join(base, 'tools', 'edition_check.py'), '--root', base, '--estate', ESTATE] + list(extra),
+    r = subprocess.run([sys.executable, os.path.join(base, 'tools', 'edition_check.py'), '--root', base, '--estate', RUN_ESTATE[0]] + list(extra),
                        capture_output=True, text=True)
     return r.returncode, r.stdout + r.stderr, round(time.time() - t, 1)
 
@@ -154,6 +175,8 @@ def main():
     work = tempfile.mkdtemp(prefix='edition-check-real-', dir=SCRATCH)
     fixture = os.path.join(work, 'fixture')
     build(fixture)
+    RUN_ESTATE[0], left = estate_of_record(work, os.path.join(fixture, 'editions', STAMP))
+    print('estate of record: %s clones linked, left out as recorded absent: %s' % (len(os.listdir(RUN_ESTATE[0])), ', '.join(left) or 'none'))
     prev = re.search(r"location\.replace\('(\d{12})/", open(os.path.join(fixture, POINTER)).read()).group(1)
     results, bad = [], 0
     rc, out, dt = run(fixture, '--strict')

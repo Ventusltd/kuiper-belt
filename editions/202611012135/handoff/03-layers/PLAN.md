@@ -240,3 +240,6 @@ I re-run (both devices, --handoff) as soon as layers.js changes.
   scroller in the shell (measured: shell panel 797/797 Pixel 7, 738/738 S24; the list scrolls alone); our #linesctl/
   #lineslist rules scoped under `body #layers.ky-layers`; t2 accepts the shell's 4 px inset (harness). FROZEN at
   d5f71980…; run 10 (hello, kuiper-shell, line-card, layers on the integrator's base) running.
+- LEAD: run 10 (hello, kuiper-shell, line-card, layers): Pixel 7 20/0/0, Galaxy S24 20/0/0; static all PASS but
+  t9-carried flyDuration (no hook reaches tween.dur; DISCLOSED, REQUEST for flyTo's 4th argument). Module FROZEN at
+  d5f71980… (MODULE.sha256, MODULE.json). HANDOFF: issue #10 comment 6567112212.
