@@ -1,14 +1,25 @@
-Opus team 8, NL-010 step 8, the drift — the LICENCES.md row (for Opus team 9's register)
+Opus team 8, NL-010 step 8, the drift: the LICENCES.md row (for Opus team 9's register)
+Written by the OPUS-8 evidence officer, 2026-11-02 UTC. Keys verified at their commits (handoff/08-drift/EVIDENCE.md K).
 
 | file | licence | key |
 |---|---|---|
-| tools/drift.py | Apache-2.0 (kuiper-belt code) | kuiper-belt@018b46a README.md:155-156 "Code is licensed under Apache-2.0, see LICENSE" |
+| tools/drift.py | Apache-2.0 (kuiper-belt code); header line 2 says so | kuiper-belt@018b46a README.md:156-157 "Code is licensed / under Apache-2.0, see [LICENSE](LICENSE)" |
 | editions/202611012135/modules/202611012325-drift.js | Apache-2.0 (kuiper-belt code); header line 1 says so | same |
-| editions/202611012135/data/drift.json | CC BY 4.0 (kuiper-belt generated data) | kuiper-belt@018b46a README.md:156 "documentation and generated data under CC BY 4.0" |
-| editions/202611012135/handoff/08-drift/*.md, LAYER.json | CC BY 4.0 (documentation) | same |
-| handoff/08-drift/test.cjs | Apache-2.0 (kuiper-belt code) | same |
+| editions/202611012135/handoff/08-drift/test.cjs | Apache-2.0 (kuiper-belt code); header line 2 says so | same |
+| editions/202611012135/handoff/08-drift/drift_test.py | Apache-2.0 (kuiper-belt code); header line 2 says so | same |
+| editions/202611012135/data/drift.json | CC BY 4.0 (kuiper-belt generated data); its `licence` field says so | kuiper-belt@018b46a README.md:157 "documentation and generated data under CC BY 4.0" |
+| editions/202611012135/handoff/08-drift/*.md, LAYER.json, MODULE.json, MODULE.sha256 | CC BY 4.0 (documentation) | same |
+| editions/202611012135/handoff/08-drift/img/*.png | CC BY 4.0 (documentation, screenshots of the page); a card in a screenshot shows a quoted line, which keeps its own repository's licence (next paragraph) | same; kuiper-belt@018b46a editions/202611012027/NOTICE.md:7-10 |
 
-drift.json quotes no line text (it carries ids, keys, paths, line numbers, shas and classes only), so it adds no licence
-beyond what keys.json already carries (editions/202611012027/NOTICE.md:7-10, each quoted line keeps its repository's
-licence). No See Through code is copied (no CERN-OHL-S v2 obligation). No GridAtlas code is copied: the lesson (the
-hashed cartridge) is a rule, not code.
+drift.json quotes no line text: it carries ids, keys, paths, line numbers, shas, classes and reasons only (measured by
+the tester's P5, "line texts quoted: 0"). So it adds no licence beyond what keys.json already carries. EVIDENCE.md quotes
+the lines of the 7 MOVED, 2 GONE and 7 quote_not_at_line rows as citations with their keys. Each quoted line keeps
+its repository's licence (kuiper-belt@018b46a editions/202611012027/NOTICE.md:7-10 "Every quoted line belongs to the
+repository it is keyed to and keeps that repository's licence ... A quote here is a citation with its key, not a
+relicensing"). The quoted repositories are data-grid-gb, gridatlas (LICENSE:1-3 Apache-2.0 at 5ec7f62), globalgrid2050
+(LICENSE.txt:1 CERN OHL-S v2 at c66759f), kuiper-belt, data-centres-gb, maths and ventus-grid-engine.
+
+No See Through code is copied (no CERN-OHL-S v2 obligation on the module). No GridAtlas code is copied: the lesson (the
+hashed cartridge, gridatlas@5ec7f62 atlas/current.json:5, tools/ci/pr-gate.mjs:176) is a rule, not code. Two constants
+are borrowed by value, not by code: CAP_SECONDS (kuiper-belt@018b46a tools/wafer_keys.py:34) and lines_of
+(tools/edition_keys.py:43-46). Both are kuiper-belt Apache-2.0 code.

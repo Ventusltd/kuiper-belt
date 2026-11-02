@@ -10,7 +10,7 @@
   "sha256": "c8a3452c703f6f77524fee4ae5a92dda4409aafda75d04f5df150b8c5a147734"
  },
  "licence_note": "keys only (Q1): elements@f7a92fb states no licence (no LICENSE or NOTICE file), so only `block:<Sym>`, the catalogue number and the register's file address (repo, commit, path) are carried; never a title, a description or a category word. line_text is line 1 of that file at that commit, licensed by its own repository, as keys.json carries line_text.",
- "register_note": "the catalogue is pinned to the register of 2026-09-15 (244 blocks, elements CATALOGUE.md:3); the live register holds 606 (stars@cbca125 blocks/blocks.json:2)",
+ "register_note": "the catalogue is pinned to the register of 2026-09-15 (244 blocks, elements CATALOGUE.md:3); the live register holds 606 (counts.live_register, stars@cbca125 blocks/blocks.json:1, a one-line file)",
  "law": "key = k0(wafer row of files[0].commit) + lines before files[0].path in `git ls-tree -r <commit>` + (1 - 1), by tools/edition_keys.py walk_commit(); placed only when the walk lands on the wafer row's lines and the file holds a text line",
  "wafer": {
   "wafer_tsv_sha256": "2be9a78371de3603089ca9b58955c9d9ddd9f547ad24904da9d51fbc407f4bca",
@@ -122,8 +122,8 @@
  ],
  "checks_keypy_ok": true,
  "command": "python3 tools/element_keys.py --elements /home/user/estate/elements --roots /home/user/estate,/home/user,/tmp/nl010-opus/team-7/builder/clones --out editions/202611012135/data/elements.json --check 3 --keypy-root /home/user/estate",
- "built_utc": "2026-11-01T23:59:01Z",
- "seconds": 160.8,
+ "built_utc": "2026-11-02T00:35:03Z",
+ "seconds": 88.7,
  "elements": [
   {
    "sym": "block:At",

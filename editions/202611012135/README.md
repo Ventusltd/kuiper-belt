@@ -1,6 +1,6 @@
 # Kuiper Edition 5 (202611012135)
 
-Under construction by the NL-010 Opus teams. Not yet published; the pointer still names Edition 4.
+**Version:** Kuiper Edition 5 · cut stamp 202611012135 (UTC) · published 2 November 2026 as the owner's overnight small step: Edition 4's wafer with the measured Android fixes (NL-009 camera, performance, touch and robustness), a hook table and loader that admit stamped modules by sha256, and the card law: every card opens with the line of code itself. The GridAtlas menu bar with the Ventus wordmark, See Through, drift, the periodic table and the File menu are built and in hand-off; each comes in as its own small step and a later dated edition.
 
 ## What changed from Edition 4
 
@@ -19,7 +19,7 @@ Edition 4 is `../202611012027/`. Edition 5 is the same engine and the same `keys
 strip) while the bar, the wafer and every other module keep running. `hello` draws one cyan ring at key 0 and leaves
 `order` before PR A. Folds in NL-009 04-touch and 09-robust (`handoff/04-loader/HANDOFF.md`).
 
-**line-card** · `modules/202611012143-line-card.js` · sha256 `e2baeaaaf244` · Opus 2 · step 2 · **admitted 23:35 UTC** (`ADMISSIONS.md` row 3; `handoff/02-card/index.patch` applied, `index.html` after `418ae14ca39b`; team 2 TEST.md PASS B1-B7 on `788256a9…`, the admitted file differs by a comment only; journey on snapshot `a3-card`, hello + line-card with the shell withdrawn, running). What a person
+**line-card** · `modules/202611012143-line-card.js` · sha256 `e2baeaaaf244` · Opus 2 · step 2 · **admitted 23:35 UTC** (`ADMISSIONS.md` row 3; `handoff/02-card/index.patch` applied, `index.html` after `418ae14ca39b`; team 2 TEST.md PASS B1-B7 on `788256a9…`, the admitted file differs by a comment only; journey on snapshot `a3-card`, hello + line-card with the shell withdrawn: Pixel 7 14/16, Galaxy S24 14/16, 0 console errors, no step turned red; the two red are the base's `load` and `see-through`). What a person
 sees: every card opens with the line of code itself, verbatim from the key; the key is the second row; the title,
 "n of 344", pattern and finder sit behind "details". On a phone (640 px and narrower) the card is a bottom sheet
 capped at 34 dvh with 44 px targets, closed by ×, Escape or a swipe down. Folds in NL-009 02-card. The law is "The
@@ -34,7 +34,7 @@ and command is a 44 px target; a panel opens under the bar, one at a time, and c
 tap on the wafer or the back gesture. Edition 4's bar stays in the page, hidden. Folds in NL-009 01-bar,
 06-seethrough (the bar entry) and 08-type.
 
-### Modules waiting for admission (on disk at 23:23 UTC, in the integration order; admissions read 00:05 UTC)
+### Modules waiting for admission (on disk at 23:23 UTC, in the integration order; admissions read 00:28 UTC)
 
 Each sha256 is of the file as it stood at 23:23 UTC; a module's bytes may still change until its row in
 `ADMISSIONS.md` admits it, and the admitted sha256 is the one in `modules.json`. Each paragraph moves to "Modules
@@ -74,14 +74,14 @@ grey-blue ring for UNVERIFIED; two lines on every card ("at head <sha7>: SAME", 
 line of code, which stays the header; a filter by class in the WAFER panel. Without `data/drift.json` it draws nothing
 and says so in words. The module only reads the file; it never classifies a line itself.
 
-Not on disk at 23:59 UTC: Opus 9 (the law, `tools/edition_check.py`, `LICENCES.md`, step 9).
+Opus 9 (the law, step 9): `tools/edition_check.py` (Apache-2.0, E1-E9 with Opus 4's E6-E8 folded in) on disk at 00:27 UTC; `LICENCES.md` not on disk. It is a tool, not a module, so it has no `order` entry; its result goes into `proof/`.
 
 ### NL-009 round-1 findings folded in
 
 | finding | folded in by | where | state |
 |---|---|---|---|
 | 01 bar | Opus 1 (shell) | `modules/202611012143-kuiper-shell.js` | the shell was refused 00:03 UTC (row 2); waits for Opus 1's rev 2 |
-| 02 card | Opus 2 (card) | `modules/202611012143-line-card.js` | admitted 23:35 UTC (row 3); journey running |
+| 02 card | Opus 2 (card) | `modules/202611012143-line-card.js` | admitted 23:35 UTC (row 3); journey: no step turned red |
 | 03 camera | Opus 10 (base) | `index.html` | applied: the spark is aimed into the band under the bar and any open panel and above the card, re-aimed on the next frame and kept there when the card or the window changes; a finger reaches a spark at 24 px (48 dp), a mouse at 9 px, only from a press that began on the wafer; a pick closes a panel only when under 96 px of band would be left. Merged with 04-touch's tap verdict (a long press opens no card). |
 | 04 touch | Opus 4 (loader patch) | `index.html` (hook table patch rev 4) | admitted 23:19 UTC (row 1), merged with 03-camera's guard as `!tapUp` (`handoff/10-integration/BASE.md` B3); journey: no step turned red |
 | 05 lines | Opus 3 (layers) | `modules/202611012141-layers.js` | waiting for admission |

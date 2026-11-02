@@ -23,6 +23,10 @@
  *  C8 admission: install nothing until every hook exists once; otherwise a loud strip and Edition 4's bar stays.
  *  C9 one row at 360, 393, 412, 430 px and in landscape.
  *  C10 this block.
+ * Revision 2 (2 Nov 2026, same generation, not yet admitted; BLOCKER from the integrator's journey and Opus 3's REQUEST):
+ *  history has one owner per entry. The page owns the card's entry; the shell never causes a popstate while a card is
+ *  shown and steps over its own dead entries (closeAll, stepOver, onPop). Edition 4's #lines #lyAll #lyFocus #lyFind
+ *  are no longer required; SCOPE's focus is a proxy for whichever #lyFocus exists.
  * The star slot (R7, Q7): reserved for See Through (owner: Opus team 5, schema kuiper.see-through.v1). The shell owns
  * the rule (title in the bar when it fits beside a centred brand, else the bottom-left 44 px strip); step 5 owns the
  * words and the target. Until step 5 mounts its node, the slot carries NL-009 06's entry: a.gm-title "See Through"
@@ -240,41 +244,35 @@
     var had = !!state.open;
     setOpenState(name);
     // the Android back gesture closes the panel: one history entry per open panel (C7); same URL, hash kept
-    if (!had && !(history.state && history.state.kmb)) { try { history.pushState({ kmb: name }, ''); historyDepth = 1; } catch (e) { historyDepth = 0; } }
+    // rev 2: over an open card the page's own {kuiper} entry is on top; the panel shares it (one back closes both)
+    // rather than stacking an entry the page cannot see past
+    if (!had && history.state && history.state.kuiper && cardShown()) { historyDepth = 0; }
+    else if (!had && !(history.state && history.state.kmb)) { try { history.pushState({ kmb: name }, ''); historyDepth = 1; } catch (e) { historyDepth = 0; } }
     else if (!had) { try { history.replaceState({ kmb: name }, ''); historyDepth = 1; } catch (e) {} }   // re-use our own entry, never stack two
     else { try { history.replaceState({ kmb: name }, ''); } catch (e) {} }
     var hook = onOpen[name]; if (hook) try { hook(menus[name].panel); } catch (e) {}
   }
-  // rev 2, the one owner of history (BLOCKER via the harness, 1 Nov 2026): the page's ANDROID BACK listener
-  // (index.html, NL-009 04-touch, Opus 4) reads every popstate as a back gesture and hides the card. The shell's own
-  // history.back() on a programmatic close is therefore flagged and swallowed in the capture phase before the page
-  // sees it (04-touch's edPopping idea, made reachable from a separate file); the page keeps owning the card's entry.
-  // Only our own {kmb} entry is ever popped; if the page pushed its entry above ours meanwhile, ours is handed to it.
+  // rev 2, one owner of history (BLOCKER via the harness, 1 Nov 2026). The page's ANDROID BACK listener (index.html,
+  // NL-009 04-touch, Opus 4) owns the card's history entry and reads every popstate it did not cause as a back gesture,
+  // closing the card. It is registered before any module and runs first (measured: Chromium runs window popstate
+  // listeners in registration order, capture or not), so the shell never causes a popstate while a card is open:
+  //  - a programmatic close pops the shell's own {kmb} entry only when, after the command that closed it has run, the
+  //    entry is still on top and no card is shown; otherwise the entry stays, and
+  //  - whenever history lands on a {kmb} entry with no panel and no card open (a back gesture over it, or the page's
+  //    own back() after its card closed), the shell steps over it, so no back gesture is ever spent on nothing.
+  function cardShown() { var c = document.getElementById('card'); return !!c && getComputedStyle(c).display !== 'none' && c.getBoundingClientRect().height > 0; }
+  function stepOver() { if (history.state && history.state.kmb && !state.open && !cardShown()) { try { history.back(); } catch (e) {} return true; } return false; }
   function closeAll(fromPop) {
     if (!state.open) return;
     setOpenState(null);
-    if (!fromPop && historyDepth && history.state && history.state.kmb) {
-      selfPopUntil = Date.now() + 1500; try { history.back(); } catch (e) { selfPopUntil = 0; }
-    } else if (!fromPop && historyDepth) {
-      // the page's {kuiper} entry is above ours: leave the history to the page, and give it ours to clean up
-      handOver = true;
-    }
     historyDepth = 0;
+    if (!fromPop) setTimeout(stepOver, 0);                         // after the row's command (a pick opens the card synchronously)
   }
-  var onOpen = {}, selfPopUntil = 0, handOver = false;
-  function onPop(e) {
-    if (selfPopUntil && Date.now() < selfPopUntil) {
-      selfPopUntil = 0; e.stopImmediatePropagation();
-      // the page pushed its entry before our back() ran (Chrome queues the traversal): we landed on our own entry;
-      // re-label it as the page's, so the page's own clean-up (edPopping, re-arm) removes it with the card
-      if (history.state && history.state.kmb) { try { history.replaceState({ kuiper: 1 }, ''); } catch (x) {} }
-      try { dispatchEvent(new CustomEvent('kuiper-shell:closed', { detail: { self: true } })); } catch (x) {}
-      return;
-    }
-    selfPopUntil = 0;
-    if (handOver && history.state && history.state.kmb) { handOver = false; try { history.replaceState({ kuiper: 1 }, ''); } catch (x) {} }
-    // a back gesture that popped our entry closes the panel and nothing under it (an open card stays)
-    if (state.open && historyDepth) { historyDepth = 0; closeAll(true); e.stopImmediatePropagation(); }
+  var onOpen = {};
+  function onPop() {
+    if (state.open && history.state && history.state.kmb) return;   // a forward step back onto our own entry: nothing to do
+    if (state.open) { historyDepth = 0; closeAll(true); return; }   // the back gesture popped our entry: the panel closes
+    stepOver();
   }
   function wire() {
     bar.addEventListener('click', function (e) {
@@ -299,7 +297,7 @@
     var cv = document.getElementById('c');
     cv.addEventListener('pointerdown', function () { if (state.open) closeAll(false); });
     // the back gesture
-    addEventListener('popstate', onPop, true);                     // capture: Chrome runs it before the page's listener
+    addEventListener('popstate', onPop);
     addEventListener('resize', measure);
     // a system font scale changes the titles' size without a resize: the overflow rule follows the measured widths
     try { var ro = new ResizeObserver(function () { measure(); }); [].forEach.call(bar.querySelectorAll('.gm-title,.ventus-brand'), function (n) { ro.observe(n); }); } catch (e) {}

@@ -1,0 +1,10 @@
+--- a/editions/index.html
++++ b/editions/index.html
+@@ -9,6 +9,6 @@
+ </head>
+ <body>
+ <main>Opening the latest Kuiper edition. <a href="202611012027/">Tap here if it does not open.</a></main>
+-<script>location.replace('202611012027/' + location.hash);</script>
++<script>location.replace('202611012027/' + location.search + location.hash);</script>
+ </body>
+ </html>

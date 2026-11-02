@@ -224,7 +224,7 @@
     + 'border-radius:0 0 6px 6px;padding:6px 10px 8px;pointer-events:auto;text-align:left;overscroll-behavior:contain;'
     + 'max-height:var(--ky-layers-max,80vh);overflow:hidden;flex-direction:column}'
     + '#layers.gm-open,#layers.ky-in-shell{display:flex}'
-    + '#layers.ky-in-shell{position:static;border:0;padding:0;background:transparent;max-height:none}#layers.ky-in-shell #lineslist{max-height:45vh}'
+    + '#layers.ky-in-shell{position:static;border:0;padding:0;background:transparent;max-height:none;height:var(--ky-layers-fit,auto);min-height:240px}'
     + '@media (min-width:641px){#layers{right:auto;width:min(720px,96vw)}}'
     + '#layers .ky-ly-rows{flex:none;min-height:88px;overflow-y:auto;overscroll-behavior:contain}'
     + '#layers .ky-ly-g{color:#2ee6e6;letter-spacing:.12em;text-transform:uppercase;font-size:10px;padding:4px 2px 0;line-height:16px}'
@@ -262,7 +262,7 @@
     + '#lineslist .lg{position:sticky;top:0;z-index:1;display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 8px;background:#0b1a20;color:#2ee6e6;'
     + 'border-top:1px solid #12414a;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;touch-action:manipulation;user-select:none}'
     + '#lineslist .lg .n{color:#7d8799;letter-spacing:0;text-transform:none}#lineslist .lg.focus{color:#22ee77}#lineslist .lg .ch{width:12px;color:#7d8799}'
-    + '#lineslist .ln{min-height:44px;padding:5px 8px;border-top:1px solid #121a26;cursor:pointer;color:#7d8799;font-size:12px;overflow-wrap:anywhere}'
+    + '#lineslist .ln{content-visibility:auto;contain-intrinsic-size:auto 62px;min-height:44px;padding:5px 8px;border-top:1px solid #121a26;cursor:pointer;color:#7d8799;font-size:12px;overflow-wrap:anywhere}'
     + '#lineslist .ln code{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;color:#ffffff;white-space:pre-wrap;font:inherit;font-weight:600}'
     + '#lineslist .ln b{color:#d5dcea;font-weight:600}#lineslist .ln.focus b{color:#22ee77}#lineslist .ln.sel{background:rgba(255,43,214,.12)}'
     + '#lineslist .ln .t{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}';
@@ -270,7 +270,9 @@
   function buildPanel() {
     panel = document.createElement('div'); panel.id = 'layers'; panel.className = 'gm-panel ky-layers';
     panel.setAttribute('aria-label', 'WAFER: the layer registry');
-    var st = document.createElement('style'); st.id = 'ky-layers-style'; st.textContent = CSS; panel.appendChild(st);
+    var st = document.createElement('style'); st.id = 'ky-layers-style';
+    // scoped above the shell's own '#kuiper-menu-bar .gm-panel #linesctl…' rules (kuiper-shell.js:156-160), so ours win
+    st.textContent = CSS.replace(/(^|[},])(#linesctl|#lineslist|#lyClear|#lycount)/g, '$1body #layers.ky-layers $2'); panel.appendChild(st);
     var rows = document.createElement('div'); rows.className = 'ky-ly-rows'; rows.innerHTML = '<div class="ky-ly-why">' + esc(manifestWhy) + '</div>';
     panel.appendChild(rows);
     var host = document.querySelector('.gm-group[data-group="layers"]');   // team 1's shell: WAFER > layers group
@@ -294,8 +296,14 @@
     if (window.visualViewport) visualViewport.addEventListener('resize', sizePanel);
     // when the panel opens, show where you are (05-lines finding 7); no wrap of setPanel (ROADMAP 4.8)
     var opener = panelName === 'shell' ? (panel.closest('.gm-panel') || panel) : panel;   // the element whose gm-open means "shown"
-    new MutationObserver(function () { if (opener.classList.contains('gm-open')) { sizePanel(); fillLines(true); } })
+    new MutationObserver(function () { if (opener.classList.contains('gm-open')) { sizePanel(); requestAnimationFrame(sizePanel); fillLines(true); } })
       .observe(opener, { attributes: true, attributeFilter: ['class'] });
+    // the shell shows its panel by its own rule (not always a gm-open on the panel itself): watch it being laid out
+    if (panelName === 'shell' && typeof ResizeObserver === 'function') {
+      var shown = false;
+      new ResizeObserver(function () { var h = opener.getBoundingClientRect().height;
+        if (h && !shown) { sizePanel(); requestAnimationFrame(sizePanel); fillLines(true); } shown = !!h; }).observe(opener);
+    }
     // rows answer Enter and Space as a button does (NL-009 04 touch, as team 4's patch gave the Edition 4 rows)
     panel.addEventListener('keydown', function (e) { var row = e.target.closest && e.target.closest('#lineslist [data-i], #lineslist [data-g]');
       if (row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.stopPropagation(); row.click(); } });
@@ -306,6 +314,19 @@
   }
   function sizePanel() {
     if (!panel) return;
+    if (panelName === 'shell') {                 // the shell's panel must not scroll as well: fill exactly what it has left
+      var sp = panel.closest('.gm-panel'); if (!sp) return;
+      var pr = sp.getBoundingClientRect(), lr = panel.getBoundingClientRect();
+      if (!pr.height) return;                                        // measured only while the shell panel is shown
+      var pad = parseFloat(getComputedStyle(sp).paddingBottom) || 0;
+      var vh0 = Math.min(innerHeight, window.visualViewport ? visualViewport.height : innerHeight);
+      var maxH = Math.min(parseFloat(getComputedStyle(sp).maxHeight) || vh0, vh0 - pr.top);
+      var fit = Math.max(240, Math.floor(maxH - (lr.top - pr.top + sp.scrollTop) - pad - 2));
+      panel.style.setProperty('--ky-layers-fit', fit + 'px');
+      var over = sp.scrollHeight - sp.clientHeight;                 // borders, margins, rounding: measured, then taken off
+      if (over > 0) panel.style.setProperty('--ky-layers-fit', Math.max(240, fit - over) + 'px');
+      return;
+    }
     var vh = Math.min(innerHeight, window.visualViewport ? visualViewport.height : innerHeight);
     var top = parseFloat(panel.style.top) || 46, avail = Math.max(160, vh - top - 4);
     panel.style.setProperty('--ky-layers-max', Math.round(innerWidth <= 640 ? avail : Math.min(avail, vh * 0.8)) + 'px');
@@ -488,13 +509,29 @@
     return { x0: s.x0, x1: s.x1, y0: top, y1: bot };
   }
   function aim(b, z) { var a = band(), mx = (a.x0 + a.x1) / 2, my = (a.y0 + a.y1) / 2; return [b.x - (mx - innerWidth / 2) / z, b.y + (my - innerHeight / 2) / z]; }
-  var flown = null;
+  // as the base page's edFly (kuiper-belt@a72c175 index.html, ED_MINBAND, tween.dur, edKeep): a panel that leaves a band
+  // under 96 px is closed by the pick; a short hop is quick (300-900 ms by screen distance, 1 ms for reduced motion);
+  // the spark is kept inside the band when the card resizes or the phone turns. The duration is passed as flyTo's
+  // fourth argument: the engine's flyTo (index.html:269) takes three today, so until the hook table forwards it the fly
+  // lasts the engine's 900 ms (REQUEST to Opus 4/10 on #10).
+  var MINBAND = 96, flown = null, flyingUntil = 0;
+  function hop(b, z) {
+    var p = edScreen(b), far = Math.hypot(p[0] - innerWidth / 2, p[1] - innerHeight / 2) + Math.abs(Math.log2(z / KY.cam.zoom)) * 120;
+    return matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : Math.max(300, Math.min(900, 300 + far * 0.6));
+  }
+  function go(x, y, z, dur) { KY.cam.atHome = false; flyingUntil = performance.now() + Math.max(dur, 900) + 50; H.flyTo(x, y, z, dur); }
   function fly(b) {
     if (!b) return;
-    var z = 14, t = aim(b, z); flown = b;
-    KY.cam.atHome = false;                                          // a resize must not re-home after a spark fly (IX:248, :679)
-    H.flyTo(t[0], t[1], z);
-    requestAnimationFrame(function () { if (flown !== b) return; var u = aim(b, z); H.flyTo(u[0], u[1], z); });
+    var g = band(); if (g.y1 - g.y0 < MINBAND && document.querySelector('.gm-open')) closePanel();
+    var z = 14, t = aim(b, z), dur = hop(b, z); flown = b;
+    go(t[0], t[1], z, dur);                                         // atHome false first: a resize must not re-home (IX:248, :679)
+    requestAnimationFrame(function () { if (flown !== b) return; var u = aim(b, z); go(u[0], u[1], z, dur); });
+  }
+  function keep() {
+    if (performance.now() < flyingUntil || lines.sel < 0 || !flown || H.card.style.display !== 'block' || document.querySelector('.gm-open')) return;
+    var b = lines.placed[lines.sel]; if (!b) return; var a = band(), p = edScreen(b);
+    if (p[0] >= a.x0 + 12 && p[0] <= a.x1 - 12 && p[1] >= a.y0 + 12 && p[1] <= a.y1 - 12) return;
+    var z = KY.cam.zoom, t = aim(b, z); go(t[0], t[1], z, 350);
   }
   function step(dir) {
     var P = lines.placed, n = P.length; if (!n || !rt.lines.on) return;
@@ -503,6 +540,8 @@
     openLine(i); fly(P[i]); fillLines();
   }
   function wireInput() {
+    if (typeof ResizeObserver === 'function') new ResizeObserver(function () { keep(); }).observe(H.card);
+    addEventListener('resize', function () { requestAnimationFrame(keep); });
     addEventListener('keydown', function (e) {
       if (H.gbox.style.display === 'block') return;
       if (e.target && e.target.id === 'lyFind') return;

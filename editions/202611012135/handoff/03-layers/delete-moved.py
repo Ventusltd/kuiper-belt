@@ -20,6 +20,8 @@ b = find(lambda l: l.startswith('  #lineslist .ln.focus b'), a); rng(a, b, 'css 
 # Edition 2 block: loadEdition .. edFly (esc stays: it is a hook)
 a = find(lambda l: l.startswith('// ============================================================ KUIPER EDITION 2'))
 b = find(lambda l: l.startswith('function esc(v)'), a) - 1; rng(a, b, 'edition 2 lines layer')
+# keep the page's selection variables: the page's Escape and Android-back handlers still assign edSel (harness, run 9)
+keep = find(lambda l: l.startswith('let ED = [], edPlaced = [], edSel = -1'), a); drop.discard(keep); log.append('kept line %d (let ED, edPlaced, edSel, edMeta)' % (keep + 1))
 a = find(lambda l: l.startswith('function edNext(step)'), b)
 b = find(lambda l: l.startswith('// ============================================================ EDITION 3'), a) - 1
 while src[b].strip() == '': b -= 1

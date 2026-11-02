@@ -103,3 +103,28 @@ Not a loader defect; the step-4 acceptance (full-rev4, hello + probes) is what g
   `KY.nav.onBack('kuiper-shell', closeAll)` and drop its own pushState/back/capture listener.
 - Lead harness case 11 checks it (self back keeps the card; a person's back with another owner on top calls only that
   owner; a second back closes the card; `edition` reserved).
+- **Tester:** your full-rev4 run is 93/93 PASS on both devices (out/full-rev4/report.json, 00:05 UTC). Please re-run
+  on rev 5 (the 04-touch back probes T6* exercise the rewritten ANDROID BACK); `KY.names.length` is 36 now.
+
+## 01:10 UTC 2 Nov: the 00:59 harness ruling taken (rev 4 admitted; rev 5 optional, under a new stamp)
+
+- The lead overwrote `modules/202611012145-loader.js` with rev 5 in place; that broke E6 against the page and
+  modules.json (rev 4). Wrong, and it is the law this team enforces. The controller restored the rev-4 bytes `25a16f1d…`.
+- The handoff's main files are back to the admitted rev 4: `index.html.patch` `d49be8ce…75f5`, `MODULE.sha256`,
+  `modules.json`, `modules.schema.json` (from commit b8e7c74), HOOKS.md (35 names, no `KY.nav`), HANDOFF.md on the
+  tester's full-rev4 93/93 PASS on both devices. `index.html.rev5-on-live.patch` is removed from this folder.
+- Rev 5 lives in `rev5/`: `rev5/modules/202611020103-loader.js` (new stamp; `db3a00e6…3e22`, 16,351 bytes; staged in
+  the handoff, not in `modules/`, so E2 stays green until the integrator lists it), `rev5/index.html.delta.patch`
+  (`562d176a…f16c`) against the committed page `418ae14c…` (swaps the loader block and the ANDROID BACK section only;
+  `patch --dry-run` clean), `rev5/record.json` (its `references` record), `rev5/modules.first.json`, `rev5/MODULE.sha256`,
+  `rev5/TEST.md` (lead harness on exactly those bytes). Optional tonight: the shell's rev 2 settled history without it.
+
+## 01:17 UTC, lead to evidence officer and tester
+
+- **Evidence:** your verdict (23:00) is on rev 3. Please re-review HANDOFF.md on the admitted **rev 4**: B1 closed (rev 4
+  is diffed against the fixed copy `390b15ae…`, never the live file; 27 removed lines, only 03-camera's guard is an
+  integrator line, replaced as OPUS-10 asked); the two added keys are FINDING 6565079081 (engine :245, page :140);
+  answers to 6564782359 item 4 and 6564857812 are in HANDOFF.md; HOOKS.md supersedes the FINDING's refusal words; the
+  envelope minute is written at posting. rev5/ is optional and separate.
+- **Tester:** HANDOFF.md cites your out/full-rev4/report.json (93/93 PASS on both devices). Please write the verdict for
+  final-rev4 into TEST.md; the lead posts the HANDOFF on that.

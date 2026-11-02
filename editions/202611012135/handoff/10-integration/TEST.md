@@ -116,3 +116,50 @@ FAIL: tops 6/6/6/39). The loader did what step 4 says. At 00:01 the integrator r
 Team 1: the file `modules/202611012143-kuiper-shell.js` was edited after its admission; a changed module needs a new
 hash (and stamp, if the generation changes) in the manifest before it can be admitted again.
 
+## Run 3: admitted [hello, line-card] (modules.json `be99c8a1…`, index.html `418ae14c…` = loader rev 4 + 02-card index.patch), started 00:02 UTC
+
+Snapshot `snap/r3` (00:02), plain `python3 -m http.server 8502`, script `ecde2f34…`. One device at a time.
+
+**Pixel 7 (00:02:31–00:25:09, load 65→70): 16 PASS, 2 FAIL, 0 console errors.** Report `runs/r3-pixel-7.json`.
+No step turned red against run 0: both reds are run 0's own (the shell is not in this manifest).
+
+| step | run 0 | run 3 Pixel 7 | measured |
+|---|---|---|---|
+| load | FAIL | FAIL (still red) | Edition 4 bar two rows (tops 6/6/6/39, 75.1 px); wafer 322×323; 0 errors; 16.4 s |
+| edition-open / edition-close | PASS | PASS | |
+| panel-dismiss | FAIL | **PASS** | wafer tap (404,549) on `#c` closed EDITION, no card; back: the loader patch's ANDROID BACK pushes `{kuiper:1}`, `history.back()` closed EDITION, URL unchanged |
+| lines-open / lines-filter | PASS | PASS | 7 rows match "acceptance" |
+| lines-pick | PASS | PASS | card 40 of 344 "Owner acceptance cannot be forged by an agent: the ACCEPT line"; **header `.lc-h code` = keys.json `line_text` (" *", 2 chars), first text node of the card**; spark y 357.1 in [85.1, 630.6], hit `#c` |
+| card-details | PASS | PASS | 198.4 → 285.25 px, cap 285.3 (34dvh), spark still clear |
+| card-close, key-e-1..3, pinch-drag, spark-tap, whole-wafer | PASS | PASS | |
+| modules | PASS (empty) | PASS | admitted [hello, line-card], refused [], done, 0 page errors |
+| see-through | FAIL | FAIL (still red) | no control (the shell carries it; not admitted) |
+| console | — | PASS | 0 |
+
+Galaxy S24 and Pixel 7 landscape: running (below).
+
+**Galaxy S24 (00:25:09–00:46:59, load 70→41): 16 PASS, 2 FAIL, 0 console errors.** Report `runs/r3-galaxy-s24.json`.
+Same two reds as run 0 (load: Edition 4 bar tops 6/6/6/39, 75.1 px at 360; see-through: no control). panel-dismiss
+PASS (wafer tap (352,547), back closes, URL unchanged); lines-pick PASS, card 40 of 344, header = `line_text`
+(" *"), first text node; card-details 198.4 → 265.19 px under cap 265.2; pinch ratio 0.503, drag (−90,70) → (−90,70);
+spark-tap card 323 = nearest (1.8 px; second 26.1); modules [hello, line-card] admitted, refused []; console 0.
+
+**Pixel 7 landscape (00:46:59–01:03:35, load 41→63): 12 PASS, 6 FAIL, 0 console errors.** Report
+`runs/r3-pixel-7-landscape.json`. No landscape run exists on the base (run 0 was Pixel 7 only), so "turned red" cannot
+be decided from this run alone; each red is analysed:
+
+| step | landscape | cause, measured |
+|---|---|---|
+| load | FAIL → **SCRIPT** | bbox [0,45,862,324]: row 45 is the Edition 4 bar's 1 px bottom rule (bar bottom 45.6; 863 lit px in row 45, 0 in rows 44, 46, 47). Re-measured on the step's own PNG from row 47: disc 245×245 at (309,80)-(553,324): passes every disc rule. Script now starts at `ceil(bar bottom)` |
+| whole-wafer | FAIL → **SCRIPT** | same row 45; from row 47 the disc is 245×245, whole under the bar |
+| card-details | **FAIL, real (line-card, landscape)** | the card is capped at 30dvh = 108 px (top 240 of 360); its action row "open on GitHub · details" is cut by the cap (07-lines-pick.png), and the script tapped the centre of `details`, which lies in the clipped part: the tap went through to the wafer, the spark picker opened a pixel card (57.8 px, no ×). A person sees half of "details" at the bottom edge. Script now taps the visible part of a card control (and fails with "not visible" when under 8 px shows) |
+| card-close | FAIL (follows card-details) | the pixel card has no `.lc-x` |
+| spark-tap | FAIL | no unambiguous green spark in view after the zoom-out (greens 0), and the selected spark at y 242.1 is 0.7 px under the card top 241.4 (hit `div.lc-in`): the 108 px card takes the lower third of a 360 px screen |
+| see-through | FAIL (still red) | no control without the shell |
+| lines-pick | PASS | card 40, header = `line_text`, spark y 142.2 in [55.6, 230], card cap 108 |
+| panel-dismiss, edition-open/close, lines-open/filter, key-e-1..3, pinch-drag, modules, console | PASS | |
+
+Run 3 verdict for the integrator: on Pixel 7 and Galaxy S24 line-card turns no step red (both reds are run 0's).
+In landscape, line-card's 30dvh cap hides its action row (`details` half visible): reported to team 2 as a landscape
+MAJOR, not decided as "turned red" for lack of a landscape base; run 4 re-measures it with the fair tap.
+

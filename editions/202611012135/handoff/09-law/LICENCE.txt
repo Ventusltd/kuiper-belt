@@ -1,0 +1,12 @@
+LICENCE: Opus team 9, NL-010 roadmap step 9 "the release law and the licence register"
+Team 9's row of editions/202611012135/LICENCES.md (section C). Keys re-read by the lead, 2026-11-02 (EVIDENCE.md 1).
+
+| brought in | what the edition takes | licence as the files state it | key | copied or linked; note |
+|---|---|---|---|---|
+| tools/edition_check.py (E1-E9), handoff/09-law/test_real_folder.py, handoff/09-law/test_edition_check.py | code written for kuiper-belt; E6-E8 are Opus team 4's logic from handoff/04-loader/edition_check.py.patch, the same repository's work | Apache-2.0 | kuiper-belt@018b46a LICENSE:1-3; README.md:156-157 | the tool's docstring line 2 names Apache-2.0 |
+| handoff/09-law/android-journey.cjs | neural-link FIXES/NL-009/android-journey.cjs (the NL-009 auditors' work for this estate) as adapted by Opus team 10 (handoff/10-integration/android-journey.cjs, sha256 ecde2f34...e911), with team 9's law layer appended | Apache-2.0 (kuiper-belt code; neural-link-between-agents is the owner's own repository, LICENSE at its root) | kuiper-belt@018b46a LICENSE:1-3 | adapted, nothing third-party |
+| handoff/09-law/pointer.patch | a one-line change to editions/index.html (location.search + location.hash), the shape of gridatlas@5ec7f62 index.html:2 | Apache-2.0 | kuiper-belt@018b46a LICENSE:1-3; gridatlas@5ec7f62 LICENSE:1-4 (a method: forwarding search and hash; no line copied) | method only |
+| editions/LAW.md, editions/202611012135/LICENCES.md, handoff/09-law/*.md, TEST-REAL-RESULTS.json | text and data | CC BY 4.0 | kuiper-belt@018b46a README.md:157 | quotes GridAtlas's RELEASE.md in short with keys: a citation, not a copy |
+| .github/workflows/check.yml | one added step (`python tools/edition_check.py`) | Apache-2.0 (kuiper-belt code) | kuiper-belt@018b46a LICENSE:1-3 | |
+
+No See Through code, no GridAtlas file, no font, image or third-party data is brought in by step 9.

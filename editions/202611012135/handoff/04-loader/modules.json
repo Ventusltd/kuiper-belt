@@ -38,8 +38,8 @@
   {
    "file": "modules/202611012145-loader.js",
    "generation": "202611012145",
-   "sha256": "d9272b82421d919d4785995d1add6e7f26295880096c333a3565b35ce7163488",
-   "bytes": 16354,
+   "sha256": "25a16f1d3c3f44d17e5649555ca0cdb11637af0e5c334a7addefa1a166b86e78",
+   "bytes": 13206,
    "role": "loader reference: the hook table and loader block of index.html, byte-identical between the marker lines; never fetched",
    "licence": "Apache-2.0",
    "team": "04",

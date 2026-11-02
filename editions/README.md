@@ -1,7 +1,7 @@
 # Kuiper editions
 
 Version numbers: an edition is numbered in order of publication (Edition 1, 2, …) and keyed by its cut stamp
-(`YYYYMMDDHHMM`, UTC). The number is for people; the stamp is the key. The current edition is **Kuiper Edition 4 (202611012027)**.
+(`YYYYMMDDHHMM`, UTC). The number is for people; the stamp is the key. The current edition is **Kuiper Edition 5 (202611012135)**.
 
 An edition is a dated folder that places the estate's best lines on the belt, each line keyed by `repo@commit path:line`
 and verified against a clone before it is placed. The stable link `editions/` opens the newest dated folder; the stamp is
@@ -9,6 +9,10 @@ written in three places in `index.html` (meta refresh, the link, `location.repla
 does. Earlier dated folders are kept unchanged as history. Find the newest edition from the pointer, not by sorting
 folder names: stamps carry the clock of the machine that cut them.
 
+- **Kuiper Edition 5** (`202611012135`, published 2026-11-02): [README](202611012135/README.md) · [open it](202611012135/). Edition 4 rebuilt as a shell with a
+  hook table and a loader that admits stamped modules by sha256 (refusing in words), the measured NL-009 Android fixes,
+  and the card law: every card opens with the line of code itself, the key second. Same keys as Edition 2. The GridAtlas
+  menu bar, See Through, drift, the periodic table and the File menu follow as small steps.
 - **Kuiper Edition 4** (`202611012027`, published 2026-11-01): [README](202611012027/README.md) · [open it](202611012027/). Edition 3 with a compact
   card (title, line, quote, GitHub link, details on demand, capped at a third of the screen), the camera placing the
   chosen spark in the clear space between the bar and the card, LINES closing when a row is picked, and the stable

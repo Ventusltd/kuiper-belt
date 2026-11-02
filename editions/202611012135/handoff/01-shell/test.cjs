@@ -2,7 +2,7 @@
 // test.cjs — Opus team 1, roadmap step 1 "the shell contract": acceptance A1–A9, measured, never estimated.
 //
 //   node test.cjs [--port 8412] [--ga-port 8512] [--out DIR] [--write] [--module FILE] [--html FILE]
-//                 [--devices "Pixel 7,Galaxy S24,Pixel 7 landscape,360x740"] [--extra] [--no-ga] [--no-a8] [--loader] [--also-loader]
+//                 [--devices "Pixel 7,Galaxy S24,Pixel 7 landscape,360x740"] [--extra] [--no-ga] [--no-a8] [--admit] [--loader] [--also-loader]
 //
 // What it does, in the form of FIXES/NL-009/android-journey.cjs (Playwright Chromium, SwiftShader flags, real touch:
 // page.touchscreen.tap for every tap, the keyboard only for Escape):
@@ -398,17 +398,33 @@ async function runKuiper(browser, devName, mod, ga, label) {
           if (s.open.length) { await page.keyboard.press('Escape'); await waitOpen(0); }
         } else a5.next = { found: null, between: false, note: 'no row "next verified line" (data-k="e") in any panel' };
       }
+      // A5 pick (rev 2, the integrator's journey steps lines-pick and card-details): a row picked in WAFER opens the card
+      // and the card stays (no popstate from the shell hides it); its details toggle keeps it; one back gesture closes
+      // the card and the page stays.
+      { const cardOn = () => page.evaluate(() => { const c = document.getElementById('card'); return !!c && getComputedStyle(c).display !== 'none' && c.getBoundingClientRect().height > 0; });
+        const wi = six.find(t => t.text.toUpperCase() === 'WAFER'); const pk = { row: false };
+        if (wi) { await tapR(await titleRect(wi.i)); await waitOpen(1);
+          const r = await page.evaluate(() => { const e = document.querySelector('#kuiper-menu-bar .gm-panel:not([hidden]) #lineslist [data-i]'); if (!e) return null; e.scrollIntoView({ block: 'nearest' }); const b = e.getBoundingClientRect(); return { x: b.x, y: b.y, w: b.width, h: b.height }; });
+          if (r) { pk.row = true; await tap(r.x + r.w / 2, r.y + Math.min(r.h, 44) / 2); await sleep(2500); pk.cardAfterPick = await cardOn(); pk.panelsOpen = (await openState()).open.length;
+            const d = await page.evaluate(() => { const e = document.querySelector('#card .lc-t, #card .ct'); if (!e) return null; const b = e.getBoundingClientRect(); return { x: b.x, y: b.y, w: b.width, h: b.height }; });
+            if (d) { await tap(d.x + d.w / 2, d.y + d.h / 2); await sleep(1500); pk.cardAfterDetails = await cardOn(); } else pk.cardAfterDetails = null;
+            const u0 = page.url(); await page.goBack({ waitUntil: 'commit', timeout: 5000 }).catch(() => {}); await sleep(1500);
+            pk.cardAfterBack = await cardOn(); pk.stayed = page.url() === u0 && !!(await page.$('#kuiper-menu-bar'));
+          } else { pk.note = 'no #lineslist row in the WAFER panel'; await page.keyboard.press('Escape'); await waitOpen(0); } }
+        pk.ok = !wi || !pk.row ? !!pk.note : (pk.cardAfterPick === true && pk.panelsOpen === 0 && pk.cardAfterDetails !== false && pk.cardAfterBack === false && pk.stayed === true);
+        a5.pick = pk; }
     }
     {
       const ts = a5.titles;
       const ok = ts.length === 6 && ts.every(r => r.open1 === 1 && r.underBar && r.inside && r.expanded === 'true' && r.closedBySecondTap && r.closedByEscape && r.closedByBack && r.stayedOnPage)
-        && a5.rowsUnder44.length === 0 && a5.rowCount > 0 && a5.next && a5.next.between && (!a5.wafer || a5.wafer.closed !== false);
+        && a5.rowsUnder44.length === 0 && a5.rowCount > 0 && a5.next && a5.next.between && (!a5.wafer || a5.wafer.closed !== false) && (!a5.pick || a5.pick.ok);
       const why = [];
       ts.forEach(r => { const f = ['open1', 'underBar', 'inside', 'closedBySecondTap', 'closedByEscape', 'closedByBack', 'stayedOnPage'].filter(k => k === 'open1' ? r.open1 !== 1 : !r[k]); if (r.expanded !== 'true') f.push('aria-expanded'); if (f.length) why.push(r.t + ': ' + f.join('/')); });
       if (a5.rowsUnder44.length) why.push(a5.rowsUnder44.length + ' row(s) under 44 px');
       if (!a5.rowCount) why.push('no panel rows');
       if (!a5.next || !a5.next.between) why.push('next verified line: ' + (a5.next && a5.next.found ? 'spark not between bar and card' : 'row not found'));
       if (a5.wafer && a5.wafer.closed === false) why.push('wafer tap did not close');
+      if (a5.pick && !a5.pick.ok) why.push('WAFER pick: ' + JSON.stringify(a5.pick));
       if (ts.length !== 6) why.push(ts.length + ' titles exercised');
       rec('A5', ok, a5, why.join('; '));
     }
@@ -633,13 +649,21 @@ function loaderMod(mod) {
     const name = path.basename(modFile);
     const html = flag('--html') ? fs.readFileSync(String(flag('--html')), 'utf8') : fs.readFileSync(path.join(EDITION_DIR, 'index.html'), 'utf8');
     const manifest = fs.readFileSync(path.join(EDITION_DIR, 'modules.json'), 'utf8');
-    if (html.includes('kuiper-shell') || manifest.includes('kuiper-shell')) { mod.mode = 'page'; mod.modeNote = html.includes('kuiper-shell') ? '(index.html names it)' : '(modules.json names it; the loader admits it)'; if (flag('--html')) mod.pageOpts = { htmlFile: String(flag('--html')), rewrite: h => h }; }
+    if (/<script[^>]+kuiper-shell\.js/.test(html) || /"id"\s*:\s*"kuiper-shell"/.test(manifest)) { mod.mode = 'page'; mod.modeNote = /<script[^>]+kuiper-shell\.js/.test(html) ? '(index.html names it)' : '(modules.json names it; the loader admits it)'; if (flag('--html')) mod.pageOpts = { htmlFile: String(flag('--html')), rewrite: h => h }; }
     else { mod.mode = 'inject'; mod.modeNote = `(neither index.html nor modules.json names it yet; served with \`<script defer src="modules/${name}"></script>\` before \`</body>\`, standing in for team 1's one script tag)`;
       mod.pageOpts = { ...(flag('--html') ? { htmlFile: String(flag('--html')) } : {}), rewrite: h => h.replace(/<\/body>/i, `<script defer src="modules/${name}"></script>\n</body>`) }; }
     // page mode through the manifest: when the integrator's record still carries an earlier sha256 of this module (a
     // revision not yet re-recorded), serve modules.json with this file's sha256 and bytes, the one-line update the
     // integrator makes, and say so; every other record is served as committed.
-    if (mod.mode === 'page' && !html.includes('kuiper-shell')) { try { const man = JSON.parse(manifest), rec = (man.modules || []).find(m => m && m.id === 'kuiper-shell');
+    // --admit: the integrator's manifest does not list the shell (yet, or again after a revision): serve modules.json
+    // with handoff/01-shell/MODULE.json (this team's record) inserted after 'hello', this file's sha256 and bytes in it,
+    // so the shell is admitted by the real loader on the real page; the note says so.
+    if (flag('--admit') && mod.mode === 'inject' && /KY_NAMES/.test(html)) { try { const man = JSON.parse(manifest), rec = JSON.parse(fs.readFileSync(path.join(HERE, 'MODULE.json'), 'utf8'));
+      rec.sha256 = mod.sha256; rec.bytes = mod.bytes; man.modules = man.modules.filter(m => m.id !== 'kuiper-shell'); man.modules.splice(1, 0, rec);
+      man.order = man.order.filter(x => x !== 'kuiper-shell'); const h = man.order.indexOf('hello'); man.order.splice(h + 1, 0, 'kuiper-shell');
+      mod.mode = 'page'; mod.pageOpts = { ...(flag('--html') ? { htmlFile: String(flag('--html')) } : {}), rewrite: x => x, manifest: JSON.stringify(man) };
+      mod.modeNote = `(--admit: modules.json served with handoff/01-shell/MODULE.json inserted, sha256 ${mod.sha256.slice(0, 12)}, order ${JSON.stringify(man.order)}; the page's loader admits it)`; } catch (e) { log('--admit failed: ' + e.message); } }
+    if (mod.mode === 'page' && !/<script[^>]+kuiper-shell\.js/.test(html)) { try { const man = JSON.parse(manifest), rec = (man.modules || []).find(m => m && m.id === 'kuiper-shell');
       if (rec && rec.sha256 !== mod.sha256) { const was = rec.sha256; rec.sha256 = mod.sha256; rec.bytes = mod.bytes; mod.pageOpts = { ...mod.pageOpts, manifest: JSON.stringify(man) };
         mod.modeNote += ` — modules.json served with kuiper-shell sha256 ${mod.sha256.slice(0, 12)} (committed record ${was.slice(0, 12)}, an earlier revision)`; } } catch (e) {} }
     if (flag('--html')) mod.modeNote += ' — index.html replaced by ' + flag('--html');

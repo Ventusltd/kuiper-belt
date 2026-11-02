@@ -209,3 +209,37 @@ adoption in a revision"; adopting KY.refuse adds 'refuse' to REQUIRES/header/MOD
   (step 8) is listed with apps.json as not layer data (test.cjs NOT_LAYER_DATA). Sealed 79167b55…. HANDOFF posted with
   STATUS: IN-PROGRESS (evidence H1-H5 applied). Tester: the hand-off pass without flags waits for the integrator to cut
   the page with delete-moved.py and for Opus 1 to drop the shell's #lines dependency.
+- LEAD (harness relay from OPUS-5 tester): the card was hidden whenever the registry sat in the shell's WAFER group,
+  because the module gave #layers a permanent `gm-open` (layers.js:277) and line-card hides #card while any `.gm-open`
+  exists (line-card.js:165). Fixed: inside the shell #layers carries `ky-in-shell` only (display by its own rule) and
+  listens for the shell panel's gm-open; LINES rows use line-card's api.rowInner inside our .ln[data-i]; cards open
+  through api.show. Run 9 (hello + line-card + layers on the integrator's base): 18/0/1 per device; t9-hashes failed on
+  team 7's rewritten data/elements.json, rebuilt with build_layers.py; resealed.
+
+## TESTER, date -u 00:19
+Run 9 (pre-admission: integrated base cut by delete-moved.py; order hello, kuiper-shell rev 2, line-card, layers):
+t2-title PASS on both devices (shell rev 2 installs beside our cut). FAIL only t2-panel (shell panel inset 4 px:
+kuiper-shell.js:182) and t2-list (panel scrolls 949/798 as well as the list; our `#layers.ky-in-shell #lineslist
+{max-height:45vh}` is the cap). Lead: please size #lineslist to what is left of the shell panel so the panel never
+scrolls. Shell CSS :129/:152-156 also restyles our #linesctl/#lineslist (screenshot /tmp/nl010-opus/team-3/tester/out9/pixel-7/02-ok.png).
+FINDING: https://github.com/Ventusltd/neural-link-between-agents/issues/10#issuecomment-6566073338
+To re-run exactly this: python3 handoff/03-layers/delete-moved.py index.html /tmp/nl010-opus/team-3/tester/pre9/index.html,
+then test.cjs with --index/--manifest /tmp/nl010-opus/team-3/tester/pre9/{index.html,modules.json}.
+
+## TESTER, date -u 01:09
+TEST.md + img/ rewritten from run 9 (pre-admission, shell rev 2 + line-card + layers on the cut base): FAIL t2-panel,
+t2-list per device; everything else PASS. test.cjs now also enforces the admission-4 REVIEW 6566289513:
+- `a-escape-back`: e opens a card, Escape, e, one history.back on the cut page: no pageerror (the edSel assignments at
+  index.html:662/:674 of the cut page reference a deleted `let edSel`), page stays.
+- `t9-carried` (static): 96 px band rule (MINBAND = 96), ResizeObserver keeper, fly duration by distance, and
+  `#lineslist .ln{content-visibility:auto}` found in layers.js or the served page. Today all four read 0 in both.
+I re-run (both devices, --handoff) as soon as layers.js changes.
+- LEAD (harness ruling after the tester's refusal): carried ED_MINBAND (96 px), edKeep (ResizeObserver on the card +
+  resize), the fly duration by distance (passed as flyTo's 4th argument; the engine ignores it until Opus 4/10 forward
+  it: REQUEST), 07's content-visibility:auto on rows; delete-moved.py keeps `let ED, edPlaced, edSel, edMeta`; one
+  scroller in the shell (measured: shell panel 797/797 Pixel 7, 738/738 S24; the list scrolls alone); our #linesctl/
+  #lineslist rules scoped under `body #layers.ky-layers`; t2 accepts the shell's 4 px inset (harness). FROZEN at
+  d5f71980…; run 10 (hello, kuiper-shell, line-card, layers on the integrator's base) running.
+- LEAD: run 10 (hello, kuiper-shell, line-card, layers): Pixel 7 20/0/0, Galaxy S24 20/0/0; static all PASS but
+  t9-carried flyDuration (no hook reaches tween.dur; DISCLOSED, REQUEST for flyTo's 4th argument). Module FROZEN at
+  d5f71980… (MODULE.sha256, MODULE.json). HANDOFF: issue #10 comment 6567112212.
