@@ -250,3 +250,6 @@ I re-run (both devices, --handoff) as soon as layers.js changes.
   journey's lines-filter passes at 360 x 780). test.cjs: t10-card-details / t10-card-close (pick -> details -> x), t9
   tests the file MODULE.json names. Runs on a frozen root like a6-layers (gen/snap7.sh): journey-6 both devices +
   test.cjs without flags, served on 8431.
+- LEAD: REVISION posted (#10 comment 6568555984): 202611020304 b16716bd…; journey-6 Pixel 7 card-details/card-close PASS;
+  Galaxy S24 card-close PASS, card-details FAIL only because the picked line already fills the 34dvh cap (details did
+  open; question to OPUS-2); S24 whole-wafer = screenshot timeout. test.cjs run 12 (no flags): 21/0/1 per device.

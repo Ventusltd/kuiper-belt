@@ -47,3 +47,26 @@ Console errors per device and scenario: Pixel 7 A-normal 0, C-card 0, t6-hash 0,
 Screenshots (first device): `img/WAIT.png` 52 KB, `img/OK.png` 117 KB, `img/FAIL.png` 87 KB, `img/REFUSED.png` 82 KB. Every device's screenshots and `report.json` are in /tmp/nl010-opus/team-3/lead/run12.
 
 The tester refuses the hand-off until every row reads PASS on both devices in a run without `--index`/`--manifest`; a NOT EVALUATED row names the other team whose module it waits for.
+
+## Journey (journey-6.cjs, the controller's admission script) on exactly these bytes
+
+Frozen root /tmp/nl010-opus/team-3/lead/snap7 (gen/snap7.sh): the branch index.html cut by delete-moved.py plus flyTo's 4th argument (the controller's a6 recipe); modules.json [hello, line-card, layers 202611020304 b16716bd…]; served on 8431. `node journey-6.cjs http://127.0.0.1:8431/editions/202611012135/ <out> --device <d>`.
+
+| step | Pixel 7 | Galaxy S24 | note |
+|---|---|---|---|
+| load | FAIL | FAIL | base: Edition 4 bar is two rows (same at G2) |
+| modules | PASS | PASS |  |
+| edition-open | PASS | PASS |  |
+| edition-close | PASS | PASS |  |
+| lines-open | PASS | PASS |  |
+| lines-filter | PASS | PASS |  |
+| lines-pick | PASS | PASS |  |
+| card-details | PASS | FAIL | S24: details opened (detailsOpen true), card stayed shown; it was already at its 34dvh cap (265.2 px) with this line, so it could not grow |
+| card-close | PASS | PASS |  |
+| key-e-1 | PASS | PASS |  |
+| key-e-2 | PASS | PASS |  |
+| key-e-3 | PASS | PASS |  |
+| pinch-drag | PASS | PASS |  |
+| spark-tap | PASS | PASS |  |
+| whole-wafer | PASS | FAIL | S24: "screenshot timed out" in the measurement; frame 14 shows the whole wafer |
+| see-through | FAIL | FAIL | base: no SEE THROUGH without the shell / see-through (same at G2) |

@@ -83,7 +83,9 @@ async function linesPick(page, ok) {
   const t = await page.evaluate(() => { const b = document.querySelector('#kuiper-menu-bar') ? [...document.querySelectorAll('#kuiper-menu-bar .gm-title')].find(x => x.textContent.trim().toUpperCase() === 'WAFER')
       : [...document.querySelectorAll('#bar button, #bar a, #bar [role=button]')].find(x => x.textContent.trim().toUpperCase() === 'LINES');
     if (!b) return null; const r = b.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
-  if (t) { await page.touchscreen.tap(t[0], t[1]); await sleep(1500); }
+  const isOpen = await page.evaluate(() => { const l = document.querySelector('#lines'); return !!(l && l.getBoundingClientRect().height > 0); });
+  if (t && !isOpen) { await page.touchscreen.tap(t[0], t[1]); await sleep(1500); }
+  await page.evaluate(() => { const i = document.querySelector('#lyFind'); if (i && i.value) { i.value = ''; i.dispatchEvent(new Event('input', { bubbles: true })); } }); await sleep(500);
   const f = await page.evaluate(() => { const i = document.querySelector('#lyFind'); if (!i) return null; const r = i.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
   if (f) { await page.touchscreen.tap(f[0], f[1]); await sleep(300); await page.keyboard.type('acceptance', { delay: 30 }); await sleep(900); }
   const row = await page.evaluate(() => { const r = document.querySelector('#lineslist .ln[data-i]'); if (!r) return null; const q = r.getBoundingClientRect(); const x = q.left + q.width / 2, y = q.top + Math.min(q.height / 2, 20);
@@ -177,17 +179,16 @@ async function run(devName, scen) {
       ok('tap within 9 px opens its card', s.taps === before + 1 && card2.open && card2.drift && card2.drift.includes(line), 'tap at +6,+6 (8.5 px): taps ' + before + '→' + s.taps + ', ' + JSON.stringify(card2.drift));
       await page.evaluate(() => { const c = document.querySelector('#card'); const x = c.querySelector('.lc-x,.cx'); if (x) x.click(); }); await sleep(1500);
     }
-    const pk = await linesPick(page, ok), bp = BASEPICK[devName];
-    ok('lines-pick: the first row is where it is without drift', !!pk && !!bp && Math.abs(pk.top - bp.top) <= 1 && pk.i === bp.i,
-      'first filtered row: without drift top ' + (bp ? bp.top + ' px, data-i ' + bp.i : '?') + ', with drift top ' + (pk ? pk.top + ' px, data-i ' + pk.i : '?'));
-    // the filter text "acceptance" stays: with it cleared, 346 rows with content-visibility:auto re-lay out after
-    // scrollIntoView and a tap measured a moment earlier can land on a LINES row (which closes LINES)
     // the LINES filter "moved", reached the way a finger reaches it: the shell's WAFER title when the shell is admitted,
     // else the page's own LINES button (ROADMAP step 8: "LINES gains a filter by class"); no programmatic panel opening
     const w = await page.evaluate(() => { const t = document.querySelector('#kuiper-menu-bar') ? [...document.querySelectorAll('#kuiper-menu-bar .gm-title')].find(b => b.textContent.trim().toUpperCase() === 'WAFER')
         : [...document.querySelectorAll('#bar button, #bar a, #bar [role=button]')].find(b => b.textContent.trim().toUpperCase() === 'LINES');
       if (!t) return null; const r = t.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2, t.textContent.trim()]; });
     if (w) { await page.touchscreen.tap(w[0], w[1]); await sleep(2500); }
+    // narrow the list first, as a finger would before scrolling to its end (346 rows with content-visibility:auto
+    // re-lay out while being scrolled, so a target measured on the full list can move under the tap)
+    { const f = await page.evaluate(() => { const i = document.querySelector('#lyFind'); if (!i) return null; const r = i.getBoundingClientRect(); return r.height ? [r.left + r.width / 2, r.top + r.height / 2] : null; });
+      if (f) { await page.touchscreen.tap(f[0], f[1]); await sleep(300); await page.keyboard.type('acceptance', { delay: 30 }); await sleep(900); } }
     await page.evaluate(() => { const d = document.querySelector('#ky-drift'); if (d) d.scrollIntoView({ block: 'start' }); }); await sleep(800);
     // the section is one collapsed 44 px row after #lineslist: open it with a finger
     const smAt = () => page.evaluate(() => { const x = document.querySelector('#ky-drift summary'); if (!x) return null; const r = x.getBoundingClientRect(); const px = r.left + Math.min(r.width / 2, 120), py = r.top + r.height / 2; const e = document.elementFromPoint(px, py); return [px, py, r.height, !!x.parentNode.open, !!(e && x.contains(e))]; });
@@ -211,6 +212,12 @@ async function run(devName, scen) {
     if (HANDOFF && devName === 'Galaxy S24') await page.screenshot({ path: path.join(HERE, 'img', '2-filter-moved-Galaxy_S24.png'), scale: 'css', timeout: 180000 });
     const bar2 = await barOf();
     ok('bar unchanged with the panel open', bar2.rows === bar.rows && (!bar2.shell || bar2.rows === 1), bar2.bar + ' ' + bar2.rows + ' row(s)');
+    // then the integrator's lines-pick, with the drift section open at the end of LINES
+    const pk = await linesPick(page, ok), bp = BASEPICK[devName];
+    ok('lines-pick: the first row is where it is without drift', !!pk && !!bp && Math.abs(pk.top - bp.top) <= 1 && pk.i === bp.i,
+      'first filtered row: without drift top ' + (bp ? bp.top + ' px, data-i ' + bp.i : '?') + ', with drift top ' + (pk ? pk.top + ' px, data-i ' + pk.i : '?'));
+    // the filter text "acceptance" stays: with it cleared, 346 rows with content-visibility:auto re-lay out after
+    // scrollIntoView and a tap measured a moment earlier can land on a LINES row (which closes LINES)
   }
   if (scen === 'C') {
     const s = await ins();
