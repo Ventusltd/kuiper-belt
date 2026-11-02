@@ -24,6 +24,10 @@ terrain come from online services, so it needs the internet.
 - Each folder is named by a date and time stamp: year, month, day, hour, minute.
 - Earlier dated folders are kept unchanged as history, so old links keep working.
 
+| folder | what it added |
+|---|---|
+| `202611020012/` | Links from the Kuiper: the page reads its hash (`#sub=<name>` types the name and presses GO; `#key=<k>` and `#key=<k>&space=<S>` find the star by key, remapped when the sky differs; `#repo=<name>` lights that repository's stars; `#view=kuiper\|map\|sat\|3d`), writes `#key=<k>&space=<S>&sub=<name>` on arrival, and links back with the row `STAR KEY <k> · OPEN IT ON THE KUIPER` (`../../editions/#key=<k>`) and the X among the stars. The sky is read from `cosmos/wafer-meta.json`. The stable link forwards both the query and the hash. |
+
 ## Credits and licences
 
 - See Through is offered under the CERN Open Hardware Licence Version 2, Strongly Reciprocal (CERN-OHL-S v2): see
