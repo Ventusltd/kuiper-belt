@@ -6,7 +6,8 @@
   "hello",
   "kuiper-shell",
   "line-card",
-  "drift"
+  "drift",
+  "apps"
  ],
  "modules": [
   {
@@ -168,6 +169,59 @@
    "team": "08",
    "step": 8,
    "proof": "handoff/08-drift/"
+  },
+  {
+   "id": "apps",
+   "generation": "202611012309",
+   "path": "modules/202611012309-apps.js",
+   "sha256": "fa01e012d81b32edf0287536e27a11075313dcd96d18c2409e21fb997bd0d481",
+   "bytes": 42561,
+   "byte_budget": 65536,
+   "requires": [
+    "wafer",
+    "keyPlace",
+    "flyTo",
+    "esc",
+    "fmt",
+    "cv",
+    "o2",
+    "hud",
+    "card",
+    "repos",
+    "commits",
+    "SPACE",
+    "cam",
+    "sel",
+    "redraw",
+    "draw"
+   ],
+   "provides": [
+    "apps"
+   ],
+   "reads": [
+    "data/apps.json",
+    "data/elements.json",
+    "data/graphs/overview.json",
+    "data/graphs/periodic-table.json"
+   ],
+   "writes": [
+    "#ky-apps",
+    "#ky-apps-css",
+    "#card (element card)",
+    "history entry {kyApps}",
+    "layers elements, spider (via KY.modules.layers.api.register)"
+   ],
+   "creates_controls": "launcher panel #ky-apps (34 rows + 1 check row), periodic-table keys view (244 rows); no bar title",
+   "licence": "Apache-2.0 (kuiper-belt code)",
+   "team": "Opus 7",
+   "step": 7,
+   "proof": "handoff/07-apps/TEST.md",
+   "optional": [
+    "kuiper-shell",
+    "layers",
+    "file",
+    "line-card"
+   ]
   }
  ],
  "references": [
