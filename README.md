@@ -188,6 +188,9 @@ Run `20260918T222408Z`, digest `a56fbe0df58281ec5971e7890d7c5ff35ab00572d83c31fd
 
 ## Editions
 
+- **Kuiper Edition 7 (202611020446)**: Edition 6 with the line card's landscape revision (the card no longer fills before its
+  details open on a landscape phone). Open it: https://ventusltd.github.io/kuiper-belt/editions/ or
+  https://www.globalgrid2050.com/kuiper-editions/.
 - **Kuiper Edition 6 (202611020326)**: the estate's verified lines on this wafer under the GridAtlas bar with the Ventus
   wordmark; every card opens with the line of code itself. Open it: https://ventusltd.github.io/kuiper-belt/editions/ or
   https://www.globalgrid2050.com/kuiper-editions/ (the pointer always opens the newest edition; each dated folder stays).

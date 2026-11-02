@@ -1,7 +1,7 @@
 # Kuiper editions
 
 Version numbers: an edition is numbered in order of publication (Edition 1, 2, …) and keyed by its cut stamp
-(`YYYYMMDDHHMM`, UTC). The number is for people; the stamp is the key. The current edition is **Kuiper Edition 6 (202611020326)**.
+(`YYYYMMDDHHMM`, UTC). The number is for people; the stamp is the key. The current edition is **Kuiper Edition 7 (202611020446)**.
 
 An edition is a dated folder that places the estate's best lines on the belt, each line keyed by `repo@commit path:line`
 and verified against a clone before it is placed. The stable link `editions/` opens the newest dated folder; the stamp is
@@ -9,6 +9,7 @@ written in three places in `index.html` (meta refresh, the link, `location.repla
 does. Earlier dated folders are kept unchanged as history. Find the newest edition from the pointer, not by sorting
 folder names: stamps carry the clock of the machine that cut them.
 
+- **Kuiper Edition 7** (`202611020446`, published 2026-11-02): [README](202611020446/README.md) · [open it](202611020446/). Edition 6 with the line card's landscape revision: on a landscape phone the card no longer fills before its details open.
 - **Kuiper Edition 6** (`202611020326`, published 2026-11-02): [README](202611020326/README.md) · [open it](202611020326/). Edition 5 with the GridAtlas
   bar: FILE EDIT VIEW · VENTUS · SCOPE WAFER ABOUT in one 34 px row on a phone, the Ventus wordmark, See Through as a
   bar title or a bottom-left strip that never takes a pinch. Same keys as Edition 2.
