@@ -9,7 +9,8 @@
   "drift",
   "apps",
   "layers",
-  "file"
+  "file",
+  "see-through"
  ],
  "modules": [
   {
@@ -377,6 +378,59 @@
    "team": "06",
    "step": 6,
    "proof": "handoff/06-file/"
+  },
+  {
+   "id": "see-through",
+   "generation": "202611021026",
+   "path": "modules/202611021026-see-through.js",
+   "sha256": "e5756c7d42ddb0ab6874abb9597cf901673b1d2ac0d1c686e1edbb5468eb8491",
+   "bytes": 13356,
+   "byte_budget": 32768,
+   "requires": [
+    "keyPlace",
+    "SPACE",
+    "wafer",
+    "cam",
+    "o2",
+    "fmt",
+    "esc",
+    "redraw",
+    "draw",
+    "layers"
+   ],
+   "provides": [
+    "see-through"
+   ],
+   "reads": [
+    "data/see-through.json"
+   ],
+   "writes": [
+    "window.KY.modules.see-through",
+    "#ky-see-through-css",
+    "#ky-st-chip"
+   ],
+   "creates_controls": "none in the bar, the panels or the card; the registry's own row input[data-ky-layer=layer:see-through] is the layer's one control; with the layer on, a tap on a star shows a#ky-st-chip under the bar, a link into See Through at that star",
+   "data": {
+    "edition": "202611021017",
+    "files": [
+     {
+      "file": "data/see-through.json",
+      "sha256": "193b94b90731ef07de6cae5514691ddb4ce6a9e16880a38069271e1b169383a7",
+      "bytes": 666738,
+      "features": 5800,
+      "licence": "ODbL-1.0 for the substation names (OpenStreetMap contributors, see-through/202611020012/NOTICE.md); keys CC BY 4.0"
+     }
+    ],
+    "built_by": "handoff/05-see-through/202611021026-build-see-through-json.py --edition 202611021017 --see-through see-through/202611020012"
+   },
+   "licence": "Apache-2.0",
+   "team": "05",
+   "step": 5,
+   "proof": "handoff/05-see-through/",
+   "optional": [
+    "kuiper-shell",
+    "file"
+   ]
   }
  ],
  "references": [
