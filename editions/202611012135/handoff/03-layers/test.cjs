@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // test.cjs — Opus team 3, NL-010 roadmap step 3 "the Kuiper layer registry": the acceptance test on Android, measured.
 //
-//   node test.cjs <root-url> <outdir> [--devices "Pixel 7,Galaxy S24"] [--handoff] [--index FILE] [--manifest FILE]
+//   node test.cjs <root-url> <outdir> [--devices "Pixel 7,Galaxy S24"] [--handoff] [--index FILE] [--manifest FILE] [--stamp YYYYMMDDHHMM]
 //
 //   <root-url>  the kuiper-belt repository root as served, e.g. http://127.0.0.1:8432/ (python3 -m http.server 8432
 //               --bind 127.0.0.1 from /home/user/estate/kuiper-belt). The edition is <root-url>editions/202611012135/.
@@ -37,7 +37,8 @@
 const { chromium, devices } = require('playwright');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), cp = require('child_process');
 
-const STAMP = '202611012135';
+// --stamp S (revision 202611020637): the edition folder under test; default Edition 5's. ED_DIR stays this file's ../..
+const STAMP = (i => i >= 0 && /^\d{12}$/.test(process.argv[i + 1] || '') ? process.argv[i + 1] : '202611012135')(process.argv.indexOf('--stamp'));
 const IDS = ['periods', 'repos', 'editions', 'lines', 'see-through', 'elements', 'spider'];
 const APPS = ['see-through', 'elements', 'spider'];
 const argv = process.argv.slice(2);
@@ -270,11 +271,31 @@ async function runDevice(browser, deviceName, shots) {
       const all = q.countLine ? q.countLine.shown === FILTER_EXPECT : false;   // rows are grouped under their repository's header, so a row need not repeat the name
       filtered = { value: q.find.value, countLine: q.countLine, rows: q.lineRows, expected: FILTER_EXPECT, allMatch: all };
       if (q.clear) { await A.tap(q.clear.rect); await sleep(700); q = await A.probe(); cleared = { value: q.find.value, countLine: q.countLine, rows: q.lineRows }; } }
-    const t2b = !!scrollIn && count0 && count0.shown === 344 && count0.total === 344 && filtered && filtered.countLine && filtered.countLine.shown > 0 && filtered.countLine.shown < 344 && filtered.countLine.shown === filtered.rows && filtered.allMatch
+    let t2b = !!scrollIn && count0 && count0.shown === 344 && count0.total === 344 && filtered && filtered.countLine && filtered.countLine.shown > 0 && filtered.countLine.shown < 344 && filtered.countLine.shown === filtered.rows && filtered.allMatch
       && cleared && cleared.value === '' && cleared.countLine && cleared.countLine.shown === 344;
+    // revision 202611020637, ENGINE LINES (Edition 9, uncut page: inspect().lines_owner 'engine'): the list, its filter
+    // and its rows are the engine's (#lineslist, #lyFind, no count line, no clear control); what the module owes there is
+    // that the engine's list still narrows to the predicate's count and returns whole, that the layer rows fold while the
+    // filter has the focus (the list keeps its room) and come back once it is left
+    const engineOwned = !!(p.inspect && p.inspect.lines_owner === 'engine');
+    let engine = null;
+    if (engineOwned) {
+      const st = () => A.page.evaluate(() => { const l = document.getElementById('layers'), f = document.getElementById('lyFind');
+        return { rows: document.querySelectorAll('#lineslist [data-i]').length, folded: !!l && getComputedStyle(l).display === 'none', value: f ? f.value : null, focused: document.activeElement === f }; });
+      // the generic block above already typed into the engine's filter: empty it and leave it first, then measure afresh
+      await A.page.evaluate(() => { const f = document.getElementById('lyFind'); f.value = ''; f.dispatchEvent(new Event('input', { bubbles: true })); f.blur(); });
+      await sleep(900); const e0 = await st();
+      await A.page.evaluate(() => document.getElementById('lyFind').scrollIntoView({ block: 'center' }));
+      await sleep(300); let q = await A.probe(); if (q.find) await A.tap(q.find.rect); await sleep(300); await A.page.keyboard.type('gridatlas', { delay: 25 }); await sleep(800);
+      const e1 = await st();
+      await A.page.evaluate(() => { const f = document.getElementById('lyFind'); f.value = ''; f.dispatchEvent(new Event('input', { bubbles: true })); f.blur(); });
+      await sleep(900); const e2 = await st();
+      engine = { before: e0, filtered: e1, expected: FILTER_EXPECT, cleared: e2 };
+      t2b = e0.rows === 344 && !e0.folded && e1.rows === FILTER_EXPECT && e1.value === 'gridatlas' && e1.focused && e1.folded && e2.rows === 344 && e2.value === '' && !e2.folded;
+    }
     record('t2-list', 'test 2: the lines list scrolls inside the panel (panel scrollHeight = clientHeight, list overflows), "344 of 344 rows", filter "gridatlas" shows exactly the Edition 4 predicate\'s count over keys.json (repo + path + title, index.html:741), clear restores 344', t2b,
-      { panel: p.panel && { scrollHeight: p.panel.scrollHeight, clientHeight: p.panel.clientHeight }, list: p.list, rows: p.lineRows, countLine: count0, find: p.find, clear: p.clear, filtered, cleared },
-      t2b ? '' : why(!p.list && 'no lines list ([data-i] rows) in #layers', p.list && !scrollIn && 'panel ' + p.panel.scrollHeight + '/' + p.panel.clientHeight + ', list ' + p.list.scrollHeight + '/' + p.list.clientHeight, !(count0 && count0.shown === 344 && count0.total === 344) && 'count line ' + JSON.stringify(count0), !p.find && 'no filter input', p.find && !p.clear && 'no clear control', filtered && !(filtered.countLine && filtered.countLine.shown === filtered.rows && filtered.allMatch) && 'filtered ' + JSON.stringify(filtered), cleared && !(cleared.value === '' && cleared.countLine && cleared.countLine.shown === 344) && 'cleared ' + JSON.stringify(cleared)));
+      { panel: p.panel && { scrollHeight: p.panel.scrollHeight, clientHeight: p.panel.clientHeight }, list: p.list, rows: p.lineRows, countLine: count0, find: p.find, clear: p.clear, filtered, cleared, engine },
+      engineOwned ? (t2b ? 'engine lines: ' + engine.filtered.rows + ' of ' + engine.before.rows + ' rows for "gridatlas" (expected ' + FILTER_EXPECT + '), rows folded while focused, back after' : 'engine lines: ' + JSON.stringify(engine)) : t2b ? '' : why(!p.list && 'no lines list ([data-i] rows) in #layers', p.list && !scrollIn && 'panel ' + p.panel.scrollHeight + '/' + p.panel.clientHeight + ', list ' + p.list.scrollHeight + '/' + p.list.clientHeight, !(count0 && count0.shown === 344 && count0.total === 344) && 'count line ' + JSON.stringify(count0), !p.find && 'no filter input', p.find && !p.clear && 'no clear control', filtered && !(filtered.countLine && filtered.countLine.shown === filtered.rows && filtered.allMatch) && 'filtered ' + JSON.stringify(filtered), cleared && !(cleared.value === '' && cleared.countLine && cleared.countLine.shown === 344) && 'cleared ' + JSON.stringify(cleared)));
 
     // test 3: a tap on the lines row turns the layer off (no green at edScreen(edPlaced[0])) and on again; repos with no value: OK · none lit
     await A.page.evaluate(() => { const l = document.querySelector('#ky-layers') || document.querySelector('#layers'); if (l) l.scrollTop = 0; const s = document.getElementById('lineslist'); if (s) s.scrollTop = 0; });
@@ -312,7 +333,8 @@ async function runDevice(browser, deviceName, shots) {
     const firstApp = order.find(id => { const r = A.row(p, id); const g = r && r.get && r.get.group; return g ? /apps/i.test(g) : APPS.includes(id); });
     const st = A.row(p, 'see-through');
     const otherMax = Math.max(...p.rows.filter(r => r.id !== 'see-through').map(r => r.maxFont));
-    const appOk = r => !!r && ((r.status === 'EMPTY' || r.status === 'REFUSED') && r.why.length > 0 || (r.id === 'see-through' && r.status === 'OK'));
+    // revision 202611020637: an app row its module registered and loaded reads OK · n of m (Edition 9: apps registers spider)
+    const appOk = r => !!r && ((r.status === 'EMPTY' || r.status === 'REFUSED') && r.why.length > 0 || (r.id === 'see-through' && r.status === 'OK') || (r.status === 'OK' && /^[\d,]+ of [\d,]+/.test(r.why)));
     const elementsRefused = apps[1] && apps[1].status === 'REFUSED' && /licence/i.test(apps[1].why);
     const t8 = apps.every(appOk) && p.rows.every(r => r.text && r.status) && firstApp === 'see-through' && st && st.maxFont > otherMax && st.maxFont >= p.panel.maxFont && elementsRefused;
     record('t8-apps', 'test 8: see-through, elements, spider rows present with EMPTY/REFUSED and a why (elements REFUSED · licence unsettled, Q1); see-through first of THE APPS and the largest label in the panel', t8,
@@ -325,7 +347,7 @@ async function runDevice(browser, deviceName, shots) {
       await A.page.keyboard.press('Escape'); await sleep(800);
       await A.page.keyboard.press('e'); await sleep(2500);
       await A.page.evaluate(() => history.back()); await sleep(1500); const after = await A.probe();
-      const ok = withCard && A.errors.length === e1 && after.marker === h.marker && /\/editions\/202611012135\//.test(after.url.href);
+      const ok = withCard && A.errors.length === e1 && after.marker === h.marker && after.url.href.indexOf('/editions/' + STAMP + '/') >= 0;
       record('a-escape-back', 'REVIEW 6566289513: e opens a card; Escape, e and one back gesture (history.back) on the cut page: no page error, the page stays', ok,
         { cardAfterE: withCard, newErrors: A.errors.slice(e1), sameDocument: after.marker === h.marker, href: after.url.href },
         ok ? '' : why(!withCard && 'e opened no card', A.errors.length !== e1 && (A.errors.length - e1) + ' new error(s): ' + A.errors[e1].text, after.marker !== h.marker && 'the page was left or reloaded: ' + after.url.href)); }

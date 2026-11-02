@@ -1,5 +1,85 @@
 # Opus team 3, step 3 the layer registry: TEST.md
 
+## Revision 202611020637 on Kuiper Edition 9 (written 2026-11-02, times from `date -u`)
+
+Module bytes under test: `modules/202611020637-layers.js`, 64,237 bytes,
+**sha256 c8fccccf212a66cf9c37e02a260eed212bd1ad2548c52b13fbf6024bd5d22486**.
+
+| run | sha256 at start | sha256 at end |
+|---|---|---|
+| journey-6.cjs, layers snapshot, Pixel 7 then Galaxy S24 | 07:26:09Z c8fccccf…22486 | 07:41:30Z c8fccccf…22486 |
+| test.cjs, layers snapshot, Pixel 7 + Galaxy S24 + static | 07:18:57Z c8fccccf…22486 | 07:25:56Z c8fccccf…22486 |
+
+(`edition-9/journey/lay-hash-start.txt`, `lay-hash-end.txt`, and the first and last lines of `edition-9/test-run.log`.)
+
+### Snapshots (scratch, served by `python3 -m http.server 8611 --bind 127.0.0.1`)
+
+- **base**: `git archive origin/main` at fdf6e35 (Kuiper Edition 9), unchanged; editions/202611020629 modules.json order
+  hello, kuiper-shell, line-card, drift, apps (dc18452f…).
+- **layers**: the same tree with exactly four files added or changed in editions/202611020629 (`edition-9/journey/snapshot-*.sha256`):
+  `modules/202611020637-layers.js` (c8fccccf…), `data/layers.json` (4aa35536…), `data/editions.json` (d175ffe1…),
+  `modules.json` (47c51d61…: Edition 9's manifest with the layers record of MODULE.json appended, `layers` last in order).
+  index.html is Edition 9's, uncut (73383218…): no delete-moved.py, no flyTo change.
+- data/layers.json and data/editions.json carry `"edition": "202611020629"`, written and checked by
+  `python3 tools/build_layers.py --edition 202611020629` (`--check` RESULT: PASS); editions.json has 9 editions,
+  pointer 202611020629. keys-min.json / keys.json are Edition 9's own (byte-identical to Edition 5's; sha256 e153dfa4… / 1c293c33…).
+  The see-through record names no file in Edition 9 (EMPTY, its module is not admitted); the module reads no other stamped data.
+
+### Journey (neural-link FIXES/NL-010/tools/controller/journey-6.cjs, unchanged; Playwright; `--use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist`; one device at a time)
+
+| step | base Pixel 7 | base Galaxy S24 | layers Pixel 7 | layers Galaxy S24 |
+|---|---|---|---|---|
+| load | PASS | PASS | PASS | PASS |
+| modules | PASS | PASS | PASS | PASS |
+| edition-open | PASS | PASS | PASS | PASS |
+| edition-close | PASS | PASS | PASS | PASS |
+| lines-open | PASS | PASS | PASS | PASS |
+| lines-filter | PASS | PASS | PASS | PASS |
+| lines-pick | PASS | PASS | PASS | PASS |
+| card-details | PASS | PASS | PASS | PASS |
+| card-close | PASS | PASS | PASS | PASS |
+| key-e-1 | PASS | PASS | PASS | PASS |
+| key-e-2 | PASS | PASS | PASS | PASS |
+| key-e-3 | PASS | PASS | PASS | PASS |
+| pinch-drag | PASS | PASS | PASS | PASS |
+| spark-tap | PASS | PASS | PASS | PASS |
+| whole-wafer | PASS | PASS | PASS | PASS |
+| see-through | PASS | PASS | PASS | PASS |
+| **total** | **16/16** | **16/16** | **16/16** | **16/16** |
+
+Windows: base Pixel 7 06:33:49-06:41:34Z, base Galaxy S24 06:41:34-06:48:54Z, layers Pixel 7 07:26:14-07:33:49Z,
+layers Galaxy S24 07:33:49-07:41:30Z. No step is HARNESS-LIMITED (no screenshot timed out). modules step with layers:
+"6 admitted: hello, kuiper-shell, line-card, drift, apps, layers", refused none. spark-tap with layers: Pixel 7 tap at
+(309.3, 436.6), 1.8 px from line 323, card 323; Galaxy S24 card 323 (the step the refused 202611020304 failed).
+Each run records two console errors, identical in base and layers, both raised on the See Through page after the last
+step navigates there (basemaps.cartocdn.com style.json, no network in this container); the load step counts zero.
+Reports: `edition-9/journey/{base,lay}-{pixel-7,galaxy-s24}.{json,sum,load}`.
+
+### test.cjs (this folder's, revision: `--stamp`, the engine-lines branch of t2-list, t8 accepts a registered app row OK)
+
+`node editions/202611020629/handoff/03-layers/test.cjs http://127.0.0.1:8611/lay/ <out> --stamp 202611020629` (the
+script copied into the layers snapshot so its ../.. is the Edition 9 folder): **RESULT: PASS, exit 0**: 22/22 per
+device on Pixel 7 and Galaxy S24, 6/6 static (t9-ci, t9-module, t9-records, t9-hashes, t9-carried, t9-module-sha).
+Full log `edition-9/test-run.log`. On the engine page t2-list measures the engine's list: 344 rows, "gridatlas" narrows
+it to 126 (the predicate's count over keys.json), the layer rows fold while the filter has the focus and return after.
+t8: spider reads OK · 567 of 2,496 because Edition 9's apps module registers it.
+
+### edition_check on the layers snapshot (`python3 tools/edition_check.py --root <layers> <layers>/editions/202611020629`)
+
+E7 has no layers line (the record's reads are literal paths: data/layers.json, data/editions.json, keys-min.json,
+keys.json, location.hash, location.search). E7 still FAILs on the drift and apps records' prose and E6 on the loader
+reference's KY_EDITION, exactly as on the base snapshot; E3 lists the four new files as not in proof/edition-sha256.txt
+(the integrator re-cuts it at assembly); E1, E2, E4, E5, E8 PASS.
+
+### Owner mode (cut page) for the record
+
+See HANDOFF.md, revision 202611020637: journey-6 Pixel 7 on Edition 9 cut by delete-moved.py (+ flyTo's fourth argument).
+
+---
+
+## Earlier: revision 202611020304 (refused 04:24Z), kept as written
+
+
 Verdict: **FAIL** — written by `test.cjs` at 2026-11-02T03:05:27.820Z from http://127.0.0.1:8431/editions/202611012135/ (kuiper-belt 66be444).
 
 Run: `node editions/202611012135/handoff/03-layers/test.cjs http://127.0.0.1:8432/ /tmp/nl010-opus/team-3/tester/out --handoff` from the repository root served by `python3 -m http.server 8432 --bind 127.0.0.1`. Playwright, harness GL flags, `devices['Pixel 7']` and `devices['Galaxy S24']`, real touch (`page.touchscreen.tap`), 6.5 s after load. Failures are served by Playwright routes only (keys.json 404, keys.json with byte 8370 changed `i`→`I` (sha256 9f6bae817dd2… against e153dfa45d30…), cosmos/wafer.tsv 404, cosmos/wafer.tsv and keys.json held to show WAIT and LOAD); no file on disk is changed. The one allowed console line in F and H is Chromium's own `Failed to load resource … 404` for the file served 404.

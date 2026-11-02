@@ -1,0 +1,724 @@
+{
+ "url": "http://127.0.0.1:8611/base/editions/202611020629/",
+ "outdir": "<scratch>/journey/out-base-galaxy-s24",
+ "generatedAt": "2026-11-02T06:41:34.636Z",
+ "devices": [
+  {
+   "device": "Galaxy S24",
+   "viewport": {
+    "width": 360,
+    "height": 780
+   },
+   "dpr": 3,
+   "url": "http://127.0.0.1:8611/base/editions/202611020629/",
+   "startedAt": "2026-11-02T06:41:34.695Z",
+   "steps": [
+    {
+     "id": "load",
+     "name": "load: zero console errors, wafer drawn, bar one row",
+     "pass": true,
+     "ms": 7289,
+     "measured": {
+      "loadMs": 7225,
+      "consoleErrors": [],
+      "big": "Kuiper Edition 9 · 344 verified lines lit",
+      "wafer": {
+       "litFraction": 0.2123,
+       "litPx": 55870,
+       "bbox": [
+        40,
+        287,
+        320,
+        569
+       ],
+       "bboxW": 281,
+       "bboxH": 283
+      },
+      "waferTries": 1,
+      "bar": {
+       "left": 0,
+       "top": 0,
+       "right": 360,
+       "bottom": 34,
+       "width": 360,
+       "height": 34
+      },
+      "barTitles": [
+       "File",
+       "Edit",
+       "View",
+       "Scope",
+       "Wafer",
+       "About"
+      ],
+      "titleTops": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "barScroll": {
+       "scrollWidth": 360,
+       "clientWidth": 360
+      },
+      "oneRow": true,
+      "sparksVisible": 101,
+      "frameMs": {
+       "median": 17,
+       "max": 17
+      },
+      "screenshot": "galaxy-s24/01-load.png"
+     },
+     "note": ""
+    },
+    {
+     "id": "modules",
+     "name": "every modules.json order entry admitted in order, none refused",
+     "pass": true,
+     "ms": 3,
+     "measured": {
+      "modules": {
+       "done": true,
+       "order": [
+        "hello",
+        "kuiper-shell",
+        "line-card",
+        "drift",
+        "apps"
+       ],
+       "admitted": [
+        "hello",
+        "kuiper-shell",
+        "line-card",
+        "drift",
+        "apps"
+       ],
+       "refused": [],
+       "failures": [],
+       "whole": null,
+       "timings": {
+        "loader_start_ms": 45,
+        "last_admitted_ms": 237,
+        "loader_end_ms": 237
+       },
+       "bytes": 131984,
+       "byte_budget": 233472
+      },
+      "consoleErrorsSoFar": 0
+     },
+     "note": "5 admitted: hello, kuiper-shell, line-card, drift, apps"
+    },
+    {
+     "id": "edition-open",
+     "name": "tap EDITION: panel opens under the bar and scrolls inside",
+     "pass": true,
+     "ms": 1329,
+     "measured": {
+      "panel": {
+       "visible": true,
+       "open": false,
+       "rect": {
+        "left": 4,
+        "top": 34,
+        "right": 356,
+        "bottom": 774,
+        "width": 352,
+        "height": 740
+       },
+       "overflowY": "auto",
+       "scrollHeight": 1082,
+       "clientHeight": 739,
+       "scrollTop": 0
+      },
+      "barBottom": 34,
+      "titleOn": true,
+      "scroll": {
+       "panelScrollTop": 189,
+       "subScrollTop": 0,
+       "pageScrollY": 0,
+       "scrollable": 343,
+       "ok": true
+      },
+      "screenshot": "galaxy-s24/02-edition-open.png"
+     },
+     "note": ""
+    },
+    {
+     "id": "edition-close",
+     "name": "tap EDITION again: panel closes",
+     "pass": true,
+     "ms": 340,
+     "measured": {
+      "panel": {
+       "visible": false,
+       "open": false,
+       "rect": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+       },
+       "overflowY": "auto",
+       "scrollHeight": 0,
+       "clientHeight": 0,
+       "scrollTop": 0
+      },
+      "screenshot": "galaxy-s24/03-edition-close.png"
+     },
+     "note": ""
+    },
+    {
+     "id": "lines-open",
+     "name": "tap LINES: panel opens under the bar with the rows",
+     "pass": true,
+     "ms": 1108,
+     "measured": {
+      "panel": {
+       "visible": true,
+       "open": false,
+       "rect": {
+        "left": 4,
+        "top": 34,
+        "right": 356,
+        "bottom": 774,
+        "width": 352,
+        "height": 740
+       },
+       "overflowY": "auto",
+       "scrollHeight": 20346,
+       "clientHeight": 739,
+       "scrollTop": 0
+      },
+      "rows": 344,
+      "firstRow": {
+       "left": 19,
+       "top": 428,
+       "right": 341,
+       "bottom": 498.4,
+       "width": 322,
+       "height": 70.4
+      },
+      "find": {
+       "left": 19,
+       "top": 240,
+       "right": 341,
+       "bottom": 420,
+       "width": 322,
+       "height": 180
+      },
+      "screenshot": "galaxy-s24/04-lines-open.png"
+     },
+     "note": ""
+    },
+    {
+     "id": "lines-filter",
+     "name": "type \"acceptance\": the list narrows to matching rows, input and first row on screen",
+     "pass": true,
+     "ms": 1443,
+     "measured": {
+      "rows": 7,
+      "allRowsMatch": true,
+      "findValue": "acceptance",
+      "firstRow": {
+       "left": 19,
+       "top": 230,
+       "right": 341,
+       "bottom": 330.1,
+       "width": 322,
+       "height": 100.1
+      },
+      "firstRowText": "*gridatlas@cacb69a tools/release/acceptance.mjs:15 · key 62,884,836,484Owner acceptance cannot be forged by an agent: th",
+      "pageScrollY": 0,
+      "activeElement": "lyFind",
+      "screenshot": "galaxy-s24/05-lines-filter.png"
+     },
+     "note": ""
+    },
+    {
+     "id": "lines-pick",
+     "name": "tap the first row: LINES closes, camera flies, card opens, spark in the clear space",
+     "pass": true,
+     "ms": 69380,
+     "measured": {
+      "linesVisible": false,
+      "card": {
+       "open": true,
+       "rect": {
+        "left": 0,
+        "top": 577.6,
+        "right": 360,
+        "bottom": 780,
+        "width": 360,
+        "height": 202.4
+       },
+       "index": 40,
+       "total": 344,
+       "title": "Owner acceptance cannot be forged by an agent: the ACCEPT line",
+       "cap": 265.2,
+       "height": 202.390625,
+       "ok": true
+      },
+      "clear": {
+       "ok": true,
+       "sparkY": 305,
+       "sparkX": 179.5,
+       "barBottom": 34,
+       "cardTop": 577.6,
+       "windowY": [
+        44,
+        567.6
+       ],
+       "hitTest": "#c",
+       "why": ""
+      },
+      "sparkMovedAfterTapPx": 349.2,
+      "rowTapped": "*gridatlas@cacb69a tools/release/acceptance.mjs:15 · key 62,884,836,484Owner acceptance cannot be forged by an agent: th",
+      "screenshot": "galaxy-s24/06-lines-pick.png"
+     },
+     "note": ""
+    },
+    {
+     "id": "card-details",
+     "name": "tap details: the card grows, stays under its cap and on screen",
+     "pass": true,
+     "ms": 1952,
+     "measured": {
+      "heightBefore": 202.390625,
+      "heightAfter": 265.1875,
+      "cap": 265.2,
+      "height": 265.1875,
+      "ok": true,
+      "cardRect": {
+       "left": 0,
+       "top": 514.8,
+       "right": 360,
+       "bottom": 780,
+       "width": 360,
+       "height": 265.2
+      },
+      "cardScrollHeight": 462,
+      "detailsOpen": true,
+      "sparkStillClear": true,
+      "clear": {
+       "ok": true,
+       "sparkY": 305,
+       "sparkX": 179.5,
+       "barBottom": 34,
+       "cardTop": 514.8,
+       "windowY": [
+        44,
+        504.79999999999995
+       ],
+       "hitTest": "#c",
+       "why": ""
+      },
+      "screenshot": "galaxy-s24/07-card-details.png"
+     },
+     "note": ""
+    },
+    {
+     "id": "card-close",
+     "name": "tap ×: the card closes and the selection clears",
+     "pass": true,
+     "ms": 1976,
+     "measured": {
+      "closeRect": {
+       "left": 316,
+       "top": 515.8,
+       "right": 360,
+       "bottom": 563.8,
+       "width": 44,
+       "height": 48
+      },
+      "closeSize": [
+       44,
+       48
+      ],
+      "cardOpen": false,
+      "magenta": null,
+      "screenshot": "galaxy-s24/08-card-close.png"
+     },
+     "note": ""
+    },
+    {
+     "id": "key-e-1",
+     "name": "press e (1): next line, card open, spark in the clear space",
+     "pass": true,
+     "ms": 37998,
+     "measured": {
+      "card": {
+       "index": 1,
+       "total": 344,
+       "title": "Bytes on disk are the bytes that ship",
+       "rect": {
+        "left": 0,
+        "top": 638.2,
+        "right": 360,
+        "bottom": 780,
+        "width": 360,
+        "height": 141.8
+       },
+       "cap": 265.2,
+       "height": 141.78125,
+       "ok": true
+      },
+      "clear": {
+       "ok": true,
+       "sparkY": 335.6,
+       "sparkX": 179.5,
+       "barBottom": 34,
+       "cardTop": 638.2,
+       "windowY": [
+        44,
+        628.2
+       ],
+       "hitTest": "#c",
+       "why": ""
+      },
+      "screenshot": "galaxy-s24/09-key-e-1.png"
+     },
+     "note": ""
+    },
+    {
+     "id": "key-e-2",
+     "name": "press e (2): next line, card open, spark in the clear space",
+     "pass": true,
+     "ms": 39994,
+     "measured": {
+      "card": {
+       "index": 2,
+       "total": 344,
+       "title": "Plain words become commands with no model, and a missing number is a refusal tha",
+       "rect": {
+        "left": 0,
+        "top": 514.8,
+        "right": 360,
+        "bottom": 780,
+        "width": 360,
+        "height": 265.2
+       },
+       "cap": 265.2,
+       "height": 265.1875,
+       "ok": true
+      },
+      "clear": {
+       "ok": true,
+       "sparkY": 274,
+       "sparkX": 179.5,
+       "barBottom": 34,
+       "cardTop": 514.8,
+       "windowY": [
+        44,
+        504.79999999999995
+       ],
+       "hitTest": "#c",
+       "why": ""
+      },
+      "screenshot": "galaxy-s24/10-key-e-2.png"
+     },
+     "note": ""
+    },
+    {
+     "id": "key-e-3",
+     "name": "press e (3): next line, card open, spark in the clear space",
+     "pass": true,
+     "ms": 35023,
+     "measured": {
+      "card": {
+       "index": 3,
+       "total": 344,
+       "title": "One Earth radius for the whole estate, with the reason",
+       "rect": {
+        "left": 0,
+        "top": 602.2,
+        "right": 360,
+        "bottom": 780,
+        "width": 360,
+        "height": 177.8
+       },
+       "cap": 265.2,
+       "height": 177.78125,
+       "ok": true
+      },
+      "clear": {
+       "ok": true,
+       "sparkY": 317.7,
+       "sparkX": 179.5,
+       "barBottom": 34,
+       "cardTop": 602.2,
+       "windowY": [
+        44,
+        592.2
+       ],
+       "hitTest": "#c",
+       "why": ""
+      },
+      "screenshot": "galaxy-s24/11-key-e-3.png"
+     },
+     "note": ""
+    },
+    {
+     "id": "pinch-drag",
+     "name": "pinch out then drag: the wafer zooms and pans, the page neither scrolls nor zooms",
+     "pass": true,
+     "ms": 129429,
+     "measured": {
+      "pinch": {
+       "centre": [
+        180,
+        417.7
+       ],
+       "sparkBefore": [
+        179.5,
+        317.7
+       ],
+       "fingerDistance": [
+        220,
+        110
+       ],
+       "sparkDistanceFromCentre": [
+        100,
+        50.4
+       ],
+       "ratio": 0.504,
+       "expected": 0.5,
+       "pageScroll": [
+        0,
+        0
+       ],
+       "vvScale": 1,
+       "innerWidth": 360,
+       "ok": true
+      },
+      "drag": {
+       "finger": [
+        -90,
+        70
+       ],
+       "sparkMoved": [
+        -90,
+        70
+       ],
+       "pageScroll": [
+        0,
+        0
+       ],
+       "vvScale": 1,
+       "vvOffset": [
+        0,
+        0
+       ],
+       "cardOpen": true,
+       "ok": true
+      },
+      "zoomOut": [
+       {
+        "centre": [
+         89.5,
+         437.3
+        ],
+        "axis": "y",
+        "fingerDistance": [
+         300,
+         12
+        ],
+        "ratio": 0.04,
+        "zoomAfter": 0.28,
+        "selectedSparkMovedPx": 0.8,
+        "greensInView": [
+         0,
+         0
+        ],
+        "ok": true
+       },
+       {
+        "centre": [
+         89.1,
+         436.6
+        ],
+        "axis": "y",
+        "fingerDistance": [
+         300,
+         12
+        ],
+        "ratio": 0.04,
+        "zoomAfter": 0.0112,
+        "selectedSparkMovedPx": 0.9,
+        "greensInView": [
+         0,
+         8
+        ],
+        "ok": true
+       },
+       {
+        "centre": [
+         88.4,
+         436.1
+        ],
+        "axis": "y",
+        "fingerDistance": [
+         300,
+         15.36
+        ],
+        "ratio": 0.05121,
+        "zoomAfter": 0.0005735,
+        "selectedSparkMovedPx": 1.7,
+        "greensInView": [
+         8,
+         106
+        ],
+        "ok": true
+       }
+      ],
+      "zoomNow": 0.0005735,
+      "screenshot": "galaxy-s24/12-pinch-drag.png"
+     },
+     "note": ""
+    },
+    {
+     "id": "spark-tap",
+     "name": "tap a green spark: the card for the nearest spark opens and the camera places it clear",
+     "pass": true,
+     "ms": 22536,
+     "measured": {
+      "tapped": {
+       "x": 258.4,
+       "y": 402.6,
+       "px": 33
+      },
+      "greensInView": 0,
+      "cameraKnown": true,
+      "predictedIndex": 323,
+      "predictedTitle": "Contributor username, UID and changeset are never read, banned from the schema,",
+      "predictedDistanceFromTapPx": 1.7,
+      "secondNearestPx": 26,
+      "cardIndex": 323,
+      "previousCardIndex": 3,
+      "cardTitle": "Contributor username, UID and changeset are never read, banned from the schema,",
+      "clear": {
+       "ok": true,
+       "sparkY": 314,
+       "sparkX": 179.5,
+       "barBottom": 34,
+       "cardTop": 595.6,
+       "windowY": [
+        44,
+        585.6
+       ],
+       "hitTest": "#c",
+       "why": ""
+      },
+      "screenshot": "galaxy-s24/13-spark-tap.png"
+     },
+     "note": ""
+    },
+    {
+     "id": "whole-wafer",
+     "name": "tap COMMANDS then WHOLE WAFER: the card closes and the whole wafer is on screen under the bar",
+     "pass": true,
+     "ms": 72366,
+     "measured": {
+      "commandsPanel": {
+       "visible": true,
+       "open": false,
+       "rect": {
+        "left": 4,
+        "top": 34,
+        "right": 356,
+        "bottom": 774,
+        "width": 352,
+        "height": 740
+       },
+       "overflowY": "auto",
+       "scrollHeight": 991,
+       "clientHeight": 739,
+       "scrollTop": 0
+      },
+      "wholeWaferButton": {
+       "text": "whole wafer⌫",
+       "left": 11,
+       "top": 164.5,
+       "right": 349,
+       "bottom": 208.5,
+       "width": 338,
+       "height": 44
+      },
+      "commandsOpenedUnderBar": true,
+      "panelStayedOpenAfterTap": false,
+      "cardOpen": false,
+      "magenta": null,
+      "wafer": {
+       "litFraction": 0.2116,
+       "litPx": 55692,
+       "bbox": [
+        40,
+        267,
+        320,
+        548
+       ],
+       "bboxW": 281,
+       "bboxH": 282
+      },
+      "screenshot": "galaxy-s24/14-whole-wafer.png"
+     },
+     "note": ""
+    },
+    {
+     "id": "see-through",
+     "name": "tap SEE THROUGH: ../../see-through/ opens (new tab or navigation)",
+     "pass": true,
+     "ms": 13874,
+     "measured": {
+      "control": {
+       "text": "See Through",
+       "tag": "a",
+       "href": "../../see-through/",
+       "target": null,
+       "rect": {
+        "left": 9,
+        "top": 729,
+        "right": 111.9,
+        "bottom": 771,
+        "width": 102.9,
+        "height": 42
+       }
+      },
+      "how": "same-tab",
+      "url": "http://127.0.0.1:8611/base/see-through/202611020012/",
+      "ok": true,
+      "screenshot": "galaxy-s24/15-see-through.png"
+     },
+     "note": "same-tab → http://127.0.0.1:8611/base/see-through/202611020012/"
+    }
+   ],
+   "consoleErrors": [
+    {
+     "kind": "request",
+     "text": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json net::ERR_TUNNEL_CONNECTION_FAILED"
+    },
+    {
+     "kind": "console",
+     "text": "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED"
+    }
+   ],
+   "pass": true,
+   "passed": 16,
+   "failed": 0,
+   "finishedAt": "2026-11-02T06:48:50.736Z"
+  }
+ ],
+ "pass": true,
+ "summary": [
+  {
+   "device": "Galaxy S24",
+   "passed": 16,
+   "failed": 0,
+   "failedSteps": [],
+   "consoleErrors": 2
+  }
+ ]
+}

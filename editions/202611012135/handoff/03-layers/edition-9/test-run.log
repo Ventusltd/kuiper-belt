@@ -1,0 +1,79 @@
+Mon Nov  2 07:18:57 UTC 2026
+c8fccccf212a66cf9c37e02a260eed212bd1ad2548c52b13fbf6024bd5d22486  lay/editions/202611020629/modules/202611020637-layers.js
+fatal: not a git repository (or any of the parent directories): .git
+[Pixel 7] PASS state-wait
+[Pixel 7] PASS state-load
+[Pixel 7] PASS t1-inspect
+[Pixel 7] PASS t2-title
+[Pixel 7] PASS t2-panel
+[Pixel 7] PASS t2-list — engine lines: 126 of 344 rows for "gridatlas" (expected 126), rows folded while focused, back after
+[Pixel 7] PASS t3-toggle
+[Pixel 7] PASS t3-repos
+[Pixel 7] PASS t6-written
+[Pixel 7] PASS t8-apps
+[Pixel 7] PASS a-escape-back
+[Pixel 7] PASS a-console
+[Pixel 7] PASS t10-card-details
+[Pixel 7] PASS t10-card-close
+[Pixel 7] PASS t6-hash
+[Pixel 7] PASS t6-query
+[Pixel 7] PASS t6-pointer
+[Pixel 7] PASS t7-repos
+[Pixel 7] PASS t4-keys-404
+[Pixel 7] PASS t5-keys-tampered
+[Pixel 7] PASS t7b-wafer-404
+[Pixel 7] PASS states-shown
+[Galaxy S24] PASS state-wait
+[Galaxy S24] PASS state-load
+[Galaxy S24] PASS t1-inspect
+[Galaxy S24] PASS t2-title
+[Galaxy S24] PASS t2-panel
+[Galaxy S24] PASS t2-list — engine lines: 126 of 344 rows for "gridatlas" (expected 126), rows folded while focused, back after
+[Galaxy S24] PASS t3-toggle
+[Galaxy S24] PASS t3-repos
+[Galaxy S24] PASS t6-written
+[Galaxy S24] PASS t8-apps
+[Galaxy S24] PASS a-escape-back
+[Galaxy S24] PASS a-console
+[Galaxy S24] PASS t10-card-details
+[Galaxy S24] PASS t10-card-close
+[Galaxy S24] PASS t6-hash
+[Galaxy S24] PASS t6-query
+[Galaxy S24] PASS t6-pointer
+[Galaxy S24] PASS t7-repos
+[Galaxy S24] PASS t4-keys-404
+[Galaxy S24] PASS t5-keys-tampered
+[Galaxy S24] PASS t7b-wafer-404
+[Galaxy S24] PASS states-shown
+[static] PASS t9-ci
+[static] PASS t9-module
+[static] PASS t9-records
+[static] PASS t9-hashes
+[static] PASS t9-carried
+[static] PASS t9-module-sha
+[
+ {
+  "device": "Pixel 7",
+  "passed": 22,
+  "failed": 0,
+  "notEvaluated": 0,
+  "failedSteps": [],
+  "notEvaluatedSteps": []
+ },
+ {
+  "device": "Galaxy S24",
+  "passed": 22,
+  "failed": 0,
+  "notEvaluated": 0,
+  "failedSteps": [],
+  "notEvaluatedSteps": []
+ },
+ {
+  "device": "static",
+  "failedSteps": []
+ }
+]
+RESULT: PASS
+exit 0
+Mon Nov  2 07:25:56 UTC 2026
+c8fccccf212a66cf9c37e02a260eed212bd1ad2548c52b13fbf6024bd5d22486  lay/editions/202611020629/modules/202611020637-layers.js

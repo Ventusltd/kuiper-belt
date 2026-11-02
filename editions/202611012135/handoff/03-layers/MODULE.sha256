@@ -1,6 +1,5 @@
-b16716bd468ef45b4d624608fdd3b455e066bf74f625f58fca4d7cc65bf10de4  modules/202611020304-layers.js
-c3da9a6e2e680f5b16b47ff445cb5d3dba01509aa0caf3c6a774ce0da0441999  data/layers.json
-2013c39afa2b1f5f859631cb207f6c74f1ae149ab5af916ee5e744d6ecca4230  data/editions.json
-00a63c4be77b3796ab74dc30f0cdf903628bc2b5b44aab9b82aea427c1a0512a  tools/build_layers.py
-26ede7385cc0c1b86cccd8b8ab96eed1e2fa792409cb5e17c61607342d746653  index.html.patch
-db6e831c7a17716a83cf5967f137c37832d2b5e9fb2bd2de2c85a36f33e3949f  delete-moved.py
+c8fccccf212a66cf9c37e02a260eed212bd1ad2548c52b13fbf6024bd5d22486  modules/202611020637-layers.js
+4aa35536bd97c46293e07ea6e8ede2dd2ac67a67fa89f330ba9d81ac9d21534c  data/layers.json
+d175ffe1acf169dd6e67332d405245b653cce892b5ecccf6765cafbb00f4eaee  data/editions.json
+47c51d6182927f3f98ec32876aeefd2a28f743fd7f1f939364837140746e8ec1  modules.json
+# paths as admitted into editions/202611020629/; the files sit now at handoff/03-layers/202611020637-layers.js and handoff/03-layers/edition-9/{data/layers.json,data/editions.json,modules.json}
