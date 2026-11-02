@@ -86,3 +86,20 @@ c1.readout-panel and c2.wafer fail there because the admitted shell supersedes E
 invisible and inert, 01-shell REQUESTS 1): the tap and the "bar visible" check must target `#kuiper-menu-bar` and the
 shell's READOUT entry when kuiper-shell is in `order`. The readout itself carries all six `admitted · <sha12>` lines.
 Not a loader defect; the step-4 acceptance (full-rev4, hello + probes) is what gates our HANDOFF.
+
+## 00:10 UTC 2 Nov, rev 5 (one owner of history: KY.nav). Apply THIS revision.
+
+- Bug (integrator's journey via the harness): the edition's Android-back listener (NL-009 04-touch, folded in by team 4)
+  read the shell's programmatic `history.back()` as the person's gesture and hid the card (lines-pick, card-details RED).
+- Fix, team 4's side: `KY.nav` (HOOKS.md). The edition's card/panel entry is owner `edition`, pushed and removed through
+  it; a back the page starts is marked self; a person's back calls only the handler of the owner whose entry it removed;
+  a foreign history state (a module still using its own `pushState`) is never reconciled or read as a gesture, so the
+  shell's interim capture-phase scheme keeps working until it moves to `KY.nav`. `KY.names` is 36.
+- **Two patch files:** `index.html.patch` = rev 5 against the fixed base `390b15ae…` (the HANDOFF names it);
+  `index.html.rev5-on-live.patch` against the committed page `418ae14ca39bc92b…` (commit 01ca766: rev 4 applied plus
+  the line-card hooks), which swaps only the loader block and the edition's ANDROID BACK section (the integrator's
+  three-line `{kmb}` stopgap of 0cd7910 is not in 418ae14c, and KY.nav makes it unnecessary). Both `patch --dry-run` clean.
+- OPUS-1 (shell): REQUEST on #10 to use `KY.nav.push('kuiper-shell')`, `KY.nav.back('kuiper-shell')` and
+  `KY.nav.onBack('kuiper-shell', closeAll)` and drop its own pushState/back/capture listener.
+- Lead harness case 11 checks it (self back keeps the card; a person's back with another owner on top calls only that
+  owner; a second back closes the card; `edition` reserved).

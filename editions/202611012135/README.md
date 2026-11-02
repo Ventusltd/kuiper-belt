@@ -14,19 +14,12 @@ Edition 4 is `../202611012027/`. Edition 5 is the same engine and the same `keys
 
 **loader** · the hook table and loader in `index.html` (reference copy `modules/202611012145-loader.js`, sha256
 `25a16f1d3c3f`, listed under `references`, never fetched) and `hello` (`modules/202611012145-hello.js`, sha256 `ee2130b56e74`)
-· Opus 4 · step 4 · **admitted 23:19 UTC** (`ADMISSIONS.md` row 1; Opus 4 `index.html.patch` rev 4, sha256 `d49be8ce…75f5`; `index.html` after `1b008b515205`; team 4's TEST.md still read "running" at admission; journey on snapshot `a1-loader` running). What a person sees: the wafer as in Edition 4, plus one readout line per module, `<id> admitted ·
+· Opus 4 · step 4 · **admitted 23:19 UTC** (`ADMISSIONS.md` row 1; Opus 4 `index.html.patch` rev 4, sha256 `d49be8ce…75f5`; `index.html` after `1b008b515205`; team 4's TEST.md still read "running" at admission; journey Pixel 7 14/16, Galaxy S24 14/16, no step turned red: the two red are the base's `load` and `see-through`). What a person sees: the wafer as in Edition 4, plus one readout line per module, `<id> admitted ·
 <sha12>`; a module whose bytes, stamp, licence or hooks do not match is refused in words (one readout line and one
 strip) while the bar, the wafer and every other module keep running. `hello` draws one cyan ring at key 0 and leaves
 `order` before PR A. Folds in NL-009 04-touch and 09-robust (`handoff/04-loader/HANDOFF.md`).
 
-**kuiper-shell** · `modules/202611012143-kuiper-shell.js` · sha256 `eeea45817821` · Opus 1 · step 1 · **admitted 23:21 UTC** (`ADMISSIONS.md` row 2; through `modules.json`, not a script tag; team 1 TEST.md PASS A1-A9; journey on snapshot `a2-shell` running). What a
-person sees: one bar across the top (36 px; 34 px at 700 px and narrower) with FILE EDIT VIEW on the left, the VENTUS
-wordmark with "Cables & Connectivity®" centred, and SCOPE WAFER ABOUT on the right, in GridAtlas's face; every title
-and command is a 44 px target; a panel opens under the bar, one at a time, and closes on the same title, Escape, a
-tap on the wafer or the back gesture. Edition 4's bar stays in the page, hidden. Folds in NL-009 01-bar,
-06-seethrough (the bar entry) and 08-type.
-
-**line-card** · `modules/202611012143-line-card.js` · sha256 `e2baeaaaf244` · Opus 2 · step 2 · **admitted 23:35 UTC** (`ADMISSIONS.md` row 3; `handoff/02-card/index.patch` applied, `index.html` after `418ae14ca39b`; team 2 TEST.md PASS B1-B7 on `788256a9…`, the admitted file differs by a comment only; journey on snapshot `a3-card` queued). What a person
+**line-card** · `modules/202611012143-line-card.js` · sha256 `e2baeaaaf244` · Opus 2 · step 2 · **admitted 23:35 UTC** (`ADMISSIONS.md` row 3; `handoff/02-card/index.patch` applied, `index.html` after `418ae14ca39b`; team 2 TEST.md PASS B1-B7 on `788256a9…`, the admitted file differs by a comment only; journey on snapshot `a3-card`, hello + line-card with the shell withdrawn, running). What a person
 sees: every card opens with the line of code itself, verbatim from the key; the key is the second row; the title,
 "n of 344", pattern and finder sit behind "details". On a phone (640 px and narrower) the card is a bottom sheet
 capped at 34 dvh with 44 px targets, closed by ×, Escape or a swipe down. Folds in NL-009 02-card. The law is "The
@@ -34,9 +27,14 @@ card law" below.
 
 ### Modules refused
 
-None yet.
+**kuiper-shell** · `modules/202611012143-kuiper-shell.js` · sha256 `eeea45817821` · Opus 1 · step 1 · **refused 00:03 UTC** (`ADMISSIONS.md` row 2, REVIEW issuecomment-6565858587; first admitted 23:21 UTC). Measured: on both devices `lines-pick` and `card-details` turned red (green at the base and after row 1; Galaxy S24 also `pinch-drag`, `spark-tap` and `whole-wafer`): after a WAFER row tap the card is `display:none` within 200 ms, because the shell's `history.back()` is read as a back gesture by 04-touch's popstate listener; and the file changed after hand-off (`352c20c6…`, not the handed-off `eeea4581…`; the loader said `sha256 mismatch`). Withdrawn from `order`; re-admission on Opus 1's rev 2 hand-off. What it does when admitted (what a
+person sees): one bar across the top (36 px; 34 px at 700 px and narrower) with FILE EDIT VIEW on the left, the VENTUS
+wordmark with "Cables & Connectivity®" centred, and SCOPE WAFER ABOUT on the right, in GridAtlas's face; every title
+and command is a 44 px target; a panel opens under the bar, one at a time, and closes on the same title, Escape, a
+tap on the wafer or the back gesture. Edition 4's bar stays in the page, hidden. Folds in NL-009 01-bar,
+06-seethrough (the bar entry) and 08-type.
 
-### Modules waiting for admission (on disk at 23:23 UTC, in the integration order; admissions read 23:37 UTC)
+### Modules waiting for admission (on disk at 23:23 UTC, in the integration order; admissions read 00:05 UTC)
 
 Each sha256 is of the file as it stood at 23:23 UTC; a module's bytes may still change until its row in
 `ADMISSIONS.md` admits it, and the admitted sha256 is the one in `modules.json`. Each paragraph moves to "Modules
@@ -82,15 +80,15 @@ Not on disk at 23:59 UTC: Opus 9 (the law, `tools/edition_check.py`, `LICENCES.m
 
 | finding | folded in by | where | state |
 |---|---|---|---|
-| 01 bar | Opus 1 (shell) | `modules/202611012143-kuiper-shell.js` | admitted 23:21 UTC (row 2); journey running |
-| 02 card | Opus 2 (card) | `modules/202611012143-line-card.js` | admitted 23:35 UTC (row 3); journey queued |
+| 01 bar | Opus 1 (shell) | `modules/202611012143-kuiper-shell.js` | the shell was refused 00:03 UTC (row 2); waits for Opus 1's rev 2 |
+| 02 card | Opus 2 (card) | `modules/202611012143-line-card.js` | admitted 23:35 UTC (row 3); journey running |
 | 03 camera | Opus 10 (base) | `index.html` | applied: the spark is aimed into the band under the bar and any open panel and above the card, re-aimed on the next frame and kept there when the card or the window changes; a finger reaches a spark at 24 px (48 dp), a mouse at 9 px, only from a press that began on the wafer; a pick closes a panel only when under 96 px of band would be left. Merged with 04-touch's tap verdict (a long press opens no card). |
-| 04 touch | Opus 4 (loader patch) | `index.html` (hook table patch rev 4) | admitted 23:19 UTC (row 1), merged with 03-camera's guard as `!tapUp` (`handoff/10-integration/BASE.md` B3); journey running |
+| 04 touch | Opus 4 (loader patch) | `index.html` (hook table patch rev 4) | admitted 23:19 UTC (row 1), merged with 03-camera's guard as `!tapUp` (`handoff/10-integration/BASE.md` B3); journey: no step turned red |
 | 05 lines | Opus 3 (layers) | `modules/202611012141-layers.js` | waiting for admission |
-| 06 see-through | Opus 1 (bar entry), Opus 5 (See Through) | the two modules | bar slot admitted with the shell 23:21 UTC (row 2); the entry itself waits for Opus 5 |
+| 06 see-through | Opus 1 (bar entry), Opus 5 (See Through) | the two modules | waiting: the shell's bar slot was refused with the shell 00:03 UTC (row 2); the entry waits for Opus 5 |
 | 07 perf | Opus 10 (base) | `index.html`, `keys-min.json`, `tools/edition_min.py` | applied: list rows `content-visibility:auto`; the page loads `keys-min.json` (1,558,451 bytes, 17 fields) and falls back to `keys.json`. The card law keeps `line_text` whole, so the file is 8.8 % smaller than `keys.json`, not 07's 86 %: one placed record's line is 1,240,449 characters. |
-| 08 type | Opus 1 (shell) | `modules/202611012143-kuiper-shell.js` | admitted 23:21 UTC (row 2); journey running |
-| 09 robust | Opus 4 (loader patch) | `index.html` (hook table patch rev 4) | admitted 23:19 UTC (row 1); journey running |
+| 08 type | Opus 1 (shell) | `modules/202611012143-kuiper-shell.js` | the shell was refused 00:03 UTC (row 2); waits for Opus 1's rev 2 |
+| 09 robust | Opus 4 (loader patch) | `index.html` (hook table patch rev 4) | admitted 23:19 UTC (row 1); journey: no step turned red |
 
 ## The card law
 

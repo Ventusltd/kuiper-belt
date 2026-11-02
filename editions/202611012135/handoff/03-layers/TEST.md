@@ -1,6 +1,6 @@
 # Opus team 3, step 3 the layer registry: TEST.md
 
-**PRE-INTEGRATION RUN** (served with --index /tmp/nl010-opus/team-3/lead/pre6/index.html, --manifest /tmp/nl010-opus/team-3/lead/pre6/modules.json): not a hand-off pass. Verdict: **FAIL** — written by `test.cjs` at 2026-11-01T23:27:56.578Z from http://127.0.0.1:8430/editions/202611012135/ (kuiper-belt 2662a4f).
+**PRE-INTEGRATION RUN** (served with --index /tmp/nl010-opus/team-3/lead/pre6/index.html, --manifest /tmp/nl010-opus/team-3/lead/pre6/modules.json): not a hand-off pass. Verdict: **FAIL** — written by `test.cjs` at 2026-11-01T23:53:36.476Z from http://127.0.0.1:8430/editions/202611012135/ (kuiper-belt 57195d2).
 
 Run: `node editions/202611012135/handoff/03-layers/test.cjs http://127.0.0.1:8432/ /tmp/nl010-opus/team-3/tester/out --handoff` from the repository root served by `python3 -m http.server 8432 --bind 127.0.0.1`. Playwright, harness GL flags, `devices['Pixel 7']` and `devices['Galaxy S24']`, real touch (`page.touchscreen.tap`), 6.5 s after load. Failures are served by Playwright routes only (keys.json 404, keys.json with byte 8370 changed `i`→`I` (sha256 9f6bae817dd2… against e153dfa45d30…), cosmos/wafer.tsv 404, cosmos/wafer.tsv and keys.json held to show WAIT and LOAD); no file on disk is changed. The one allowed console line in F and H is Chromium's own `Failed to load resource … 404` for the file served 404.
 
@@ -35,11 +35,11 @@ Device-independent (test 9 and the hand-off):
 | `t9-ci` | test 9: python3 tools/ci_check.py prints RESULT: PASS | PASS |
 | `t9-module` | test 9: exactly one modules/<stamp>-layers.js, node --check exits 0, exactly one KY.register( | PASS |
 | `t9-records` | test 9: data/layers.json kuiper.layers.v1: seven records, order periods..spider, key layer:<id>, label, group, colour from PALETTE.md with its meaning, licence, source | PASS |
-| `t9-hashes` | test 9: every record with a source file hashes to its sha256 and bytes; every data/*.json (but layers.json) is some record's source | FAIL: no record names data/drift.json |
+| `t9-hashes` | test 9: every data file a record names (editions.json, keys.json, see-through.json, …) hashes to the record's sha256 and bytes; data/*.json no record names are listed | FAIL: mismatch: [["elements","data/elements.json","sha 28b8b2df02b5 vs 781dc0d96cf9, bytes 165584 vs 165383"]] |
 | `t9-module-sha` | hand-off: MODULE.sha256 names the module file and its measured sha256 | PASS |
 
 Console errors per device and scenario: Pixel 7 A-normal 0, t6-hash 0, t6-query 0, t6-pointer 0, E-selftest 0, F-keys-404 0, G-keys-tampered 0, H-wafer-404 0; Galaxy S24 A-normal 0, t6-hash 0, t6-query 0, t6-pointer 0, E-selftest 0, F-keys-404 0, G-keys-tampered 0, H-wafer-404 0.
 
-Screenshots (first device): `img/WAIT.png` 52 KB, `img/OK.png` 116 KB, `img/FAIL.png` 87 KB, `img/REFUSED.png` 82 KB. Every device's screenshots and `report.json` are in /tmp/nl010-opus/team-3/lead/run8.
+Screenshots (first device): `img/WAIT.png` 52 KB, `img/OK.png` 117 KB, `img/FAIL.png` 87 KB, `img/REFUSED.png` 82 KB. Every device's screenshots and `report.json` are in /tmp/nl010-opus/team-3/lead/run9.
 
 The tester refuses the hand-off until every row reads PASS on both devices in a run without `--index`/`--manifest`; a NOT EVALUATED row names the other team whose module it waits for.

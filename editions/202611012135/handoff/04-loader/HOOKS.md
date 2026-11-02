@@ -46,9 +46,9 @@ words, esc, cv, ov, o2, hud, big, sub, card, gbox, gin, SPACE, N, repos, commits
 
 ## The rest of `window.KY` (not in `hooks`, but admissible in `requires`)
 
-`requires` may name: `Object.keys(KY.hooks)` ∪ `['cam', 'lit', 'sel', 'redraw', 'draw', 'panels', 'refuse']` ∪ the `provides` of
+`requires` may name: `Object.keys(KY.hooks)` ∪ `['cam', 'lit', 'sel', 'redraw', 'draw', 'panels', 'refuse', 'nav']` ∪ the `provides` of
 modules admitted earlier in `order` (a module's `id` is always in its `provides`). `KY.names` is the frozen list of the 28
-hooks plus those seven, without `provides` (35 names since rev 3).
+hooks plus those eight, without `provides` (35 names since rev 3, 36 since rev 5).
 
 | member | shape | engine line |
 |---|---|---|
@@ -61,10 +61,11 @@ hooks plus those seven, without `provides` (35 names since rev 3).
 | `KY.draw.add(fn, order)` | the one wrap of `draw`; `fn(o2, KY)` runs after the engine's and the edition's overlay, ascending `order`; a throwing fn is removed and reported, the frame continues | :332 `function draw(){`, wrapped :654 |
 | `KY.panels.add(name, el, title)` / `.set(name)` / `.place()` | rev 4: once `kuiper-shell` (team 1) is admitted, `add` appends `el` to `KY.modules['kuiper-shell'].api.panel(name)` (the shell's six: file edit view scope wafer about); otherwise, or for a name the shell lacks, `PANELS[name] = el`; the bar titles are team 1's | :710 `PANELS`, :712 `placePanels`, :714 `setPanel` |
 | `KY.refuse(text, slot)` | rev 3: one line in the shared `#refuse[role=alert]` strip under the module's own `slot` (its id); `engine` and `modules` are the page's (TypeError); empty text clears the slot; the strip goes when every slot is empty | the page's `refuse(m, slot)` (NL-009 09-robust, given slots by team 4; rev-3 patched page :140) |
+| `KY.nav` | rev 5, the page's one owner of history state for the Android back gesture: `push(owner)` adds one entry (`{kuiper:1, kuiperDepth, owner}`); `back(owner)` removes the owner's entry, marked self so no listener reads it as the person's gesture (`isSelf(e)` true); `onBack(owner, fn)` is called when the person's back removes that owner's entry, and nobody else's; `has(owner)`, `depth`. The owner is the module id; `edition` is the page's (TypeError). The shell should push its panel entry through it instead of its own `pushState`/`history.back()`/capture listener | the edition's ANDROID BACK (NL-009 04-touch, rewritten on `KY.nav`), rev-5 patched page |
 | `KY.register(module)` | the only call a module makes at parse time; a closure of the loader | |
 | `KY.modules` | `{id: frozen {id, generation, sha256, api, inspect}}`; alias `window.__KUIPER_MODULES__` | |
 | `KY.inspect()` | `{schema, edition, hooks, order, admitted, refused, timings}` = `window.__KUIPER_EDITION__` | |
-| `KY.names` | frozen array: the 28 hooks + `cam lit sel redraw draw panels refuse` (35) | |
+| `KY.names` | frozen array: the 28 hooks + `cam lit sel redraw draw panels refuse nav` (36) | |
 
 `Object.isFrozen(window.KY) === true`, and `KY.hooks`, `KY.names`, `KY.cam`, `KY.lit`, `KY.sel`, `KY.draw`, `KY.panels`
 are frozen too. `KY.modules` is the one object the loader fills (each entry frozen).

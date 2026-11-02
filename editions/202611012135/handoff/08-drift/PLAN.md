@@ -30,3 +30,10 @@ trailing `\r` stripped.
 | 5 layer record | lead | `KY.modules.layers.api.register({id:'drift', module:'drift', load})` when the record exists; otherwise own draw, says so |
 
 ## Builder / tester / evidence: slots free at 23:25. If not here by 23:45 the lead does the part.
+
+## LEAD, date -u 00:05 (2026-11-02): all four parts done by the lead (no builder, tester or evidence officer appeared by 23:45)
+- tools/drift.py written; `--check` RESULT: PASS 7 of 7 (P1, P2 x3, P3, P5); negative (one class changed) FAILs.
+- data/drift.json: 309 SAME / 7 MOVED / 2 GONE / 0 FILE_GONE / 28 UNVERIFIED at origin/HEAD; team 4's 331/7/2/0/6
+  reproduced exactly with their heads and their pipelinenews clone (EVIDENCE.md C).
+- module sealed at sha256 18f7019a… (MODULE.sha256); test.cjs run 2 `--handoff` RESULT: PASS 32 of 32 pre-integration.
+- HANDOFF posted on #10 by the lead; EVIDENCE.md reviewed by the lead in the evidence slot (disclosed there).

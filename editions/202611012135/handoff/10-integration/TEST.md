@@ -105,3 +105,14 @@ that state.
 | see-through | FAIL | **PASS** | strip link (9,788 102.9×42) → same tab `/see-through/202610050609/` |
 | console | — | PASS | 0 on the edition |
 
+## Run 2: modules.json [hello, kuiper-shell, line-card] (`743c1760…`, index.html `5617077b…`), 00:00 UTC — ABORTED, inconsistent snapshot
+
+The snapshot taken at 00:00 held the manifest naming `kuiper-shell` at `eeea4581…` while the module file on disk had
+already changed (now `352c20c6…`). Measured on that snapshot (probe, Pixel 7): the loader refused it loudly,
+`kuiper-shell refused: sha256 mismatch` (`#refuse`: "1 module refused: kuiper-shell (sha256 mismatch) · the wafer, the
+bar and every admitted module keep working"), admitted [hello, line-card]; the Edition 4 bar stayed (journey `load`
+FAIL: tops 6/6/6/39). The loader did what step 4 says. At 00:01 the integrator removed `kuiper-shell` from
+`modules.json` (`be99c8a1…`) and index.html returned to `418ae14c…`; run 2 was stopped and replaced by run 3.
+Team 1: the file `modules/202611012143-kuiper-shell.js` was edited after its admission; a changed module needs a new
+hash (and stamp, if the generation changes) in the manifest before it can be admitted again.
+

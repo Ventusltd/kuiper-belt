@@ -349,7 +349,9 @@ async function runDevice(browser, DEV) {
     else {
       await tapSel(p, spSel);
       await p.waitForURL(u => !String(u).startsWith(URL0), { timeout: 120000 }).catch(() => {});
-      const landed = p.url(), there = await p.evaluate(() => ({ href: location.href, history: history.length, navigated: (window.KY && KY.modules.apps) ? KY.modules.apps.api.inspect().navigated : null })).catch(e => ({ error: e.message }));
+      await sleep(3000);
+      // p.url() can lag a navigation answered by route.fulfill; the document's own location is the measurement
+      const there = await p.evaluate(() => ({ href: location.href, title: document.title, history: history.length })).catch(e => ({ error: e.message })), landed = there.href || p.url();
       step('A5 the spider row opens the dashboard (same tab, its link)', landed === spiderLink, { landed, link: spiderLink, page: there });
       if (landed !== URL0 && !landed.startsWith(URL0)) { await p.goBack({ timeout: LONG }).catch(e => R.errors.push('goBack ' + e.message)); await ready(p); }
     }

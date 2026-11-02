@@ -11,7 +11,7 @@ is the edition branch as the harness last committed it; `kb@96736f5` is the comm
 |---|---|---|
 | `editions/202611012135/modules/202611012325-drift.js` | 22,294 | `18f7019aad915920e79c1f279ad688f3ccd4f1dd96ff23a992520c19b37fdd8d` |
 | `editions/202611012135/data/drift.json` | 118,553 | `388103129b904a4a038d18adc26b703c144dede2d09497d13fe6223b30b5d103` |
-| `tools/drift.py` | 26,522 | `caa61fd4329713abbf7673a20c6755b16c159996774e5b302a0fcb2b73a6cdbb` |
+| `tools/drift.py` | 26,522 | `29fdb05e5717aee41a5b0ed149b715bf4d997cdbee045bef90da9dd7a6b6080e` |
 
 Inputs, recorded inside drift.json `inputs`: `editions/202611012135/keys.json` sha256 `1c293c33…7242b` (byte-identical
 to Edition 4's `editions/202611012027/keys.json`, measured), `cosmos/repos.tsv`, and the git objects of the clones under
@@ -88,7 +88,7 @@ find_clone does), no key outside keys.json. Negative: one GONE row changed to SA
 | never trusted blind | kb@018b46a tools/key.py:49 |
 | every time carries its offset | kb@018b46a README.md:39 |
 | the text rule of line_text | kb@018b46a tools/edition_keys.py:250 |
-| the key law (new key of a MOVED line) | kb@018b46a tools/edition_keys.py:12; the walk :137-160, the sum :207-213 |
+| the key law (new key of a MOVED line) | kb@018b46a tools/edition_keys.py:12; the walk :136-159, the sum :209-215 |
 | lines_of (binary rule) | kb@018b46a tools/edition_keys.py:43-46 |
 | the cap (borrowed, DISCLOSED) | kb@018b46a tools/wafer_keys.py:34 `CAP_SECONDS = 14 * 86400` (there: the silence cap) |
 | colours | kb@018b46a PALETTE.md:9 grey-blue the record, :11 green energised, :12 amber attention, :19 no decoration |
@@ -113,3 +113,10 @@ find_clone does), no key outside keys.json. Negative: one GONE row changed to SA
   falls back to the edition's key in this cut, but the module says why when one does.
 - test.cjs ran pre-integration (modules.json routed: the served records re-hashed from disk, line-card, drift); the
   layer registry is not admitted in the served manifest, so the module drew on its own (`registry own`).
+
+## G. Android (test.cjs, run 2, `--handoff`)
+
+`node handoff/08-drift/test.cjs http://127.0.0.1:8480/editions/202611012135/ <out> --handoff` → **RESULT: PASS (32 of
+32) pre-integration**, Pixel 7 and Galaxy S24, real touch, zero console errors in every scenario (the deliberate 404 of
+data/drift.json in scenario C excluded and counted). TEST.md holds every step with its measurement; img/ holds three
+CSS-pixel PNGs (the MOVED card on Pixel 7, the filter "moved" on Galaxy S24, the refusal on Galaxy S24).
