@@ -188,10 +188,9 @@ Run `20260918T222408Z`, digest `a56fbe0df58281ec5971e7890d7c5ff35ab00572d83c31fd
 
 ## Editions
 
-- **Kuiper Edition 5 (202611012135)**: the estate's verified lines on this wafer, each card opening with the line of code
-  itself, with the Android fixes measured on Pixel 7 and Galaxy S24 and a loader that admits stamped modules by
-  sha256. Open it: https://ventusltd.github.io/kuiper-belt/editions/ or https://www.globalgrid2050.com/kuiper-editions/
-  (the pointer always opens the newest edition; each dated folder stays as history).
+- **Kuiper Edition 6 (202611020326)**: the estate's verified lines on this wafer under the GridAtlas bar with the Ventus
+  wordmark; every card opens with the line of code itself. Open it: https://ventusltd.github.io/kuiper-belt/editions/ or
+  https://www.globalgrid2050.com/kuiper-editions/ (the pointer always opens the newest edition; each dated folder stays).
 - **Kuiper Edition 1 (202610311905)**: the same lines on a belt of their own, with the register, five chapters, twenty
   surveys and the proofs. Method and evidence: [editions/README.md](editions/README.md).
 
