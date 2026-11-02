@@ -4,7 +4,6 @@
  "hooks": "kuiper.hooks.v1",
  "order": [
   "hello",
-  "kuiper-shell",
   "line-card"
  ],
  "modules": [
@@ -34,53 +33,6 @@
    "team": "04",
    "step": 4,
    "proof": "handoff/04-loader/"
-  },
-  {
-   "id": "kuiper-shell",
-   "generation": "202611012143",
-   "path": "modules/202611012143-kuiper-shell.js",
-   "sha256": "eeea45817821c84ab8bd78238fede7e82d5d9edeba02226fe1d1442a6fd9df66",
-   "bytes": 42397,
-   "byte_budget": 65536,
-   "requires": [
-    "safeBox",
-    "card",
-    "hud",
-    "big",
-    "sub",
-    "cv",
-    "gbox",
-    "gin",
-    "redraw"
-   ],
-   "provides": [
-    "kuiper-shell",
-    "menuBar"
-   ],
-   "reads": [
-    "#bar",
-    "#keys",
-    "#hud",
-    "#top",
-    "#foot",
-    "#lines",
-    "#lyFocus",
-    "#lyFind",
-    "#card"
-   ],
-   "writes": [
-    "window.KY.modules.kuiper-shell",
-    "window.__KUIPER_SHELL__",
-    "#kuiper-menu-bar",
-    "#kuiper-menu-bar-css",
-    "#kuiper-star-strip",
-    "#kuiper-menu-bar-failure"
-   ],
-   "creates_controls": "the bar: six titles FILE EDIT VIEW SCOPE WAFER ABOUT, their panels, the star slot",
-   "licence": "Apache-2.0",
-   "team": "01",
-   "step": 1,
-   "proof": "handoff/01-shell/"
   },
   {
    "id": "line-card",
