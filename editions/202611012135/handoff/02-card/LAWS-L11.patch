@@ -1,0 +1,20 @@
+--- a/LAWS.md
++++ b/LAWS.md
+@@ -170,3 +170,17 @@
+ **Falsified by:** a reconciliation resolved by recency, seniority or plausibility rather than by
+ pinned evidence; a `HONOURED` returned where a predicate was not actually evaluated; or a
+ `NOT EVALUATED` that gives a count instead of the statements.
++
++---
++
++## L11. The line of code is the header
++
++The line of code is the header. Every card opens with the line itself, verbatim from the key; the key is the second row; every name a person gave the line comes after.
++
++On every card the instrument shows for a keyed line, the first row is the line of code itself, byte for byte the
++text `tools/key.py <key>` returns for that key, in the instrument's monospace; the second row is the key,
++`repo@commit path:line`; every name a person gave the line (a title, a pattern, a finder, a count) comes after
++both. A card whose first row is a title, a count or a label is not a card of this instrument.
++
++**Falsified by:** a card whose first visible row differs from the text at its key; a card that shows a line
++without its key on the next row; or a quote shown as the header when the quote is not the line at the key.

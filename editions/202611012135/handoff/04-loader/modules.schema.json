@@ -1,0 +1,262 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "kuiper.modules.v1",
+ "title": "Kuiper edition manifest (editions/<stamp>/modules.json)",
+ "description": "Opus team 4, NL-010 step 4 (ROADMAP.md step 4, 4.5; team-2/STEPS.md 4.5). The edition's current.json (gridatlas@5ec7f62 atlas/current.json:24-41, :650-660). The page admits the ids of `order`, in that order, each only when its file hashes to `sha256`, its size equals `bytes` and fits `byte_budget`, its stamp is written identically in the file name, the header line and the registration, its `licence` is non-empty and every name in `requires` is a hook of kuiper.hooks.v1 (handoff/04-loader/HOOKS.md) or a `provides` of a module admitted earlier. Licence of this file: CC BY 4.0.",
+ "type": "object",
+ "required": [
+  "schema",
+  "edition",
+  "hooks",
+  "order",
+  "modules"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "schema": {
+   "const": "kuiper.modules.v1"
+  },
+  "edition": {
+   "type": "string",
+   "pattern": "^\\d{12}$",
+   "description": "the edition folder's stamp; the page refuses the whole set when it differs from KY.edition"
+  },
+  "hooks": {
+   "const": "kuiper.hooks.v1"
+  },
+  "order": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/id"
+   },
+   "uniqueItems": true,
+   "description": "admission order (ROADMAP.md 'Integration order'); nothing outside it is fetched"
+  },
+  "modules": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/module"
+   }
+  },
+  "references": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/reference"
+   },
+   "description": "files in modules/ that are not modules and are never fetched (the loader reference)"
+  },
+  "contracts": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "boolean"
+   }
+  }
+ },
+ "$defs": {
+  "id": {
+   "type": "string",
+   "pattern": "^[a-z0-9][a-z0-9-]*$"
+  },
+  "stamp": {
+   "type": "string",
+   "pattern": "^\\d{12}$"
+  },
+  "hookname": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9-]+$"
+  },
+  "module": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "generation",
+    "path",
+    "sha256",
+    "bytes",
+    "byte_budget",
+    "requires",
+    "provides",
+    "reads",
+    "writes",
+    "licence",
+    "team",
+    "step",
+    "proof"
+   ],
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "generation": {
+     "$ref": "#/$defs/stamp",
+     "description": "the UTC minute the module was cut; equals the file name's twelve digits, the header line's and the registration's"
+    },
+    "path": {
+     "type": "string",
+     "pattern": "^modules/[a-z0-9][a-z0-9.-]*\\.js$"
+    },
+    "sha256": {
+     "type": "string",
+     "pattern": "^[0-9a-f]{64}$"
+    },
+    "bytes": {
+     "type": "integer",
+     "minimum": 1
+    },
+    "byte_budget": {
+     "type": "integer",
+     "minimum": 1
+    },
+    "requires": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/hookname"
+     },
+     "uniqueItems": true
+    },
+    "provides": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/hookname"
+     },
+     "uniqueItems": true,
+     "description": "always contains id"
+    },
+    "reads": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "description": "every fetch( literal in the file is one of these (E7)"
+    },
+    "writes": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "description": "globals and #element ids, each matched by a literal in the file (E7); window.KY.modules.<id> is matched by the registration"
+    },
+    "creates_controls": {
+     "type": "string"
+    },
+    "licence": {
+     "type": "string",
+     "minLength": 1,
+     "description": "SPDX or the exact name, e.g. CERN-OHL-S-2.0; empty is refused at run time and by E6"
+    },
+    "team": {
+     "type": "string",
+     "pattern": "^\\d\\d$"
+    },
+    "step": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 10
+    },
+    "proof": {
+     "type": "string"
+    }
+   }
+  },
+  "reference": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "file",
+    "generation",
+    "sha256",
+    "bytes",
+    "role",
+    "licence"
+   ],
+   "properties": {
+    "file": {
+     "type": "string",
+     "pattern": "^modules/[a-z0-9][a-z0-9.-]*\\.js$"
+    },
+    "generation": {
+     "$ref": "#/$defs/stamp"
+    },
+    "sha256": {
+     "type": "string",
+     "pattern": "^[0-9a-f]{64}$"
+    },
+    "bytes": {
+     "type": "integer"
+    },
+    "role": {
+     "type": "string"
+    },
+    "licence": {
+     "type": "string",
+     "minLength": 1
+    },
+    "team": {
+     "type": "string"
+    },
+    "step": {
+     "type": "integer"
+    }
+   }
+  }
+ },
+ "examples": [
+  {
+   "schema": "kuiper.modules.v1",
+   "edition": "202611012135",
+   "hooks": "kuiper.hooks.v1",
+   "order": [
+    "hello"
+   ],
+   "modules": [
+    {
+     "id": "hello",
+     "generation": "202611012145",
+     "path": "modules/202611012145-hello.js",
+     "sha256": "ee2130b56e74ef3ec26a91aa2a177579c5fddcb8c48c17aa111f9fa8dbf7dd53",
+     "bytes": 1303,
+     "byte_budget": 4096,
+     "requires": [
+      "keyPlace",
+      "cam",
+      "draw",
+      "redraw"
+     ],
+     "provides": [
+      "hello"
+     ],
+     "reads": [],
+     "writes": [
+      "window.KY.modules.hello",
+      "#ky-hello"
+     ],
+     "creates_controls": "none",
+     "licence": "Apache-2.0",
+     "team": "04",
+     "step": 4,
+     "proof": "handoff/04-loader/"
+    }
+   ],
+   "references": [
+    {
+     "file": "modules/202611012145-loader.js",
+     "generation": "202611012145",
+     "sha256": "d9272b82421d919d4785995d1add6e7f26295880096c333a3565b35ce7163488",
+     "bytes": 16354,
+     "role": "loader reference: the hook table and loader block of index.html, byte-identical between the marker lines; never fetched",
+     "licence": "Apache-2.0",
+     "team": "04",
+     "step": 4
+    }
+   ],
+   "contracts": {
+    "module_sha256_required": true,
+    "order_explicit": true,
+    "engine_mutation_forbidden": true,
+    "stamp_in_name_equals_generation": true,
+    "hooks_frozen": true
+   }
+  }
+ ]
+}

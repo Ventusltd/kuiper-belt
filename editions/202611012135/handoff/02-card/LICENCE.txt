@@ -1,0 +1,18 @@
+LICENCE: Opus team 2, NL-010 roadmap step 2 "the card law" (modules/202611012143-line-card.js, LAWS-L11.patch, the README section)
+
+This file is team 2's row of editions/202611012135/LICENCES.md, the register Opus team 9 builds
+(ROADMAP.md step 9, 9.8; team-5/STEPS.md 9.8). Keys are written repo@sha path:line. The OPUS-2 evidence officer
+re-read every key on 2026-11-01 at kuiper-belt@018b46a, which is identical for these paths to edition/202611012135
+@96736f5.
+
+| brought in | what the edition takes | licence as the files state it | key | note for the edition |
+|---|---|---|---|---|
+| kuiper-belt: modules/202611012143-line-card.js (the card, K0-K6) and handoff/02-card/index.patch (edCard and fillLines delegate to the module) | code written for this edition in kuiper-belt | Apache-2.0 | kuiper-belt@018b46a LICENSE:1-2 ("Apache License / Version 2.0, January 2004"); README.md:156-157 ("Code is licensed under Apache-2.0, see [LICENSE](LICENSE)"); editions/README.md:27 ("Code Apache-2.0, text and data CC BY 4.0, as the repository") | header line 1 of the module: `/* kuiper module line-card, generation 202611012143 (UTC), Apache-2.0 (kuiper-belt) */`; modules.json record `"licence": "Apache-2.0"` |
+| kuiper-belt: the NL-009 round-1 02-card patch (FABLE-02), folded into the module (bottom sheet, 44 px targets, swipe/Escape close, 34dvh, safe-area) | code written for kuiper-belt Edition 4's index.html, rewritten into the module | Apache-2.0 (kuiper-belt code, the same repository's work) | neural-link@b9b7d5d FIXES/NL-009/round1/02-card.md:78-84 (the PATCH section, one file `editions/202611012027/index.html`); kuiper-belt@018b46a editions/202611012027/NOTICE.md:3-4 (index.html is Apache-2.0) | nothing new to attribute |
+| kuiper-belt: LAWS.md L11 (handoff/02-card/LAWS-L11.patch, landed in PR B), the edition README section "The card law", handoff/02-card/*.md | documentation and law text | CC BY 4.0 | kuiper-belt@018b46a README.md:157 ("documentation and generated data under CC BY 4.0"); ROADMAP.md step 2 licence note ("L11's text is CC BY 4.0") | handoff/02-card/test.cjs is code: Apache-2.0 |
+| the quoted lines: every card header is `keys.json bodies[].line_text`, the line at the key in its own repository | a citation with its key; keys.json is not changed (sha256 1c293c33...7242b, the same as Edition 4) | each line keeps its repository's licence: Apache-2.0, CERN-OHL-S v2, CC BY 4.0, ODbL 1.0, OGL v3 | kuiper-belt@018b46a editions/202611012027/NOTICE.md:7-10 ("A quote here is a citation with its key, not a relicensing.") | showing the line as the header, rather than the register's quote, is the same citation of the same key. No line is brought in that Edition 4 did not already cite. NOTICE.md needs no new sentence |
+| GridAtlas: the lesson "show the engine's live text, never a cleaned label" | method only; no GridAtlas line is copied into the module | Apache-2.0 | gridatlas@5ec7f62 atlas/modules/202609031958-menu-bar.js:92-98 (the lesson); LICENSE:2-3; NOTICE:1-2 | a method is not a copy. No attribution is required |
+| See Through | nothing: no See Through code is copied | CERN-OHL-S v2 (not applicable here) | kuiper-belt@018b46a see-through/202610050609/LICENSE.md:1-9 | the module carries no CERN-OHL-S line; its licence line stays Apache-2.0 |
+
+Licence line for the module and test.cjs: Apache-2.0 (kuiper-belt). Step 2 brings no third-party code, font, image or
+data into the edition.

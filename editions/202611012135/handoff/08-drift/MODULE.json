@@ -1,0 +1,48 @@
+{
+ "id": "drift",
+ "generation": "202611012325",
+ "path": "modules/202611012325-drift.js",
+ "sha256": "18f7019aad915920e79c1f279ad688f3ccd4f1dd96ff23a992520c19b37fdd8d",
+ "bytes": 22294,
+ "byte_budget": 65536,
+ "requires": [
+  "wafer",
+  "keyPlace",
+  "o2",
+  "ov",
+  "cv",
+  "card",
+  "esc",
+  "fmt",
+  "commits",
+  "repos",
+  "SPACE",
+  "hud",
+  "flyTo",
+  "cam",
+  "sel",
+  "draw",
+  "redraw",
+  "panels"
+ ],
+ "provides": [
+  "drift"
+ ],
+ "reads": [
+  "data/drift.json",
+  "keys-min.json",
+  "keys.json"
+ ],
+ "writes": [
+  "window.KY.modules.drift",
+  "#ky-drift",
+  "#ky-drift-css",
+  "#card .ky-drift-cl",
+  "#hud (one DRIFT line per frame, appended)"
+ ],
+ "creates_controls": "the drift section of the WAFER panel: five class filters (44 px) and the list of the chosen class; a tap on an amber MOVED spark opens its card",
+ "licence": "Apache-2.0",
+ "team": "08",
+ "step": 8,
+ "proof": "handoff/08-drift/"
+}

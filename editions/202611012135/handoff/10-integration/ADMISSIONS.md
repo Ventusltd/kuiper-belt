@@ -1,0 +1,25 @@
+# ADMISSIONS.md: the integrator's admission log (Opus team 10, NL-010 step 10)
+
+Lead OPUS-10. One row per admission attempt, in the roadmap's order 4, 1, 2, 3, 6, 5, 7, 8, 9. A module is admitted
+when its `HANDOFF.md` and a `TEST.md` reading PASS (Pixel 7 + Galaxy S24, zero console errors) are in its handoff
+folder; the integrator applies any `index.html` patch, adds the record to `modules.json`, freezes a snapshot of the
+edition folder (`/tmp/nl010-opus/team-10/lead/snap.sh <name>`: the edition folder copied without `handoff/`, the rest of
+the kuiper-belt root symlinked, every file's sha256 listed beside it) and runs the journey on that snapshot on port
+8500 with `journey-5.cjs` (FIXES/NL-009/android-journey.cjs with the selector changes written in its header; same
+steps and thresholds, plus the `modules` step). A module that turns a step red that was green before it is refused,
+and a REVIEW on #10 names the step and the measurement.
+
+| # | module (id) | team | file sha256 (first 12) | index.html patch | index.html sha256 after (first 12) | journey (Pixel 7 / Galaxy S24) | verdict |
+|---|---|---|---|---|---|---|---|
+| 0 | base (Edition 4 copy + NL-009 07-perf + 03-camera) | 10 | — | BASE.md B1-B3 | `390b15aed286` | Pixel 7 14/16, Galaxy S24 12/16 (22:32-23:17 UTC, load 53→61) | reference |
+
+Row 0 detail (snapshot `snap/base`, journey-5.cjs, report `/tmp/nl010-opus/team-10/lead/journey/out-base5/report.json`):
+red on both devices: `load` (bar two rows: title tops 6/6/6/39, bar 75.1 px; NL-009 01-bar, step 1's to fix; 0
+console errors), `see-through` (no control in the bar; NL-009 06, steps 1/5). Galaxy S24 `whole-wafer`: the
+screenshot for the wafer measurement timed out at 180 s (`wafer: {error: 'screenshot timed out'}`), and the VIEW-less
+Edition 4 COMMANDS panel stayed open after WHOLE WAFER until the corner tap: counted red here, a harness-limited
+measurement under load. The team 10 tester's base run (TEST.md "Run 0", Pixel 7, NL-009 script + panel-dismiss)
+agrees: load, panel-dismiss (back), see-through red. These are the reference; an admission must not add a red step.
+| 1 | `hello` + the hook table and loader (Opus 4 `index.html.patch` rev 4, sha256 `d49be8ce…75f5`) | 04 | hello `ee2130b56e74`; loader reference `25a16f1d3c3f` (≡ the page block between the markers, sha256 of the block `3ed23ad1…fbcb` both sides) | rev 4 is `diff -u` against this base (390b15ae…), `patch -p1` clean, no fuzz; 27 lines removed, 07-perf, 03-camera and `EDITION 5` survive (grep counts: `keys-min.json` 2, `edBand` 4, `ED_MINBAND = 96` 1, `content-visibility:auto` 1, `EDITION 2 ·` 0); 03's guard + `!tapUp` as BASE.md B3; `node --check` PASS | `1b008b515205` | Pixel 7 14/16, Galaxy S24 14/16 (23:19-23:47 UTC, load 53→73); red = the base's `load` (bar two rows) and `see-through` only; Galaxy S24 `whole-wafer` green again | **admitted** 23:19 UTC on the harness's instruction (rev 4 names this base in HANDOFF HEAD); **team 4's TEST.md still read "running" at admission** — the verdict is recorded here when it lands |
+| 2 | `kuiper-shell` (Opus 1) | 01 | `eeea45817821` (42,397 bytes; = handoff MODULE.sha256 = TEST.md's tested bytes) | none: admitted through `modules.json` (order 2), not `index.patch`'s script tag (one admission path, the loader's checks run) | `1b008b515205` (unchanged) | both devices: `lines-pick`, `card-details` **turned red** (green at base and a1); Galaxy S24 also `pinch-drag` (zoom-out pinch: the spark moved 144 px), `spark-tap` (0 sparks in view) red; `whole-wafer` red (bbox null, the strip); `see-through` turned green (the strip opens `../../see-through/`); `load` red by the wafer-disc measurement catching the SEE THROUGH strip (script fixed: strip masked); bar one row 0,0 412×34 | **REFUSED** 00:03 UTC (REVIEW issuecomment-6565858587): after a WAFER row tap the card is `display:none` within 200 ms, because the shell's `history.back()` is read as a back gesture by 04-touch's popstate listener; and the file was edited after hand-off (`352c20c6…` ≠ `eeea4581…`, loader: `sha256 mismatch`). Withdrawn from `order`; re-admission on rev 2's hand-off. First: admitted 23:21 UTC; TEST.md "Verdict: PASS" (A1-A9, 7 viewports, 0 console errors), HANDOFF STATUS PASS. Probe (Galaxy S24, live tree): admitted, refused [], bar 0,0 360×34, six titles, 0 errors |
+| 3 | `line-card` (Opus 2) | 02 | `e2baeaaaf244` (14,509 bytes) | `handoff/02-card/index.patch` (edCard → `api.show`, fillLines → `api.row`), `patch -p1` clean | `418ae14ca39b` | snapshot `a3-card` (hello + line-card; shell withdrawn) running | admitted 23:35 UTC; TEST.md "RESULT: PASS" (B1-B7, 344 bodies, S0b keys-min.json ≡ keys.json for every placed body). Disclosed by team 2: the run tested `788256a9…`, the file is `e2baeaaa…` after a comment-only change (HANDOFF :53-55); the journey measures the admitted bytes. Probe: 3 admitted, 0 errors |
