@@ -4,7 +4,7 @@ From Edition 5 (`202611012135`) onwards every Kuiper edition ships by this law a
 team 9 (NL-010 roadmap step 9) from FIXES/NL-010/ROADMAP.md step 9 and FIXES/NL-010/team-5/STEPS.md 9.1-9.8 in
 Ventusltd/neural-link-between-agents, without softening a word. Text CC BY 4.0, as the repository (README.md:156-157);
 the tool it names, `tools/edition_check.py`, is Apache-2.0 code. Keys are `repo@sha path:line`; a short sha means that
-head: gridatlas `5ec7f62`, kuiper-belt `018b46a`, neural-link `591b57c`. This file lands in the release PR (PR B, 9.6),
+head: gridatlas `5ec7f62`, kuiper-belt `018b46a`, neural-link `591b57c` (the NL-009 round-1 files at neural-link `fc822ee`). This file lands in the release PR (PR B, 9.6),
 so the owner merges it.
 
 In one paragraph: a new dated folder; a pointer that moves in three places and nowhere else; `ci_check` and
@@ -14,10 +14,12 @@ back, byte-exact, with no folder ever deleted. Every licence of everything the e
 files and written in one register in the edition folder.
 
 The lesson it copies: a release is a pointer move and nothing else (gridatlas@5ec7f62 docs/RELEASE.md:3-7, :139-151);
-the tested preview is the release (:119-121); the owner accepts in writing, first line, and agents never record
-acceptance (:40, :49-53); only the owner merges a release, every PR a draft, rebase never squash (:41, :54-55);
+the eight steps cut, preview PR, owner acceptance, release, live bytes, homepage, served, rollback (docs/RELEASE.md:38-45);
+the tested preview is the release (:119-121); the owner accepts in writing, first line, by an owner login, and agents
+never record acceptance (:40, :49-53); only the owner merges a release, every PR a draft, rebase never squash (:41, :54-55);
 cartridges are hashed in the manifest and refused on mismatch (atlas/current.json:5, :14-21, :31; tools/ci/pr-gate.mjs:176;
-docs/RELEASE.md:117); a module installs nothing until its hooks exist (atlas/modules/202609031958-menu-bar.js:8-17);
+docs/RELEASE.md:117); a module installs nothing until its hooks exist and publishes a missing hook (atlas/modules/202609031958-menu-bar.js:8-17,
+:122-124, :157);
 rollback is a revert of the pointer commit, byte-exact, refused if the pointer has moved since (docs/RELEASE.md:264,
 :283-306). The gap it closes: a harness merged release PRs on chat authorisation against "only the owner merges"
 (neural-link@591b57c SESSIONS/202611012145-kuiper-edition-harness-notes.md:19-20).
@@ -43,8 +45,8 @@ editions/index.html:7), the link (:11) and `location.replace` (:12), each as `<s
 editions/202611012027/README.md:25-26). From Edition 5 the `location.replace` forwards `location.search +
 location.hash`, as GridAtlas's root does (gridatlas@5ec7f62 index.html:2), because today it forwards only the hash and
 `editions/?layers=...` opens with no layers (team-2/STEPS.md 3.6). The change is prepared as
-`editions/202611012135/handoff/09-law/pointer.patch` and lands in the release PR with the stamp move; the same
-forwarding is asked of `see-through/index.html:12` when step 5 cuts its folder. The release PR also adds the
+`editions/202611012135/handoff/09-law/pointer.patch` and lands in the release PR with the stamp move; See Through's
+pointer already forwards both at kuiper-belt@233d91b see-through/index.html:12 (it names `202611020012/`). The release PR also adds the
 edition's entry to `editions/README.md`, updates its "current edition" sentence, and adds the entry to the Editions
 section of the root `README.md` (notes :42-43).
 
@@ -80,8 +82,8 @@ On GitHub, `.github/workflows/check.yml` runs `tools/ci_check.py` and then `tool
 FAIL fails the run. On the measuring machine, the integrator runs, in this order:
 
 1. `{ python3 tools/ci_check.py; python3 tools/edition_check.py editions/<stamp> --strict --pre-cut; } >
-   editions/<stamp>/proof/ci_check.log` (`--pre-cut` allows only E3 to be NOT EVALUATED, and only because the sha256
-   list that will hash this log is not cut yet);
+   editions/<stamp>/proof/ci_check.log` (`--pre-cut` allows only the folder's own E3 to be NOT EVALUATED: its sha256
+   list is absent or a draft until the final cut, which hashes this log; every other NOT EVALUATED still fails);
 2. cut `proof/edition-sha256.txt` (every file of the folder but itself, `handoff/` included);
 3. `python3 tools/edition_check.py editions/<stamp> --strict`, which must print `RESULT: PASS` with nothing NOT
    EVALUATED; its output is quoted in PR A's body.
@@ -93,9 +95,9 @@ http://127.0.0.1:<port>/editions/<stamp>/ <outdir> --all --law --proof editions/
 (the script is `editions/202611012135/handoff/09-law/android-journey.cjs`: FIXES/NL-009/android-journey.cjs as adapted
 by Opus team 10 for Edition 5's shell, with the law layer added), on Playwright `devices['Pixel 7']` with `hasTouch`,
 `isMobile` and `deviceScaleFactor`, real touch only, SwiftShader flags, served from the repository root, one device at
-a time (NL-009 BRIEF.md:11-20; notes :53-58); run one device per process, the reports are combined by `node
-android-journey.cjs --merge editions/<stamp>/proof/android-journey.json <report.json>...`. Each step is measured and written to `proof/android-journey.json` with
-its rectangle, timing or hit-test result:
+a time (neural-link@fc822ee FIXES/NL-009/round1/BRIEF.md:11-20; notes :53-58); run one device per process, the reports are combined by `node
+android-journey.cjs --merge editions/<stamp>/proof/android-journey.json <report.json>...`. Each step is measured and
+written to `proof/android-journey.json` with its rectangle, timing or hit-test result:
 
 (a) load `editions/<stamp>/` with zero console errors; (b) the bar is one row at 360 px and 393 px and the Ventus lockup
 is at the top; (c) each menu title opens, the same tap closes it, a tap on the wafer closes it, the back gesture closes
@@ -106,7 +108,9 @@ scrolls; (h) a 4 px spark is hit, or the page says what it hit instead; (i) land
 is still one row or wraps by design and says so; (j) every module of `modules.json` reports `admitted`, none
 `refused`; and every NL-009 round-1 BLOCKER and MAJOR as a step: (k) the bar is one row at 360, 393, 412 and 430 px,
 not the 75.1 px two rows of Edition 4 (01-bar.md:13, BLOCKER); (l) every bar title is at least 44 px tall, not 29.0 px
-(01-bar.md:18, MAJOR); (m) SEE THROUGH fits on that row and "see through" is named on the page (01-bar.md:20,
+(01-bar.md:18, MAJOR); (m) "see through" is named on the page and SEE THROUGH is reachable in one tap by the shell's measured rule: a bar
+title on the one row at 434 px and wider, the bottom-left 44 px strip below 434 px (kuiper-belt editions/202611012135/
+modules/202611012143-kuiper-shell.js:45 `STAR_TITLE_MQ = '(min-width: 434px)'`; ROADMAP R7, Q7) (01-bar.md:20,
 06-seethrough.md:24-32, MAJOR; 06-seethrough.md:11, BLOCKER); (n) after a pick with READOUT open, READOUT is not
 under the bar (09-robust.md:11, MAJOR); (o) with `--disable-webgl --disable-webgl2` the page shows a sentence, not a
 blank black screen (09-robust.md:18, MAJOR).
@@ -127,8 +131,8 @@ the pointer `editions/` after PR B lands on the same stamp (`location.replace` r
 `editions/202611012135/handoff/04-loader/modules.schema.json`, Opus team 4). The loader in `index.html` fetches each
 module in `order`, computes its sha256 in the browser, refuses it when the digest differs or when a name in `requires`
 is not on the hook table, and prints the refusal in the readout: `<id> refused: sha256 mismatch` or `<id> refused:
-missing hook <name>`, never a silent skip (menu-bar.js:15-17). The edition stays usable without any refused module
-(menu-bar.js:16). `order` is the integration order in which the modules were proven (ROADMAP "Integration order").
+missing hook <name>`, never a silent skip (menu-bar.js:17-18). The edition stays usable without any refused module
+(menu-bar.js:17). `order` is the integration order in which the modules were proven (ROADMAP "Integration order").
 Checked by: E2, E6, E7, E8, and the journey's step (j).
 
 ## 9.6 The owner's ACCEPT on the preview; who merges
@@ -138,21 +142,39 @@ Two PRs per edition, both drafts, both from the branch `edition/<stamp>`:
 - **PR A, the preview**, adds `editions/<stamp>/` and nothing else: no pointer, no README entries, no root file. Gate:
   9.3 and 9.4 PASS, `proof/` complete, the PR body carrying the journey table and the `NOT EVALUATED` list. Pages
   serves main only, so PR A is merged for the folder to be served at `editions/<stamp>/`. The owner tests the served
-  folder on the phone and posts `ACCEPT <stamp>` as the first line of a comment on PR A, or `REJECT <stamp>`, which
+  folder on the phone and posts `ACCEPT <stamp>`, by an owner login, as the first line of a comment on PR A, or `REJECT <stamp>`, which
   withdraws it (the shape of gridatlas@5ec7f62 docs/RELEASE.md:40). **Agents never post ACCEPT** (notes :64;
   RELEASE.md:49-53; neural-link@591b57c AGENTS.md:18).
 - **PR B, the release**, changes only `editions/index.html` (three places, 9.2), `editions/README.md`, the root
   `README.md` Editions section, and `editions/LAW.md` the first time (with it, `.github/workflows/check.yml`'s one
-  `run:` line). Gate: `ACCEPT <stamp>` on PR A, by the owner, after the folder's cut time; 9.3 PASS on the PR head;
+  `run:` line). Gate: `ACCEPT <stamp>` on PR A, by the owner, by an owner login, after the folder's cut time; 9.3 PASS on the PR head;
   the pointer names the folder the owner tested, byte for byte the one in main (RELEASE.md:119-121). **Only the owner
   merges PR B**, with rebase (RELEASE.md:41, :54-55; neural-link@591b57c AGENTS.md:11, :18).
+- **What carries the rest.** PR A carries the folder only. Everything else the edition branch holds outside
+  `editions/<stamp>/` goes in PR B, named file by file in its body: `editions/LAW.md`, `tools/edition_check.py` and the
+  one `run:` line of `.github/workflows/check.yml` (the first time); every other new or changed `tools/*.py` (for Edition
+  5: `tools/drift.py`, `tools/build_layers.py`, `tools/apps_registry.py`, `tools/element_keys.py`); and any
+  `see-through/` change (for Edition 5: the folder `see-through/202611020012/` and the move of `see-through/index.html`,
+  which is See Through's own pointer and moves under the same ACCEPT rule). Edition 5's branch held all of these at
+  `233d91b` and no PR carried them yet.
 
 **Who merges PR A is open: ROADMAP question Q6, pending the owner's answer.** As drafted, the integrator may merge PR A
 because it changes nothing the stable link shows (the pointer is untouched) and the owner alone merges PR B; or the
 owner merges both, as GridAtlas's law reads for the release. Until the owner answers Q6, no agent treats either reading
-as settled. Edition 5's preview folder is already on kuiper-belt main at `e92ad5d` ("Publish Kuiper Edition 5 preview
-folder (202611012135); pointer stays on Edition 4"), with the pointer unchanged, so the owner can test it in small
-published steps; every later change to that folder before PR B is a further additive commit, and E3 is cut last.
+as settled. As a record, not a rule: Edition 5's preview folder went to kuiper-belt main at `e92ad5d` ("Publish Kuiper
+Edition 5 preview folder (202611012135); pointer stays on Edition 4") with the pointer unchanged; 123 files of the folder
+changed on the branch after it (`git diff --stat e92ad5d 233d91b -- editions/202611012135`), so the folder on main is not
+the folder the owner will be asked to ACCEPT; E3 is cut last, and the ACCEPT names the stamp at the head that PR B points
+at.
+
+**The owner's overnight delegation (recorded, not part of the law).** On 2 Nov 2026 the harness recorded the owner's
+chat words as a delegation (neural-link issue #10 comment 6566796733, 01:19 UTC; FIXES/NL-010/OVERNIGHT.md): the harness
+may merge to kuiper-belt main new dated edition folders and move the editions pointer to them, and merge the Kuiper door,
+the deploy allow-list line and the Kuiper editions homepage card in globalgrid2050 and globalgrid2050-homepage, for
+tonight's NL-010 work only. For exactly those objects it suspends RELEASE.md's "only the owner merges" and 9.6, until
+the owner's next message, which ends it. It does not cover GridAtlas releases, data pipelines, deletions or any other
+repository. It is not an `ACCEPT <stamp>` by an owner login on PR A: a relay of the owner's words does not meet 9.6, and
+once the owner merges this law, a pointer move outside a delegation the owner has written or confirmed needs that ACCEPT.
 
 This tightens the Edition 2-4 procedure, where the harness merged and pushed main itself (notes :48-49): that is the
 NL-008 gap (notes :19-20).

@@ -6,8 +6,10 @@ Apache-2.0 (kuiper-belt code), kuiper-belt README.md:156-157. Written by Opus te
   python3 tools/edition_check.py                      every editions/<stamp>/ that holds a modules.json
   python3 tools/edition_check.py editions/<stamp>     one folder
       --strict      the release gate: a NOT EVALUATED counts as a FAIL (PR B and the run quoted in PR A use it)
-      --pre-cut     with --strict: allow E3 to be NOT EVALUATED only because proof/edition-sha256.txt is not cut yet
-                    (the run saved in proof/ci_check.log is taken before the sha256 list that hashes it)
+      --pre-cut     the checked folder's own proof/edition-sha256.txt is not cut yet (absent, or a draft): its E3 is
+                    NOT EVALUATED and --strict allows that one thing; earlier folders are still verified (the run saved in
+                    proof/ci_check.log is taken before the final sha256 list that hashes it; harness ruling, neural-link
+                    issue #10 comment 6566796733: E3 includes handoff/ at the final cut, --pre-cut until then)
       --root DIR    the repository (default: this tool's)       --estate DIR  the clones E9 reads (default: its parent)
 
 Prints one line per check and `RESULT: PASS` or `RESULT: FAIL` (exit 1). A check that cannot be evaluated prints
@@ -263,6 +265,9 @@ def run(argv):
             if s in checked:
                 skips.append('editions/%s: no proof/edition-sha256.txt yet (the integrator cuts it last)' % s)
             continue
+        if precut and s in checked:
+            skips.append('editions/%s: proof/edition-sha256.txt not cut yet: --pre-cut reads it as a draft (the final cut includes handoff/ and comes last)' % s)
+            continue
         seen, bad = set(), 0
         for ln in read(sp).splitlines():
             if not ln.strip() or ln.lstrip().startswith('#'):
@@ -493,7 +498,7 @@ def run(argv):
     if R.skips:
         print('NOT EVALUATED:')
         for sk in R.skips:
-            allowed = precut and sk.startswith('E3: ') and 'no proof/edition-sha256.txt yet' in sk
+            allowed = precut and sk.startswith('E3: ') and ('no proof/edition-sha256.txt yet' in sk or 'not cut yet: --pre-cut' in sk)
             print('  - %s%s' % (sk, ' (allowed by --pre-cut)' if strict and allowed else ''))
             if strict and not allowed:
                 blocking.append('NOT EVALUATED under --strict: ' + sk)

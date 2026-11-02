@@ -1003,7 +1003,11 @@
       .then(function () { clearTimeout(tm); once(); });
   }
   function goHome() {               // the X at the stars stage: back to the Kuiper that opened this page, else its pointer
-    var same = false; try { same = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (e) {}
+    // the stable link see-through/ is a hop of its own, so the referrer is then the pointer; the pointer keeps the page
+    // before it in sessionStorage ('seeThroughFrom'). Back only to a same-origin page that is not See Through itself.
+    var from = document.referrer || '', same = false;
+    try { if (from && /\/see-through\/(index\.html)?$/.test(new URL(from).pathname)) from = sessionStorage.getItem('seeThroughFrom') || ''; } catch (e) { from = ''; }
+    try { var fu = new URL(from); same = fu.origin === location.origin && fu.pathname.indexOf('/see-through/') < 0; } catch (e) {}
     if (same && history.length > 1) history.back(); else location.href = KUIPER_URL;
   }
 

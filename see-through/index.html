@@ -9,6 +9,6 @@
 </head>
 <body>
 <main>Opening See Through. <a href="202611020012/">Tap here if it does not open.</a></main>
-<script>location.replace('202611020012/' + location.search + location.hash);</script>
+<script>try { sessionStorage.setItem('seeThroughFrom', document.referrer); } catch (e) {} location.replace('202611020012/' + location.search + location.hash);</script>
 </body>
 </html>
