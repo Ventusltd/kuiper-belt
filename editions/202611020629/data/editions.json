@@ -1,0 +1,113 @@
+{
+ "schema": "kuiper.editions.v1",
+ "edition": "202611020629",
+ "licence": "CC BY 4.0 (kuiper-belt data, README.md:156-157)",
+ "built_by": "tools/build_layers.py",
+ "sources": [
+  "editions/README.md",
+  "editions/202611020629/README.md:1",
+  "editions/index.html (location.replace)"
+ ],
+ "pointer": "202611020629",
+ "editions": [
+  {
+   "number": 1,
+   "stamp": "202610311905",
+   "published": "2026-11-01",
+   "status": "published",
+   "evidence": "editions/README.md:32",
+   "key": "edition:202610311905",
+   "cut_utc": "2026-10-31T19:05:00Z",
+   "path": "../202610311905/",
+   "pointer": false
+  },
+  {
+   "number": 2,
+   "stamp": "202611010114",
+   "published": "2026-11-01",
+   "status": "published",
+   "evidence": "editions/README.md:29",
+   "key": "edition:202611010114",
+   "cut_utc": "2026-11-01T01:14:00Z",
+   "path": "../202611010114/",
+   "pointer": false
+  },
+  {
+   "number": 3,
+   "stamp": "202611012022",
+   "published": "2026-11-01",
+   "status": "published",
+   "evidence": "editions/README.md:26",
+   "key": "edition:202611012022",
+   "cut_utc": "2026-11-01T20:22:00Z",
+   "path": "../202611012022/",
+   "pointer": false
+  },
+  {
+   "number": 4,
+   "stamp": "202611012027",
+   "published": "2026-11-01",
+   "status": "published",
+   "evidence": "editions/README.md:22",
+   "key": "edition:202611012027",
+   "cut_utc": "2026-11-01T20:27:00Z",
+   "path": "../202611012027/",
+   "pointer": false
+  },
+  {
+   "number": 5,
+   "stamp": "202611012135",
+   "published": "2026-11-02",
+   "status": "published",
+   "evidence": "editions/README.md:18",
+   "key": "edition:202611012135",
+   "cut_utc": "2026-11-01T21:35:00Z",
+   "path": "../202611012135/",
+   "pointer": false
+  },
+  {
+   "number": 6,
+   "stamp": "202611020326",
+   "published": "2026-11-02",
+   "status": "published",
+   "evidence": "editions/README.md:15",
+   "key": "edition:202611020326",
+   "cut_utc": "2026-11-02T03:26:00Z",
+   "path": "../202611020326/",
+   "pointer": false
+  },
+  {
+   "number": 7,
+   "stamp": "202611020446",
+   "published": "2026-11-02",
+   "status": "published",
+   "evidence": "editions/README.md:14",
+   "key": "edition:202611020446",
+   "cut_utc": "2026-11-02T04:46:00Z",
+   "path": "../202611020446/",
+   "pointer": false
+  },
+  {
+   "number": 8,
+   "stamp": "202611020528",
+   "published": "2026-11-02",
+   "status": "published",
+   "evidence": "editions/README.md:13",
+   "key": "edition:202611020528",
+   "cut_utc": "2026-11-02T05:28:00Z",
+   "path": "../202611020528/",
+   "pointer": false
+  },
+  {
+   "number": 9,
+   "stamp": "202611020629",
+   "published": "2026-11-02",
+   "status": "published",
+   "evidence": "editions/README.md:12",
+   "key": "edition:202611020629",
+   "cut_utc": "2026-11-02T06:29:00Z",
+   "path": "../202611020629/",
+   "pointer": true
+  }
+ ]
+}

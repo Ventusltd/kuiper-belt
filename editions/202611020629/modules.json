@@ -7,7 +7,8 @@
   "kuiper-shell",
   "line-card",
   "drift",
-  "apps"
+  "apps",
+  "layers"
  ],
  "modules": [
   {
@@ -222,6 +223,83 @@
     "file",
     "line-card"
    ]
+  },
+  {
+   "id": "layers",
+   "file": "202611020637-layers.js",
+   "generation": "202611020637",
+   "path": "modules/202611020637-layers.js",
+   "sha256": "c8fccccf212a66cf9c37e02a260eed212bd1ad2548c52b13fbf6024bd5d22486",
+   "bytes": 64237,
+   "byte_budget": 98304,
+   "requires": [
+    "wafer",
+    "keyPlace",
+    "address",
+    "describe",
+    "findBy",
+    "flyTo",
+    "safeBox",
+    "fmt",
+    "esc",
+    "cv",
+    "o2",
+    "hud",
+    "big",
+    "sub",
+    "card",
+    "gbox",
+    "repos",
+    "commits",
+    "N",
+    "SPACE",
+    "lightTime",
+    "cam",
+    "lit",
+    "sel",
+    "redraw",
+    "draw",
+    "panels",
+    "refuse"
+   ],
+   "provides": [
+    "layers"
+   ],
+   "reads": [
+    "data/layers.json",
+    "data/editions.json",
+    "keys-min.json",
+    "keys.json",
+    "location.hash",
+    "location.search"
+   ],
+   "writes": [
+    "window.KY.modules.layers",
+    "#layers",
+    "#ky-layers-style",
+    "#lyAll",
+    "#big",
+    "#sub",
+    "#hud",
+    "#card",
+    "history.replaceState",
+    "KY.lit.repo",
+    "KY.lit.period",
+    "KY.sel.target"
+   ],
+   "creates_controls": "7 input[data-ky-layer=layer:<id>] (the originals, one per data/layers.json record) in #layers; on a page whose engine owns the lines (#lyAll), nothing else: #layers sits in the engine's LINES block before #lineslist and #lyAll follows the lines row; on a cut page also #lyFocus, #lyFind, #lyClear, next/prev buttons and #lineslist rows",
+   "data": {
+    "edition": "202611020629",
+    "files": [
+     "data/layers.json",
+     "data/editions.json"
+    ],
+    "built_by": "tools/build_layers.py --edition 202611020629"
+   },
+   "licence": "Apache-2.0",
+   "team": 3,
+   "step": 3,
+   "proof": "handoff/03-layers/"
   }
  ],
  "references": [
