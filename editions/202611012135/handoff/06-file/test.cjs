@@ -270,11 +270,14 @@ fs.mkdirSync(OUT, { recursive: true });
               await p.waitForTimeout(600);
               const k = await p.evaluate(() => KY.modules.file.api.link.inspect().fields.key);
               const first = await p.evaluate(() => { const e = document.querySelector('#ky-file-apps > *'); return e && { app: e.getAttribute('data-ky-app'), lit: e.classList.contains('ky-lit') }; });
+              const hit = await p.evaluate(() => { const e = document.querySelector('#ky-file-apps [data-ky-app="see-through"]'); e.scrollIntoView({ block: 'center' }); const b = e.getBoundingClientRect(), x = b.left + b.width / 2, y = b.top + Math.min(b.height / 2, 22), h = document.elementFromPoint(x, y);
+                return { x, y, on_row: !!h && (h === e || e.contains(h)), hit: h ? h.tagName + '#' + h.id + '.' + h.className : null }; });
               const r = await tapSel(p, '#ky-file-apps [data-ky-app="see-through"]');
               await p.waitForURL(/\/see-through\//, { timeout: 60000 }).catch(() => {});
+              const opened = p.url().indexOf('/see-through/') < 0 ? await p.evaluate(() => (KY.modules.file.api.inspect().opened || []).slice(-3)).catch(e => String(e)) : 'navigated';
               const want = ROOT + 'see-through/#key=' + k;
               step('G4 Open an app by touch: See Through first and lit, lands on ../../see-through/#key=<the open key>', p.url() === want && first && first.app === 'see-through' && first.lit && r.height >= 44,
-                { landed: p.url(), want, first, row_h: Math.round(r.height) });
+                { landed: p.url(), want, first, row_h: Math.round(r.height), hit, opened });
             }
           }
         }

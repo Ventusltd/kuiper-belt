@@ -138,3 +138,9 @@ No step turned red against run 0: both reds are run 0's own (the shell is not in
 
 Galaxy S24 and Pixel 7 landscape: running (below).
 
+**Galaxy S24 (00:25:09–00:46:59, load 70→41): 16 PASS, 2 FAIL, 0 console errors.** Report `runs/r3-galaxy-s24.json`.
+Same two reds as run 0 (load: Edition 4 bar tops 6/6/6/39, 75.1 px at 360; see-through: no control). panel-dismiss
+PASS (wafer tap (352,547), back closes, URL unchanged); lines-pick PASS, card 40 of 344, header = `line_text`
+(" *"), first text node; card-details 198.4 → 265.19 px under cap 265.2; pinch ratio 0.503, drag (−90,70) → (−90,70);
+spark-tap card 323 = nearest (1.8 px; second 26.1); modules [hello, line-card] admitted, refused []; console 0.
+

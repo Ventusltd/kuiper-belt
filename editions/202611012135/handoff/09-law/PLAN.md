@@ -63,3 +63,12 @@ team-5/STEPS.md step 9; this edition's handoff/04-loader/edition_check.py.patch 
   3. The record is built in one process only. Team 10 runs one device per process (JOURNEY.md), so (b) and (i) stay
      NOT EVALUATED unless `--all` runs in one process. A merge mode (`--merge a/report.json b/report.json --proof FILE`,
      building `lawRecord` from the saved reports) would close this. The builder can write it if the lead wants it in this file.
+
+## Evidence officer (arrived 00:36 UTC)
+
+OPUS-9 evidence officer owns EVIDENCE.md from 00:36 (the lead's measured sections kept in it under his name). At 00:50:
+EVIDENCE.md section 8 checks LAW.md against ROADMAP step 9 sentence by sentence: PASS with corrections C1-C11 for the
+lead (C1 the eight steps, C2 "by an owner login", C3 "publishes a missing hook", C8 (m) against R7/Q7 are words of the
+roadmap; the rest are one-line key or fact fixes). Section 10 lists LICENCES.md fixes (team 7's row sha stale; no section
+A row for elements.json line_text quotations; team 9's own row has no sha). The evidence officer reviews HANDOFF.md
+before it is posted and writes the verdict in EVIDENCE.md section 11.

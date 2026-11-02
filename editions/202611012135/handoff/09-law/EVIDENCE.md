@@ -226,49 +226,49 @@ should make before the HANDOFF.
 
 | roadmap sentence (ROADMAP.md line) | LAW.md | verdict |
 |---|---|---|
-| Goal 1: one written law: folder, pointer in three places and nowhere else, ci_check green, journey green, modules hashed, owner's ACCEPT on a served preview before the pointer moves, owner merges the pointer, rollback byte-exact, no folder deleted (:651-655) | :3, :10-13 | SAME; ADDED `edition_check` green |
-| Goal 2: every licence verified from the files, one register in the folder (:655-656) | :13-14 | SAME (verbatim) |
-| Lesson: a release is a pointer move and nothing else (RELEASE.md:3-7, :139-151) (:658) | :16 | SAME |
-| Lesson: the eight steps cut, preview PR, owner acceptance, release, live bytes, homepage, served, rollback (:38-45) (:658-660) | absent | **C1 OMITTED**: add the clause and its key to :16-17 |
-| Lesson: the tested preview is the release (:119-121) (:660) | :17 | SAME |
-| Lesson: owner accepts in writing, first line, **by an owner login**, agents never record acceptance (:40, :49-53) (:660-661) | :17-18 "the owner accepts in writing, first line" | **C2 SOFTENED**: "by an owner login" dropped; RELEASE.md:40 adds "not through a GitHub App, no agent signature". Restore at :17 and in 9.6's gate (:144) |
-| Lesson: only the owner merges, every PR a draft, rebase never squash (:41, :54-55) (:661) | :18 | SAME |
+| Goal 1: one written law: folder, pointer in three places and nowhere else, ci_check green, journey green, modules hashed, owner's ACCEPT on a served preview before the pointer moves, owner merges the pointer, rollback byte-exact, no folder deleted (:651-654) | :3, :10-13 | SAME; ADDED `edition_check` green |
+| Goal 2: every licence verified from the files, one register in the folder (:654-655) | :13-14 | SAME (verbatim) |
+| Lesson: a release is a pointer move and nothing else (RELEASE.md:3-7, :139-151) (:657-658) | :16 | SAME |
+| Lesson: the eight steps cut, preview PR, owner acceptance, release, live bytes, homepage, served, rollback (:38-45) (:658-659) | absent | **C1 OMITTED**: add the clause and its key to :16-17 |
+| Lesson: the tested preview is the release (:119-121) (:659) | :17 | SAME |
+| Lesson: owner accepts in writing, first line, **by an owner login**, agents never record acceptance (:40, :49-53) (:659-660) | :17-18 "the owner accepts in writing, first line" | **C2 SOFTENED**: "by an owner login" dropped; RELEASE.md:40 adds "not through a GitHub App, no agent signature". Restore at :17 and in 9.6's gate (:144) |
+| Lesson: only the owner merges, every PR a draft, rebase never squash (:41, :54-55) (:660-661) | :18 | SAME |
 | Lesson: cartridges hashed and refused on mismatch (current.json:5, :14-21, :31; pr-gate.mjs:176; RELEASE.md:117) (:661-662) | :19-20 | SAME, all five keys |
-| Lesson: a module installs nothing until its hooks exist **and publishes a missing hook** (menu-bar.js:8-17, :122-124, :157) (:663) | :20 "installs nothing until its hooks exist (menu-bar.js:8-17)" | **C3 OMITTED**: "and publishes a missing hook" and the keys :122-124, :157 |
-| Lesson: rollback a revert of the pointer commit, byte-exact, **gates re-run**, refused if the pointer has moved (:264, :283-306, :291-296, :300-302) (:664-665) | :21-22 | SAME in substance (:283-306 covers the sub-ranges; "gates re-run" is in 9.7 as "9.3 re-run"); optional: add "gates re-run" |
-| Lesson: the NL-008 finding (notes :19-20) (:665-666) | :22-23 | SAME, key with sha |
-| Kuiper change: `editions/LAW.md` root-level, in the release PR so the owner merges it; repeated in short in each edition's README (:668-669) | :7-8 | SAME for the PR; "repeated in short in each edition's README" not said: **C4** add one sentence (the duty falls on team 10's README) |
-| 9.1 folder rule (notes :39-46; editions/README.md:3-4, :9-10) (:669-670) | :27-29 | SAME; ADDED "never deleted" (team-5 9.1 says it) |
-| 9.1 the folder's files, incl. android-journey.json and ci_check.log from Edition 5 (:670-673) | :31-34 | SAME, every file named |
-| 9.2 three places (:7, :11, :12), `<stamp>/`, no `/belt/` (:673-674) | :41-42 | SAME, keys checked in section 4 |
-| 9.2 from Edition 5 forward `location.search + location.hash` as gridatlas index.html:2; today hash only, `editions/?layers=` opens with no layers (team-2 3.6) (:674-677) | :43-45 | SAME |
-| 9.2 the same forwarding asked of `see-through/index.html:12` when step 5 cuts its folder (:677-678) | :46-47 | SAME words, **C5 STALE fact**: at aa04b3b the See Through pointer already names `202611020012/` and forwards `location.search + location.hash` (section 4; the harness's commit `9adcc00`). Say so in one clause |
-| 9.2 the release PR adds the editions/README.md and root README entries (:678-679) | :47-49 | SAME |
-| 9.3 ci_check PASS, K3 root only (:68) (:679-680) | :57-59 | SAME |
-| 9.3 E1 every `editions/*/index.html` script and every `modules/*.js` pass `node --check` (:680-681) | table E1 | SAME |
-| 9.3 E2 every module in modules.json exists and hashes as recorded, no stray file (:681-682) | table E2 | ADDED a third state: a hand-off-named file not in the manifest is NOT EVALUATED, a FAIL only under `--strict`; check.yml runs without `--strict`, so on GitHub E2 is softer than "no stray file". The release gate (9.3 step 3, `--strict`) keeps the roadmap's meaning. Acceptable as written because LAW.md says so; noted |
-| 9.3 E3 proof/edition-sha256.txt matches every file (:682) | table E3 | ADDED: every edition folder (enforces "never edited") |
-| 9.3 E4 three stamps agree and name a folder with a proof (:682-683) | table E4, :51-53 | SAME; ADDED search+hash once Edition 5+ |
-| 9.3 E5 keys.json byte-identical unless the README names a change (1c293c33..., proof/edition-sha256.txt:4) (:683-684) | table E5 | SAME, key re-read (section 4) |
-| 9.3 E6-E8 from step 4; E9 from step 8 (:684-686) | table E6-E9 | SAME; ADDED E9 NOT EVALUATED where clones are absent |
-| 9.3 output saved as proof/ci_check.log; wired into check.yml (:6-8, :25-26) in the same PR (:686-687) | :79-87 | SAME; ADDED the three-step order and `--pre-cut` (the log is hashed by the list, so the list is cut after it) |
-| 9.4 the journey script, Pixel 7, real touch, SwiftShader, served from the root (:687-689) | :91-96 | SAME (the adapted script, as the team brief :737-739 allows); NL-009 brief key: **C6** path is `FIXES/NL-009/round1/BRIEF.md:11-20` |
-| 9.4 (a)-(j) (:689-693) | :99-106 | SAME; (i) "or wraps by design and says so" is team-5 9.4's wording |
-| 9.4 every NL-009 BLOCKER and MAJOR (01-bar.md:13, :18, :20; 06-seethrough.md:11, :24; 09-robust.md:11, :18) (:693-694) | :105-111 (k)-(o) | SAME, every key re-read (section 7); **C7** the NL-009 keys carry no sha and LAW.md :7 says a short key means neural-link `591b57c`, where these files do not exist: name `fc822ee`. **C8** (m) reads "SEE THROUGH fits on that row" at 360 px, but ROADMAP R7 (:933-939) and Q7 put SEE THROUGH in the bottom-left 44 px strip at 380 px and narrower, and the journey script's own (m) reports the strip "not failed" (android-journey.cjs:546-547). Write R7's rule into (m) so the law and the gate agree |
-| 9.4 every MINOR measured and reported without blocking ACCEPT (:694-695) | :113-116 | SAME |
-| 9.4 NOT EVALUATED with the reason (LAWS.md:156), the list in the PR body (:695-696) | :116-117 | SAME |
-| 9.5 modules.json hashes and the loader's refusals (step 4) (:696) | :122-130 | SAME; **C9 KEY**: "never a silent skip (menu-bar.js:15-17)" is at :17-18, "stays usable ... (menu-bar.js:16)" is at :17 (section 1); inherited from team-5 9.5 |
-| 9.6 two draft PRs from edition/<stamp>; PR A adds the folder and nothing else, merged so Pages serves it, owner posts ACCEPT/REJECT first line on PR A (:696-699) | :134-141 | SAME |
-| 9.6 PR B only the pointer, editions/README.md, root README, LAW.md the first time; gate ACCEPT after cut time, 9.3 PASS on PR head, pointer names the tested folder; only the owner merges PR B, with rebase (:699-702) | :142-146 | SAME; ADDED check.yml with LAW.md (the roadmap's "Files touched" :722-724 puts it in PR B) |
-| 9.6 who merges PR A is Q6 (:702) | :148-150 | SAME |
+| Lesson: a module installs nothing until its hooks exist **and publishes a missing hook** (menu-bar.js:8-17, :122-124, :157) (:662-663) | :20 "installs nothing until its hooks exist (menu-bar.js:8-17)" | **C3 OMITTED**: "and publishes a missing hook" and the keys :122-124, :157 |
+| Lesson: rollback a revert of the pointer commit, byte-exact, **gates re-run**, refused if the pointer has moved (:264, :283-306, :291-296, :300-302) (:663-664) | :21-22 | SAME in substance (:283-306 covers the sub-ranges; "gates re-run" is in 9.7 as "9.3 re-run"); optional: add "gates re-run" |
+| Lesson: the NL-008 finding (notes :19-20) (:664-665) | :22-23 | SAME, key with sha |
+| Kuiper change: `editions/LAW.md` root-level, in the release PR so the owner merges it; repeated in short in each edition's README (:667-668) | :7-8 | SAME for the PR; "repeated in short in each edition's README" not said: **C4** add one sentence (the duty falls on team 10's README) |
+| 9.1 folder rule (notes :39-46; editions/README.md:3-4, :9-10) (:668-669) | :27-29 | SAME; ADDED "never deleted" (team-5 9.1 says it) |
+| 9.1 the folder's files, incl. android-journey.json and ci_check.log from Edition 5 (:669-671) | :31-34 | SAME, every file named |
+| 9.2 three places (:7, :11, :12), `<stamp>/`, no `/belt/` (:671-672) | :41-42 | SAME, keys checked in section 4 |
+| 9.2 from Edition 5 forward `location.search + location.hash` as gridatlas index.html:2; today hash only, `editions/?layers=` opens with no layers (team-2 3.6) (:672-674) | :43-45 | SAME |
+| 9.2 the same forwarding asked of `see-through/index.html:12` when step 5 cuts its folder (:674-675) | :46-47 | SAME words, **C5 STALE fact**: at aa04b3b the See Through pointer already names `202611020012/` and forwards `location.search + location.hash` (section 4; the harness's commit `9adcc00`). Say so in one clause |
+| 9.2 the release PR adds the editions/README.md and root README entries (:675-676) | :47-49 | SAME |
+| 9.3 ci_check PASS, K3 root only (:68) (:676-677) | :57-59 | SAME |
+| 9.3 E1 every `editions/*/index.html` script and every `modules/*.js` pass `node --check` (:677-678) | table E1 | SAME |
+| 9.3 E2 every module in modules.json exists and hashes as recorded, no stray file (:678-679) | table E2 | ADDED a third state: a hand-off-named file not in the manifest is NOT EVALUATED, a FAIL only under `--strict`; check.yml runs without `--strict`, so on GitHub E2 is softer than "no stray file". The release gate (9.3 step 3, `--strict`) keeps the roadmap's meaning. Acceptable as written because LAW.md says so; noted |
+| 9.3 E3 proof/edition-sha256.txt matches every file (:679) | table E3 | ADDED: every edition folder (enforces "never edited") |
+| 9.3 E4 three stamps agree and name a folder with a proof (:679-680) | table E4, :51-53 | SAME; ADDED search+hash once Edition 5+ |
+| 9.3 E5 keys.json byte-identical unless the README names a change (1c293c33..., proof/edition-sha256.txt:4) (:680-681) | table E5 | SAME, key re-read (section 4) |
+| 9.3 E6-E8 from step 4; E9 from step 8 (:681-682) | table E6-E9 | SAME; ADDED E9 NOT EVALUATED where clones are absent |
+| 9.3 output saved as proof/ci_check.log; wired into check.yml (:6-8, :25-26) in the same PR (:682-683) | :79-87 | SAME; ADDED the three-step order and `--pre-cut` (the log is hashed by the list, so the list is cut after it) |
+| 9.4 the journey script, Pixel 7, real touch, SwiftShader, served from the root (:683-685) | :91-96 | SAME (the adapted script, as the team brief :738-739 allows); NL-009 brief key: **C6** path is `FIXES/NL-009/round1/BRIEF.md:11-20` |
+| 9.4 (a)-(j) (:685-689) | :99-106 | SAME; (i) "or wraps by design and says so" is team-5 9.4's wording |
+| 9.4 every NL-009 BLOCKER and MAJOR (01-bar.md:13, :18, :20; 06-seethrough.md:11, :24; 09-robust.md:11, :18) (:689-690) | :105-111 (k)-(o) | SAME, every key re-read (section 7); **C7** the NL-009 keys carry no sha and LAW.md :7 says a short key means neural-link `591b57c`, where these files do not exist: name `fc822ee`. **C8** (m) reads "SEE THROUGH fits on that row" at 360 px, but ROADMAP R7 (:940-947) and Q7 (:1029-1033) put SEE THROUGH in the bottom-left 44 px strip at 380 px and narrower, and the journey script's own (m) reports the strip "not failed" (android-journey.cjs:546-547). Write R7's rule into (m) so the law and the gate agree |
+| 9.4 every MINOR measured and reported without blocking ACCEPT (:690) | :113-116 | SAME |
+| 9.4 NOT EVALUATED with the reason (LAWS.md:156), the list in the PR body (:691-692) | :116-117 | SAME |
+| 9.5 modules.json hashes and the loader's refusals (step 4) (:692) | :122-130 | SAME; **C9 KEY**: "never a silent skip (menu-bar.js:15-17)" is at :17-18, "stays usable ... (menu-bar.js:16)" is at :17 (section 1); inherited from team-5 9.5 |
+| 9.6 two draft PRs from edition/<stamp>; PR A adds the folder and nothing else, merged so Pages serves it, owner posts ACCEPT/REJECT first line on PR A (:692-694) | :134-141 | SAME |
+| 9.6 PR B only the pointer, editions/README.md, root README, LAW.md the first time; gate ACCEPT after cut time, 9.3 PASS on PR head, pointer names the tested folder; only the owner merges PR B, with rebase (:695-697) | :142-146 | SAME; ADDED check.yml with LAW.md (the roadmap's "Files touched" :720-723 puts it in PR B) |
+| 9.6 who merges PR A is Q6 (:697-698) | :148-150 | SAME |
 | (not in the roadmap) | :150-153 "Edition 5's preview folder is already on kuiper-belt main at e92ad5d ... every later change to that folder before PR B is a further additive commit, and E3 is cut last" | **C10 ADDED, needs rewording**: the fact (e92ad5d on main, pointer unchanged there: `git diff --stat 018b46a origin/main -- editions/index.html` empty) is right; "every later change ... is a further additive commit" is a new practice the roadmap does not have, and it is not what happened: since e92ad5d the branch has modified 47 files of the folder and added 24 (`git diff --name-status e92ad5d HEAD -- editions/202611012135`), NOTICE.md and README.md among them. State it as a record, not a rule, or leave it to the owner (Q6) |
-| 9.7 rollback by git revert on rollback/<stamp>-to-<previous>, refused unless the pointer has not moved, byte-identical to the parent, 9.3 re-run, draft PR only the owner merges, no folder deleted or edited (:702-705) | :160-166 | SAME; ADDED the README "rolled back" line and the older-edition route (both team-5 9.7) |
-| 9.8 the register in the folder, verified from the files at the heads (:705-706) | :170-172 | SAME; the per-repository facts (:706-720) live in LICENCES.md section A, every key re-read (section 6) |
-| 9.8 rule: DISCLOSED or NOT EVALUATED blocks copying, not linking (L8) (:720) | :173-174 | SAME (verbatim) |
-| 9.8 linking to See Through brings no duty; copying kuiper-law.js or descent.js makes the module CERN-OHL-S v2, never relicensed; keep it in its own module (:720-723) | :174-176 | SAME |
+| 9.7 rollback by git revert on rollback/<stamp>-to-<previous>, refused unless the pointer has not moved, byte-identical to the parent, 9.3 re-run, draft PR only the owner merges, no folder deleted or edited (:698-700) | :160-166 | SAME; ADDED the README "rolled back" line and the older-edition route (both team-5 9.7) |
+| 9.8 the register in the folder, verified from the files at the heads (:700-701) | :170-172 | SAME; the per-repository facts (:701-711) live in LICENCES.md section A, every key re-read (section 6) |
+| 9.8 rule: DISCLOSED or NOT EVALUATED blocks copying, not linking (L8) (:712) | :173-174 | SAME (verbatim) |
+| 9.8 linking to See Through brings no duty; copying kuiper-law.js or descent.js makes the module CERN-OHL-S v2, never relicensed; keep it in its own module (:713-715) | :174-176 | SAME |
 | Licence note: the law and register CC BY 4.0, edition_check.py Apache-2.0 (:732-733) | :5-6 | SAME |
-| Licence note: gaps elements, spider graph data, galaxies-wafers; neither invented (:733-735) | :179-180 | SAME (Q1, Q5, Q2) |
-| Acceptance: E1-E9 PASS; one altered byte -> E2 FAIL and `<id> refused: sha256 mismatch`; missing hook; revert byte-identical (:727-731) | 9.3, 9.5, 9.7 | SAME |
+| Licence note: gaps elements, spider graph data, galaxies-wafers; neither invented (:733-734) | :179-180 | SAME (Q1, Q5, Q2) |
+| Acceptance: E1-E9 PASS; one altered byte -> E2 FAIL and `<id> refused: sha256 mismatch`; missing hook; revert byte-identical (:725-730) | 9.3, 9.5, 9.7 | SAME |
 
 Gap in the roadmap itself, carried into LAW.md: no PR in 9.6 carries new files under `tools/`. PR A is "editions/<stamp>/
 and nothing else", PR B lists the pointer, the READMEs, LAW.md and check.yml; but check.yml's new line runs

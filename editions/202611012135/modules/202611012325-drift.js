@@ -255,6 +255,8 @@
     chips = panel.querySelector('.kd-c'); list = panel.querySelector('.kd-l');
     chips.addEventListener('click', function (e) { var b = e.target.closest('button[data-class]'); if (!b) return; st.filter = b.dataset.class; paint(); });
     list.addEventListener('click', function (e) { var b = e.target.closest('[data-row]'); if (!b) return; var r = st.rows[+b.dataset.row]; if (r) open(r, true); });
+    var shm = KY.modules && KY.modules['kuiper-shell'], swp = shm && shm.api && typeof shm.api.panel === 'function' ? shm.api.panel('wafer') : null, lsl = document.getElementById('lineslist');
+    if (!swp && lsl) { lsl.parentNode.insertBefore(panel, lsl); return; }   // no shell: the page's own LINES panel holds the filter (ROADMAP step 8)
     try { KY.panels.add('wafer', panel, 'drift'); } catch (e) { st.errors.push('panels.add: ' + e.message); }
     if (!panel.isConnected) {   // no shell and no WAFER panel: the section waits detached, the readout still speaks
       st.errors.push('no WAFER panel to hold the filter');
