@@ -6,20 +6,20 @@ as it is assembled, a negative test per check that FAILs on a tampered scratch c
 `proof/android-journey.json`. Scratch: /tmp/nl010-opus/team-9/tester/ (never inside the repositories). Port 8492.
 One device at a time; load average 48-72 on 4 cores throughout.
 
-## Verdict: HAND-OFF REFUSED (01:58 UTC): the tool PASSES its tests; the folder does not yet pass E1-E9 under --strict
+## Verdict: HAND-OFF REFUSED (02:52 UTC): the tool PASSES its tests; the folder does not yet pass E1-E9 under --strict
 
 What passes (the tool itself): every negative test FAILs its check on a tampered scratch copy and the clean copy
 PASSes `--strict` (test_real_folder.py 20/20; test_edition_check.py 67/67 incl. `--real`; the tester's 4 `--pre-cut`
-draft cases; the page refusals). `tools/ci_check.py` reads `RESULT: PASS` (01:51, 01:55).
-The branch folder (`edition_check.py editions/202611012135 --strict --pre-cut`, 01:55, tool `01a9e5d429ef`): E1, E4-E9
+draft cases; the page refusals). `tools/ci_check.py` reads `RESULT: PASS` (01:51, 01:55, 02:51).
+The branch folder (`edition_check.py editions/202611012135 --strict --pre-cut`, 01:55 and 02:51, tool `01a9e5d429ef`): E1, E4-E9
 PASS (E9 PASS again: the harness moved the pipelinenews clone out of the estate at ~01:53; drift.py unchanged).
 What blocks:
 
 | # | what | measured | owner |
 |---|---|---|---|
-| 1 | E2 under `--strict` (branch) | 7 files in modules/ pending admission (in no `modules.json` record): NOT EVALUATED = FAIL under `--strict`; admitted: hello, line-card | OPUS-10 / controller (admit or remove before the folder is final) |
+| 1 | E2 under `--strict` (branch) | 10 files in modules/ pending admission at 02:51 (7 at 01:55; Edition 6 revisions now land in this folder's modules/) (in no `modules.json` record): NOT EVALUATED = FAIL under `--strict`; admitted: hello, line-card | OPUS-10 / controller (admit or remove before the folder is final) |
 | 2 | E3 final (branch) | Edition 5's `proof/edition-sha256.txt` not cut (allowed by `--pre-cut` only; the final run is `--strict` without it, handoff/ included, ruling 6566796733) | OPUS-10 |
-| 3 | the journey's law gate | no run has measured a gate-PASS state: the shell (needed for (b) (k) (l) (m)) is withdrawn; run 3 on main's shipped tree in progress | team 1 shell rev 3, controller |
+| 3 | the journey's law gate | no run has measured a gate-PASS state: the shell (needed for (b) (k) (l) (m)) is withdrawn. Run 3 on main's shipped tree, both phones: LAW GATE FAIL (a, b, e, k, l, m): `load` (no shell) and **`card-details` red on both phones** (collapsed card already at its cap), which G2 had green (FINDING issuecomment-6567874903) | team 1 shell rev 3, controller |
 | 4 | the shipped tree, main a432b43 (`--strict`) | **E4 FAIL** (the pointer names 202611012135, which has no proof/edition-sha256.txt), **E9 FAIL** (only `inputs.repos.tsv.sha256` differs: the engine's b9901d4 moved cosmos/repos.tsv on main after the drift was cut), E2 5 pending, E3 not cut; and main's manifest admits see-through (`4e6b40313d9d…`), not the G2 state the harness names | HARNESS, OPUS-10, OPUS-8; FINDINGs issuecomment-6567215418, -6567232690 |
 | 5 | E9 robustness | `tools/drift.py --heads` reads two live inputs: the estate's clone set (drift.py:246-255) and the root's cosmos/repos.tsv. E9 PASSes on the branch only while both stay as recorded | OPUS-8; FINDING issuecomment-6566567480 |
 | — | `ci_check.py` | PASS since 01:13; FAIL 00:48-01:02 on team 12's EVIDENCE.md (FINDING issuecomment-6566545614, fixed by team 12) | closed |
@@ -48,6 +48,8 @@ What blocks:
 | tester `precut_cases.py` (scratch) | 01:50 | tool `01a9e5d429ef` | 4/4: stale draft + `--strict` → E3 FAIL `late.json`; + `--pre-cut` → PASS (draft allowed); + an earlier folder edited → E3 FAIL (earlier folders still verified); + a stray module → E2 FAIL (pre-cut excuses E3 only) |
 | `edition_check.py --strict --pre-cut` (branch) | 01:55 | `01a9e5d429ef` | E1, E4-E9 PASS (E9 byte-identical, 118,553 bytes, `388103129b90`); E2 7 pending, E3 not cut: RESULT FAIL |
 | `edition_check.py --strict` on main a432b43 (`git archive` to scratch) | 01:54 | `01a9e5d429ef` | E1, E5-E8 PASS (3 records: hello, line-card, see-through); E2 5 pending; E3 not cut; **E4 FAIL** proof/edition-sha256.txt missing; **E9 FAIL** re-computed `0b9cf208ddfa` (same 118,553 bytes; `inputs.repos.tsv.sha256` `0aadce5b97…` → `23692e2f07…`); RESULT FAIL. FINDING header stamped 02:00 UTC by mistake; GitHub's time (~01:54) is right |
+| `android-journey.cjs --law` Pixel 7, then Galaxy S24, `--merge`, on main a432b43 (`git archive`, served from the root on 8492) | 02:03-02:51 (24 + 23 min) | `f156bbbd1493` | manifest `4e6b40313d9d` (hello, line-card, see-through). Pixel 7 16/18, Galaxy S24 16/18, 0 console errors on the edition. Red: `load` (bar 2 rows, 75.1 px) and `card-details` ("card did not grow": collapsed 285.25 of cap 285.3 px / 265.19 of 265.2 px; card 40 of 344). `see-through` PASS (opens see-through/202610050609/ same tab). LAW GATE FAIL (a, b, e, k, l, m), 11 NOT EVALUATED. Record: handoff/09-law/android-journey.main-a432b43.json |
+| `edition_check.py --strict --pre-cut` (branch) | 02:51 | `01a9e5d429ef` | E1, E4-E9 PASS; E2 10 pending; E3 not cut: RESULT FAIL. `ci_check.py`: RESULT PASS |
 
 ## Per check: real folder, and the negative tests that must FAIL
 
@@ -78,8 +80,14 @@ page on a served scratch copy. Each case below FAILed its check, with the named 
 
 ## proof/android-journey.json
 
-Not written into the edition: no run yet measured an assembled folder whose gate could read PASS (5 modules pending;
-the shell admitted and withdrawn twice). Records kept in scratch: /tmp/nl010-opus/team-9/tester/journey1/ (00:31,
-hello + line-card) and /tmp/nl010-opus/team-9/tester/journey2/ (01:02, + kuiper-shell). The file is written to
-`editions/202611012135/proof/android-journey.json` from the `--law --proof` run (Pixel 7, then Galaxy S24 for (b),
-merged with `--merge`) on the assembled folder, with the script's sha256 in it.
+Not written into `editions/202611012135/proof/`: no run has measured a state of this folder whose gate reads PASS, and the
+branch folder's manifest (`be99c8a126ce`, hello, line-card) is not the manifest main serves (`4e6b40313d9d`, + see-through),
+so a record of either would misdescribe the other. The law-shaped two-phone record of what the pointer serves now is
+`handoff/09-law/android-journey.main-a432b43.json` (gate FAIL). Earlier records: /tmp/nl010-opus/team-9/tester/journey1/
+(00:31, hello + line-card, Pixel 7) and journey2/ (01:02, + kuiper-shell, Pixel 7; law layer contaminated by a withdrawal).
+`proof/android-journey.json` is written from the `--law` Pixel 7 + Galaxy S24 `--merge` run on the folder as it is cut.
+
+## Timestamps
+
+FINDING issuecomment-6567215418 carried a header stamp of 02:00 UTC; GitHub received it at 01:55:03Z (flagged by the NL-011
+live reviewer, 6567275739). GitHub's time is authoritative; later stamps read from `date -u`.

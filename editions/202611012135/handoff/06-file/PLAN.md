@@ -297,3 +297,12 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   G3 PASS (navigation request seen, landed byte for byte), G4 PASS. test.cjs now 4afaa6d6 (A4 direct waits for the light
   and the fly up to 90 s after its fixed 6/8 s, the lead's s24b timing note). Tester's own Galaxy S24 run (run-s24t) on
   3ae05df7 + 4afaa6d6 now, so both devices of record run the final test.cjs; TEST.md and img/ written meanwhile.
+- 03:19 TESTER: run-s24t (Galaxy S24, module 3ae05df7, test.cjs 4afaa6d6) = run-p7f (Pixel 7): 34 PASS, 2 NOT
+  EVALUATED (A3: proof/edition-sha256.txt absent), 1 FAIL = strict G6 on exactly one console 404 (that file), 0 pageerror.
+  TEST.md written (verdict: every module gate PASS on both devices; "zero console errors" NOT signed until team 10's
+  proof/edition-sha256.txt exists and G6 + A3 sha256 are re-run with this test.cjs on the assembled edition);
+  report-pixel7.json, report-galaxy-s24.json and img/ (4 PNG, 27-65 KB, all from run-p7f and run-s24t) in this folder.
+- 03:22 LEAD: runs of record on 3ae05df7: Pixel 7 run-p7f and Galaxy S24 run-s24t, each 33 PASS, 2 NOT EVALUATED,
+  strict G6 FAIL on one 404 (proof/edition-sha256.txt, team 10's, absent since ~00:59), 0 pageerror. The tester accepts
+  the hand-off on that disclosed condition (TEST.md Verdict). HANDOFF.md written with the five points of EVIDENCE.md §10
+  (envelope, measured table, inline sha256, disclosures a-e, the four departures) and posted on #10 now.

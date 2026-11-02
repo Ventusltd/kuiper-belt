@@ -1,10 +1,10 @@
 {
  "id": "layers",
- "file": "202611020240-layers.js",
- "generation": "202611020240",
- "path": "modules/202611020240-layers.js",
- "sha256": "d503841c3b04d3c88cfefe11ebaa96b5d1bcccede23ad48dc10a29019764efef",
- "bytes": 57215,
+ "file": "202611020304-layers.js",
+ "generation": "202611020304",
+ "path": "modules/202611020304-layers.js",
+ "sha256": "b16716bd468ef45b4d624608fdd3b455e066bf74f625f58fca4d7cc65bf10de4",
+ "bytes": 58064,
  "byte_budget": 98304,
  "requires": [
   "wafer",

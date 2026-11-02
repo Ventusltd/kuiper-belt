@@ -1,4 +1,4 @@
-/* kuiper module kuiper-shell, generation 202611020220 (UTC), Apache-2.0 (kuiper-belt).
+/* kuiper module kuiper-shell, generation 202611020243 (UTC), Apache-2.0 (kuiper-belt).
  * NOTICE: the bar's CSS values and the menu structure are copied from GridAtlas, Copyright 2026 Ventus Ltd,
  * Apache-2.0 (gridatlas@5ec7f62 LICENSE:1-4, NOTICE:1-12), atlas/modules/202609031958-menu-bar.js, keys beside
  * each value below. "Ventus" and "Cables & Connectivity(R)" are the mark of Ventus Ltd, used by its owner's
@@ -28,7 +28,7 @@
  *  shown and steps over its own dead entries (closeAll, stepOver, onPop). Edition 4's #lines #lyAll #lyFocus #lyFind
  *  are no longer required; SCOPE's focus is a proxy for whichever #lyFocus exists.
  * Generation 202611020220 (2 Nov 2026) = revision 3 of 202611012143, a new stamped file because 202611012143 was published
- * with Edition 5's files; the earlier file is never edited. (A first cut, 202611020154, was never handed off or listed.)
+ * with Edition 5's files; the earlier file is never edited. (Earlier cuts 202611020154 and 202611020220 were never handed off or listed.)
  * Revision 3: a panel reopened while the shell's own back() is on its way gets a fresh
  *  entry when that pop arrives (pendingBack), so the next back gesture closes it and never leaves the page. The star
  *  strip steps aside while a card is shown (it sat under a pinch's finger when lifted above the card), and the clock of
@@ -40,7 +40,7 @@
  */
 (function () {
   'use strict';
-  var ID = 'kuiper-shell', GEN = '202611020220', SCHEMA = 'kuiper.menu-bar.v1';
+  var ID = 'kuiper-shell', GEN = '202611020243', SCHEMA = 'kuiper.menu-bar.v1';
   var BAR_ID = 'kuiper-menu-bar', STYLE_ID = 'kuiper-menu-bar-css', FAIL_ID = 'kuiper-menu-bar-failure';
   var STRIP_ID = 'kuiper-star-strip';
   // the six names (C5; gridatlas@5ec7f62 menu-bar.js:31 ['File','Edit','View','Scope','Grid','About'])
@@ -166,6 +166,10 @@
       B + ' .gm-panel #lines #linesctl input[type=checkbox]{width:20px;height:20px;margin:0;accent-color:#2ee6e6}',
       B + ' .gm-panel #lines #lyFind{min-height:44px;box-sizing:border-box;width:100%;font:12px ui-monospace,monospace}',
       B + ' .gm-panel #lines #lineslist .ln{min-height:44px;box-sizing:border-box}',
+      // Edition 4's NEXT / PREVIOUS inside the moved #lines: 44 px rows (they lost the panel-wide row rule in rev 3)
+      B + ' .gm-panel #lines #linesctl button{display:flex;align-items:center;width:100%;min-height:44px;box-sizing:border-box;margin:0 0 3px;',
+      'padding:7px 10px;border:0;border-radius:2px;background:transparent;color:#cfeef6;font:11px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;',
+      'text-align:left;letter-spacing:.03em;cursor:pointer}',
       // the star strip, bottom-left, 44 px (GridAtlas's phone chips: chipStaysOnMap MB:1521-1552; live twin in the cartridge from :5870)
       '#' + STRIP_ID + '{position:fixed;left:calc(8px + env(safe-area-inset-left,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));',
       'z-index:10019;display:flex;height:44px;box-sizing:border-box;background:rgba(4,10,13,.95);border:1px solid rgba(80,220,240,.3);',

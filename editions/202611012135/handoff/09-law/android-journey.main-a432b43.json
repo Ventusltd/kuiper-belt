@@ -1,0 +1,671 @@
+{
+ "schema": "kuiper.android-journey.v1",
+ "law": "editions/LAW.md 9.4",
+ "url": "http://127.0.0.1:8492/editions/202611012135/",
+ "generatedAt": "2026-11-02T01:57:13.561Z",
+ "finishedAt": "2026-11-02T02:49:53.945Z",
+ "script": {
+  "file": "android-journey.cjs",
+  "bytes": 68384,
+  "sha256": "f156bbbd14930f9ba68757f7e5b36c15351bcc868e6d0277e4fa25b0b698ffe1"
+ },
+ "devices": [
+  {
+   "device": "Pixel 7",
+   "passed": 16,
+   "failed": 2,
+   "failedSteps": [
+    "load",
+    "card-details"
+   ],
+   "consoleErrors": 0
+  },
+  {
+   "device": "Galaxy S24",
+   "passed": 16,
+   "failed": 2,
+   "failedSteps": [
+    "load",
+    "card-details"
+   ],
+   "consoleErrors": 0
+  }
+ ],
+ "steps": [
+  {
+   "step": "a",
+   "text": "load editions/<stamp>/ with zero console errors",
+   "minor": false,
+   "status": "FAIL",
+   "measured": [
+    {
+     "device": "Pixel 7",
+     "id": "load",
+     "pass": false,
+     "note": "bar is not one row (button tops 6/6/6/39/39, bar height 75.1, scrollWidth 412/412)"
+    },
+    {
+     "device": "Pixel 7",
+     "id": "console",
+     "pass": true,
+     "note": "note: 2 error(s) after leaving the edition (not counted)"
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "load",
+     "pass": false,
+     "note": "bar is not one row (button tops 6/6/39/39/39, bar height 75.1, scrollWidth 360/360)"
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "console",
+     "pass": true,
+     "note": "note: 2 error(s) after leaving the edition (not counted)"
+    }
+   ]
+  },
+  {
+   "step": "b",
+   "text": "the bar is one row at 360 px and 393 px wide and the Ventus lockup is at the top",
+   "minor": false,
+   "status": "FAIL",
+   "measured": [
+    {
+     "width": 360,
+     "rows": 2,
+     "bar": {
+      "left": 0,
+      "top": 0,
+      "width": 360,
+      "height": 75.1
+     },
+     "lockup": {
+      "text": "KUIPER EDITION 5",
+      "rect": {
+       "left": 8,
+       "top": 12,
+       "width": 130.6,
+       "height": 17
+      },
+      "inBar": true,
+      "atTop": true
+     }
+    },
+    {
+     "width": 393,
+     "rows": 2,
+     "bar": {
+      "left": 0,
+      "top": 0,
+      "width": 393,
+      "height": 75.1
+     },
+     "lockup": {
+      "text": "KUIPER EDITION 5",
+      "rect": {
+       "left": 8,
+       "top": 12,
+       "width": 130.6,
+       "height": 17
+      },
+      "inBar": true,
+      "atTop": true
+     }
+    }
+   ],
+   "note": "read from the --law pass at 360 and 393 px (Playwright's Pixel 7 is 412 px wide, Galaxy S24 360 px)"
+  },
+  {
+   "step": "c",
+   "text": "each menu title opens, the same tap closes it, a wafer tap closes it, the back gesture closes it",
+   "minor": false,
+   "status": "PASS",
+   "measured": [
+    {
+     "device": "Pixel 7",
+     "id": "edition-open",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Pixel 7",
+     "id": "edition-close",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Pixel 7",
+     "id": "panel-dismiss",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Pixel 7",
+     "id": "lines-open",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "edition-open",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "edition-close",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "panel-dismiss",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "lines-open",
+     "pass": true,
+     "note": ""
+    }
+   ]
+  },
+  {
+   "step": "d",
+   "text": "SEE THROUGH opens ../../see-through/ on the same host",
+   "minor": false,
+   "status": "PASS",
+   "measured": [
+    {
+     "device": "Pixel 7",
+     "id": "see-through",
+     "pass": true,
+     "note": "same-tab → http://127.0.0.1:8492/see-through/202610050609/"
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "see-through",
+     "pass": true,
+     "note": "same-tab → http://127.0.0.1:8492/see-through/202610050609/"
+    }
+   ]
+  },
+  {
+   "step": "e",
+   "text": "LINES pick closes the panel; the card header is the line of code; the spark is in clear space",
+   "minor": false,
+   "status": "FAIL",
+   "measured": [
+    {
+     "device": "Pixel 7",
+     "id": "lines-filter",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Pixel 7",
+     "id": "lines-pick",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Pixel 7",
+     "id": "card-details",
+     "pass": false,
+     "note": "card did not grow"
+    },
+    {
+     "device": "Pixel 7",
+     "id": "card-close",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "lines-filter",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "lines-pick",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "card-details",
+     "pass": false,
+     "note": "card did not grow"
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "card-close",
+     "pass": true,
+     "note": ""
+    }
+   ]
+  },
+  {
+   "step": "f",
+   "text": "NEXT VERIFIED LINE three times: the same holds each time",
+   "minor": false,
+   "status": "PASS",
+   "measured": [
+    {
+     "device": "Pixel 7",
+     "id": "key-e-1",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Pixel 7",
+     "id": "key-e-2",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Pixel 7",
+     "id": "key-e-3",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "key-e-1",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "key-e-2",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "key-e-3",
+     "pass": true,
+     "note": ""
+    }
+   ]
+  },
+  {
+   "step": "g",
+   "text": "pinch zooms the wafer, not the page; a drag pans, not scrolls",
+   "minor": false,
+   "status": "PASS",
+   "measured": [
+    {
+     "device": "Pixel 7",
+     "id": "pinch-drag",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "pinch-drag",
+     "pass": true,
+     "note": ""
+    }
+   ]
+  },
+  {
+   "step": "h",
+   "text": "a 4 px spark is hit, or the page says what it hit",
+   "minor": false,
+   "status": "PASS",
+   "measured": [
+    {
+     "device": "Pixel 7",
+     "id": "spark-tap",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "spark-tap",
+     "pass": true,
+     "note": ""
+    }
+   ]
+  },
+  {
+   "step": "i",
+   "text": "landscape and font scale 1.3: the bar one row or wrapping by design",
+   "minor": false,
+   "status": "NOT EVALUATED",
+   "reason": "Pixel 7 landscape not run (use --all); font scale 1.3 NOT EVALUATED: Playwright emulates no Android font scale"
+  },
+  {
+   "step": "j",
+   "text": "every module of modules.json reports admitted, none refused",
+   "minor": false,
+   "status": "PASS",
+   "measured": [
+    {
+     "device": "Pixel 7",
+     "id": "modules",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "modules",
+     "pass": true,
+     "note": ""
+    }
+   ]
+  },
+  {
+   "step": "k",
+   "text": "bar one row at 360, 393, 412 and 430 px (NL-009 01-bar.md:13, BLOCKER)",
+   "minor": false,
+   "status": "FAIL",
+   "measured": [
+    {
+     "width": 360,
+     "rows": 2,
+     "bar": {
+      "left": 0,
+      "top": 0,
+      "width": 360,
+      "height": 75.1
+     }
+    },
+    {
+     "width": 393,
+     "rows": 2,
+     "bar": {
+      "left": 0,
+      "top": 0,
+      "width": 393,
+      "height": 75.1
+     }
+    },
+    {
+     "width": 412,
+     "rows": 2,
+     "bar": {
+      "left": 0,
+      "top": 0,
+      "width": 412,
+      "height": 75.1
+     }
+    },
+    {
+     "width": 430,
+     "rows": 2,
+     "bar": {
+      "left": 0,
+      "top": 0,
+      "width": 430,
+      "height": 75.1
+     }
+    }
+   ]
+  },
+  {
+   "step": "l",
+   "text": "every bar title has a hit box at least 44 px tall (01-bar.md:18, MAJOR)",
+   "minor": false,
+   "status": "FAIL",
+   "measured": [
+    {
+     "width": 360,
+     "minHitHeight": 30,
+     "titles": [
+      "SEE THROUGH 30",
+      "edition 30",
+      "readout 30",
+      "lines 30",
+      "commands 30"
+     ]
+    },
+    {
+     "width": 393,
+     "minHitHeight": 30,
+     "titles": [
+      "SEE THROUGH 30",
+      "edition 30",
+      "readout 30",
+      "lines 30",
+      "commands 30"
+     ]
+    },
+    {
+     "width": 412,
+     "minHitHeight": 30,
+     "titles": [
+      "SEE THROUGH 30",
+      "edition 30",
+      "readout 30",
+      "lines 30",
+      "commands 30"
+     ]
+    },
+    {
+     "width": 430,
+     "minHitHeight": 30,
+     "titles": [
+      "edition 30",
+      "readout 30",
+      "lines 30",
+      "commands 30"
+     ]
+    }
+   ]
+  },
+  {
+   "step": "m",
+   "text": "SEE THROUGH named on the page and reachable on the one row (06-seethrough.md:11 BLOCKER; 01-bar.md:20, 06-seethrough.md:24-32 MAJOR)",
+   "minor": false,
+   "status": "FAIL",
+   "measured": [
+    {
+     "width": 360,
+     "text": 1,
+     "controls": [
+      {
+       "text": "SEE THROUGH",
+       "rect": {
+        "left": 146.6,
+        "top": 6,
+        "width": 100.5,
+        "height": 29
+       },
+       "onBarRow": true
+      }
+     ],
+     "rows": 2
+    },
+    {
+     "width": 393,
+     "text": 1,
+     "controls": [
+      {
+       "text": "SEE THROUGH",
+       "rect": {
+        "left": 146.6,
+        "top": 6,
+        "width": 100.5,
+        "height": 29
+       },
+       "onBarRow": true
+      }
+     ],
+     "rows": 2
+    },
+    {
+     "width": 412,
+     "text": 1,
+     "controls": [
+      {
+       "text": "SEE THROUGH",
+       "rect": {
+        "left": 146.6,
+        "top": 6,
+        "width": 100.5,
+        "height": 29
+       },
+       "onBarRow": true
+      }
+     ],
+     "rows": 2
+    },
+    {
+     "width": 430,
+     "text": 0,
+     "controls": [],
+     "rows": 2
+    }
+   ],
+   "note": "below 381 px the bottom-left chip is the shell's rule (ROADMAP Q7); a control off the bar row is reported, not failed"
+  },
+  {
+   "step": "n",
+   "text": "after a pick with READOUT open, READOUT is not under the bar (09-robust.md:11, MAJOR)",
+   "minor": false,
+   "status": "NOT EVALUATED",
+   "reason": "no step of this script opens READOUT (in Edition 5, #hud inside VIEW) before a pick; the integrator names the selector and the step is added"
+  },
+  {
+   "step": "o",
+   "text": "with --disable-webgl --disable-webgl2 the page shows a sentence, not a blank screen (09-robust.md:18, MAJOR)",
+   "minor": false,
+   "status": "PASS",
+   "measured": {
+    "webglAvailable": false,
+    "visibleWords": 27,
+    "says": true,
+    "sample": "WebGL2 is not available in this browser. Refusing rather than drawing a fraction of the wafer. The verified lines are in keys.json and README.md in this folder.",
+    "screenshot": "law-no-webgl.png"
+   }
+  },
+  {
+   "step": "nl009",
+   "text": "NL-009 steps outside (a)-(o): WHOLE WAFER, harness",
+   "minor": false,
+   "status": "PASS",
+   "measured": [
+    {
+     "device": "Pixel 7",
+     "id": "whole-wafer",
+     "pass": true,
+     "note": ""
+    },
+    {
+     "device": "Galaxy S24",
+     "id": "whole-wafer",
+     "pass": true,
+     "note": ""
+    }
+   ]
+  },
+  {
+   "step": "minor",
+   "text": "sticky hover (01-bar.md:27-33)",
+   "minor": true,
+   "status": "NOT EVALUATED",
+   "reason": "MINOR: not measured by this script; reported, does not block ACCEPT"
+  },
+  {
+   "step": "minor",
+   "text": "safe-area insets (01-bar.md:27-33)",
+   "minor": true,
+   "status": "NOT EVALUATED",
+   "reason": "MINOR: not measured by this script; reported, does not block ACCEPT"
+  },
+  {
+   "step": "minor",
+   "text": "dvh (01-bar.md:27-33)",
+   "minor": true,
+   "status": "NOT EVALUATED",
+   "reason": "MINOR: not measured by this script; reported, does not block ACCEPT"
+  },
+  {
+   "step": "minor",
+   "text": "landscape scroll in the EDITION panel (06-seethrough.md:33)",
+   "minor": true,
+   "status": "NOT EVALUATED",
+   "reason": "MINOR: not measured by this script; reported, does not block ACCEPT"
+  },
+  {
+   "step": "minor",
+   "text": "noscript (09-robust.md:23-36)",
+   "minor": true,
+   "status": "NOT EVALUATED",
+   "reason": "MINOR: not measured by this script; reported, does not block ACCEPT"
+  },
+  {
+   "step": "minor",
+   "text": "keys.json 404 said in the open (09-robust.md:23-36)",
+   "minor": true,
+   "status": "NOT EVALUATED",
+   "reason": "MINOR: not measured by this script; reported, does not block ACCEPT"
+  },
+  {
+   "step": "minor",
+   "text": "Escape closes the card (09-robust.md:23-36)",
+   "minor": true,
+   "status": "NOT EVALUATED",
+   "reason": "MINOR: not measured by this script; reported, does not block ACCEPT"
+  },
+  {
+   "step": "minor",
+   "text": "reduced motion (09-robust.md:23-36)",
+   "minor": true,
+   "status": "NOT EVALUATED",
+   "reason": "MINOR: not measured by this script; reported, does not block ACCEPT"
+  },
+  {
+   "step": "minor",
+   "text": "ARIA (09-robust.md:23-36)",
+   "minor": true,
+   "status": "NOT EVALUATED",
+   "reason": "MINOR: not measured by this script; reported, does not block ACCEPT"
+  }
+ ],
+ "gate": "FAIL",
+ "failed": [
+  "a",
+  "b",
+  "e",
+  "k",
+  "l",
+  "m"
+ ],
+ "not_evaluated": [
+  "i: Pixel 7 landscape not run (use --all); font scale 1.3 NOT EVALUATED: Playwright emulates no Android font scale",
+  "n: no step of this script opens READOUT (in Edition 5, #hud inside VIEW) before a pick; the integrator names the selector and the step is added",
+  "minor: MINOR: not measured by this script; reported, does not block ACCEPT",
+  "minor: MINOR: not measured by this script; reported, does not block ACCEPT",
+  "minor: MINOR: not measured by this script; reported, does not block ACCEPT",
+  "minor: MINOR: not measured by this script; reported, does not block ACCEPT",
+  "minor: MINOR: not measured by this script; reported, does not block ACCEPT",
+  "minor: MINOR: not measured by this script; reported, does not block ACCEPT",
+  "minor: MINOR: not measured by this script; reported, does not block ACCEPT",
+  "minor: MINOR: not measured by this script; reported, does not block ACCEPT",
+  "minor: MINOR: not measured by this script; reported, does not block ACCEPT"
+ ],
+ "rule": "gate PASS only when every non-MINOR step was measured and is PASS; FAIL when one failed; otherwise NOT EVALUATED, never PASS; the NOT EVALUATED list goes in PR A's body; agents never post ACCEPT",
+ "merged_from": [
+  {
+   "file": "/tmp/nl010-opus/team-9/tester/j3-p7/report.json",
+   "sha256": "4e3f5401a1de4bcb4546cd93300b8d26de89bcb5b23d9cf1ee0d3757303c07fd",
+   "devices": [
+    "Pixel 7"
+   ],
+   "law": true
+  },
+  {
+   "file": "/tmp/nl010-opus/team-9/tester/j3-s24/report.json",
+   "sha256": "f2758cd62cc7dfd13458e86baf2aa019ac5dcf559f866e09d34d6073bbe47567",
+   "devices": [
+    "Galaxy S24"
+   ],
+   "law": false
+  }
+ ]
+}

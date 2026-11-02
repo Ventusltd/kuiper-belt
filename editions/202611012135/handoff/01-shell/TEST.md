@@ -1,17 +1,17 @@
 # handoff/01-shell/TEST.md: step 1 "the shell contract", acceptance A1–A9
 
-Tester OPUS-1 (Opus team 1). Written by `test.cjs` at 2026-11-02 02:35 UTC; every cell below is a measurement from that run, never an estimate.
+Tester OPUS-1 (Opus team 1). Written by `test.cjs` at 2026-11-02 03:00 UTC; every cell below is a measurement from that run, never an estimate.
 
-**Verdict: FAIL — HAND-OFF REFUSED by the tester until every cell reads PASS.**
+**Verdict: PASS — the hand-off may go.**
 
 | run | value |
 |---|---|
-| module | `modules/202611020220-kuiper-shell.js` |
-| module sha256 | `1755fde2103a74b7114741751c9f5995166a7e2ded0f1750dee2688defc19220` (48579 bytes) |
-| how the module reached the page | `page` (--admit: modules.json served with handoff/01-shell/MODULE.json inserted, sha256 1755fde2103a, order ["hello","kuiper-shell","line-card","drift"]; the page's loader admits it) |
+| module | `modules/202611020243-kuiper-shell.js` |
+| module sha256 | `2045c51ae1ac844aef98fd7de330d947caf704fcbb935098938ce0caf0758bdf` (49071 bytes) |
+| how the module reached the page | `page` (--admit: modules.json served with handoff/01-shell/MODULE.json inserted, sha256 2045c51ae1ac, order ["hello","kuiper-shell","line-card"]; the page's loader admits it) |
 | test.cjs sha256 | `ed5facac8e1a6eb8122db4f1c527f0ee2cb15371b17dedaf27ed1b5683fe83b9` |
-| Kuiper | http://127.0.0.1:8410/editions/202611012135/ (kuiper-belt `f21eb32c648bb418c664a278b6ed91ba3148ae40`, branch `edition/202611012135`, working tree) — server already serving |
-| GridAtlas | http://127.0.0.1:8510/atlas/ (gridatlas `5ec7f62f213e2d20a02e86427daa182c0f38e4a4`) — server started by test.cjs (pid 26211); maplibre-gl@3.6.2 from `see-through/202610050513/vendor/`, Carto style = one background layer, all other external requests aborted (team-1/STEPS.md:20-29) |
+| Kuiper | http://127.0.0.1:8410/editions/202611012135/ (kuiper-belt `66be444660d07b6531cf8ef595d22792601db2b1`, branch `edition/202611012135`, working tree) — server already serving |
+| GridAtlas | http://127.0.0.1:8510/atlas/ (gridatlas `5ec7f62f213e2d20a02e86427daa182c0f38e4a4`) — server started by test.cjs (pid 5124); maplibre-gl@3.6.2 from `see-through/202610050513/vendor/`, Carto style = one background layer, all other external requests aborted (team-1/STEPS.md:20-29) |
 | browser | Playwright Chromium 153.0.8010.12, `--use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist`, real touch (`touchscreen.tap`), 7 s settle |
 | devices | Pixel 7 412×839 touch · Galaxy S24 360×780 touch · Pixel 7 landscape 863×360 touch · 360x740 360×740 touch |
 
@@ -24,7 +24,7 @@ Tester OPUS-1 (Opus team 1). Written by `test.cjs` at 2026-11-02 02:35 UTC; ever
 | A2b | 360 px with a 1.3× font scale on titles and wordmark (01-bar method): still one row, bar height kept; if it overflows, `overflow-x:auto` and the last title reachable by scroll and opens on tap | n/a | n/a | n/a | PASS |
 | A3 | wordmark: `.ventus-main` "Ventus" 11/14 px 800 `rgb(255,255,255)` uppercase; `.ventus-sub` 4.5/5.5 px `rgb(136,136,136)`; centred within 1 px (x on the viewport, y on the bar); not a link; box within 1 px of the team-1 table AND of GridAtlas measured live in this run | PASS | PASS | PASS | PASS |
 | A4 | at rest nothing over the wafer outside the bar but `#c`, `#o`, the find box (top = bar bottom + 36, right-aligned, 44 px on touch) and the star chip; `#keys #top #hud #foot #lines #bar` hidden; no panel open | PASS | PASS | PASS | PASS |
-| A5 | each title: real tap opens exactly one panel under the bar inside the viewport (`aria-expanded=true`), second tap, Escape and `page.goBack()` (the Android back gesture) close it and stay on the page; every panel row ≥ 44 px; a wafer tap closes; VIEW "next verified line" lands the spark between bar bottom and card top (10 px margins) | FAIL: 2 row(s) under 44 px | FAIL: 2 row(s) under 44 px | FAIL: 2 row(s) under 44 px | FAIL: 2 row(s) under 44 px |
+| A5 | each title: real tap opens exactly one panel under the bar inside the viewport (`aria-expanded=true`), second tap, Escape and `page.goBack()` (the Android back gesture) close it and stay on the page; every panel row ≥ 44 px; a wafer tap closes; VIEW "next verified line" lands the spark between bar bottom and card top (10 px margins) | PASS | PASS | PASS | PASS |
 | A6 | `elementFromPoint(titleCentreX, 40)` is the title on a coarse pointer, all closed (44 px hit box); with FILE open, 4 px into its first row is the row, not the title | PASS | PASS | PASS | PASS |
 | A7 | zero `pageerror`, zero console errors, zero failed local requests during the device run; `node --check` of the module | PASS | PASS | PASS | PASS |
 | A9 | the same table measured on GridAtlas `/atlas/` (gridatlas@5ec7f62 served on port+100, CDN stubbed as team 1 did) — bar, title face, wordmark style and box compared number to number (box tolerance 1 px, styles exact) | PASS | PASS | PASS | PASS |
@@ -34,10 +34,10 @@ Tester OPUS-1 (Opus team 1). Written by `test.cjs` at 2026-11-02 02:35 UTC; ever
 
 | device | bar (x,y,w×h) | titles (sum w) / slot w / slack | wordmark box | GridAtlas box (live) | find box | rows <44 px | console errors |
 |---|---|---|---|---|---|---|---|
-| Pixel 7 | 0,0,412×34 | 224.4 / 77.6 / 110 | 73.6×16.3 | 73.6×16.3 | - | 2 of 382 | 0 |
-| Galaxy S24 | 0,0,360×34 | 224.4 / 77.6 / 58 | 73.6×16.3 | 73.6×16.3 | - | 2 of 382 | 0 |
-| Pixel 7 landscape | 0,0,863×36 | 325.8 / 247.1 / 189.2 | 90×20.5 | 90×20.5 | - | 2 of 382 | 0 |
-| 360x740 | 0,0,360×34 | 224.4 / 77.6 / 58 | 73.6×16.3 | 73.6×16.3 | - | 2 of 382 | 0 |
+| Pixel 7 | 0,0,412×34 | 224.4 / 77.6 / 110 | 73.6×16.3 | 73.6×16.3 | - | 0 of 370 | 0 |
+| Galaxy S24 | 0,0,360×34 | 224.4 / 77.6 / 58 | 73.6×16.3 | 73.6×16.3 | - | 0 of 370 | 0 |
+| Pixel 7 landscape | 0,0,863×36 | 325.8 / 247.1 / 189.2 | 90×20.5 | 90×20.5 | - | 0 of 370 | 0 |
+| 360x740 | 0,0,360×34 | 224.4 / 77.6 / 58 | 73.6×16.3 | 73.6×16.3 | - | 0 of 370 | 0 |
 
 ## A9: the two shells, number to number
 
@@ -227,10 +227,10 @@ None on any device.
 
 ## Images (img/)
 
-- `img/01-pixel7-rest.png` 120 KB: Kuiper on Pixel 7 at rest: one bar, the wordmark, nothing else over the wafer
-- `img/02-galaxy-s24-view-open.png` 93 KB: Galaxy S24 (360 px): the VIEW panel open under the bar
+- `img/01-pixel7-rest.png` 118 KB: Kuiper on Pixel 7 at rest: one bar, the wordmark, nothing else over the wafer
+- `img/02-galaxy-s24-view-open.png` 81 KB: Galaxy S24 (360 px): the VIEW panel open under the bar
 - `img/04-pixel7-next-line.png` 26 KB: Pixel 7: VIEW → "next verified line", the spark between the bar and the card
-- `img/03-bars-kuiper-over-gridatlas.png` 77 KB: the top 50 px of both shells on every device, Kuiper over GridAtlas, same scale
+- `img/03-bars-kuiper-over-gridatlas.png` 76 KB: the top 50 px of both shells on every device, Kuiper over GridAtlas, same scale
 
 ## Method notes
 

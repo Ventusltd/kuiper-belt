@@ -39,7 +39,7 @@
     "param": "layers",
     "value": "periods"
    },
-   "module": "202611020240-layers.js"
+   "module": "202611020304-layers.js"
   },
   {
    "id": "repos",
@@ -65,7 +65,7 @@
     "param": "layers",
     "value": "repos"
    },
-   "module": "202611020240-layers.js"
+   "module": "202611020304-layers.js"
   },
   {
    "id": "editions",
@@ -96,7 +96,7 @@
     "param": "layers",
     "value": "editions"
    },
-   "module": "202611020240-layers.js"
+   "module": "202611020304-layers.js"
   },
   {
    "id": "lines",
@@ -136,7 +136,7 @@
     "param": "layers",
     "value": "lines"
    },
-   "module": "202611020240-layers.js"
+   "module": "202611020304-layers.js"
   },
   {
    "id": "see-through",

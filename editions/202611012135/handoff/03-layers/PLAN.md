@@ -243,3 +243,10 @@ I re-run (both devices, --handoff) as soon as layers.js changes.
 - LEAD: run 10 (hello, kuiper-shell, line-card, layers): Pixel 7 20/0/0, Galaxy S24 20/0/0; static all PASS but
   t9-carried flyDuration (no hook reaches tween.dur; DISCLOSED, REQUEST for flyTo's 4th argument). Module FROZEN at
   d5f71980… (MODULE.sha256, MODULE.json). HANDOFF: issue #10 comment 6567112212.
+- LEAD (REVIEW 6567442274, layers withdrawn 02:13): cause found: delete-moved.py cuts Edition 4's capture listener on
+  #card (index.html:668-674), which stopped the page's close-on-click (index.html:603); with layers + the cut page, the
+  details tap reached it and hid the card. Revision cut as NEW files: 202611020240 (card guard; committed by the harness,
+  tested, never admitted) then 202611020304 (the same guard, plus the layer rows fold while the filter is in use, so the
+  journey's lines-filter passes at 360 x 780). test.cjs: t10-card-details / t10-card-close (pick -> details -> x), t9
+  tests the file MODULE.json names. Runs on a frozen root like a6-layers (gen/snap7.sh): journey-6 both devices +
+  test.cjs without flags, served on 8431.

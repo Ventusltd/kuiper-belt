@@ -1,8 +1,8 @@
 {
- "url": "http://127.0.0.1:8464/editions/202611012135/",
+ "url": "http://127.0.0.1:8462/editions/202611012135/",
  "stamp": "202611012135",
  "pointer": "routed",
- "started": "2026-11-02T00:59:25.576Z",
+ "started": "2026-11-02T02:39:27.642Z",
  "devices": {
   "Galaxy S24": {
    "steps": [
@@ -209,17 +209,17 @@
        {
         "p": "LICENCES.md",
         "status": 200,
-        "len": "13292",
-        "row": "13292",
-        "hint": "13,292 bytes",
+        "len": "14994",
+        "row": "14994",
+        "hint": "14,994 bytes",
         "download": true
        },
        {
         "p": "proof/android-journey.json",
-        "status": 404,
-        "len": "335",
-        "row": null,
-        "hint": "missing · HTTP 404",
+        "status": 200,
+        "len": "57668",
+        "row": "57668",
+        "hint": "57,668 bytes",
         "download": true
        },
        {
@@ -238,8 +238,7 @@
      "result": "NOT EVALUATED",
      "measured": {
       "missing": [
-       "proof/edition-sha256.txt",
-       "proof/android-journey.json"
+       "proof/edition-sha256.txt"
       ],
       "why": "written by the integrator (proof/*) and Opus 9 (LICENCES.md) at assembly"
      }
@@ -257,10 +256,10 @@
      "measured": {
       "hash": "#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
       "header_equal": true,
-      "zoom": 14.000000000000004,
+      "zoom": 13.999999999999991,
       "spark": [
        180,
-       338.1093749999418
+       338.10937499994185
       ],
       "barBottom": 34,
       "cardTop": 642.21875,
@@ -275,12 +274,12 @@
       "cam0": [
        -31644.85262322351,
        187248.28604743813,
-       14.000000000000004
+       13.999999999999991
       ],
       "cam1": [
        -31644.85262322351,
        187248.28604743813,
-       14.000000000000004
+       13.999999999999991
       ]
      }
     },
@@ -295,18 +294,18 @@
      "id": "A6 Save an image: PNG, not one colour, innerWidth x min(dpr,2) wide, the stamp strip within 5 %",
      "result": "PASS",
      "measured": {
-      "file": "Galaxy_S24-kuiper-202611012135-20261102T0103Z.png",
-      "bytes": 98576,
+      "file": "Galaxy_S24-kuiper-202611012135-20261102T0240Z.png",
+      "bytes": 98049,
       "w": 720,
       "h": 1688,
       "expectW": 720,
       "colours": 3,
-      "foot": 13556,
-      "ref": 13556,
+      "foot": 13555,
+      "ref": 13555,
       "lines": [
-       "Kuiper edition 202611012135 · 2026-11-02 01:03 UTC",
+       "Kuiper edition 202611012135 · 2026-11-02 02:40 UTC",
        "code Apache-2.0, text and data CC BY 4.0",
-       "http://127.0.0.1:8464/editions/202611012135/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines"
+       "http://127.0.0.1:8462/editions/202611012135/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines"
       ]
      }
     },
@@ -347,14 +346,14 @@
         161906.2701997671,
         169281.27433357772
        ],
-       "hash": "#repo=gridatlas&period=2026-07&layers=repos,editions,lines"
+       "hash": "#repo=gridatlas&period=2026-07&layers=periods,repos,editions,lines"
       },
       "key": {
        "open": true,
        "index": 0,
        "header": "# Every digest in this repository is taken over git blob content, which is LF,",
-       "hash": "#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=periods,repos,editions,lines",
-       "zoom": 13.999999999999996,
+       "hash": "#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+       "zoom": 14.000000000000004,
        "card": "block"
       }
      }
@@ -363,7 +362,7 @@
      "id": "A7 a pasted See Through link -> navigation to See Through, the hash kept",
      "result": "PASS",
      "measured": {
-      "url": "http://127.0.0.1:8464/see-through/#sub=Drax"
+      "url": "http://127.0.0.1:8462/see-through/#sub=Drax"
      }
     },
     {
@@ -386,11 +385,11 @@
       "index": 0,
       "header": "# Every digest in this repository is taken over git blob content, which is LF,",
       "hash": "#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
-      "zoom": 13.999999999999996,
+      "zoom": 13.999999999999991,
       "card": "block",
       "s": [
        180,
-       338.1093749999418
+       338.10937499994185
       ],
       "top": 34,
       "bot": 642.21875
@@ -438,14 +437,14 @@
      "id": "A4 pointer #edition=…&key=…: the URL is that edition with the rest of the hash",
      "result": "PASS",
      "measured": {
-      "url": "http://127.0.0.1:8464/editions/202611010114/#key=36064705400"
+      "url": "http://127.0.0.1:8462/editions/202611010114/#key=36064705400"
      }
     },
     {
      "id": "A4 pointer #app=see-through&sub=Drax: the URL is See Through with #sub=Drax",
      "result": "PASS",
      "measured": {
-      "url": "http://127.0.0.1:8464/see-through/#sub=Drax"
+      "url": "http://127.0.0.1:8462/see-through/#sub=Drax"
      }
     },
     {
@@ -455,37 +454,37 @@
       "forwarded": [
        {
         "hash": "#key=36064705400",
-        "landed": "http://127.0.0.1:8464/editions/202611012135/#key=36064705400",
+        "landed": "http://127.0.0.1:8462/editions/202611012135/#key=36064705400",
         "ok": true
        },
        {
         "hash": "#line=0048802883266c68d5bdb6f5add0074e8b5b729d:5",
-        "landed": "http://127.0.0.1:8464/editions/202611012135/#line=0048802883266c68d5bdb6f5add0074e8b5b729d:5",
+        "landed": "http://127.0.0.1:8462/editions/202611012135/#line=0048802883266c68d5bdb6f5add0074e8b5b729d:5",
         "ok": true
        },
        {
         "hash": "#repo=gridatlas&period=2026-07",
-        "landed": "http://127.0.0.1:8464/editions/202611012135/#repo=gridatlas&period=2026-07",
+        "landed": "http://127.0.0.1:8462/editions/202611012135/#repo=gridatlas&period=2026-07",
         "ok": true
        },
        {
         "hash": "#layers=lines,see-through&key=63035688574",
-        "landed": "http://127.0.0.1:8464/editions/202611012135/#layers=lines,see-through&key=63035688574",
+        "landed": "http://127.0.0.1:8462/editions/202611012135/#layers=lines,see-through&key=63035688574",
         "ok": true
        },
        {
         "hash": "#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
-        "landed": "http://127.0.0.1:8464/editions/202611012135/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+        "landed": "http://127.0.0.1:8462/editions/202611012135/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
         "ok": true
        },
        {
-        "hash": "#key=62884838295&line=79488f292a75a02a19d39739c7294ef7a8a0667a:152&layers=repos,editions,lines",
-        "landed": "http://127.0.0.1:8464/editions/202611012135/#key=62884838295&line=79488f292a75a02a19d39739c7294ef7a8a0667a:152&layers=repos,editions,lines",
+        "hash": "#key=63013214349&line=c506a252f27fa8b80e849eb63bbb6699eaf674f0:22&layers=repos,editions,lines",
+        "landed": "http://127.0.0.1:8462/editions/202611012135/#key=63013214349&line=c506a252f27fa8b80e849eb63bbb6699eaf674f0:22&layers=repos,editions,lines",
         "ok": true
        },
        {
-        "hash": "#key=63013235013&line=ff5ebcf7bd4b0c133731cf5a8d4ff4b51fda1659:8&layers=repos,editions,lines",
-        "landed": "http://127.0.0.1:8464/editions/202611012135/#key=63013235013&line=ff5ebcf7bd4b0c133731cf5a8d4ff4b51fda1659:8&layers=repos,editions,lines",
+        "hash": "#key=63013167913&line=8f615def7fea7bab74c8921d09a47e9df280e481:144&layers=repos,editions,lines",
+        "landed": "http://127.0.0.1:8462/editions/202611012135/#key=63013167913&line=8f615def7fea7bab74c8921d09a47e9df280e481:144&layers=repos,editions,lines",
         "ok": true
        }
       ]
@@ -495,17 +494,27 @@
      "id": "G3 Open an edition by touch: ../202611010114/#<hash>, the copied link's hash byte for byte",
      "result": "PASS",
      "measured": {
-      "landed": "http://127.0.0.1:8464/editions/202611010114/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
-      "want": "http://127.0.0.1:8464/editions/202611010114/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+      "landed": "http://127.0.0.1:8462/editions/202611010114/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+      "want": "http://127.0.0.1:8462/editions/202611010114/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
       "copied_hash": "#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
-      "row_h": 44
+      "row_h": 44,
+      "hit": {
+       "x": 186.5,
+       "y": 403,
+       "on_row": true,
+       "hit": "A#.gm-row"
+      },
+      "navigation_requests": [
+       "http://127.0.0.1:8462/editions/202611010114/"
+      ],
+      "after": "navigated"
      }
     },
     {
      "id": "A5 round trip (e)",
      "result": "PASS",
      "measured": {
-      "link": "http://127.0.0.1:8464/editions/202611012135/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+      "link": "http://127.0.0.1:8462/editions/202611012135/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
       "before": 0,
       "after": 0,
       "header_equal": true
@@ -515,8 +524,8 @@
      "id": "G4 Open an app by touch: See Through first and lit, lands on ../../see-through/#key=<the open key>",
      "result": "PASS",
      "measured": {
-      "landed": "http://127.0.0.1:8464/see-through/#key=62884838295",
-      "want": "http://127.0.0.1:8464/see-through/#key=62884838295",
+      "landed": "http://127.0.0.1:8462/see-through/#key=63013214349",
+      "want": "http://127.0.0.1:8462/see-through/#key=63013214349",
       "first": {
        "app": "see-through",
        "lit": true
@@ -528,26 +537,26 @@
        "on_row": true,
        "hit": "A#.gm-row ky-lit"
       },
-      "opened": "Error: page.evaluate: ReferenceError: KY is not defined\n    at eval (eval at evaluate (:311:30), <anonymous>:1:52)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)"
+      "opened": "navigated"
      }
     },
     {
-     "id": "A5 round trip (edPlaced[175])",
+     "id": "A5 round trip (edPlaced[263])",
      "result": "PASS",
      "measured": {
-      "link": "http://127.0.0.1:8464/editions/202611012135/#key=62884838295&line=79488f292a75a02a19d39739c7294ef7a8a0667a:152&layers=repos,editions,lines",
-      "before": 175,
-      "after": 175,
+      "link": "http://127.0.0.1:8462/editions/202611012135/#key=63013214349&line=c506a252f27fa8b80e849eb63bbb6699eaf674f0:22&layers=repos,editions,lines",
+      "before": 263,
+      "after": 263,
       "header_equal": true
      }
     },
     {
-     "id": "A5 round trip (edPlaced[343])",
+     "id": "A5 round trip (edPlaced[198])",
      "result": "PASS",
      "measured": {
-      "link": "http://127.0.0.1:8464/editions/202611012135/#key=63013235013&line=ff5ebcf7bd4b0c133731cf5a8d4ff4b51fda1659:8&layers=repos,editions,lines",
-      "before": 343,
-      "after": 343,
+      "link": "http://127.0.0.1:8462/editions/202611012135/#key=63013167913&line=8f615def7fea7bab74c8921d09a47e9df280e481:144&layers=repos,editions,lines",
+      "before": 198,
+      "after": 198,
       "header_equal": true
      }
     },
@@ -566,8 +575,8 @@
      "id": "G5 Copy a link to this view, clipboard denied -> the link in a selected read-only 44 px field, never silent",
      "result": "PASS",
      "measured": {
-      "value": "http://127.0.0.1:8464/editions/202611012135/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
-      "url": "http://127.0.0.1:8464/editions/202611012135/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+      "value": "http://127.0.0.1:8462/editions/202611012135/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
+      "url": "http://127.0.0.1:8462/editions/202611012135/#key=36064705400&line=0048802883266c68d5bdb6f5add0074e8b5b729d:5&layers=repos,editions,lines",
       "readOnly": true,
       "selected": true,
       "focused": true,
@@ -583,7 +592,7 @@
       "openBefore": "scope",
       "afterPanel": {
        "open": null,
-       "url": "http://127.0.0.1:8464/editions/202611012135/#repo=Kuiper-belt&layers=repos,editions,lines"
+       "url": "http://127.0.0.1:8462/editions/202611012135/#repo=Kuiper-belt&layers=periods,repos,editions,lines"
       }
      }
     },
@@ -591,13 +600,13 @@
      "id": "A8 three module link writes add no history entry (replaceState)",
      "result": "PASS",
      "measured": {
-      "lenBefore": 9,
+      "lenBefore": 8,
       "lenAfter": {
-       "len": 9,
-       "hash": "#key=36064705400&repo=gridatlas&period=2026-07&layers=repos,editions,lines"
+       "len": 8,
+       "hash": "#key=36064705400&repo=gridatlas&period=2026-07&layers=periods,repos,editions,lines"
       },
       "hl": {
-       "len": 8,
+       "len": 7,
        "writes": 4
       }
      }
@@ -718,32 +727,32 @@
       "results": [
        {
         "ex": "#key=36064705400",
-        "landed": "http://127.0.0.1:8464/editions/202611012027/#key=36064705400",
+        "landed": "http://127.0.0.1:8462/editions/202611012027/#key=36064705400",
         "ok": true
        },
        {
         "ex": "#line=0048802883266c68d5bdb6f5add0074e8b5b729d:5",
-        "landed": "http://127.0.0.1:8464/editions/202611012027/#line=0048802883266c68d5bdb6f5add0074e8b5b729d:5",
+        "landed": "http://127.0.0.1:8462/editions/202611012027/#line=0048802883266c68d5bdb6f5add0074e8b5b729d:5",
         "ok": true
        },
        {
         "ex": "#repo=gridatlas&period=2026-07",
-        "landed": "http://127.0.0.1:8464/editions/202611012027/#repo=gridatlas&period=2026-07",
+        "landed": "http://127.0.0.1:8462/editions/202611012027/#repo=gridatlas&period=2026-07",
         "ok": true
        },
        {
         "ex": "#layers=lines,see-through&key=63035688574",
-        "landed": "http://127.0.0.1:8464/editions/202611012027/#layers=lines,see-through&key=63035688574",
+        "landed": "http://127.0.0.1:8462/editions/202611012027/#layers=lines,see-through&key=63035688574",
         "ok": true
        },
        {
         "ex": "#edition=202611010114&key=36064705400",
-        "landed": "http://127.0.0.1:8464/editions/202611012027/#edition=202611010114&key=36064705400",
+        "landed": "http://127.0.0.1:8462/editions/202611012027/#edition=202611010114&key=36064705400",
         "ok": true
        },
        {
         "ex": "#app=see-through&sub=Drax",
-        "landed": "http://127.0.0.1:8464/editions/202611012027/#app=see-through&sub=Drax",
+        "landed": "http://127.0.0.1:8462/editions/202611012027/#app=see-through&sub=Drax",
         "ok": true
        }
       ]
@@ -760,8 +769,7 @@
      "measured": {
       "other": [],
       "evidence_404": [
-       "http://127.0.0.1:8464/editions/202611012135/proof/edition-sha256.txt",
-       "http://127.0.0.1:8464/editions/202611012135/proof/android-journey.json"
+       "http://127.0.0.1:8462/editions/202611012135/proof/edition-sha256.txt"
       ],
       "allow_missing_evidence": false
      }
@@ -769,16 +777,15 @@
    ],
    "errors": [],
    "expected_404": [
-    "http://127.0.0.1:8464/editions/202611012135/proof/edition-sha256.txt",
-    "http://127.0.0.1:8464/editions/202611012135/proof/android-journey.json"
+    "http://127.0.0.1:8462/editions/202611012135/proof/edition-sha256.txt"
    ],
    "other_console": [],
    "shot_errors": [
-    "screenshot 02-open-key: page.screenshot: Timeout 180000ms exceeded."
+    "screenshot 03-pasted-line: page.screenshot: Timeout 180000ms exceeded."
    ],
    "pass": false
   }
  },
- "finished": "2026-11-02T01:35:15.108Z",
+ "finished": "2026-11-02T03:17:45.298Z",
  "pass": false
 }
