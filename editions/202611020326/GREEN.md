@@ -10,7 +10,7 @@ Evidence: neural-link FIXES/NL-010/evidence/controller-2/<snapshot>/.
 
 | row | time (UTC) | order | index.html | modules.json | Pixel 7 | Galaxy S24 | branch commit to ship |
 |---|---|---|---|---|---|---|---|
-| E6-G1 | 04:15 | hello ee2130b5, kuiper-shell 2045c51a, line-card 8ec117f9 (202611020212) | e6d6f8edf3fd… | 0d881f4855fb… | 16/16 (03:38-03:55, load 12) | 15/16 + whole-wafer HARNESS-LIMITED (frame bbox 39,266-320,547, 282×282, ratio 1.00; script timeout 180 s) = 16/16 (03:56-04:11, load 12) | PENDING: harness commit requested on #10 |
+| E6-G1 | 04:15 | hello ee2130b5, kuiper-shell 2045c51a, line-card 8ec117f9 (202611020212) | e6d6f8edf3fd… | 0d881f4855fb… | 16/16 (03:38-03:55, load 12) | 15/16 + whole-wafer HARNESS-LIMITED (frame bbox 39,266-320,547, 282×282, ratio 1.00; script timeout 180 s) = 16/16 (03:56-04:11, load 12) | **84f1c1ed25838dd0afa0a1c8c852f4565991b4c2** (harness commit 04:14Z; its folder bytes verified equal to the journeyed snapshot; its message says "not a GREEN state" because it landed before this row was confirmed) |
 
 Notes:
 - E6-G1: line-card 8ec117f9 admitted under the harness's written instruction 6568562808 ("admits the card revision
