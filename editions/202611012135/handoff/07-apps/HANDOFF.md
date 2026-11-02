@@ -1,11 +1,11 @@
-[OPUS-7 lead → HARNESS, OPUS-10, OPUS-3, OPUS-9, OPUS-6] [NL-010] [UTC_STAMP]
+[OPUS-7 lead → HARNESS, OPUS-10, OPUS-3, OPUS-9, OPUS-6] [NL-010] [2026-11-02 01:34 UTC]
 TYPE: HANDOFF
 IN-REPLY-TO: https://github.com/Ventusltd/neural-link-between-agents/issues/10
 SCOPE: Ventusltd/kuiper-belt branch edition/202611012135: editions/202611012135/modules/202611012309-apps.js, data/apps.json, data/elements.json, data/graphs/{overview,periodic-table}.json, tools/apps_registry.py, tools/element_keys.py, handoff/07-apps/ (roadmap step 7, the OS of the estate, baby step one)
-HEAD: kuiper-belt@HEAD_SHA (the files as on disk when this was posted, keyed by sha256 in handoff/07-apps/MODULE.sha256). Source heads: elements@f7a92fb, globalgrid2050@c66759f, testcode@d09c185, stars@cbca125, gridatlas@5ec7f62
+HEAD: kuiper-belt@233d91b1847d34299864f7a7ffa61155f223266a (the files as on disk when this was posted, keyed by sha256 in handoff/07-apps/MODULE.sha256). Source heads: elements@f7a92fb, globalgrid2050@c66759f, testcode@d09c185, stars@cbca125, gridatlas@5ec7f62
 EVIDENCE: handoff/07-apps/{MODULE.sha256, MODULE.json, test.cjs, TEST.md, EVIDENCE.md, LICENCE.txt, REQUESTS.md, PLAN.md, README-apps.md, img/ ×4}
-STATUS: TEST_STATUS
-DETAILS: module sha256 fa01e012d81b32edf0287536e27a11075313dcd96d18c2409e21fb997bd0d481 (42,561 bytes); apps.json ba59b9bd…a334; elements.json e204cb41…64d5; overview.json 124aa35e…df09; periodic-table.json b8482044…3a0e. No index.html patch.
+STATUS: PASS for every team-7 gate (test.cjs: 12/12 script gates, 17/17 device gates on Pixel 7 and on Galaxy S24, 0 console errors, 0 page errors, every off-origin request blocked); NOT EVALUATED: E' (file.js's EVIDENCE files, which the integrator writes at assembly) and A4's spark tap (the elements layer is REFUSED until the owner answers Q1)
+DETAILS: module sha256 fa01e012d81b32edf0287536e27a11075313dcd96d18c2409e21fb997bd0d481 (42,561 bytes); apps.json 027f6614…80a5; elements.json e204cb41…64d5; overview.json 124aa35e…df09; periodic-table.json b8482044…3a0e. No index.html patch.
 
 **What it is.** Roadmap step 7. Module `202611012309-apps.js`, id `apps`, schema `kuiper.apps.v1`. It registers once through `KY.register` and requires 16 hooks, each one used: wafer keyPlace flyTo esc fmt cv o2 hud card repos commits SPACE cam sel redraw draw. Neighbours are optional: `file` (its FILE row "Open an app" calls `api.open()` and reads `api.list()`), `layers` (`register`), `kuiper-shell` and `line-card`. It never adds a bar title.
 
@@ -31,7 +31,20 @@ DETAILS: module sha256 fa01e012d81b32edf0287536e27a11075313dcd96d18c2409e21fb997
   - overview: 16 nodes, 15 edges, all drawn, but as **rings**. Every node keys to one place, because all 16 are served from ventus-grid-engine (builder's FINDING).
   - periodic-table: 663 nodes and 2,481 edges. 552 edges are drawn; 412 nodes had no key and are counted, not drawn.
 
-**Measured (TEST.md, test.cjs).** TEST_TABLE
+**Measured (TEST.md, test.cjs).** TEST.md (the tester's test.cjs, sha256 as in TEST.md; run by the lead on 8470 because no tester run had started on the sealed bytes; the tester's 00:38 run passed the same gates on the pre-seal data) was written at 2026-11-02T01:27:04Z on the sealed bytes (it hashes the module, apps.json 027f6614…, elements.json e204cb41… and both graphs). Real touch, one device at a time, every off-origin request aborted for the whole run.
+| gate | Pixel 7 | Galaxy S24 |
+|---|---|---|
+| script: A1 ×8 (34 rows, keys, APPS.md:7-13, homepage ids, rows = source lines, same_as, spider/periodic rows, Q5 graphs), A4 ×4 (244 in order, 221 inside their wafer rows, Q1, `tools/key.py` ×3) | 12/12 PASS | (once) |
+| M the loader admitted `apps`, nothing refused | PASS | PASS |
+| A2 six bar titles, none for apps; FILE › Open an app opens `#ky-apps` under the bar; 34 rows ≥ 44 px (min 71.4); first line of each row is its key; one panel at a time | PASS ×5 | PASS ×5 |
+| A3 See Through row → `../../see-through/`, same tab, 200, "See Through"; `goBack()` → no panel open | PASS ×2 | PASS ×2 |
+| A4 readout "221 elements placed, 23 counted, not placed" + "606 in the live register, 244 catalogued"; elements row REFUSED · licence unsettled, disabled; card from the keys view (3 elements): line_text then block:<Sym> | PASS ×3 | PASS ×3 |
+| A4 a tap within 9 px of an element spark | NOT EVALUATED (Q1: the layer draws nothing) | NOT EVALUATED |
+| A5 spider layer OK, 15 overview edges drawn; periodic-table nodes with no key named; spider row opens its link in the same tab; data/graphs 404 → row FAIL naming the file, wafer draws | PASS ×4 | PASS ×4 |
+| A6 the whole run offline from every other host | PASS | PASS |
+| E 0 page errors, 0 console errors, 0 failed same-origin requests | PASS | PASS |
+| E' file.js EVIDENCE files present | NOT EVALUATED (integrator) | NOT EVALUATED |
+img/: launcher.png, table-layer.png, spider-layer.png, element-card.png (block:Gc, ventus-grid-engine; replaces the harness-removed one, K1 0).
 
 **Owner questions honoured.**
 - **Q1:** keys only from elements. The elements layer is REFUSED, so A4's "tap within 9 px of an element spark" is **NOT EVALUATED** until the owner answers. The card is proven from the keys view instead.

@@ -283,3 +283,9 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   one at a time) on 8470 now: integrator index.html, modules shell, line-card, layers, file, see-through, apps; output to
   /tmp/nl010-opus/team-7/lead/final. TESTER: please do not start a parallel run. The harness removed img/element-card.png
   (K1: its binary bytes matched a private digest by chance); the replacement is checked with leaks() before it goes in.
+- 01:34 LEAD: FINAL run done (lead, 8470, test.cjs --allow-missing-evidence, both devices): TEST.md written 01:27:04Z on the
+  sealed bytes (module fa01e012…, apps.json 027f6614…, elements.json e204cb41…), 12/12 script + 17/17 device gates PASS on
+  each device, E' NOT EVALUATED. TEST.md and img/ installed (4 PNG; element-card.png regenerated, block:Gc, leaks() 0).
+  K1: leaks() over the 26 team-7 files = 0; tools/ci_check.py "742 tracked files scanned, 0 match", RESULT: PASS.
+  HANDOFF.md filled (four placeholders; STATUS names E' and A4 spark-tap NOT EVALUATED; layers.js :599-600).
+  EVIDENCE: final look please; I post at 01:45 UTC unless you write a blocker here.

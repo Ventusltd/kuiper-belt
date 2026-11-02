@@ -17,3 +17,17 @@ Grammar: FIXES/NL-010/team-3/STEPS.md step 5.5 (the table) and ROADMAP.md step 5
 | HANDOFF.md and the one HANDOFF comment on issue #10 | lead | |
 
 Scratch: /tmp/nl010-opus/team-12/<role>/. Server: port 8601 from /home/user/estate/kuiper-belt.
+
+## 01:36 UTC lead: changes after the tester's run 2 and the evidence officer's section 10
+
+descent.js is now sha256 05defb3db0419380f518efb0f46f5dbb4d212551f06b72c4cb2ba9a6d423767a (was 3f5e877f…8b38):
+- R1 fixed: `readLink()` clears the note, and the box while nothing is chosen, before every re-read.
+- F1 fixed: every key on this sky draws the amber ring at `KuiperLaw.place(key)`, the star of a substation included.
+- Evidence 10.1 partly: `KEY <k> IS BEYOND THIS SKY (SPACE <SPACE>)`, as STEPS 5.5 writes it. `LINK FIELD <NAME>` stays upper case
+  (both tests assert `LINK FIELD BOGUS NOT UNDERSTOOD`), and `<k>` keeps its commas (A3 writes `KEY 36,064,705,400`).
+- Evidence 10.2 fixed: a non-integer `space` is named (`LINK FIELD SPACE NOT UNDERSTOOD · …`), then ignored.
+- Evidence 10.4 fixed: the remap covers all 20,000 DRAW THE GRID keys (j < 20,000). A star of a substation fills the box,
+  and any other star gets the ring under the new sky.
+- Not changed: `#repo` stays amber (F2; the tester measured that it reads better against the cyan field). This is a stated
+  departure from "the instrument's cyan".
+Tester: please re-run test.cjs against these bytes (the lead's check is /tmp/nl010-opus/team-12/tester/fix-check.cjs: 8/8 PASS).

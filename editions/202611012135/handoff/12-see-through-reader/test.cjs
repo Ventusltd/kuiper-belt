@@ -88,7 +88,7 @@ function probe() {
   return { T: s.T, D: s.D, name: s.name, view: s.view, in3d: s.in3d, NP: s.NP, note: s.note, cap: s.cap, space: s.space, spaceSource: s.spaceSource,
     noteFit: (() => { if (!s.note) return null; const e = [...document.querySelectorAll('div,span')].find(x => x.children.length === 0 && x.textContent === s.note); if (!e) return null;
       const r = e.getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(e); const t = rg.getBoundingClientRect();
-      return { textRight: +t.right.toFixed(1), boxRight: +r.right.toFixed(1), innerWidth, fits: t.right <= innerWidth && t.left >= 0 }; })(),
+      return { textRight: +t.right.toFixed(1), boxRight: +r.right.toFixed(1), innerWidth, fits: t.right <= Math.min(innerWidth, r.right) + 0.5 && t.left >= 0 }; })(),
     box: inp ? inp.value : null, hash: location.hash, href: location.href, link: d.link(), ring: d.ring(), lit: d.repoLit(), row, mapState: s.mapState };
 }
 // amber (#ffb000) pixels on the See Through canvas inside a box around (x, y) CSS px; centroid in CSS px
@@ -182,7 +182,9 @@ function lawAt(k) {
     check('C3 #key=' + k201 + ' (no &space): T -1, D 0, box "Cowley Substation", note "THE STAR THAT LANDS ON COWLEY SUBSTATION. PRESS GO"',
       n201 === 'Cowley Substation' && s.T === -1 && s.D < 0.01 && s.box === 'Cowley Substation' && s.note === 'THE STAR THAT LANDS ON COWLEY SUBSTATION. PRESS GO', { name201: n201, T: s.T, box: s.box, note: s.note });
     s = await setHash(p, '#key=36064705400', () => /LINE OF CODE/.test(window.__descent.state().note));
-    const law3 = await p.evaluate(lawAt, 36064705400), amb3 = await p.evaluate(amberAt, { x: law3.x, y: law3.y, half: 16 });
+    const law3 = await p.evaluate(lawAt, 36064705400);
+    let amb3 = { n: 0 };   // the canvas repaints on the page's own frame; under load the first repaint after the hashchange can lag
+    for (let t = 0; t < 20 && amb3.n < 20; t++) { amb3 = await p.evaluate(amberAt, { x: law3.x, y: law3.y, half: 16 }); if (amb3.n < 20) await sleep(1500); }
     const rd = s.ring ? Math.hypot(s.ring.x - law3.x, s.ring.y - law3.y) : 99, pd = amb3.n ? Math.hypot(amb3.x - law3.x, amb3.y - law3.y) : 99;
     check('C3 hashchange #key=36064705400: note "KEY 36,064,705,400 · A LINE OF CODE, NOT A SUBSTATION", T -1, D 0, one amber ring within 1 px of KuiperLaw.place(k) (__descent.ring()); on the canvas an amber ring of radius 10 px centred within 2 px of it (pixel centroid; anti-aliasing against the cyan stars moves a thresholded centroid by up to ~2 px)',
       s.note === 'KEY 36,064,705,400 · A LINE OF CODE, NOT A SUBSTATION' && s.T === -1 && s.D < 0.01 && rd <= 1 && pd <= 2 && Math.abs(amb3.radius - 10) <= 1.5 && law3.star1 <= 1 && amb3.n >= 20,

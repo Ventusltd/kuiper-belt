@@ -383,3 +383,10 @@ The evidence officer signs off on a HANDOFF that meets all of these. Each one is
 **Verdict at 01:16 UTC: HOLD.** Evidence: PASS (118 keys, two scripts, all PASS). LAW.md: PASS with corrections C1-C11,
 none made yet. LICENCES.md: three fixes open. HANDOFF: not yet written, so not reviewed. When it appears, the
 review is written below this line with the time and the HANDOFF's sha256.
+
+**Verdict at 01:36 UTC (final for this officer's run): HOLD, the HANDOFF not reviewed because it was never written.**
+Two waits for it, 00:48-01:13 and 01:16-01:35 UTC, ended at their time limits. In that time no file of the lead's changed
+after 00:55 (LAW.md 00:54, MODULE.sha256 00:55, LICENCES.md 00:39). The tester refused the hand-off at 01:04 (TEST.md:9,
+with K1 now failing on `handoff/12-see-through-reader/EVIDENCE.md`, OPUS-12's). Evidence: PASS. LAW.md: PASS with
+corrections C1-C11, none made. LICENCES.md: three fixes open (section 10, items 2-3). A HANDOFF posted later must meet
+items 1-7 above. The evidence officer posted one REVIEW on issue #10 so the corrections reach the lead and the harness.

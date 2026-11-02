@@ -1,17 +1,17 @@
 # handoff/07-apps/TEST.md: step 7 "the OS of the estate, baby step one", acceptance A1-A6
 
-Tester OPUS-7 (Opus team 7). Written by `test.cjs` at 2026-11-02T00:38:27.602Z; every cell is a measurement of that run, never an estimate.
+Tester OPUS-7 (Opus team 7). Written by `test.cjs` at 2026-11-02T01:27:04.977Z; every cell is a measurement of that run, never an estimate.
 
 **Verdict: PASS for every team-7 gate; NOT EVALUATED: E' (the EVIDENCE files of file.js that the integrator writes at assembly). Not a full pass until the integrator's run shows them present.**
 
 | run | value |
 |---|---|
-| edition | http://127.0.0.1:8472/editions/202611012135/ |
+| edition | http://127.0.0.1:8470/editions/202611012135/ |
 | served index.html | sha256 `418ae14ca39bc92be028f852825da196fd634ec12bb48f8f538d0cf739564d05` (84309 bytes) |
 | served modules.json | sha256 `3d98406946f0b563a96d38c66099bff4060b04f2fa250b7d2b7f801bc7f8a633` (4973 bytes) |
 | module | `modules/202611012309-apps.js` sha256 `fa01e012d81b32edf0287536e27a11075313dcd96d18c2409e21fb997bd0d481` (42561 bytes) |
-| data/apps.json | sha256 `9ade18cfdb582ac6d7beede7efe05906dfc6027d51d62b425211183ca6987fe7` (32460 bytes) |
-| data/elements.json | sha256 `28b8b2df02b5b7766ec31b2b04d14c5e7701f0198ab37b7f49c6d85a17184c02` (165584 bytes) |
+| data/apps.json | sha256 `027f6614745dae924a642d2c2f463b2dc5fc9f4eb11e2b08f4ab78e2ae9a80a5` (32936 bytes) |
+| data/elements.json | sha256 `e204cb414d38d4c174083f55a46a57179fd48b4c8ed8248a7ba0f995601964d5` (165622 bytes) |
 | data/graphs/overview.json | sha256 `124aa35e3eabafe15f3c90f82d1a38b7132fb7cdf23aba836a9757a84202df09` (6125 bytes) |
 | data/graphs/periodic-table.json | sha256 `b84820447a0f8d18687f48f409e2a5442bc66c7f8b71d7ff1a171ecc7dc53a0e` (509639 bytes) |
 | test.cjs | sha256 `16d9d8274fa480ab4b22c13baf8a4137a25dba342afcdba5c0ffdad031942999` |
@@ -62,7 +62,7 @@ Tester OPUS-7 (Opus team 7). Written by `test.cjs` at 2026-11-02T00:38:27.602Z; 
 
 ### Pixel 7
 
-- PASS M the loader admitted apps, nothing refused: `{"ready_s":23,"admitted":["kuiper-shell","line-card","layers","file","see-through","apps"],"refused":[]}`
+- PASS M the loader admitted apps, nothing refused: `{"ready_s":29,"admitted":["kuiper-shell","line-card","layers","file","see-through","apps"],"refused":[]}`
 - PASS A2 the bar keeps step 1's six titles; no bar title names apps: `{"buttons":["File","Edit","View","Scope","Wafer","About"],"all":["File","Edit","View","Scope","Wafer","About"]}`
 - PASS A2 FILE > Open an app (real tap) opens #ky-apps under the bar: `{"bar":{"top":0,"bottom":34,"left":0,"right":412,"height":34},"launcher":{"top":35,"bottom":826,"left":4,"right":408,"height":791}}`
 - PASS A2 34 rows, one per apps.json record (FAIL rows never hidden), every row >= 44 px: `{"rows":34,"min_h":71.4,"under44":[],"hidden":[],"states":{"":34}}`
@@ -74,17 +74,17 @@ Tester OPUS-7 (Opus team 7). Written by `test.cjs` at 2026-11-02T00:38:27.602Z; 
 - PASS A5 the readout names how many periodic-table nodes had no key (663 nodes, 2,481 edges): `{"line":"spider graphs: overview 15 of 15 edges drawn (15 as rings: both ends at one key), 0 of 16 nodes had no key · periodic-table 552 of 2,481 edges drawn, 412 of 663 nodes had no key","periodic":{"nodes":663,"keyed":251,"no_key":412,"keyed_by":{"element":206,"repository":45},"edges":2481,"drawn":552,"rings":0,"sha256":"b84820447a0f8d18687f48f409e2a5442bc66c7f8b71d7ff1a171ecc7dc53a0e","source":"stars@cbca125 blocks/graph.json (K1-redacted copy: 2 tokens)"}}`
 - PASS A4 card from the periodic-table panel: first line = line_text, second = block:<Sym> (3 elements): `{"rows":244,"cards":[{"sym":"block:Gc","open":true,"first":true,"second":true,"header_equal":true,"sym_span":"block:Gc","w1":"/* geo-core — the one distance primitive, and the earth model it stands on.","w2":"block:Gc","i1":"/* geo-core — the one distance primitive, and the earth model it stands on.","i2":"block:Gc","h":173.78125,"ok":true},{"sym":"block:x309","open":true,"first":true,"second":true,"header_equal":true,"sym_span":"block:x309","w1":"import csv","w2":"block:x309","i1":"import csv","i2":"block:x309","h":174.390625,"ok":true},{"sym":"block:x996","open":true,"first":true,"second":tr…`
 - PASS A5 the spider row opens the dashboard (same tab, its link): `{"landed":"https://github.com/Ventusltd/testcode/tree/d09c185c8dacbc5c73afb2b0d0d8dad40745a544/spider/20260914T143049Z-v5-linkify-frontdoor-brandfaithful/","link":"https://github.com/Ventusltd/testcode/tree/d09c185c8dacbc5c73afb2b0d0d8dad40745a544/spider/20260914T143049Z-v5-linkify-frontdoor-brandfaithful/","page":{"href":"https://github.com/Ventusltd/testcode/tree/d09c185c8dacbc5c73afb2b0d0d8dad40745a544/spider/20260914T143049Z-v5-linkify-frontdoor-brandfaithful/","title":"stub","history":6}}`
-- PASS A3 the See Through row navigates in the same tab to ../../see-through/ (200, title "See Through"): `{"requested":["http://127.0.0.1:8472/see-through/","http://127.0.0.1:8472/see-through/202611020012/"],"landed":"http://127.0.0.1:8472/see-through/202611020012/","want":"http://127.0.0.1:8472/see-through/","status":200,"title":"See Through","tabs":1}`
-- PASS A3 goBack() returns to the edition with no panel open: `{"url":"http://127.0.0.1:8472/editions/202611012135/","launcherOpen":false,"menuOpen":"","card":""}`
-- PASS A5 with data/graphs/* answered 404 the spider row is FAIL naming the file; lines OK; the wafer still draws: `{"spider":{"status":"FAIL","why":"data/graphs/overview.json HTTP 404","row":"FAIL · data/graphs/overview.json HTTP 404","disabled":false,"checked":true},"lines":"OK","wafer":{"litFraction":0.2366,"litPx":78285},"routed_404":["http://127.0.0.1:8472/editions/202611012135/data/graphs/overview.json","http://127.0.0.1:8472/editions/202611012135/data/graphs/periodic-table.json"]}`
+- PASS A3 the See Through row navigates in the same tab to ../../see-through/ (200, title "See Through"): `{"requested":["http://127.0.0.1:8470/see-through/","http://127.0.0.1:8470/see-through/202611020012/"],"landed":"http://127.0.0.1:8470/see-through/202611020012/","want":"http://127.0.0.1:8470/see-through/","status":200,"title":"See Through","tabs":1}`
+- PASS A3 goBack() returns to the edition with no panel open: `{"url":"http://127.0.0.1:8470/editions/202611012135/","launcherOpen":false,"menuOpen":"","card":""}`
+- PASS A5 with data/graphs/* answered 404 the spider row is FAIL naming the file; lines OK; the wafer still draws: `{"spider":{"status":"FAIL","why":"data/graphs/overview.json HTTP 404","row":"FAIL · data/graphs/overview.json HTTP 404","disabled":false,"checked":true},"lines":"OK","wafer":{"litFraction":0.2366,"litPx":78285},"routed_404":["http://127.0.0.1:8470/editions/202611012135/data/graphs/overview.json","http://127.0.0.1:8470/editions/202611012135/data/graphs/periodic-table.json"]}`
 - PASS A6 every step above ran with every off-origin request blocked (listed): `{"blocked":0,"sample":[]}`
-- PASS E zero pageerrors, zero console errors, zero failed same-origin requests on the edition: `{"pageerrors":[],"console":[],"failed_local":[],"see_through_console_listed_not_counted":0,"aborted_listed":22,"evidence_404_listed":["http://127.0.0.1:8472/editions/202611012135/LICENCES.md","http://127.0.0.1:8472/editions/202611012135/proof/android-journey.json"]}`
-- NOT EVALUATED E' the EVIDENCE files file.js rows HEAD are present (written by the integrator at assembly): `{"missing":["http://127.0.0.1:8472/editions/202611012135/LICENCES.md","http://127.0.0.1:8472/editions/202611012135/proof/android-journey.json"],"why":"--allow-missing-evidence: NOT EVALUATED (never a pass); team 6's rows, the integrator's files"}`
-- screenshots: launcher.png (154363 B), table-layer.png (101471 B), spider-layer.png (172497 B), element-card.png (37170 B)
+- PASS E zero pageerrors, zero console errors, zero failed same-origin requests on the edition: `{"pageerrors":[],"console":[],"failed_local":[],"see_through_console_listed_not_counted":0,"aborted_listed":22,"evidence_404_listed":["http://127.0.0.1:8470/editions/202611012135/proof/edition-sha256.txt","http://127.0.0.1:8470/editions/202611012135/proof/android-journey.json"]}`
+- NOT EVALUATED E' the EVIDENCE files file.js rows HEAD are present (written by the integrator at assembly): `{"missing":["http://127.0.0.1:8470/editions/202611012135/proof/edition-sha256.txt","http://127.0.0.1:8470/editions/202611012135/proof/android-journey.json"],"why":"--allow-missing-evidence: NOT EVALUATED (never a pass); team 6's rows, the integrator's files"}`
+- screenshots: launcher.png (154251 B), table-layer.png (101471 B), spider-layer.png (172497 B), element-card.png (37170 B)
 
 ### Galaxy S24
 
-- PASS M the loader admitted apps, nothing refused: `{"ready_s":21,"admitted":["kuiper-shell","line-card","layers","file","see-through","apps"],"refused":[]}`
+- PASS M the loader admitted apps, nothing refused: `{"ready_s":11,"admitted":["kuiper-shell","line-card","layers","file","see-through","apps"],"refused":[]}`
 - PASS A2 the bar keeps step 1's six titles; no bar title names apps: `{"buttons":["File","Edit","View","Scope","Wafer","About"],"all":["File","Edit","View","Scope","Wafer","About"]}`
 - PASS A2 FILE > Open an app (real tap) opens #ky-apps under the bar: `{"bar":{"top":0,"bottom":34,"left":0,"right":360,"height":34},"launcher":{"top":35,"bottom":767,"left":4,"right":356,"height":732}}`
 - PASS A2 34 rows, one per apps.json record (FAIL rows never hidden), every row >= 44 px: `{"rows":34,"min_h":71.4,"under44":[],"hidden":[],"states":{"":34}}`
@@ -96,31 +96,11 @@ Tester OPUS-7 (Opus team 7). Written by `test.cjs` at 2026-11-02T00:38:27.602Z; 
 - PASS A5 the readout names how many periodic-table nodes had no key (663 nodes, 2,481 edges): `{"line":"spider graphs: overview 15 of 15 edges drawn (15 as rings: both ends at one key), 0 of 16 nodes had no key · periodic-table 552 of 2,481 edges drawn, 412 of 663 nodes had no key","periodic":{"nodes":663,"keyed":251,"no_key":412,"keyed_by":{"element":206,"repository":45},"edges":2481,"drawn":552,"rings":0,"sha256":"b84820447a0f8d18687f48f409e2a5442bc66c7f8b71d7ff1a171ecc7dc53a0e","source":"stars@cbca125 blocks/graph.json (K1-redacted copy: 2 tokens)"}}`
 - PASS A4 card from the periodic-table panel: first line = line_text, second = block:<Sym> (3 elements): `{"rows":244,"cards":[{"sym":"block:Gc","open":true,"first":true,"second":true,"header_equal":true,"sym_span":"block:Gc","w1":"/* geo-core — the one distance primitive, and the earth model it stands on.","w2":"block:Gc","i1":"/* geo-core — the one distance primitive, and the earth model it stands on.","i2":"block:Gc","h":173.78125,"ok":true},{"sym":"block:x309","open":true,"first":true,"second":true,"header_equal":true,"sym_span":"block:x309","w1":"import csv","w2":"block:x309","i1":"import csv","i2":"block:x309","h":174.390625,"ok":true},{"sym":"block:x996","open":true,"first":true,"second":tr…`
 - PASS A5 the spider row opens the dashboard (same tab, its link): `{"landed":"https://github.com/Ventusltd/testcode/tree/d09c185c8dacbc5c73afb2b0d0d8dad40745a544/spider/20260914T143049Z-v5-linkify-frontdoor-brandfaithful/","link":"https://github.com/Ventusltd/testcode/tree/d09c185c8dacbc5c73afb2b0d0d8dad40745a544/spider/20260914T143049Z-v5-linkify-frontdoor-brandfaithful/","page":{"href":"https://github.com/Ventusltd/testcode/tree/d09c185c8dacbc5c73afb2b0d0d8dad40745a544/spider/20260914T143049Z-v5-linkify-frontdoor-brandfaithful/","title":"stub","history":6}}`
-- PASS A3 the See Through row navigates in the same tab to ../../see-through/ (200, title "See Through"): `{"requested":["http://127.0.0.1:8472/see-through/","http://127.0.0.1:8472/see-through/202611020012/"],"landed":"http://127.0.0.1:8472/see-through/202611020012/","want":"http://127.0.0.1:8472/see-through/","status":200,"title":"See Through","tabs":1}`
-- PASS A3 goBack() returns to the edition with no panel open: `{"url":"http://127.0.0.1:8472/editions/202611012135/","launcherOpen":false,"menuOpen":"","card":""}`
-- PASS A5 with data/graphs/* answered 404 the spider row is FAIL naming the file; lines OK; the wafer still draws: `{"spider":{"status":"FAIL","why":"data/graphs/overview.json HTTP 404","row":"FAIL · data/graphs/overview.json HTTP 404","disabled":false,"checked":true},"lines":"OK","wafer":{"litFraction":0.2284,"litPx":61186},"routed_404":["http://127.0.0.1:8472/editions/202611012135/data/graphs/overview.json","http://127.0.0.1:8472/editions/202611012135/data/graphs/periodic-table.json"]}`
+- PASS A3 the See Through row navigates in the same tab to ../../see-through/ (200, title "See Through"): `{"requested":["http://127.0.0.1:8470/see-through/","http://127.0.0.1:8470/see-through/202611020012/"],"landed":"http://127.0.0.1:8470/see-through/202611020012/","want":"http://127.0.0.1:8470/see-through/","status":200,"title":"See Through","tabs":1}`
+- PASS A3 goBack() returns to the edition with no panel open: `{"url":"http://127.0.0.1:8470/editions/202611012135/","launcherOpen":false,"menuOpen":"","card":""}`
+- PASS A5 with data/graphs/* answered 404 the spider row is FAIL naming the file; lines OK; the wafer still draws: `{"spider":{"status":"FAIL","why":"data/graphs/overview.json HTTP 404","row":"FAIL · data/graphs/overview.json HTTP 404","disabled":false,"checked":true},"lines":"OK","wafer":{"litFraction":0.2284,"litPx":61186},"routed_404":["http://127.0.0.1:8470/editions/202611012135/data/graphs/overview.json","http://127.0.0.1:8470/editions/202611012135/data/graphs/periodic-table.json"]}`
 - PASS A6 every step above ran with every off-origin request blocked (listed): `{"blocked":0,"sample":[]}`
-- PASS E zero pageerrors, zero console errors, zero failed same-origin requests on the edition: `{"pageerrors":[],"console":[],"failed_local":[],"see_through_console_listed_not_counted":0,"aborted_listed":22,"evidence_404_listed":["http://127.0.0.1:8472/editions/202611012135/LICENCES.md","http://127.0.0.1:8472/editions/202611012135/proof/android-journey.json"]}`
-- NOT EVALUATED E' the EVIDENCE files file.js rows HEAD are present (written by the integrator at assembly): `{"missing":["http://127.0.0.1:8472/editions/202611012135/LICENCES.md","http://127.0.0.1:8472/editions/202611012135/proof/android-journey.json"],"why":"--allow-missing-evidence: NOT EVALUATED (never a pass); team 6's rows, the integrator's files"}`
-- screenshots: galaxy-s24-launcher.png (130353 B), galaxy-s24-table-layer.png (86091 B), galaxy-s24-spider-layer.png (135054 B), galaxy-s24-element-card.png (35388 B)
+- PASS E zero pageerrors, zero console errors, zero failed same-origin requests on the edition: `{"pageerrors":[],"console":[],"failed_local":[],"see_through_console_listed_not_counted":0,"aborted_listed":22,"evidence_404_listed":["http://127.0.0.1:8470/editions/202611012135/proof/edition-sha256.txt","http://127.0.0.1:8470/editions/202611012135/proof/android-journey.json"]}`
+- NOT EVALUATED E' the EVIDENCE files file.js rows HEAD are present (written by the integrator at assembly): `{"missing":["http://127.0.0.1:8470/editions/202611012135/proof/edition-sha256.txt","http://127.0.0.1:8470/editions/202611012135/proof/android-journey.json"],"why":"--allow-missing-evidence: NOT EVALUATED (never a pass); team 6's rows, the integrator's files"}`
+- screenshots: galaxy-s24-launcher.png (130314 B), galaxy-s24-table-layer.png (86091 B), galaxy-s24-spider-layer.png (135054 B), galaxy-s24-element-card.png (35388 B)
 
-
-## How it was served and how to repeat it (tester's note, appended below the generated record)
-
-The integrator had not admitted `apps` yet (modules.json order hello, kuiper-shell, line-card), so the run used team 6's
-scratch-site method: `/tmp/nl010-opus/team-7/tester/mksite.py` builds `/tmp/nl010-opus/team-7/tester/site` (the
-kuiper-belt root symlinked; this edition's `data/` symlinked, so the data tested are the files in the repository;
-`modules/` copied; `index.html` = the integrator's live `index.html` (loader rev 3, sha256 above); `modules.json` =
-`handoff/04-loader/modules.json` plus records for kuiper-shell, line-card, layers, file, see-through, apps with their
-measured sha256). Team 3's `index.html.patch` does not apply to the integrator's index (2 of 6 hunks fail), so the run
-has none of its deletions. Served with `python3 -m http.server 8472 --bind 127.0.0.1` from the site folder.
-
-    KYPAGE=<edition>/index.html python3 /tmp/nl010-opus/team-7/tester/mksite.py
-    node handoff/07-apps/test.cjs http://127.0.0.1:8472/editions/202611012135/ <outdir> \
-      --devices "Pixel 7,Galaxy S24" --allow-missing-evidence --shots handoff/07-apps/img --testmd handoff/07-apps/TEST.md
-
-On the integrator's own snapshot drop `--allow-missing-evidence`: once proof/edition-sha256.txt, LICENCES.md and
-proof/android-journey.json exist, E' leaves the table and the verdict becomes a full PASS (exit 0).
-img/ (Pixel 7, CSS px): launcher.png (FILE > Open an app), table-layer.png (WAFER panel, periodic table REFUSED ·
-licence unsettled), element-card.png (block:Gc from the periodic-table panel: header = the line at key 47,018,556,351),
-spider-layer.png (spider graphs on, no panel over the wafer).
