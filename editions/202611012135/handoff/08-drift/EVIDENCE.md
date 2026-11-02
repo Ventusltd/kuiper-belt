@@ -68,15 +68,15 @@ Top level `{summary, bodies}`; `summary.bodies` 346, `on_wafer` 344, `verified` 
 | `repo` (346) | edition_belt.py:73 | drift.py:234 (the repositories), :285; module :209 card line |
 | `commit` (346) | edition_belt.py:73 | drift.py:293 `row['edition_commit'] = b['commit']`; module :209 `sha7(b.commit)` |
 | `path` (346) | edition_belt.py:73 | drift.py:291, :314 `git cat-file` `<head>:<path>` |
-| `line` (346) | edition_belt.py:73 | drift.py:292, :322 the SAME test at `line - 1` |
-| `key` (346; null for 2) | kb@018b46a tools/edition_keys.py:245 `rec['key'] = c['k0'] + before + (line - 1)` (law :12) | drift.py:289, :300 (null → UNVERIFIED); module :197 `H.keyPlace(b.key)` |
+| `line` (346) | edition_belt.py:73 | drift.py:292, :322-323 the SAME test at `line - 1` |
+| `key` (346; null for 2) | kb@018b46a tools/edition_keys.py:249 `rec['key'] = c['k0'] + before + (line - 1)` (law :12) | drift.py:289, :300 (null → UNVERIFIED); module :197 `H.keyPlace(b.key)` |
 | `on_wafer` (346) | edition_keys.py:179 (False), :193 (True) | drift.py:300 `b.get('on_wafer') is False` → UNVERIFIED "key not on the wafer" |
-| `line_text` (346; empty for 4) | edition_keys.py:246 `body.split(b'\n')[line - 1].decode('utf-8', 'replace').rstrip('\r')`, :247 | drift.py:302 (empty → UNVERIFIED), :320 `text = b['line_text']`, compared by :170-171 `line_at` (the same decode and rstrip) |
-| `lines_before` (346) | edition_keys.py:228 | drift.py `--check` P3 re-walks it at the edition commit for the 7 MOVED (0 disagreements) |
-| `quote`, `quote_check`, `quote_matches` (346), `quote_line`, `quote_key` (7) | edition_belt.py:77 (`quote[:160]`); edition_keys.py:248-264 | **never read** by drift.py (no fallback to `quote`, measured `grep -n quote tools/drift.py`: docstring only) |
+| `line_text` (346; empty for 4) | edition_keys.py:250 `text = body.split(b'\n')[line - 1].decode('utf-8', 'replace').rstrip('\r')`, :251 `rec['line_text'] = text` | drift.py:302 (empty → UNVERIFIED), :320 `text = b['line_text']`, compared by :170-171 `line_at` (the same decode and rstrip) |
+| `lines_before` (346) | edition_keys.py:230 `rec['lines_before'] = before` | drift.py `--check` P3 re-walks it at the edition commit for the 7 MOVED (0 disagreements) |
+| `quote`, `quote_check`, `quote_matches` (346), `quote_line`, `quote_key` (7) | edition_belt.py:77 (`quote[:160]`); edition_keys.py:252-268 | **never read** by drift.py (no fallback to `quote`: `grep -n quote tools/drift.py` matches only :4 and :370, both prose) |
 | `k0`, `wafer_row`, `commit_lines_wafer`, `repo_on_wafer` | edition_keys.py:193-194 | not read |
 | `repo_name_differs` (61, all kuiper-belt → `Kuiper-belt`) | edition_keys.py:195-196 | not read. The matching rule is drift.py:76-83 `tsv_name` (exact, then case-insensitive) |
-| `blob`, `blob_at_path`, `blob_lines`, `blob_matches_body`, `commit_lines_measured`, `verified`, `reason` | edition_belt.py:73; edition_keys.py:219-276 | not read |
+| `blob`, `blob_at_path`, `blob_lines`, `blob_matches_body`, `commit_lines_measured`, `verified`, `reason` | edition_belt.py:73; edition_keys.py:224-277 | not read |
 | `title, pattern, worker, finding, class, line_end, destination, open` | edition_belt.py:74-80 | not read |
 | `k, x, y, r, theta` | edition_belt.py:94 | module only (placement of the edition's own spark, through keys-min.json) |
 
@@ -206,7 +206,7 @@ head the drift measured (verdict section L).
 ## H. The seven `summary.quote_not_at_line` rows of keys.json
 
 From keys.json `summary.quote_not_at_line` (written by kb@018b46a tools/edition_keys.py:285-289). The quote checker
-(:248-264) found the finding's quoted first line one line below `line` in all seven. Quotes come from `git show
+(:252-268) found the finding's quoted first line one line below `line` in all seven. Quotes come from `git show
 <commit>:<path>` at the edition commit.
 
 | # | repo path:line (key) | `line_text` = the line at `line` | the line at `quote_line` (quote_key) | drift class |
@@ -286,8 +286,8 @@ No hook is used that is not in `requires`. Engine lines at kb@96736f5 editions/2
 
 Copied constants and idioms, at kb@0cd7910 editions/202611012135/index.html (patched page): :220-221 commit records
 `{ unix, lines, repo, sha, gap, k0 … }`, `c.k1 = k`; :742 `const ED_TAP_TOUCH = 24, ED_TAP_MOUSE = 9, ED_SLOP = 10;`
-(module :30); :709 `const ED_Z = 14, …`; :256 `refuse('../../cosmos/wafer.tsv did not load. The wafer will not invent its
-keys.')` (module NOLOAD :28 copies its form). Optional APIs: kb@0cd7910 modules/202611012143-line-card.js:126 `function
+(module :31); :709 `const ED_Z = 14, …`; :256 `refuse('../../cosmos/wafer.tsv did not load. The wafer will not invent its
+keys.')` (module NOLOAD :30 copies its form). Optional APIs: kb@0cd7910 modules/202611012143-line-card.js:126 `function
 show(b, o) {`, :140 `state.last = { header: header(b), key: keyText(b), k: b.key };`; modules/202611012141-layers.js:29
 `FORMATS` (no `kuiper.drift.v1` yet: REQUESTS item 2), :119 `function register(layer) {`, :122 the throw `layer … not in layers.json`.
 The step: neural-link FIXES/NL-010/ROADMAP.md:589-648; team-4/STEPS.md:233-352.

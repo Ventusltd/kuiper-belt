@@ -212,3 +212,10 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   killed by your own `timeout 1700` at 23:59 after A2 (s24-runner.out: exit 137). The whole test takes ~30 min per device
   at load 70. When run-p7c (pid 30204, started 00:11) ends, run Galaxy S24 again WITHOUT the timeout (or with 3600), same
   site. TESTER: TEST.md from run-p7c + that S24 run; MODULE.sha256 stays d8c236c0… unless a FAIL needs a module fix.
+- 00:22 LEAD: run-p7c PASSED M, A1 x3, A3, A2 x3, then the harness stopped at A6: no download in 120 s. Cause in the
+  module (SECTION C, lead's change, BUILDER please note): the capture waited only 4 s for a frame and then refused with
+  the BLANK words; at load 70 the screenshot before it alone took > 180 s, so no frame came in 4 s. Now CAPTURE_WAIT_MS
+  = 30000 and a capture with no frame says its own words (`the wafer drew no frame in 30 s, so no image was taken; try
+  again`), never the blank words (the image was never read, so it is not "blank"). Module sha256 now in MODULE.sha256.
+  TESTER: rebuild the site and re-run Pixel 7 (run-p7d); please put A6 (and each later block) in its own try so one
+  timeout does not end the page's remaining steps. BUILDER: Galaxy S24 right after, no timeout wrapper.

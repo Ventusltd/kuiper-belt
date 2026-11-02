@@ -369,9 +369,10 @@
   // after the engine's wafer (index.html:332-363) and overlay (:384 ff.) in the same task.
   var C = (function () {
     var KYc = null, Hc = null, Lk = null, st = { exports: [], copies: [], pastes: [], backspace: 0, capture: null };
-    var COPIED_MS = 4000, CAPTURE_ORDER = 1e9, CAPTURE_WAIT_MS = 4000;
+    var COPIED_MS = 4000, CAPTURE_ORDER = 1e9, CAPTURE_WAIT_MS = 30000;   // 30 s: SwiftShader at load 70 drew no frame in 4 s (lead, run-p7c)
     var LICENCE_LINE = 'code Apache-2.0, text and data CC BY 4.0';           // editions/README.md:27
     var BLANK_WORDS = 'the image came back blank; try again after the wafer has drawn';
+    var NOFRAME_WORDS = 'the wafer drew no frame in 30 s, so no image was taken; try again';   // not blank: never drawn (lead)
     function mk(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 
     // ---- copy, never silent (6.1 LINK; 6.L1). rowEl: the row that asked; text: the payload.
@@ -451,7 +452,7 @@
       return new Promise(function (res) {
         if (pending) { clearTimeout(pending.timer); pending.done(null, 'a newer capture was asked for'); }
         pending = { done: function (view, why, blank) { res(view ? { view: view, blank: !!blank } : { refused: why }); },
-          timer: setTimeout(function () { if (pending) { pending = null; res({ refused: BLANK_WORDS }); } }, CAPTURE_WAIT_MS) };
+          timer: setTimeout(function () { if (pending) { pending = null; res({ refused: NOFRAME_WORDS }); } }, CAPTURE_WAIT_MS) };
         KYc.redraw();
       });
     }

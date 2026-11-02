@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// Apache-2.0 (kuiper-belt code), kuiper-belt@018b46a README.md:156-157; the LICENCES.md row is handoff/08-drift/LICENCE.txt.
 // test.cjs — Opus team 8, step 8 the drift: P4 on Android (ROADMAP.md step 8 "Acceptance test on Android"), in the
 // form of FIXES/NL-009/android-journey.cjs: Playwright, devices['Pixel 7'] and devices['Galaxy S24'] (360 px), real
 // touch (page.touchscreen.tap), zero console errors, a measured assertion per step, report.json, exit 0 only when every
