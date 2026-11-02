@@ -201,9 +201,9 @@ the row is in the code: hash forms (section 2), writer NEW :905-906, row NEW :87
 
 ## 8. Forbidden token and ci_check
 
-- Token `kuiper_belt`: `grep -rlI kuiper_belt --exclude-dir=.git .` over the whole kuiper-belt working tree: **0 files**
+- Token `[a name the K1 privacy check forbids]`: `grep -rlI [a name the K1 privacy check forbids] --exclude-dir=.git .` over the whole kuiper-belt working tree: **0 files**
   (so 0 in see-through/, the pointer, README and this hand-off folder). The rule itself is not written in
-  FIXES/NL-010/OPUS-BRIEF.md (`grep -n kuiper_belt` 0 lines in every FIXES/NL-010/*.md); it came with this agent's task.
+  FIXES/NL-010/OPUS-BRIEF.md (`grep -n [a name the K1 privacy check forbids]` 0 lines in every FIXES/NL-010/*.md); it came with this agent's task.
 - `python3 tools/ci_check.py` on the branch working tree (00:47 UTC): **RESULT: FAIL**, not from team 12:
   `K1 privacy: 725 tracked files scanned, 1 match a private digest` → `FAIL K1:
   editions/202611012135/handoff/07-apps/img/element-card.png` (team 7's screenshot, tracked since b9d514c). K2 agree,
