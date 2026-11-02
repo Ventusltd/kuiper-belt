@@ -1,3 +1,70 @@
+# TEST: revision 202611021026 (OPUS-5 lead), modules/202611021026-see-through.js on Kuiper Edition 11
+
+**Revision status: PASS on both phones (lead's runs, 2026-11-02 11:18 UTC).** Module sha256
+`e5756c7d42ddb0ab6874abb9597cf901673b1d2ac0d1c686e1edbb5468eb8491` (13,356 B), data/see-through.json sha256
+`193b94b90731ef07de6cae5514691ddb4ce6a9e16880a38069271e1b169383a7` (666,738 B). Printed before and after every run
+(edition-11/journey/*.load, edition-11/test-runs.load): unchanged. Under the 01:34Z rule a tester's PASS on these bytes is
+still needed before admission; this section is the lead's evidence, and the earlier tester's REFUSED below is on 87a88e48.
+
+## What the tester refused, and what changed
+
+| refusal (87a88e48) | this revision |
+|---|---|
+| card-details red on Pixel 7 (REVIEW issuecomment-6567342104): two card rows filled #card to its cap | writes nothing into #card. The test's `card` step proves it: 0 nodes of the module and 0 See Through links in a line card. journey card-details PASS on both phones |
+| entry at 393 px (381 vs 434 rule) | no entry of its own. The shell's entry (title from 434 px, strip narrower) stays the way in. journey see-through PASS. The test's `entry` step checks the form for the width |
+| spark: card hidden behind a stale gm-open | no card row, so this does not apply. The deep link is the star's chip, not a card row |
+| licence: CERN-OHL-S-2.0 module | Apache-2.0: the file reads keys and carries no See Through code. The rule is in the builder (CERN-OHL-S-2.0) |
+
+## Snapshot
+
+Byte copy of kuiper-belt main 94aa593 (git archive), editions/202611021017 plus three files: modules/202611021026-see-through.js,
+data/see-through.json, and modules.json (= edition-11/modules.json, sha256 5123fd41e5f4…, the see-through record appended last
+to order and modules). Base = main's folder unchanged (modules.json 226d9112415c…). Both are served from one http.server on 127.0.0.1.
+
+## journey-6.cjs (FIXES/NL-010/tools/controller/), one at a time, flags --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist
+
+| device | base (7 modules) | with see-through (8 modules) |
+|---|---|---|
+| Pixel 7 (412×839) | 16/16 PASS | 16/16 PASS, modules: 8 admitted, none refused |
+| Galaxy S24 (360×780) | 16/16 PASS | 16/16 PASS, modules: 8 admitted, none refused |
+
+New red steps: none. Page errors: 0 on every run. Console: 2 entries on each run, base and snapshot alike. Both are See
+Through's CARTO style (basemaps.cartocdn.com, ERR_TUNNEL_CONNECTION_FAILED, refused by the sandbox proxy) after the
+see-through step's navigation. No screenshot timed out. Reports: edition-11/journey/.
+
+## 202611021026-test.cjs (this folder), run on the snapshot
+
+`node 202611021026-test.cjs http://127.0.0.1:<port>/snap/editions/202611021017/ <out> --device "<device>"` (test sha256 f7a8191e…)
+
+| step | Pixel 7 | Galaxy S24 |
+|---|---|---|
+| load | PASS: 8 admitted, 0 refused | PASS |
+| row | PASS: "See Through stars" reads **OK · 5,800 of 5,800** | PASS |
+| data | PASS: sha256 = record, space 63,777,293,432 = KY.hooks.SPACE, edition 202611021017, 5,800 placed | PASS |
+| entry | PASS: one a[data-star=see-through] → ../../see-through/, strip at 412 | PASS: strip at 360 |
+| draw | PASS: cyan pixels 575 → 23,277 with the layer on | PASS: 556 → 17,817 |
+| tap | PASS: star 923 "Neepsend" → chip, href ../../see-through/#key=2944916524&space=63777293432&sub=Neepsend, 44 px, hit-testable | PASS (same star) |
+| open | PASS: same tab, see-through/202611020012/ with that hash, title "See Through", box "Neepsend" | PASS |
+| back | PASS: Edition 11, 8 admitted, #layers=editions,lines,see-through kept | PASS |
+| card | PASS: line card open, 0 module nodes | PASS |
+| errors | PASS: 0. externalUnreachable: the CARTO style and its echo | PASS |
+
+Reports: edition-11/test-*.report.json. Screens: edition-11/img/ (the chip on both phones, See Through landed at Neepsend).
+
+## edition_check (tools/edition_check.py --root <snapshot> editions/202611021017)
+
+No new failure. E6, E7 and E9 read the same on base and on snapshot. E7's remaining entries are drift's and apps' prose; see-through
+has none. E3 fails on the snapshot only because proof/edition-sha256.txt (the integrator's, written at cut) does not yet list the
+two new files or the new modules.json. edition-11/edition-check-{base,snap}.txt.
+
+## Not evaluated
+
+Real phones (these are emulated). Widths 393/430, landscape and desktop. A tester's run. Live map tiles (sandbox).
+
+---
+
+# Earlier revision (202611012141, sha256 87a88e48), kept as written
+
 # TEST: handoff/05-see-through/test.cjs (Opus team 5 tester)
 
 **Hand-off status: REFUSED** (OPUS-BRIEF.md "Roles": the tester refuses the hand-off until test.cjs passes on both

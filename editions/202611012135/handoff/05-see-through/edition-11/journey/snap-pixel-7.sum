@@ -1,0 +1,16 @@
+[Pixel 7] PASS load
+[Pixel 7] PASS modules — 8 admitted: hello, kuiper-shell, line-card, drift, apps, layers, file, see-through
+[Pixel 7] PASS edition-open
+[Pixel 7] PASS edition-close
+[Pixel 7] PASS lines-open
+[Pixel 7] PASS lines-filter
+[Pixel 7] PASS lines-pick
+[Pixel 7] PASS card-details
+[Pixel 7] PASS card-close
+[Pixel 7] PASS key-e-1
+[Pixel 7] PASS key-e-2
+[Pixel 7] PASS key-e-3
+[Pixel 7] PASS pinch-drag
+[Pixel 7] PASS spark-tap
+[Pixel 7] PASS whole-wafer
+[Pixel 7] PASS see-through — same-tab → http://127.0.0.1:8673/snap/see-through/202611020012/

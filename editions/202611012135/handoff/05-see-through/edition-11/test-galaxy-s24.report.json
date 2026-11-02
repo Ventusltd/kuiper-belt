@@ -1,0 +1,146 @@
+{
+ "device": "Galaxy S24",
+ "url": "http://127.0.0.1:8673/snap/editions/202611021017/",
+ "pass": true,
+ "steps": [
+  {
+   "id": "load",
+   "pass": true,
+   "measured": {
+    "order": [
+     "hello",
+     "kuiper-shell",
+     "line-card",
+     "drift",
+     "apps",
+     "layers",
+     "file",
+     "see-through"
+    ],
+    "admitted": [
+     "hello",
+     "kuiper-shell",
+     "line-card",
+     "drift",
+     "apps",
+     "layers",
+     "file",
+     "see-through"
+    ],
+    "refused": []
+   }
+  },
+  {
+   "id": "row",
+   "pass": true,
+   "measured": {
+    "dom": "OK · 5,800 of 5,800",
+    "status": "OK",
+    "why": "5,800 of 5,800",
+    "placed": 5800,
+    "total": 5800,
+    "label": "See Through stars"
+   }
+  },
+  {
+   "id": "data",
+   "pass": true,
+   "measured": {
+    "sha256": "193b94b90731ef07de6cae5514691ddb4ce6a9e16880a38069271e1b169383a7",
+    "record": "193b94b90731ef07de6cae5514691ddb4ce6a9e16880a38069271e1b169383a7",
+    "space": 63777293432,
+    "SPACE": 63777293432,
+    "edition": "202611021017",
+    "stars": 5800,
+    "unplaced": 0,
+    "registered": "yes"
+   }
+  },
+  {
+   "id": "entry",
+   "pass": true,
+   "measured": {
+    "n": 1,
+    "href": "../../see-through/",
+    "target": null,
+    "form": "strip",
+    "w": 360
+   }
+  },
+  {
+   "id": "draw",
+   "pass": true,
+   "measured": {
+    "on": true,
+    "cyanBefore": 556,
+    "cyanAfter": 17817
+   }
+  },
+  {
+   "id": "tap",
+   "pass": true,
+   "measured": {
+    "star": 923,
+    "name": "Neepsend",
+    "want": "../../see-through/#key=2944916524&space=63777293432&sub=Neepsend",
+    "chip": {
+     "href": "../../see-through/#key=2944916524&space=63777293432&sub=Neepsend",
+     "text": "SEE THROUGH ›Neepsend · key 2,944,916,524",
+     "h": 44,
+     "top": 42,
+     "left": 8,
+     "right": 352,
+     "hit": true,
+     "x": 180,
+     "y": 64
+    }
+   }
+  },
+  {
+   "id": "open",
+   "pass": true,
+   "measured": {
+    "url": "http://127.0.0.1:8673/snap/see-through/202611020012/#key=2944916524&space=63777293432&sub=Neepsend",
+    "title": "See Through",
+    "box": "Neepsend"
+   }
+  },
+  {
+   "id": "back",
+   "pass": true,
+   "measured": {
+    "url": "http://127.0.0.1:8673/snap/editions/202611021017/#key=2944916462&layers=editions,lines,see-through",
+    "admitted": [
+     "hello",
+     "kuiper-shell",
+     "line-card",
+     "drift",
+     "apps",
+     "layers",
+     "file",
+     "see-through"
+    ]
+   }
+  },
+  {
+   "id": "card",
+   "pass": true,
+   "measured": {
+    "shown": true,
+    "owned": 0,
+    "seeLinks": 0
+   }
+  },
+  {
+   "id": "errors",
+   "pass": true,
+   "measured": {
+    "errors": [],
+    "externalUnreachable": [
+     "basemaps.cartocdn.com net::ERR_TUNNEL_CONNECTION_FAILED",
+     "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED"
+    ]
+   }
+  }
+ ]
+}

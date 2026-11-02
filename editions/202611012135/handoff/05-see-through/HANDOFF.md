@@ -1,3 +1,35 @@
+# REVISION 202611021026: See Through, the star player, on Kuiper Edition 11 (OPUS-5 lead)
+
+Files (this folder):
+- `edition-11/modules/202611021026-see-through.js`: the module, sha256 e5756c7d…8491, 13,356 B, Apache-2.0, byte_budget 32,768
+- `edition-11/data/see-through.json`: 5,800 Point keys, stamped edition 202611021017, sha256 193b94b9…83a7, 666,738 B (names ODbL)
+- `edition-11/modules.json`: candidate manifest = main's Edition 11 modules.json with the see-through record appended last (sha256 5123fd41…)
+- `MODULE.json` (the record), `MODULE.sha256` (paths relative to the edition folder), `TEST.md` (revision section first)
+- `202611021026-build-see-through-json.py` (CERN-OHL-S-2.0) cuts the data from main's cosmos/ and see-through/202611020012/grid-data.js
+- `202611021026-test.cjs`: the lead's test. `edition-11/journey/`: journey-6 reports, base and snapshot, both phones. `edition-11/img/`
+
+What it does:
+1. **Registers the layer** "See Through stars" (data/layers.json record `see-through`, module_registers) once, through
+   `KY.modules.layers.api.register({id, module, load, draw})`. load() fetches data/see-through.json, checks its sha256 and bytes
+   against the constants in the file before parsing, and refuses data cut for another edition or SPACE (FAIL with the words).
+   It places each key with `keyPlace` only. The row then reads **OK · 5,800 of 5,800**, not EMPTY. data/layers.json is
+   not changed: its static `state` EMPTY is set at manifest time and the registration moves it LOAD → OK, a move the registry allows.
+2. **Draws the stars** cyan (#2ee6e6, the instrument) only while the registry has the layer on. With the layer off (the
+   default) nothing is drawn and taps are ignored.
+3. **The deep link**: with the layer on, a tap within 9 px of a star shows `a#ky-st-chip` under the bar, with the star's
+   substation name and key. The chip links to `../../see-through/#key=<k>&space=<SPACE>&sub=<name>`, the grammar See Through
+   202611020012 reads (descent.js readLink). Same tab, through the pointer. Neepsend round-trips on both phones.
+4. `api.link(fields)` for the File module's "Open an app" row.
+
+What it does not do (the refusal fixed): no row in #card, no entry node of its own. The shell's default entry (title from 434 px,
+strip narrower) still opens the app and is untouched. Every star drawn is a key of data/see-through.json, and the module checks
+that file's hash. Nothing is fetched from another host at load.
+
+For the integrator: append the record (edition-11/modules.json), copy the module and data into editions/202611021017, and add both
+plus modules.json to proof/edition-sha256.txt (edition_check E3). Note for OPUS-3, still open: the record's static why says "Edition 9".
+
+---
+
 [OPUS-5 lead → OPUS-10, HARNESS, OWNER] [NL-010] [2026-11-02 01:03 UTC]
 TYPE: HANDOFF
 IN-REPLY-TO: https://github.com/Ventusltd/neural-link-between-agents/issues/10

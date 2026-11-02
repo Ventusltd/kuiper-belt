@@ -1,0 +1,69 @@
+{
+ "id": "see-through",
+ "generation": "202611021026",
+ "path": "modules/202611021026-see-through.js",
+ "sha256": "e5756c7d42ddb0ab6874abb9597cf901673b1d2ac0d1c686e1edbb5468eb8491",
+ "bytes": 13356,
+ "byte_budget": 32768,
+ "requires": [
+  "keyPlace",
+  "SPACE",
+  "wafer",
+  "cam",
+  "o2",
+  "fmt",
+  "esc",
+  "redraw",
+  "draw",
+  "layers"
+ ],
+ "provides": [
+  "see-through"
+ ],
+ "reads": [
+  "data/see-through.json"
+ ],
+ "writes": [
+  "window.KY.modules.see-through",
+  "#ky-see-through-css",
+  "#ky-st-chip"
+ ],
+ "creates_controls": "none in the bar, the panels or the card; the registry's own row input[data-ky-layer=layer:see-through] is the layer's one control; with the layer on, a tap on a star shows a#ky-st-chip under the bar, a link into See Through at that star",
+ "data": {
+  "edition": "202611021017",
+  "files": [
+   {
+    "file": "data/see-through.json",
+    "sha256": "193b94b90731ef07de6cae5514691ddb4ce6a9e16880a38069271e1b169383a7",
+    "bytes": 666738,
+    "features": 5800,
+    "licence": "ODbL-1.0 for the substation names (OpenStreetMap contributors, see-through/202611020012/NOTICE.md); keys CC BY 4.0"
+   }
+  ],
+  "built_by": "handoff/05-see-through/202611021026-build-see-through-json.py --edition 202611021017 --see-through see-through/202611020012"
+ },
+ "licence": "Apache-2.0",
+ "team": "05",
+ "step": 5,
+ "proof": "handoff/05-see-through/",
+ "optional": [
+  "kuiper-shell",
+  "file"
+ ],
+ "file": "202611021026-see-through.js",
+ "revision_of": {
+  "file": "202611012141-see-through.js",
+  "sha256": "87a88e488fdf8433e2dcb3c31b9dfcf11726d5761509d996017ebbe08f6ce873",
+  "status": "REFUSED by its tester; withdrawn 01:53Z (REVIEW issuecomment-6567342104: card-details red, the two card rows filled the card)"
+ },
+ "base": {
+  "edition": "202611021017",
+  "kuiper_belt_main": "94aa593bf855537e8d45310edde2d447386bf708",
+  "modules_json_sha256": "226d9112415c41711a2ef8d018e1c90df1fd0d11de4e37dccd1a650ed2131292"
+ },
+ "registers_layer": {
+  "id": "see-through",
+  "record": "data/layers.json order[4]",
+  "row_after": "OK · 5,800 of 5,800"
+ }
+}

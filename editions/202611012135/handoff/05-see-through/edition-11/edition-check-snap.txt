@@ -1,0 +1,13 @@
+edition_check: editions/202611021017 (repository snap)
+E1 PASS: 10 script blocks in 10 editions/*/index.html and 8 modules/*.js parse (node --check)
+E2 PASS: 202611021017: 7 records hash as recorded, 1 reference(s), 8 of 8 files in modules/ admitted
+E3 FAIL: editions/202611021017: modules.json sha256 5123fd41e5f4, listed 226d9112415c; editions/202611021017: modules/202611021026-see-through.js not in proof/edition-sha256.txt; editions/202611021017: data/see-through.json not in proof/edition-sha256.txt
+E4 PASS: the pointer names 202611021017 in its three places, folder and proof exist; forwards location.search + location.hash
+E5 PASS: 202611021017 keys.json byte-identical to editions/202611020825 (1c293c33...)
+E6 FAIL: 202611021017: reference modules/202611012145-loader.js: hook-table block differs from index.html
+E7 FAIL: 202611021017: drift: writes #hud (one DRIFT line per frame, appended), no literal in the file; 202611021017: apps: writes #card (element card), no literal in the file; 202611021017: apps: writes history entry {kyApps}, no literal in the file; 202611021017: apps: writes layers elements, spider (via KY.modules.layers.api.register), no literal in the file
+E8 PASS: 7 admitted modules parse and register exactly once
+E9 NOT EVALUATED: 202611021017: 21 of 21 clones the recorded heads need are not under /tmp/claude-0/st/srv (cvaa, data-centres-gb, data-grid-gb, data-gridatlas ...): drift not re-computed here
+NOT EVALUATED:
+  - E9: 202611021017: 21 of 21 clones the recorded heads need are not under /tmp/claude-0/st/srv (cvaa, data-centres-gb, data-grid-gb, data-gridatlas ...): drift not re-computed here
+RESULT: FAIL
