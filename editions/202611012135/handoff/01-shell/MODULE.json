@@ -1,9 +1,9 @@
 {
  "id": "kuiper-shell",
- "generation": "202611020154",
- "path": "modules/202611020154-kuiper-shell.js",
- "sha256": "ef315e9bfa6af2a8d9196859cb65bb2c612be8ec48b1a832cbb1241676624eef",
- "bytes": 47604,
+ "generation": "202611020220",
+ "path": "modules/202611020220-kuiper-shell.js",
+ "sha256": "1755fde2103a74b7114741751c9f5995166a7e2ded0f1750dee2688defc19220",
+ "bytes": 48579,
  "byte_budget": 65536,
  "requires": [
   "safeBox",

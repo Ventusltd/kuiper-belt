@@ -1,4 +1,4 @@
-/* kuiper module kuiper-shell, generation 202611020154 (UTC), Apache-2.0 (kuiper-belt).
+/* kuiper module kuiper-shell, generation 202611020220 (UTC), Apache-2.0 (kuiper-belt).
  * NOTICE: the bar's CSS values and the menu structure are copied from GridAtlas, Copyright 2026 Ventus Ltd,
  * Apache-2.0 (gridatlas@5ec7f62 LICENSE:1-4, NOTICE:1-12), atlas/modules/202609031958-menu-bar.js, keys beside
  * each value below. "Ventus" and "Cables & Connectivity(R)" are the mark of Ventus Ltd, used by its owner's
@@ -27,8 +27,9 @@
  *  history has one owner per entry. The page owns the card's entry; the shell never causes a popstate while a card is
  *  shown and steps over its own dead entries (closeAll, stepOver, onPop). Edition 4's #lines #lyAll #lyFocus #lyFind
  *  are no longer required; SCOPE's focus is a proxy for whichever #lyFocus exists.
- * Generation 202611020154 (2 Nov 2026) = revision 3 of 202611012143, a new stamped file because 202611012143 was published
- * with Edition 5's files; the earlier file is never edited. Revision 3: a panel reopened while the shell's own back() is on its way gets a fresh
+ * Generation 202611020220 (2 Nov 2026) = revision 3 of 202611012143, a new stamped file because 202611012143 was published
+ * with Edition 5's files; the earlier file is never edited. (A first cut, 202611020154, was never handed off or listed.)
+ * Revision 3: a panel reopened while the shell's own back() is on its way gets a fresh
  *  entry when that pop arrives (pendingBack), so the next back gesture closes it and never leaves the page. The star
  *  strip steps aside while a card is shown (it sat under a pinch's finger when lifted above the card), and the clock of
  *  the flanks does no work while the flanks are hidden.
@@ -39,7 +40,7 @@
  */
 (function () {
   'use strict';
-  var ID = 'kuiper-shell', GEN = '202611020154', SCHEMA = 'kuiper.menu-bar.v1';
+  var ID = 'kuiper-shell', GEN = '202611020220', SCHEMA = 'kuiper.menu-bar.v1';
   var BAR_ID = 'kuiper-menu-bar', STYLE_ID = 'kuiper-menu-bar-css', FAIL_ID = 'kuiper-menu-bar-failure';
   var STRIP_ID = 'kuiper-star-strip';
   // the six names (C5; gridatlas@5ec7f62 menu-bar.js:31 ['File','Edit','View','Scope','Grid','About'])
@@ -135,13 +136,15 @@
       'text-align:left;color:#cfeef6;font:11px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;z-index:2}',
       B + ' .gm-panel[hidden]{display:none!important}',
       B + ' .gm-side-right .gm-panel{left:auto;right:0}',
-      B + ' .gm-panel button,' + B + ' .gm-panel [role="button"],' + B + ' .gm-panel a.gm-row{',
+      // rev 3: the row look applies to the shell's own rows only (direct children of a panel), never to a module's
+      // content mounted in a named group (Opus 3's #layers rows are div.ln[role=button]; measured: flexed into columns)
+      B + ' .gm-panel>button,' + B + ' .gm-panel>[role="button"],' + B + ' .gm-panel>a.gm-row{',
       'display:flex;align-items:center;width:100%;min-height:44px;box-sizing:border-box;',
       'position:static!important;inset:auto!important;transform:none!important;margin:0 0 3px;',
       'padding:7px 10px;border:0;border-radius:2px;background:transparent;color:#cfeef6;',
       'font:11px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;text-align:left;',
       'letter-spacing:.03em;text-transform:none;cursor:pointer;text-decoration:none}',
-      '@media (hover:hover){' + B + ' .gm-panel button:hover,' + B + ' .gm-panel [role="button"]:hover,' + B + ' .gm-panel a.gm-row:hover{',
+      '@media (hover:hover){' + B + ' .gm-panel>button:hover,' + B + ' .gm-panel>[role="button"]:hover,' + B + ' .gm-panel>a.gm-row:hover{',
       'background:rgba(80,220,240,.14);color:#fff}}',
       B + ' .gm-panel .gm-hint{margin-left:auto;padding-left:10px;color:#6fa2ae}',
       B + ' .gm-layer-group{margin:5px 0 2px;padding:6px 8px 3px;border-top:1px solid #19343b;color:#6fa2ae;',
@@ -158,11 +161,11 @@
       B + ' .gm-panel #hud{white-space:pre-line;color:#8fb3bd;font-size:11px;line-height:1.55}',
       B + ' .gm-panel #top #sub{max-height:none!important;overflow:visible!important;margin-top:4px}',
       B + ' .gm-panel #foot .long{display:inline!important}',
-      B + ' .gm-panel #linesctl{display:flex;flex-direction:column;align-items:stretch;gap:3px}',
-      B + ' .gm-panel #linesctl label{display:flex;align-items:center;gap:10px;min-height:44px;padding:7px 10px;cursor:pointer}',
-      B + ' .gm-panel #linesctl input[type=checkbox]{width:20px;height:20px;margin:0;accent-color:#2ee6e6}',
-      B + ' .gm-panel #lyFind{min-height:44px;box-sizing:border-box;width:100%;font:12px ui-monospace,monospace}',
-      B + ' .gm-panel #lineslist .ln{min-height:44px;box-sizing:border-box}',
+      B + ' .gm-panel #lines #linesctl{display:flex;flex-direction:column;align-items:stretch;gap:3px}',
+      B + ' .gm-panel #lines #linesctl label{display:flex;align-items:center;gap:10px;min-height:44px;padding:7px 10px;cursor:pointer}',
+      B + ' .gm-panel #lines #linesctl input[type=checkbox]{width:20px;height:20px;margin:0;accent-color:#2ee6e6}',
+      B + ' .gm-panel #lines #lyFind{min-height:44px;box-sizing:border-box;width:100%;font:12px ui-monospace,monospace}',
+      B + ' .gm-panel #lines #lineslist .ln{min-height:44px;box-sizing:border-box}',
       // the star strip, bottom-left, 44 px (GridAtlas's phone chips: chipStaysOnMap MB:1521-1552; live twin in the cartridge from :5870)
       '#' + STRIP_ID + '{position:fixed;left:calc(8px + env(safe-area-inset-left,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));',
       'z-index:10019;display:flex;height:44px;box-sizing:border-box;background:rgba(4,10,13,.95);border:1px solid rgba(80,220,240,.3);',
@@ -311,6 +314,13 @@
     // the back gesture
     addEventListener('popstate', onPop);
     addEventListener('resize', measure);
+    // rev 3: a text field focused inside a panel (the WAFER filter) is scrolled to the panel's top, so the field and the
+    // first rows under it are on screen (the on-screen keyboard takes the bottom; journey step lines-filter)
+    bar.addEventListener('focusin', function (e) {
+      var t = e.target, p = t && t.closest && t.closest('.gm-panel');
+      if (!p || !/^(INPUT|TEXTAREA)$/.test(t.tagName) || /^(checkbox|radio|button)$/i.test(t.type || '')) return;
+      setTimeout(function () { var pr = p.getBoundingClientRect(), r = t.getBoundingClientRect(); if (r.top - pr.top > 8) p.scrollTop += r.top - pr.top - 8; }, 0);
+    });
     // a system font scale changes the titles' size without a resize: the overflow rule follows the measured widths
     try { var ro = new ResizeObserver(function () { measure(); }); [].forEach.call(bar.querySelectorAll('.gm-title,.ventus-brand'), function (n) { ro.observe(n); }); } catch (e) {}
     // a tap on the bar, a panel or the strip never reaches Edition 4's window pointerup spark-picker (index.html:685-689)

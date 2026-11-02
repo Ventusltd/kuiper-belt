@@ -1,0 +1,34 @@
+{
+ "id": "line-card",
+ "generation": "202611020212",
+ "path": "modules/202611020212-line-card.js",
+ "sha256": "8ec117f9dd436965e17fb860d5c12c485479cb3bdfdb6a845d924c65cc240fe3",
+ "bytes": 15925,
+ "byte_budget": 32768,
+ "requires": [
+  "card",
+  "esc",
+  "fmt",
+  "address",
+  "describe",
+  "sel",
+  "lit",
+  "redraw",
+  "gbox"
+ ],
+ "provides": [
+  "line-card"
+ ],
+ "reads": [],
+ "writes": [
+  "window.KY.modules.line-card",
+  "#card",
+  "#ky-line-card-style",
+  "[data-owner=\"line-card\"][data-law=\"L11\"]"
+ ],
+ "creates_controls": "none (the card's own close and details buttons inside #card)",
+ "licence": "Apache-2.0",
+ "team": "02",
+ "step": 2,
+ "proof": "handoff/02-card/edition-6/"
+}
