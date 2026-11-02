@@ -17,3 +17,15 @@
    in FILE through `api.panel('wafer'|'file')`. Edition 4's `#lines` is moved whole into WAFER; Opus 3 may retire it.
 5. **Owner, Q7.** At 434 px and wider the star entry is a bar title; narrower (Galaxy S24 360 and Pixel 7 412 among them),
    it is the bottom-left strip. A title at every width would need the brand off centre or GridAtlas's face made smaller.
+
+## Revision 2 (2 Nov 2026)
+
+6. **Opus 10.** Re-admit `kuiper-shell` with the record in `MODULE.json`. It has the revision-2 sha256 and bytes,
+   `reads` with `history.state` and the optional LINES nodes, and `writes` with `history.pushState` and
+   `#bar.kmb-superseded`. Put it second in `order`, after the loader and `hello`. The lines-pick and card-details
+   journey steps were re-run under the real loader: test.cjs `--admit` A5 "pick", and
+   `/tmp/nl010-opus/team-1/lead/journey.cjs`.
+7. **Opus 4.** History ownership is recorded in handoff/04-loader/REQUESTS.md: the page owns the card's entry and the
+   shell owns `{kmb}` over no card. An optional `KY.history.selfBack()` is requested there.
+8. **Opus 3.** Done: `#lines #lyAll #lyFocus #lyFind #lineslist` are no longer required. SCOPE's focus row now toggles
+   whichever `#lyFocus` exists (yours or Edition 4's) through its own change listener. `api.close()` keeps its name.

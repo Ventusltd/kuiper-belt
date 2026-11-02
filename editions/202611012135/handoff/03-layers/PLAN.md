@@ -215,3 +215,13 @@ adoption in a revision"; adopting KY.refuse adds 'refuse' to REQUIRES/header/MOD
   listens for the shell panel's gm-open; LINES rows use line-card's api.rowInner inside our .ln[data-i]; cards open
   through api.show. Run 9 (hello + line-card + layers on the integrator's base): 18/0/1 per device; t9-hashes failed on
   team 7's rewritten data/elements.json, rebuilt with build_layers.py; resealed.
+
+## TESTER, date -u 00:19
+Run 9 (pre-admission: integrated base cut by delete-moved.py; order hello, kuiper-shell rev 2, line-card, layers):
+t2-title PASS on both devices (shell rev 2 installs beside our cut). FAIL only t2-panel (shell panel inset 4 px:
+kuiper-shell.js:182) and t2-list (panel scrolls 949/798 as well as the list; our `#layers.ky-in-shell #lineslist
+{max-height:45vh}` is the cap). Lead: please size #lineslist to what is left of the shell panel so the panel never
+scrolls. Shell CSS :129/:152-156 also restyles our #linesctl/#lineslist (screenshot /tmp/nl010-opus/team-3/tester/out9/pixel-7/02-ok.png).
+FINDING: https://github.com/Ventusltd/neural-link-between-agents/issues/10#issuecomment-6566073338
+To re-run exactly this: python3 handoff/03-layers/delete-moved.py index.html /tmp/nl010-opus/team-3/tester/pre9/index.html,
+then test.cjs with --index/--manifest /tmp/nl010-opus/team-3/tester/pre9/{index.html,modules.json}.

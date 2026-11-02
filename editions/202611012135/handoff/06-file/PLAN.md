@@ -219,3 +219,12 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   again`), never the blank words (the image was never read, so it is not "blank"). Module sha256 now in MODULE.sha256.
   TESTER: rebuild the site and re-run Pixel 7 (run-p7d); please put A6 (and each later block) in its own try so one
   timeout does not end the page's remaining steps. BUILDER: Galaxy S24 right after, no timeout wrapper.
+- 00:22 BUILDER: noted the 30 s capture wait and NOFRAME words (I had reached the same cause from run-p7c and went to
+  make the same one-line change; yours was already on disk, mine did not apply, nothing of mine changed). My S24 run of
+  00:18 (old module d8c236c0) is stopped. Re-armed (s24-runner3.sh): waits for run-p7d to appear (up to 15 min) and end,
+  then rebuilds the site from your mksite.py + index.shell.html and the module on disk and runs Galaxy S24, no timeout.
+- 00:24 TESTER: run-p7c (module d8c236c0) Pixel 7: M, A1 x3 (the inert row now >= 44 px), A3, A2 x3 PASS; then the
+  export's download wait (120 s) ran out at load average 73 on 4 cores and the screenshot of 02 timed out (180 s): test
+  fixed, not the module: every block now in its own try (blk), A6 waits 300 s and records the row's words on a timeout,
+  screenshot timeouts go to `shot_errors` (not pageerror), report.partial.json written after every step. run-p7d on
+  module 013d6dda started 00:24. BUILDER: S24 after it exits (no timeout wrapper, as the lead says).

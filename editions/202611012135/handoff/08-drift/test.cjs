@@ -60,6 +60,7 @@ function manifest(withDrift) {
   return m;
 }
 const MOVED = DRIFT.rows.filter(r => r.class === 'MOVED');
+const BASEBAR = {};
 const C = DRIFT.summary.counts;
 
 async function overlay(page, x, y, rad) {   // classify overlay pixels in a box (or the whole canvas)
@@ -90,10 +91,13 @@ async function run(devName, scen) {
   await sleep(7000);
   const ins = () => page.evaluate(() => { const m = window.KY && KY.modules && KY.modules.drift; return m && m.api ? m.api.inspect() : null; });
   const base = await overlay(page);
-  const bar = await page.evaluate(() => { const ts = [...document.querySelectorAll('#kuiper-menu-bar .gm-menu>.gm-title')]; const tops = new Set(ts.map(t => Math.round(t.getBoundingClientRect().top)));
-    const b = document.querySelector('#kuiper-menu-bar'); return { titles: ts.map(t => t.textContent.trim()), rows: tops.size, h: b ? Math.round(b.getBoundingClientRect().height) : null, sw: b ? b.scrollWidth : 0, cw: b ? b.clientWidth : 0 }; });
+  const barOf = () => page.evaluate(() => { const shell = !!document.querySelector('#kuiper-menu-bar');
+    const ts = shell ? [...document.querySelectorAll('#kuiper-menu-bar .gm-menu>.gm-title')] : [...document.querySelectorAll('#bar > *')].filter(e => e.getBoundingClientRect().width > 0);
+    const tops = new Set(ts.map(t => Math.round(t.getBoundingClientRect().top)));
+    const b = document.querySelector(shell ? '#kuiper-menu-bar' : '#bar'); return { bar: shell ? '#kuiper-menu-bar (the shell)' : '#bar (the page, no shell admitted)', shell, titles: ts.map(t => t.textContent.trim()), rows: tops.size, h: b ? Math.round(b.getBoundingClientRect().height) : null, sw: b ? b.scrollWidth : 0, cw: b ? b.clientWidth : 0 }; });
+  const bar = await barOf();
   const res = { device: devName, scenario: scen, base, bar };
-  if (scen === 'A') { ok('baseline wafer', base.green > 0, base.green + ' green overlay px, no drift module'); }
+  if (scen === 'A') { BASEBAR[devName] = bar; ok('baseline wafer', base.green > 0, base.green + ' green overlay px, no drift module; bar ' + bar.bar + ' ' + bar.rows + ' row(s): ' + bar.titles.join('|')); }
   if (scen === 'B') {
     let s = await ins();
     const hud = await page.evaluate(() => document.querySelector('#hud').textContent);
@@ -103,7 +107,12 @@ async function run(devName, scen) {
     ok('admitted', s && s.status === 'OK', s ? 'status ' + s.status + ' registry ' + s.registry + ' marks ' + s.marks : 'drift not in KY.modules: ' + JSON.stringify(await page.evaluate(() => window.__KUIPER_EDITION__ && window.__KUIPER_EDITION__.refused)));
     ok('readout five counts = drift.json', want.every(k => got[k] === C[k]) && Object.keys(got).length === 5 && dl.includes(DRIFT.summary.share_text),
       (dl || 'no DRIFT line') + ' · page ' + JSON.stringify(got) + ' · drift.json ' + JSON.stringify(C));
-    ok('bar one row', bar.rows === 1 && bar.sw <= bar.cw + 1, JSON.stringify(bar));
+    // the drift adds no bar title and does not change the bar (ROADMAP step 8 "no new bar title"; "the bar stays one
+    // row"): B's bar equals A's bar; with the shell admitted it is one row. Without the shell the page's own bar is two
+    // rows at 360-412 px before any module (ADMISSIONS.md row 0, NL-009 01-bar, team 1's to fix), so equality is the test.
+    const A0 = BASEBAR[devName];
+    ok('bar unchanged by drift' + (bar.shell ? ', one row' : ''), A0 && JSON.stringify(A0.titles) === JSON.stringify(bar.titles) && A0.rows === bar.rows && bar.sw <= bar.cw + 1 && (!bar.shell || bar.rows === 1),
+      'with drift ' + JSON.stringify(bar) + ' · without (A) ' + JSON.stringify(A0 && { titles: A0.titles, rows: A0.rows }));
     // every MOVED spark: amber in a 9x9 box of the overlay, and nothing of the page drawn over it (elementFromPoint)
     {
       const all = [];
@@ -146,22 +155,26 @@ async function run(devName, scen) {
       ok('tap within 9 px opens its card', s.taps === before + 1 && card2.open && card2.drift && card2.drift.includes(line), 'tap at +6,+6 (8.5 px): taps ' + before + '→' + s.taps + ', ' + JSON.stringify(card2.drift));
       await page.evaluate(() => { const c = document.querySelector('#card'); const x = c.querySelector('.lc-x,.cx'); if (x) x.click(); }); await sleep(1500);
     }
-    // the LINES filter "moved": the WAFER panel, real taps
-    const w = await page.evaluate(() => { const t = [...document.querySelectorAll('#kuiper-menu-bar .gm-title')].find(b => b.textContent.trim().toUpperCase() === 'WAFER'); if (!t) return null; const r = t.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
+    // the LINES filter "moved", reached the way a finger reaches it: the shell's WAFER title when the shell is admitted,
+    // else the page's own LINES button (ROADMAP step 8: "LINES gains a filter by class"); no programmatic panel opening
+    const w = await page.evaluate(() => { const t = document.querySelector('#kuiper-menu-bar') ? [...document.querySelectorAll('#kuiper-menu-bar .gm-title')].find(b => b.textContent.trim().toUpperCase() === 'WAFER')
+        : [...document.querySelectorAll('#bar button, #bar a, #bar [role=button]')].find(b => b.textContent.trim().toUpperCase() === 'LINES');
+      if (!t) return null; const r = t.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2, t.textContent.trim()]; });
     if (w) { await page.touchscreen.tap(w[0], w[1]); await sleep(2500); }
-    else await page.evaluate(() => KY.panels.set('wafer'));
     await page.evaluate(() => { const d = document.querySelector('#ky-drift'); if (d) d.scrollIntoView({ block: 'start' }); }); await sleep(800);
-    const chip = await page.evaluate(() => { const b = document.querySelector('#ky-drift .kd-c button[data-class=MOVED]'); if (!b) return null; const r = b.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2, r.height]; });
+    const chip = await page.evaluate(() => { const b = document.querySelector('#ky-drift .kd-c button[data-class=MOVED]'); if (!b) return null; const r = b.getBoundingClientRect(); const x = r.left + r.width / 2, y = r.top + r.height / 2;
+      const e = document.elementFromPoint(x, y); return [x, y, r.height, !!(e && b.contains(e)), e ? (e.id || e.className || e.tagName) : 'none', (b.closest('.gm-panel,[id]:not(#ky-drift)') || {}).id || ''];
+    });
     if (chip) { await page.evaluate(() => KY.modules.drift.api.filter('SAME')); await sleep(300);
       const c2 = await page.evaluate(() => { const r = document.querySelector('#ky-drift .kd-c button[data-class=MOVED]').getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
       await page.touchscreen.tap(c2[0], c2[1]); await sleep(1500); }
     const listed = await page.evaluate(() => [...document.querySelectorAll('#ky-drift .kd-l [data-row]')].map(b => ({ row: +b.dataset.row, cls: b.dataset.class })));
     const wantRows = DRIFT.rows.map((r, i) => r.class === 'MOVED' ? i : -1).filter(i => i >= 0);
-    ok('filter "moved" lists exactly the MOVED rows', chip && chip[2] >= 44 && listed.length === wantRows.length && listed.every((x, i) => x.cls === 'MOVED' && x.row === wantRows[i]),
-      'chip ' + (chip ? chip[2].toFixed(0) + ' px tall' : 'missing') + '; listed ' + listed.length + ' rows, drift.json MOVED ' + wantRows.length);
+    ok('filter "moved" lists exactly the MOVED rows', chip && chip[2] >= 44 && chip[3] && listed.length === wantRows.length && listed.every((x, i) => x.cls === 'MOVED' && x.row === wantRows[i]),
+      'opened by a tap on ' + (w ? '"' + w[2] + '"' : 'NOTHING (no WAFER title, no LINES button)') + '; chip ' + (chip ? chip[2].toFixed(0) + ' px tall, ' + (chip[3] ? 'on top' : 'COVERED by ' + chip[4]) + ', in ' + (chip[5] || 'body') : 'missing') + '; listed ' + listed.length + ' rows, drift.json MOVED ' + wantRows.length);
     if (HANDOFF && devName === 'Galaxy S24') await page.screenshot({ path: path.join(HERE, 'img', '2-filter-moved-Galaxy_S24.png'), scale: 'css', timeout: 180000 });
-    const bar2 = await page.evaluate(() => { const ts = [...document.querySelectorAll('#kuiper-menu-bar .gm-menu>.gm-title')]; return new Set(ts.map(t => Math.round(t.getBoundingClientRect().top))).size; });
-    ok('bar one row with the panel open', bar2 === 1, bar2 + ' row(s)');
+    const bar2 = await barOf();
+    ok('bar unchanged with the panel open', bar2.rows === bar.rows && (!bar2.shell || bar2.rows === 1), bar2.bar + ' ' + bar2.rows + ' row(s)');
   }
   if (scen === 'C') {
     const s = await ins();

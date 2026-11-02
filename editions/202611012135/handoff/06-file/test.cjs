@@ -57,6 +57,7 @@ fs.mkdirSync(OUT, { recursive: true });
   let allPass = true;
   for (const DEV of DEVICES) {
     const R = report.devices[DEV] = { steps: [], errors: [], expected_404: [], other_console: [] };
+    const blk = async (name, fn) => { try { await fn(); } catch (e) { step(name + ' (block threw)', false, String(e && e.message || e).split('\n').slice(0, 3).join(' ')); } };
     const step = (id, pass, measured) => { R.steps.push({ id, result: pass === null ? 'NOT EVALUATED' : (pass ? 'PASS' : 'FAIL'), measured }); if (pass === false) allPass = false;
       try { fs.writeFileSync(path.join(OUT, 'report.partial.json'), JSON.stringify(report, null, 1)); } catch (e) {} };   // a killed run keeps what it measured
     const slug = DEV.replace(/[^A-Za-z0-9]+/g, '_');
@@ -86,7 +87,7 @@ fs.mkdirSync(OUT, { recursive: true });
     async function settle(p, ms) { await p.waitForTimeout(ms || 7000); await p.waitForFunction(() => !KY.cam || true, null, { timeout: 5000 }).catch(() => {}); }
     const tapSel = async (p, sel) => { const el = p.locator(sel).first(); await el.scrollIntoViewIfNeeded(); const b = await el.boundingBox(); if (!b) throw new Error('no box for ' + sel); await p.touchscreen.tap(b.x + b.width / 2, b.y + Math.min(b.height / 2, 22)); return b; };
     const openMenu = async (p, n) => { const open = await p.evaluate(m => { const b = document.getElementById('kuiper-menu-bar'); return b && b.getAttribute('data-open') === m; }, n); if (!open) { await tapSel(p, '#kuiper-menu-bar .gm-menu[data-menu="' + n + '"] > .gm-title'); await p.waitForTimeout(900); } };
-    const shot = async (p, name) => { if (!SHOTS) return; fs.mkdirSync(SHOTS, { recursive: true }); await p.screenshot({ path: path.join(SHOTS, slug + '-' + name + '.png'), scale: 'css', timeout: 180000 }).catch(e => R.errors.push('screenshot ' + name + ': ' + e.message)); };
+    const shot = async (p, name) => { if (!SHOTS) return; fs.mkdirSync(SHOTS, { recursive: true }); await p.screenshot({ path: path.join(SHOTS, slug + '-' + name + '.png'), scale: 'css', timeout: 180000 }).catch(e => (R.shot_errors = R.shot_errors || []).push('screenshot ' + name + ': ' + e.message.split('\n')[0])); };
     const sel = p => p.evaluate(() => { const lc = KY.modules['line-card'].api.inspect(); const h = document.querySelector('#card .lc-h code');
       return { open: lc.open, index: lc.index, header: h ? h.textContent : null, hash: location.hash, zoom: KY.cam.zoom, card: KY.hooks.card.style.display }; });
     const placed = bodies.filter(b => b.on_wafer && b.verified && Number.isFinite(b.key) && b.key >= 0);
@@ -96,6 +97,7 @@ fs.mkdirSync(OUT, { recursive: true });
       const ed = await p.evaluate(() => ({ admitted: __KUIPER_EDITION__.admitted.map(a => a.id), refused: __KUIPER_EDITION__.refused, SPACE: KY.hooks.SPACE }));
       step('M admitted', ed.admitted.includes('file') && ed.refused.length === 0, ed);
       const SPACE = ed.SPACE, P = placed.filter(b => b.key < SPACE);
+      await blk('A1', async () => {
       // A1 the panel
       await openMenu(p, 'file');
       await tapSel(p, '#ky-file-open-edition'); await p.waitForFunction(() => document.querySelector('#ky-file-editions[data-filled="ok"]'), null, { timeout: 60000 }).catch(() => {});
@@ -119,6 +121,7 @@ fs.mkdirSync(OUT, { recursive: true });
         && a1.sub.find(s => s.ed === STAMP).inert, { edList });
       step('A1 apps: See Through first and lit', apps.length > 0 && apps[0].app === 'see-through' && apps[0].lit, { apps });
       await shot(p, '01-file-panel');
+      }); await blk('A3', async () => {
       // A3 evidence
       const ev = await p.evaluate(() => [...document.querySelectorAll('#ky-file a[data-ky-evidence]')].map(a => ({ p: a.getAttribute('data-ky-evidence'), bytes: a.getAttribute('data-ky-bytes'), dl: a.hasAttribute('download'), hint: a.querySelector('.gm-hint').textContent })));
       const a3 = [];
@@ -130,6 +133,7 @@ fs.mkdirSync(OUT, { recursive: true });
       if (shaTxt.ok) { const t = await shaTxt.text(), m = t.match(/^([0-9a-f]{64})\s+\*?(?:\.\/)?keys\.json$/m), srv = crypto.createHash('sha256').update(Buffer.from(await (await fetch(URL0 + 'keys.json')).arrayBuffer())).digest('hex');
         step('A3 sha256(keys.json) = edition-sha256.txt', !!m && m[1] === srv, { listed: m && m[1], served: srv }); }
       else step('A3 sha256(keys.json) = edition-sha256.txt', null, { why: 'proof/edition-sha256.txt HTTP ' + shaTxt.status });
+      }); await blk('A2', async () => {
       // A2 open a key
       await openMenu(p, 'file');
       await tapSel(p, '#ky-file-key-in'); await p.keyboard.type(String(KEY0)); await tapSel(p, '#ky-file-key .ky-go'); await settle(p, 8000);
@@ -146,9 +150,11 @@ fs.mkdirSync(OUT, { recursive: true });
       await tapSel(p, '#ky-file-copy-cmd'); await p.waitForTimeout(1200);
       const clip = await p.evaluate(() => navigator.clipboard.readText().catch(e => 'ERR ' + e.message));
       step('A2 Copy python tools/key.py <k> -> clipboard', clip === 'python tools/key.py ' + KEY0, { clip });
-      // A6 save an image
+      }); await blk('A6', async () => {
+      // A6 save an image (a step of its own: a timeout under load is measured, not a harness abort)
+      try {
       await openMenu(p, 'file');
-      const dlP = p.waitForEvent('download', { timeout: 120000 }); await tapSel(p, '#kuiper-export-image'); const dl = await dlP;
+      const dlP = p.waitForEvent('download', { timeout: 300000 }); await tapSel(p, '#kuiper-export-image'); const dl = await dlP;
       const fp = path.join(OUT, slug + '-' + dl.suggestedFilename()); await dl.saveAs(fp);
       const png = fs.readFileSync(fp), isPng = png.slice(1, 4).toString() === 'PNG';
       const a6 = await p.evaluate(async ({ b64 }) => {
@@ -168,12 +174,16 @@ fs.mkdirSync(OUT, { recursive: true });
       }, { b64: png.toString('base64') });
       step('A6 Save an image: PNG, not one colour, innerWidth x min(dpr,2) wide, the stamp strip within 5 %', isPng && a6.colours > 1 && a6.w === a6.expectW && a6.ref > 0 && Math.abs(a6.foot - a6.ref) / a6.ref <= 0.05
         && /Apache-2\.0, text and data CC BY 4\.0/.test(a6.lines.join('\n')) && a6.lines[0].indexOf(STAMP) >= 0, Object.assign({ file: path.basename(fp), bytes: png.length }, a6));
+      } catch (e) { const row = await p.evaluate(() => (document.querySelector('#kuiper-export-image .ky-file-why') || {}).textContent || null).catch(() => null);
+        step('A6 Save an image: PNG, not one colour, innerWidth x min(dpr,2) wide, the stamp strip within 5 %', false, { error: String(e.message || e).split('\n')[0], row, exports: await p.evaluate(() => KY.modules.file.api.inspect().c).catch(() => null) }); }
+      }); await blk('A6 negative', async () => {
       await p.evaluate(() => { KY.draw.add(() => { if (!window.__blank) return; const gl = KY.hooks.cv.getContext('webgl2'); gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT); }, 1e8); window.__blank = 1; });
       let got = false; const onDl = () => { got = true; }; p.on('download', onDl);
       await openMenu(p, 'file'); await tapSel(p, '#kuiper-export-image'); await p.waitForTimeout(7000); p.off('download', onDl);
       const blankRow = await p.evaluate(() => (document.querySelector('#kuiper-export-image .ky-file-why') || {}).textContent);
       step('A6 a cleared #c is refused in words, no file', blankRow === 'the image came back blank; try again after the wafer has drawn' && !got, { row: blankRow, download: got });
       await p.evaluate(() => { window.__blank = 0; });
+      }); await blk('A7', async () => {
       // A7 EDIT: paste a Kuiper link, Backspace
       if (await p.evaluate(() => !!document.getElementById('kuiper-menu-bar').getAttribute('data-open'))) await p.evaluate(() => KY.modules['kuiper-shell'].api.close());
       await p.waitForTimeout(800);
@@ -185,6 +195,7 @@ fs.mkdirSync(OUT, { recursive: true });
       await p.keyboard.press('Backspace'); await p.waitForTimeout(2500);
       const bs = await p.evaluate(() => location.hash);
       step('A7 Backspace clears key line repo period, keeps layers', !/(^#|&)(key|line|repo|period)=/.test(bs) && /(^#|&)layers=/.test(bs), { hash: bs });
+      }); await blk('A4 direct', async () => {
       // A4 direct (hashchange on the open page)
       const direct = {};
       await p.evaluate(() => { location.hash = '#repo=gridatlas&period=2026-07'; }); await settle(p, 6000);
@@ -194,11 +205,13 @@ fs.mkdirSync(OUT, { recursive: true });
       step('A4 direct: repo&period lights gridatlas over July 2026; key opens the line', direct.repoPeriod.repo === 'gridatlas' && direct.repoPeriod.K && direct.repoPeriod.K[0] >= 0
         && direct.key.header === bodies[0].line_text && Math.abs(direct.key.zoom - 14) < 0.01, direct);
       await shot(p, '03-pasted-line');
+      }); await blk('A7 See Through paste', async () => {
       // A7 a pasted See Through link -> navigation
       await openMenu(p, 'edit'); await tapSel(p, '#ky-edit-paste'); await p.waitForTimeout(700);
       await p.keyboard.type('https://ventusltd.github.io/kuiper-belt/see-through/#sub=Drax'); await p.keyboard.press('Enter');
       await p.waitForURL(/\/see-through\//, { timeout: 60000 }).catch(() => {});
       step('A7 a pasted See Through link -> navigation to See Through, the hash kept', /\/see-through\/.*#sub=Drax$/.test(p.url()), { url: p.url() });
+      });
       await p.context().close();
 
       // ------------------------------------------------------------------ A4 through the pointer, A5 round trip
@@ -274,6 +287,7 @@ fs.mkdirSync(OUT, { recursive: true });
 
       // ------------------------------------------------------------------ clipboard refused, A8 history
       p = await newPage({ clip: false }); await p.goto('about:blank'); await p.goto(URL0, { timeout: 180000 }); await ready(p);
+      await blk('A2/G5 clipboard refused', async () => {
       await p.evaluate(() => { Object.defineProperty(navigator.clipboard ? Object.getPrototypeOf(navigator.clipboard) : {}, 'writeText', { value: () => Promise.reject(new Error('denied by the test')), configurable: true }); });
       await p.evaluate(k => { location.hash = '#key=' + k; }, KEY0); await settle(p, 8000);
       await openMenu(p, 'file'); await tapSel(p, '#ky-file-copy-cmd'); await p.waitForTimeout(1200);
@@ -288,6 +302,7 @@ fs.mkdirSync(OUT, { recursive: true });
         && fl.readOnly && fl.selected && fl.h >= 44, fl);
       await shot(p, '04-copy-fallback');
       await p.evaluate(() => KY.modules['kuiper-shell'].api.close()); await p.waitForTimeout(800);
+      }); await blk('A8', async () => {
       // three link changes on one page (no card left open), then back leaves the page in one step
       await p.evaluate(() => { location.hash = '#repo=gridatlas'; }); await settle(p, 3000);
       await p.evaluate(() => { location.hash = '#period=2026-07'; }); await settle(p, 3000);
@@ -303,6 +318,7 @@ fs.mkdirSync(OUT, { recursive: true });
       await p.evaluate(k => { KY.modules.file.api.link.set('key', String(k)); KY.modules.file.api.link.flush(); KY.modules.file.api.link.set('repo', 'gridatlas'); KY.modules.file.api.link.flush(); KY.modules.file.api.link.set('period', '2026-07'); KY.modules.file.api.link.flush(); }, KEY0);
       const lenAfter = await p.evaluate(() => ({ len: history.length, hash: location.hash }));
       step('A8 three module link writes add no history entry (replaceState)', lenAfter.len === lenBefore && /period=2026-07/.test(lenAfter.hash), { lenBefore, lenAfter, hl });
+      }); await blk('G1', async () => {
       // G1 parse -> serialise -> parse, byte-identical, for every GRAMMAR.md example
       await p.waitForTimeout(600);
       const g1 = await p.evaluate(exs => {
@@ -321,6 +337,7 @@ fs.mkdirSync(OUT, { recursive: true });
         return { serialiser: pure ? 'link.format (pure)' : 'link.set + link.hashText (format not exposed)', out };
       }, EXAMPLES);
       step('G1 every grammar example: parse -> serialise -> parse byte-identical, nothing refused', g1.out.length === EXAMPLES.length && g1.out.every(o => o.identical && o.refused.length === 0 && Object.keys(o.f1).length > 0), g1);
+      });
       await p.context().close();
 
       // ------------------------------------------------------------------ G2 the real pointer forwards the hash byte for byte

@@ -23,6 +23,10 @@
  *  C8 admission: install nothing until every hook exists once; otherwise a loud strip and Edition 4's bar stays.
  *  C9 one row at 360, 393, 412, 430 px and in landscape.
  *  C10 this block.
+ * Revision 2 (2 Nov 2026, same generation, not yet admitted; BLOCKER from the integrator's journey and Opus 3's REQUEST):
+ *  history has one owner per entry. The page owns the card's entry; the shell never causes a popstate while a card is
+ *  shown and steps over its own dead entries (closeAll, stepOver, onPop). Edition 4's #lines #lyAll #lyFocus #lyFind
+ *  are no longer required; SCOPE's focus is a proxy for whichever #lyFocus exists.
  * The star slot (R7, Q7): reserved for See Through (owner: Opus team 5, schema kuiper.see-through.v1). The shell owns
  * the rule (title in the bar when it fits beside a centred brand, else the bottom-left 44 px strip); step 5 owns the
  * words and the target. Until step 5 mounts its node, the slot carries NL-009 06's entry: a.gm-title "See Through"

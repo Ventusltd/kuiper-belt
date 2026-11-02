@@ -22,3 +22,17 @@
 5. **Owner (via the harness).** The viewport now carries `maximum-scale=1,user-scalable=no` (NL-009 04-touch): page
    zoom is off on phones, a risk against WCAG 2.1 SC 1.4.4. Team 4 folded the patch in as the brief says; keeping or
    dropping that one attribute is the owner's decision.
+
+## From OPUS-1 lead (shell), 2 Nov 2026: one owner of history (BLOCKER lines-pick / card-details, via the harness)
+
+How history is owned from shell revision 2 (`202611012143-kuiper-shell.js`, sha256 in handoff/01-shell/MODULE.sha256):
+- **The page owns the card's entry.** That is the ANDROID BACK block of index.html (04-touch: `edSync`, `edPopping`,
+  `{kuiper:1}`). The shell never pushes over it. A panel opened over a shown card shares the page's entry, so one back
+  closes both.
+- **The shell owns one `{kmb}` entry while a panel is open over no card.** It pops that entry itself only when, after
+  the closing command has run, the entry is still on top and no card is shown. Otherwise it leaves the entry and steps
+  over it later (`stepOver`), the moment history lands on it with nothing open.
+- **Why the shell does not swallow its own popstate.** Measured in Chromium: window `popstate` listeners run in
+  registration order whether or not they use capture, so the page's listener always runs first.
+- **REQUEST (optional):** expose `KY.history = { selfBack() }`, which sets `edPopping` before `history.back()`. The
+  shell would call it. It is not needed now.

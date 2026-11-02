@@ -11,8 +11,10 @@ No Playwright run by me (machine loaded, as instructed). The page results quoted
 
 ## 0. Verdict on the lead's HANDOFF draft (/tmp/nl010-opus/team-8/lead/handoff.md, 00:03 UTC)
 
-**PASS WITH CORRECTIONS. Post it only after these six edits.** The numbers it states are true at the recorded heads,
-and I re-measured each one (sections D to J).
+**PASS WITH CORRECTIONS.** The lead posted the draft unchanged as #10 comment 6565879640 at 2026-11-02T00:03:55Z,
+before this review (the body is byte-identical to the draft, measured with `diff`). So the six corrections below go to #10 as
+the evidence officer's FINDING, which replies to that comment: #10 comment 6566138043 (2026-11-02T00:24:47Z). The numbers it states are true at the recorded heads, and I
+re-measured each one (sections D to J). None of the corrections changes a count.
 
 1. Replace "No builder/tester/evidence officer appeared; the lead did all four parts". It is no longer true: the tester
    wrote `handoff/08-drift/drift_test.py` (RESULT: PASS 14 of 14, /tmp/nl010-opus/team-8/tester/drift_test.out) and
@@ -22,11 +24,14 @@ and I re-measured each one (sections D to J).
    018b46a → e92ad5d (2026-11-02T00:06:59Z, PR A's merge). I re-ran the tool at the new heads (00:10:11Z, section D):
    **the same 309/7/2/0/28; 95 rows differ only in `head` (34 globalgrid2050 + 61 kuiper-belt), 0 in class or
    head_line**. Suggested line: "drift.json is as of its recorded heads; re-observed at 00:10 UTC two heads had moved
-   (globalgrid2050, kuiper-belt) and no row's class changed."
+   (globalgrid2050, kuiper-belt) and no row's class changed; the host is ahead of the clones in four more
+   (particle-physics-drawing-engine, stars, time-stone, ventus-grid-engine: 24 rows measured at the clone's head, not the
+   host's; section D)." These four came to light after the HANDOFF was posted, by `git ls-remote` at 00:20Z.
 3. `tools/drift.py` no longer matches MODULE.sha256. The file was edited at 00:01:50 (a docstring line, `:136-160,
    :207-213` → `:136-159, :209-215`, one line changed, same 26,522 bytes). Its sha256 is now
    `29fdb05e5717aee41a5b0ed149b715bf4d997cdbee045bef90da9dd7a6b6080e`, not `caa61fd4…`. Update MODULE.sha256 (and
    the hash in section A of this file follows the file). P1 and P3 still pass with the edited file (my `--check`, 00:08Z).
+   **Resolved at 00:24Z:** the lead's MODULE.sha256 now reads `29fdb05e…` for tools/drift.py (measured).
 4. GONE `atlas/current.json:14` is a re-indent, not a removal. At the head 41729af line 14 is ` "cartridge_order": [`
    (one space) where the edition has `  "cartridge_order": [` (two spaces), measured with `cat -A`. The byte rule
    makes it GONE, and that is correct under the law, but the HANDOFF should not imply that the cartridge order went
@@ -50,7 +55,7 @@ sha256, the 18 hooks (each one is used, and no hook is used that is not listed),
 |---|---|---|---|
 | `editions/202611012135/modules/202611012325-drift.js` | 22,294 | `18f7019aad915920e79c1f279ad688f3ccd4f1dd96ff23a992520c19b37fdd8d` (= MODULE.sha256, = MODULE.json) | line 1 `Apache-2.0 (kuiper-belt code)`; name, stamp, requires, provides present (:1, :18-20) |
 | `editions/202611012135/data/drift.json` | 118,553 | `388103129b904a4a038d18adc26b703c144dede2d09497d13fe6223b30b5d103` (= MODULE.sha256) | `licence` field `CC BY 4.0 (kuiper-belt data); quotes no line text` |
-| `tools/drift.py` | 26,522 | `29fdb05e5717aee41a5b0ed149b715bf4d997cdbee045bef90da9dd7a6b6080e` (**≠ MODULE.sha256 `caa61fd4…`**, verdict item 3) | line 2 `Apache-2.0 (kuiper-belt code)` |
+| `tools/drift.py` | 26,522 | `29fdb05e5717aee41a5b0ed149b715bf4d997cdbee045bef90da9dd7a6b6080e` (= MODULE.sha256 since about 00:24Z; the HANDOFF's posted file list predates it, verdict item 3) | line 2 `Apache-2.0 (kuiper-belt code)` |
 | `handoff/08-drift/drift_test.py` (tester) | being edited | n/a | line 2 `Apache-2.0` |
 | `handoff/08-drift/test.cjs` (tester) | being edited | n/a | licence line added by the evidence officer (line 2), see LICENCE.txt |
 
@@ -122,33 +127,33 @@ rows in cosmos/wafer.tsv), but the edition branch's cosmos/ is still 018b46a's (
 mtime UTC). For comparison, the head drift.json recorded and the checked-out HEAD. 25 clones = the 21 of keys.json's
 22 repositories that have a clone, plus 4 that keys.json does not name. pipelinenews has no clone.
 
-| clone | origin/HEAD at 00:09:57Z | fetched | drift.json `heads` | checked-out HEAD (if different) |
-|---|---|---|---|---|
-| code-generator | 857ea81244848b1da8fe21fffaed74cab568a3b4 | 2026-10-31T23:26:48Z | not in keys.json | |
-| cvaa | 877bf380202b6a922932afc0bdcfd7f42a183086 | 2026-10-31T23:26:48Z | same | |
-| data-centres-gb | f9f47286fae63872375c558fc89ff4b1793914e4 | 2026-10-31T23:26:49Z | same | |
-| data-grid-gb | 01a4491dc66ec4e6319a05a394926043b9d992f9 | 2026-10-31T23:26:49Z | same | 75ab8ae (fix/nl007-operator-canon) |
-| data-gridatlas | 8bf88da9e210ce9f61dc0398869d3369f3fa2445 | 2026-10-31T23:26:49Z | same | |
-| elements | f7a92fb085c38dcbbd5cb469a66cd5ca61fb95bf | 2026-10-31T23:26:50Z | same | |
-| energy-transition-simulator | a6b5ae63cc0eeb4d619f154c7e116616c997af77 | 2026-10-31T23:26:50Z | same | |
-| galaxies-wafers | fff6fc6ad4f93a15fe8f6456942a1b44e5547105 | 2026-10-31T23:26:50Z | same | |
-| **globalgrid2050** | **3248bf7f1c3dca8c03864c4d271cfe5d51e24f24** | **2026-11-01T23:51:08Z** | **35b5be2fa446 (moved since)** | c66759f |
-| grid-distance-maths | 8e91b07d8312acca5bcaef43e839f06a3b1d642a | 2026-10-31T23:26:51Z | same | |
-| gridatlas | 41729af0b49dcfbe8f2a3ebc485eff217a61b84d | 2026-10-31T23:26:56Z | same | 5ec7f62 (preview/202610312138-gridatlas-v9.188) |
-| gridmachine1 | c6cbf9686eea1aa148b2e4616b7d603e6a93b450 | 2026-10-31T23:26:56Z | same | |
-| **kuiper-belt** | **e92ad5dde7ccfd28e9b04b63e02499c4fcfb3111** | 2026-11-02T00:04:40Z (FETCH_HEAD does not name it; reflog 00:06:59Z) | **018b46aed50f (moved since; b9901d4 at 00:03Z)** | 01ca766 (edition/202611012135) |
-| kuiper-drawing-engine | ee69a07a7ebf71f2f20c052f392991f115fdbee0 | 2026-10-31T23:26:57Z | same | |
-| kuiper-ship | 668ff0897022d5c14635198939673de3d9a66ce9 | 2026-10-31T23:26:57Z | not in keys.json | |
-| maths | b898a5ee39aa81a45197c5f17ba1195727aa538e | 2026-10-31T23:26:57Z | same | |
-| particle-physics-drawing-engine | e51127791aab091ccb96f0b4eab807c02a9d116e | 2026-10-31T23:26:58Z | same | eb52ad7 |
-| star-maker | f65c2f381d91eeb1eba75a97ae6765c24e32197d | 2026-10-31T23:26:59Z | same | |
-| stars | 529ae15839ddfb586960fd4805df16e8049c9a01 | 2026-10-31T23:27:04Z | same | cbca125 |
-| substations | 7d3f8233d3f01ee5f069727f21e387d90a280c26 | 2026-10-31T23:27:04Z | not in keys.json | |
-| testcode | d09c185c8dacbc5c73afb2b0d0d8dad40745a544 | 2026-10-31T23:27:05Z | not in keys.json | |
-| time-stone | c507d8ce86392411afbd14190ccd22ff978c7ca1 | 2026-10-31T23:27:06Z | same | a1703b1 |
-| trillion-loop | 35fdea2f2744df338cfa7e28200e18008b307e73 | 2026-10-31T23:27:06Z | same | |
-| ventus-grid-engine | 5eead830d99021c90fd58add2f8bf05b0b752340 | 2026-10-31T23:27:07Z | same | 96a800e |
-| worlds- | b5f15716486c3ff509c56914fbee06f2e6aec2d8 | 2026-10-31T23:27:07Z | same | |
+| clone | origin/HEAD at 00:09:57Z | fetched | drift.json `heads` | checked-out HEAD (if different) | host HEAD, `git ls-remote` 00:20-00:22Z |
+|---|---|---|---|---|---|
+| code-generator | 857ea81244848b1da8fe21fffaed74cab568a3b4 | 2026-10-31T23:26:48Z | not in keys.json | | = clone |
+| cvaa | 877bf380202b6a922932afc0bdcfd7f42a183086 | 2026-10-31T23:26:48Z | same | | = clone |
+| data-centres-gb | f9f47286fae63872375c558fc89ff4b1793914e4 | 2026-10-31T23:26:49Z | same | | = clone |
+| data-grid-gb | 01a4491dc66ec4e6319a05a394926043b9d992f9 | 2026-10-31T23:26:49Z | same | 75ab8ae (fix/nl007-operator-canon) | = clone |
+| data-gridatlas | 8bf88da9e210ce9f61dc0398869d3369f3fa2445 | 2026-10-31T23:26:49Z | same | | = clone |
+| elements | f7a92fb085c38dcbbd5cb469a66cd5ca61fb95bf | 2026-10-31T23:26:50Z | same | | = clone |
+| energy-transition-simulator | a6b5ae63cc0eeb4d619f154c7e116616c997af77 | 2026-10-31T23:26:50Z | same | | = clone |
+| galaxies-wafers | fff6fc6ad4f93a15fe8f6456942a1b44e5547105 | 2026-10-31T23:26:50Z | same | | = clone |
+| **globalgrid2050** | **3248bf7f1c3dca8c03864c4d271cfe5d51e24f24** | **2026-11-01T23:51:08Z** | **35b5be2fa446 (moved since)** | c66759f | 0b3369d066c3466b3c68db26623c1f8ce2e24dea (the clone fetched it at 00:12:29Z) |
+| grid-distance-maths | 8e91b07d8312acca5bcaef43e839f06a3b1d642a | 2026-10-31T23:26:51Z | same | | = clone |
+| gridatlas | 41729af0b49dcfbe8f2a3ebc485eff217a61b84d | 2026-10-31T23:26:56Z | same | 5ec7f62 (preview/202610312138-gridatlas-v9.188) | = clone |
+| gridmachine1 | c6cbf9686eea1aa148b2e4616b7d603e6a93b450 | 2026-10-31T23:26:56Z | same | | = clone |
+| **kuiper-belt** | **e92ad5dde7ccfd28e9b04b63e02499c4fcfb3111** | 2026-11-02T00:04:40Z (FETCH_HEAD does not name it; reflog 00:06:59Z) | **018b46aed50f (moved since; b9901d4 at 00:03Z)** | 01ca766 (edition/202611012135) | = clone |
+| kuiper-drawing-engine | ee69a07a7ebf71f2f20c052f392991f115fdbee0 | 2026-10-31T23:26:57Z | same | | = clone |
+| kuiper-ship | 668ff0897022d5c14635198939673de3d9a66ce9 | 2026-10-31T23:26:57Z | not in keys.json | | = clone |
+| maths | b898a5ee39aa81a45197c5f17ba1195727aa538e | 2026-10-31T23:26:57Z | same | | = clone |
+| particle-physics-drawing-engine | e51127791aab091ccb96f0b4eab807c02a9d116e | 2026-10-31T23:26:58Z | same | eb52ad7 | **f5cf211f66108f2d003f15cb7016029e8b93eec7, ahead of the clone; the clone lacks it** (`git cat-file -e` fails) |
+| star-maker | f65c2f381d91eeb1eba75a97ae6765c24e32197d | 2026-10-31T23:26:59Z | same | | = clone |
+| stars | 529ae15839ddfb586960fd4805df16e8049c9a01 | 2026-10-31T23:27:04Z | same | cbca125 | **5c33db09fda2eb0649960e73e739eafc4ca40af6, ahead of the clone; the clone lacks it** (`git cat-file -e` fails) |
+| substations | 7d3f8233d3f01ee5f069727f21e387d90a280c26 | 2026-10-31T23:27:04Z | not in keys.json | | = clone |
+| testcode | d09c185c8dacbc5c73afb2b0d0d8dad40745a544 | 2026-10-31T23:27:05Z | not in keys.json | | = clone |
+| time-stone | c507d8ce86392411afbd14190ccd22ff978c7ca1 | 2026-10-31T23:27:06Z | same | a1703b1 | **77fe21cc37a8edb211eb7b0a7d49e477f975d64e, ahead of the clone; the clone lacks it** (`git cat-file -e` fails) |
+| trillion-loop | 35fdea2f2744df338cfa7e28200e18008b307e73 | 2026-10-31T23:27:06Z | same | | = clone |
+| ventus-grid-engine | 5eead830d99021c90fd58add2f8bf05b0b752340 | 2026-10-31T23:27:07Z | same | 96a800e | **598dfcd9835ae19a5b2077eea6815d37d838618a, ahead of the clone; the clone lacks it** (`git cat-file -e` fails) |
+| worlds- | b5f15716486c3ff509c56914fbee06f2e6aec2d8 | 2026-10-31T23:27:07Z | same | | = clone |
 
 The moved heads: globalgrid2050@3248bf7 (2026-11-01T23:38:58+00:00, "kuiper-editions: the door on globalgrid2050.com to the
 newest Kuiper edition") and kuiper-belt@e92ad5d (2026-11-02T00:05:55+00:00, "Publish Kuiper Edition 5 preview folder
@@ -157,7 +162,9 @@ before it. **Live re-runs at run time** (`python3 tools/drift.py --out <scratch>
 00:03:37Z at heads (…, globalgrid2050 3248bf7, kuiper-belt b9901d4) and 00:10:11Z at (…, 3248bf7, e92ad5d). Both gave
 **309 SAME / 7 MOVED / 2 GONE / 0 FILE_GONE / 28 UNVERIFIED** and 21 of 22 heads. Against data/drift.json, 95 rows differ,
 only in `head`: 34 globalgrid2050 + 61 kuiper-belt (keys.json per-repo counts). 0 rows differ in class or head_line
-(scratch drift.live.json sha256 80f2036f…, drift.live2.json 2859593c…). The deliverable stays the cut-time record. E9 re-runs it
+(scratch drift.live.json sha256 80f2036f…, drift.live2.json 2859593c…). A third run at about 00:23Z, after the clone fetched globalgrid2050@0b3369d (00:12:29Z), gave the same result: 309/7/2/0/28, 95 rows differ only in `head`, 0 in class (drift.live3.json 197463f7…).
+
+**The host is ahead of the clones in four repositories** (`git ls-remote <origin> HEAD`, read only, 2026-11-02T00:20:12Z to 00:22:39Z; nothing fetched into the clones): particle-physics-drawing-engine f5cf211f6610, stars 5c33db09fda2, time-stone 77fe21cc37a8, ventus-grid-engine 598dfcd9835a. The clones do not hold those commits. Their 8 + 3 + 5 + 8 = **24 rows are measured at the clone's head, not at the host's**, so at the host's heads they are UNMEASURED. All of them read SAME at the clone heads. drift.json's `head_rule` says this honestly ("its default branch as the clone last saw it on the host"). The other 21 clones' origin/HEAD equals the host. globalgrid2050 on the host is 0b3369d, as the harness reported in #10 comment 6566064489. The deliverable stays the cut-time record. E9 re-runs it
 with `--heads`, which never re-observes.
 
 ## E. The result (data/drift.json, re-checked 00:08 UTC)
@@ -299,7 +306,7 @@ The step: neural-link FIXES/NL-010/ROADMAP.md:589-648; team-4/STEPS.md:233-352.
   **gridatlas@41729af atlas/current.json:3 `202610312138`**. 5ec7f62 is the checked-out preview branch.
 - "kb@96736f5 … :256" is not the refusal idiom. At 96736f5, :256 is a comment. The idiom is kb@0cd7910 :256 (as the
   draft's later row says).
-- tools/drift.py sha256 changed after MODULE.sha256 was written (verdict item 3).
+- tools/drift.py sha256 changed after MODULE.sha256 was written (verdict item 3); MODULE.sha256 has since been updated.
 - Heads moved after drift.json was cut (section D). The classes did not change (measured).
 - DISCLOSED: no second machine for the re-run. The determinism proof is P1 here plus the tester's two-PYTHONHASHSEED runs.
 - DISCLOSED: `observed_at` is the clone's FETCH_HEAD mtime or the reflog, not a live GitHub call. The sandbox's clones are

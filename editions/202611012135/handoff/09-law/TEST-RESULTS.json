@@ -1,0 +1,199 @@
+{
+ "tool": "tools/edition_check.py",
+ "tool_sha256": "13d1da02634516c28193a9fbc5b388943ee1f6429fa2e69315453128ba7ff2bd",
+ "run_at_utc": "2026-11-02T00:24:57Z",
+ "cases": [
+  {
+   "case": "clean fixture, --strict",
+   "expect": "PASS",
+   "exit": 0,
+   "ok": true,
+   "seconds": 21.6,
+   "output": [
+    "edition_check: editions/202611012135 (repository fixture) --strict",
+    "E1 PASS: 4 script blocks in 4 editions/*/index.html and 2 modules/*.js parse (node --check)",
+    "E2 PASS: 202611012135: 2 records hash as recorded, 0 reference(s), 2 of 2 files in modules/ admitted",
+    "E3 PASS: every listed file matches and every file is listed (202610311905 51, 202611010114 9, 202611012022 10, 202611012027 8, 202611012135 18)",
+    "E4 PASS: the pointer names 202611012027 in its three places, folder and proof exist; forwards location.hash (search not forwarded: allowed only while the pointer names a pre-Edition-5 folder; handoff/09-law/pointer.patch)",
+    "E5 PASS: 202611012135 keys.json byte-identical to editions/202611012027 (1c293c33...)",
+    "E6 PASS: 202611012135: 2 records, stamp = file name = header = manifest, licences present, requires within 35 hooks from index.html + provides; 0 reference(s)",
+    "E7 PASS: 2 admitted modules: every reads/writes entry has its literal; no fetch outside reads",
+    "E8 PASS: 2 admitted modules parse and register exactly once",
+    "E9 PASS: 202611012135: tools/drift.py --heads data/drift.json re-computes it byte-identical (118553 bytes, sha256 388103129b90...)",
+    "RESULT: PASS"
+   ]
+  },
+  {
+   "case": "E1 a script that does not parse",
+   "check": "E1",
+   "expect": "FAIL with \"SyntaxError\"",
+   "exit": 1,
+   "ok": true,
+   "seconds": 20.5,
+   "line": "E1 FAIL: editions/202611012135/index.html script 1: SyntaxError: Unexpected token '='"
+  },
+  {
+   "case": "E2 one altered byte in a module",
+   "check": "E2",
+   "expect": "FAIL with \"refused: sha256 mismatch\"",
+   "exit": 1,
+   "ok": true,
+   "seconds": 25.1,
+   "line": "E2 FAIL: 202611012135: hello refused: sha256 mismatch (file 2902b7f75c88, manifest ee2130b56e74); 202611012135: hello: bytes 1304, manifest 1303"
+  },
+  {
+   "case": "E2 a module file in no record and no hand-off (stray)",
+   "check": "E2",
+   "expect": "FAIL with \"stray file\"",
+   "exit": 1,
+   "ok": true,
+   "seconds": 16.2,
+   "line": "E2 FAIL: 202611012135: modules/202611020000-stray.js is in no manifest record and no hand-off names it (stray file)"
+  },
+  {
+   "case": "E2 order names an id with no record",
+   "check": "E2",
+   "expect": "FAIL with \"no record\"",
+   "exit": 1,
+   "ok": true,
+   "seconds": 18.4,
+   "line": "E2 FAIL: 202611012135: order names ghost, no record"
+  },
+  {
+   "case": "E3 an earlier edition folder edited",
+   "check": "E3",
+   "expect": "FAIL with \"sha256\"",
+   "exit": 1,
+   "ok": true,
+   "seconds": 14.4,
+   "line": "E3 FAIL: editions/202611012027: README.md sha256 af8528deb636, listed 138eb3d2966d"
+  },
+  {
+   "case": "E3 a file added after the cut",
+   "check": "E3",
+   "expect": "FAIL with \"not in proof/edition-sha256.txt\"",
+   "exit": 1,
+   "ok": true,
+   "seconds": 12.9,
+   "line": "E3 FAIL: editions/202611012135: data/late.json not in proof/edition-sha256.txt"
+  },
+  {
+   "case": "E4 the pointer's three stamps disagree",
+   "check": "E4",
+   "expect": "FAIL with \"disagree\"",
+   "exit": 1,
+   "ok": true,
+   "seconds": 12.7,
+   "line": "E4 FAIL: pointer stamps disagree: meta 202611012027, link 202611012022, replace 202611012027"
+  },
+  {
+   "case": "E4 a fourth place names a stamp",
+   "check": "E4",
+   "expect": "FAIL with \"not 3\"",
+   "exit": 1,
+   "ok": true,
+   "seconds": 11.2,
+   "line": "E4 FAIL: the pointer holds 4 twelve-digit stamps, not 3: ['202611012022', '202611012027', '202611012027', '202611012027']"
+  },
+  {
+   "case": "E4 pointer moved to Edition 5 forwarding only the hash",
+   "check": "E4",
+   "expect": "FAIL with \"location.search + location.hash\"",
+   "exit": 1,
+   "ok": false,
+   "seconds": 19.7,
+   "line": "E4 FAIL: pointer places: meta refresh 0, link 0, location.replace 0 (each must be 1)"
+  },
+  {
+   "case": "E5 keys.json changed and README silent",
+   "check": "E5",
+   "expect": "FAIL with \"names no change\"",
+   "exit": 1,
+   "ok": true,
+   "seconds": 38.7,
+   "line": "E5 FAIL: 202611012135: keys.json 5cef669d6b28 differs from editions/202611012027 1c293c337b4c and README.md names no change to the findings"
+  },
+  {
+   "case": "E6 generation differs from the file name and header",
+   "check": "E6",
+   "expect": "FAIL with \"stamp mismatch\"",
+   "exit": 1,
+   "ok": true,
+   "seconds": 11.6,
+   "line": "E6 FAIL: 202611012135: hello refused: stamp mismatch: generation 202611020001, file name 202611012145; 202611012135: hello refused: stamp mismatch: generation 202611020001, header 202611012145"
+  },
+  {
+   "case": "E6 a requires name that is not a hook",
+   "check": "E6",
+   "expect": "FAIL with \"refused: missing hook noSuchHook\"",
+   "exit": 1,
+   "ok": true,
+   "seconds": 18.6,
+   "line": "E6 FAIL: 202611012135: hello refused: missing hook noSuchHook"
+  },
+  {
+   "case": "E6 no licence",
+   "check": "E6",
+   "expect": "FAIL with \"no licence\"",
+   "exit": 1,
+   "ok": true,
+   "seconds": 19.2,
+   "line": "E6 FAIL: 202611012135: hello: no licence"
+  },
+  {
+   "case": "E7 a writes entry with no literal in the file",
+   "check": "E7",
+   "expect": "FAIL with \"no literal\"",
+   "exit": 1,
+   "ok": true,
+   "seconds": 12.8,
+   "line": "E7 FAIL: 202611012135: hello: writes #no-such-node-anywhere, no literal in the file"
+  },
+  {
+   "case": "E7 a fetch( outside reads",
+   "check": "E7",
+   "expect": "FAIL with \"not in reads\"",
+   "exit": 1,
+   "ok": true,
+   "seconds": 15.2,
+   "line": "E7 FAIL: 202611012135: hello: fetch(data/secret.json) not in reads"
+  },
+  {
+   "case": "E8 KY.register( twice",
+   "check": "E8",
+   "expect": "FAIL with \"appears 2 times\"",
+   "exit": 1,
+   "ok": true,
+   "seconds": 15.3,
+   "line": "E8 FAIL: 202611012135: hello: KY.register( appears 2 times"
+  },
+  {
+   "case": "E9 drift.json not what the tool re-computes",
+   "check": "E9",
+   "expect": "FAIL with \"re-computed\"",
+   "exit": 1,
+   "ok": true,
+   "seconds": 17.5,
+   "line": "E9 FAIL: 202611012135: data/drift.json sha256 e2d59ede0d9a, re-computed 388103129b90 (118553 vs 118553 bytes)"
+  },
+  {
+   "case": "strict: a pending module counts as FAIL",
+   "check": "E2",
+   "expect": "FAIL with \"pending admission\"",
+   "exit": 1,
+   "ok": true,
+   "seconds": 20.8,
+   "line": "E2 PASS: 202611012135: 2 records hash as recorded, 0 reference(s), 2 of 3 files in modules/ admitted | NOT EVALUATED: 202611012135: 1 file(s) pending admission, not in modules.json: modules/202611020000-pending.js (no MODULE.sha256 yet; named in handoff/99-x/PLAN.md)"
+  },
+  {
+   "case": "pointer.patch applied, pointer moved to Edition 5",
+   "check": "E4",
+   "expect": "PASS",
+   "exit": 1,
+   "ok": false,
+   "seconds": 15.9,
+   "line": "E4 FAIL: pointer places: meta refresh 0, link 0, location.replace 0 (each must be 1)"
+  }
+ ],
+ "result": "FAIL"
+}

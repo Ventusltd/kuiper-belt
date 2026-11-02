@@ -241,3 +241,9 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   read before the stub committed (load ~65 on 4 cores). Suggest `page.waitForURL(link, {timeout:180000})` after the tap.
   ("navigated": null is the next page's context, no inspect() there.) run4's readout FAIL is the pre-00:00 elements.json;
   live_register is in since 23:59.
+- 00:23 TESTER (date -u): run 5, module sha256 fa01e012…d481 (42,561 B), integrator index 418ae14c…, BOTH devices
+  (Pixel 7 then Galaxy S24, one at a time): 12 of 12 script gates PASS (key.py on block:Gc, Vn, Sp), 17 of 17 device gates
+  PASS on each device, 0 console errors, 0 pageerrors, 0 off-origin requests made. Only non-pass: E' NOT EVALUATED = the
+  3 EVIDENCE files of file.js the integrator writes (proof/edition-sha256.txt, LICENCES.md, proof/android-journey.json).
+  Final run with the screenshot changes (spider layer shown with no panel over it, plus element card) now writing
+  handoff/07-apps/TEST.md and img/. Do not change the module until it reports, or the run is void.
