@@ -187,9 +187,9 @@
    "module_registers": true,
    "source": {
     "file": "data/elements.json",
-    "bytes": 165584,
+    "bytes": 165622,
     "features": 244,
-    "sha256": "28b8b2df02b5b7766ec31b2b04d14c5e7701f0198ab37b7f49c6d85a17184c02",
+    "sha256": "e204cb414d38d4c174083f55a46a57179fd48b4c8ed8248a7ba0f995601964d5",
     "owner": "Opus team 7 (step 7) writes it with tools/element_keys.py"
    },
    "licence": "UNSETTLED: elements@f7a92fb has no LICENSE, owner question Q1",

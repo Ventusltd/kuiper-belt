@@ -1,5 +1,5 @@
---- a/editions/202611012135/index.html	2026-11-01 23:53:32.037611325 +0000
-+++ b/editions/202611012135/index.html	2026-11-01 23:53:32.159861428 +0000
+--- a/editions/202611012135/index.html	2026-11-02 01:23:38.052783150 +0000
++++ b/editions/202611012135/index.html	2026-11-02 01:23:38.104705903 +0000
 @@ -67,12 +67,6 @@
      z-index:11;background:#090c13f2;border:1px solid #1d6470;border-radius:0 0 6px 6px;padding:10px 12px;pointer-events:auto;text-align:left}
    #hud{right:0;left:auto;max-width:min(560px,96vw)} #foot{border-top:1px solid #1d6470}
@@ -22,7 +22,7 @@
    { const st = new URLSearchParams(location.search).get('selftest') || '', mt = st.match(/^(20\d\d)-(\d\d)$/);
      if (mt) setTimeout(() => { tween = null; const R = Math.sqrt(SPACE); cx = 0; cy = 0; zoom = (Math.min(cv.width, cv.height)/2)*0.80/R;
        const got = lightTime(+mt[1], +mt[2], 0); tween = null; cx = 0; cy = 0; zoom = (Math.min(cv.width, cv.height)/2)*0.80/R; draw();
-@@ -639,120 +633,7 @@
+@@ -639,120 +633,8 @@
    else if (e.key === '/') { e.preventDefault(); gbox.style.display = 'block'; gin.value = ''; gin.focus(); }
    else if (e.key === 'Backspace') { e.preventDefault(); target = null; litRepo = -1; newFrom = -1; flash = 0; pulse = -1; litK = [-1,-1]; litCi = null; card.style.display = 'none'; home(); } });
  
@@ -32,7 +32,7 @@
 -// line's key was computed by tools/edition_keys.py with key.py's walk (ls-tree order, lines_of), so a
 -// spark here is a key that python tools/key.py would resolve to that very line. Lines whose commit is
 -// not on the wafer are counted and named, never placed: the seventh law.
--let ED = [], edPlaced = [], edSel = -1, edMeta = null;
+ let ED = [], edPlaced = [], edSel = -1, edMeta = null;
 -const EDPATH = 'keys-min.json', EDFULL = 'keys.json';
 -// EDITION 5 (perf, NL-009 07): the page draws 17 of the 36 fields of each record, so it loads keys-min.json
 -// (1,558,451 bytes, written from keys.json by tools/edition_min.py, which records the sha256 of its source). The
@@ -143,7 +143,7 @@
  
  // ============================================================ EDITION 3: the menu bar, panels at rest hidden
  // Borrowed in spirit from gridatlas atlas/modules/202609031958-menu-bar.js: one row of titles, every panel
-@@ -765,12 +646,7 @@
+@@ -765,12 +647,7 @@
    + '<button class="gm-title" data-panel="lines" aria-controls="lines" aria-expanded="false">lines</button>'
    + '<button class="gm-title" data-panel="foot" aria-controls="foot" aria-expanded="false">commands</button>';
  document.body.prepend(bar);
@@ -157,7 +157,7 @@
  for (const [k, el] of Object.entries(PANELS)) { el.setAttribute('role', 'region'); el.setAttribute('aria-label', { top:'edition', hud:'readout', lines:'lines', foot:'commands' }[k]); }
  let openPanel = null;
  function placePanels(){ const h = bar.getBoundingClientRect().height; for (const el of Object.values(PANELS)) el.style.top = (h + 2) + 'px'; }
-@@ -779,7 +655,6 @@
+@@ -779,7 +656,6 @@
    openPanel = (openPanel === name) ? null : name;
    for (const [k, el] of Object.entries(PANELS)) el.classList.toggle('gm-open', k === openPanel);
    for (const b of bar.querySelectorAll('.gm-title')) { const on = b.dataset.panel === openPanel; b.classList.toggle('gm-on', on); b.setAttribute('aria-expanded', on ? 'true' : 'false'); }
@@ -165,7 +165,7 @@
    dirty = true;
  }
  bar.addEventListener('click', e => { const b = e.target.closest('.gm-title'); if (b) { e.stopPropagation(); setPanel(b.dataset.panel); } });
-@@ -806,31 +681,6 @@
+@@ -803,31 +679,6 @@
  { const _safe = safeBox; safeBox = function(){ const s = _safe(); placePanels(); s.y0 = Math.max(s.y0, bar.getBoundingClientRect().bottom + 8); s.y1 = Math.max(s.y0 + 24, innerHeight - 8); return s; }; }
  // prefers-reduced-motion: the camera lands at once instead of flying for 900 ms
  { const _fly = flyTo, rm = matchMedia('(prefers-reduced-motion: reduce)'); flyTo = function(x, y, z){ _fly(x, y, z); if (rm.matches && tween) tween.t0 -= tween.dur; }; }

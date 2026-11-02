@@ -86,6 +86,9 @@ function probe() {
     row = { text: a.textContent, href: a.getAttribute('href'), abs: a.href, h: +r.height.toFixed(1), w: +r.width.toFixed(1), x: r.left + r.width / 2, y: r.top + r.height / 2,
       vis: cs.display !== 'none' && r.height > 0 && r.top >= 0 && r.bottom <= innerHeight, hit: (() => { const e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return e === a || a.contains(e); })() }; }
   return { T: s.T, D: s.D, name: s.name, view: s.view, in3d: s.in3d, NP: s.NP, note: s.note, cap: s.cap, space: s.space, spaceSource: s.spaceSource,
+    noteFit: (() => { if (!s.note) return null; const e = [...document.querySelectorAll('div,span')].find(x => x.children.length === 0 && x.textContent === s.note); if (!e) return null;
+      const r = e.getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(e); const t = rg.getBoundingClientRect();
+      return { textRight: +t.right.toFixed(1), boxRight: +r.right.toFixed(1), innerWidth, fits: t.right <= innerWidth && t.left >= 0 }; })(),
     box: inp ? inp.value : null, hash: location.hash, href: location.href, link: d.link(), ring: d.ring(), lit: d.repoLit(), row, mapState: s.mapState };
 }
 // amber (#ffb000) pixels on the See Through canvas inside a box around (x, y) CSS px; centroid in CSS px
@@ -96,7 +99,9 @@ function amberAt(arg) {
   const w = Math.min(cv.width - x0, Math.round(2 * half * sc)), h = Math.min(cv.height - y0, Math.round(2 * half * sc));
   const px = g.getImageData(x0, y0, w, h).data; let n = 0, sx = 0, sy = 0;
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = (y * w + x) * 4; if (px[i] > 200 && px[i + 1] > 120 && px[i + 1] < 210 && px[i + 2] < 90) { n++; sx += x; sy += y; } }
-  return { n, x: n ? r.left + (x0 + sx / n) / sc : null, y: n ? r.top + (y0 + sy / n) / sc : null, scale: sc };
+  const cx = n ? x0 + sx / n : 0, cy = n ? y0 + sy / n : 0; let rs = 0;   // mean distance of the amber pixels from their centroid
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = (y * w + x) * 4; if (px[i] > 200 && px[i + 1] > 120 && px[i + 1] < 210 && px[i + 2] < 90) rs += Math.hypot(x - (cx - x0), y - (cy - y0)); }
+  return { n, x: n ? r.left + cx / sc : null, y: n ? r.top + cy / sc : null, radius: n ? +(rs / n / sc).toFixed(2) : null, scale: sc };
 }
 // the expected screen position of KuiperLaw.place(k) at the stars stage, from two substations' own screen positions
 function lawAt(k) {
@@ -179,9 +184,9 @@ function lawAt(k) {
     s = await setHash(p, '#key=36064705400', () => /LINE OF CODE/.test(window.__descent.state().note));
     const law3 = await p.evaluate(lawAt, 36064705400), amb3 = await p.evaluate(amberAt, { x: law3.x, y: law3.y, half: 16 });
     const rd = s.ring ? Math.hypot(s.ring.x - law3.x, s.ring.y - law3.y) : 99, pd = amb3.n ? Math.hypot(amb3.x - law3.x, amb3.y - law3.y) : 99;
-    check('C3 hashchange #key=36064705400: note "KEY 36,064,705,400 · A LINE OF CODE, NOT A SUBSTATION", T -1, D 0, one amber ring within 1 px of KuiperLaw.place(k) (state and canvas pixels)',
-      s.note === 'KEY 36,064,705,400 · A LINE OF CODE, NOT A SUBSTATION' && s.T === -1 && s.D < 0.01 && rd <= 1 && pd <= 1 && law3.star1 <= 1 && amb3.n >= 20,
-      { note: s.note, ringStatePx: +rd.toFixed(3), ringCanvasPx: +pd.toFixed(3), amberPx: amb3.n, starCheckPx: +law3.star1.toFixed(3) });
+    check('C3 hashchange #key=36064705400: note "KEY 36,064,705,400 · A LINE OF CODE, NOT A SUBSTATION", T -1, D 0, one amber ring within 1 px of KuiperLaw.place(k) (__descent.ring()); on the canvas an amber ring of radius 10 px centred within 2 px of it (pixel centroid; anti-aliasing against the cyan stars moves a thresholded centroid by up to ~2 px)',
+      s.note === 'KEY 36,064,705,400 · A LINE OF CODE, NOT A SUBSTATION' && s.T === -1 && s.D < 0.01 && rd <= 1 && pd <= 2 && Math.abs(amb3.radius - 10) <= 1.5 && law3.star1 <= 1 && amb3.n >= 20,
+      { note: s.note, noteFit: s.noteFit, ringStatePx: +rd.toFixed(3), ringCanvasPx: +pd.toFixed(3), ringRadiusPx: amb3.radius, amberPx: amb3.n, starCheckPx: +law3.star1.toFixed(3) });
     await shot(p, '03-key-own-sky-amber-ring');
     s = await setHash(p, '#key=' + SPACE, () => /BEYOND/.test(window.__descent.state().note));
     check('C3 hashchange #key=<SPACE>: "KEY ' + fmt(SPACE) + ' IS BEYOND THIS SKY"', s.note === 'KEY ' + fmt(SPACE) + ' IS BEYOND THIS SKY', { note: s.note });
@@ -192,7 +197,7 @@ function lawAt(k) {
     s = await setHash(p, '#repo=nosuchrepo', () => /NO REPOSITORY/.test(window.__descent.state().note));
     check('C3 hashchange #repo=nosuchrepo: "NO REPOSITORY CALLED NOSUCHREPO"', s.note === 'NO REPOSITORY CALLED NOSUCHREPO', { note: s.note });
     s = await setHash(p, '#bogus=1', () => /LINK FIELD/.test(window.__descent.state().note));
-    check('C3 hashchange #bogus=1: "LINK FIELD BOGUS NOT UNDERSTOOD"', s.note === 'LINK FIELD BOGUS NOT UNDERSTOOD', { note: s.note });
+    check('C3 hashchange #bogus=1 (after #repo=nosuchrepo on the same page): "LINK FIELD BOGUS NOT UNDERSTOOD" (a re-read link replaces the earlier note)', s.note === 'LINK FIELD BOGUS NOT UNDERSTOOD', { note: s.note });
     await done(p);
 
     // C4 #repo=gridatlas: the lit repository
