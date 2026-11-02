@@ -1,0 +1,37 @@
+--- /tmp/claude-0/-home-user/e5bfe783-54ef-5c7a-8d30-0a492af18594/scratchpad/cd/edition_check.orig.py	2026-11-02 10:36:58.195713111 +0000
++++ /tmp/claude-0/-home-user/e5bfe783-54ef-5c7a-8d30-0a492af18594/scratchpad/cd/edition_check.py	2026-11-02 10:36:58.302095384 +0000
+@@ -45,6 +45,8 @@
+ NAMES = re.compile(r'const KY_NAMES = Object\.freeze\(\[([\s\S]*?)\]\)')
+ SCRIPT = re.compile(r'<script\b([^>]*)>([\s\S]*?)</script>', re.I)
+ STAMP = re.compile(r'^\d{12}$')
++KYED = re.compile(r"const KY_EDITION = '(\d{12})';")      # 13-check-debts: the one line that moves with the folder
++ANNOT = re.compile(r'\s*\([^()]*\)\s*$')                # 13-check-debts: a trailing annotation in a reads/writes entry
+ EXTRA = ['cam', 'lit', 'sel', 'redraw', 'draw', 'panels']          # team 4's patch, kept as written
+ P_META = re.compile(r'<meta http-equiv="refresh" content="0; url=(\d{12})/">')
+ P_LINK = re.compile(r'<a href="(\d{12})/">')
+@@ -368,8 +370,13 @@
+             if not h or h.group(1) != r.get('generation') or (fd and fd.group(1) != r.get('generation')):
+                 errs.append('%s: reference %s: stamp file %s, header %s, manifest %s' % (s, r.get('file'), fd and fd.group(1), h and h.group(1), r.get('generation')))
+             rb = block_of(t)
+-            if pblock is not None and rb != pblock:
+-                errs.append('%s: reference %s: hook-table block differs from index.html' % (s, r.get('file')))
++            # 13-check-debts: the reference copy keeps the KY_EDITION of the edition it was written for (202611012135);
++            # the page's KY_EDITION moves with every folder (the loader refuses a manifest whose edition differs from
++            # the page's, index.html:938). Compare the blocks with that one line normalised, and say so.
++            if pblock is not None and rb is not None and KYED.sub("const KY_EDITION = '<stamp>';", rb) != KYED.sub("const KY_EDITION = '<stamp>';", pblock):
++                errs.append('%s: reference %s: hook-table block differs from index.html beyond the KY_EDITION line' % (s, r.get('file')))
++            elif pblock is not None and rb != pblock:
++                ok.append('%s: reference %s: hook-table block equals index.html except KY_EDITION (reference %s, page %s)' % (s, r.get('file'), (KYED.search(rb) or [None, '?'])[1], (KYED.search(pblock) or [None, '?'])[1]))
+             if src_names is None and rb:
+                 src_names = NAMES.search(rb); names_from = r.get('file')
+         if pblock is None and order:
+@@ -421,6 +428,9 @@
+                 if w == 'window.KY.modules.%s' % rid:
+                     good = re.search(r"""id\s*:\s*['"]%s['"]""" % re.escape(rid), t) or re.search(r"""['"]%s['"]""" % re.escape(rid), t)
+                 else:
++                    # 13-check-debts: a record may annotate a target in a trailing parenthesis, '#hud (one line per frame)';
++                    # the literal checked is the part before it. Prose with no literal still fails.
++                    w = ANNOT.sub('', w).strip()
+                     lit = w[1:] if w.startswith('#') else (w[7:] if w.startswith('window.') else w)
+                     good = lit in t or (lit.startswith('ky-') and re.search(r"""['"]ky-['"]\s*\+""", t) and re.search(r"""['"]%s['"]""" % re.escape(lit[3:]), t))
+                 if not good:
