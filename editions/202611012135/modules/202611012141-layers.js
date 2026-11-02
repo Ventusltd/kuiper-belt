@@ -298,6 +298,12 @@
     var opener = panelName === 'shell' ? (panel.closest('.gm-panel') || panel) : panel;   // the element whose gm-open means "shown"
     new MutationObserver(function () { if (opener.classList.contains('gm-open')) { sizePanel(); requestAnimationFrame(sizePanel); fillLines(true); } })
       .observe(opener, { attributes: true, attributeFilter: ['class'] });
+    // the shell shows its panel by its own rule (not always a gm-open on the panel itself): watch it being laid out
+    if (panelName === 'shell' && typeof ResizeObserver === 'function') {
+      var shown = false;
+      new ResizeObserver(function () { var h = opener.getBoundingClientRect().height;
+        if (h && !shown) { sizePanel(); requestAnimationFrame(sizePanel); fillLines(true); } shown = !!h; }).observe(opener);
+    }
     // rows answer Enter and Space as a button does (NL-009 04 touch, as team 4's patch gave the Edition 4 rows)
     panel.addEventListener('keydown', function (e) { var row = e.target.closest && e.target.closest('#lineslist [data-i], #lineslist [data-g]');
       if (row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.stopPropagation(); row.click(); } });
