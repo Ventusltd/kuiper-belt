@@ -318,6 +318,16 @@ async function runDevice(browser, deviceName, shots) {
       { rows: apps.map(r => r && [r.id, r.status, r.why]), order, firstOfApps: firstApp, fontPx: { seeThrough: st && st.maxFont, largestOtherRow: otherMax, largestInPanel: p.panel && p.panel.maxFont } },
       t8 ? '' : why(apps.some(r => !appOk(r)) && 'app rows: ' + apps.map(r => r ? r.id + '=' + r.text : 'missing').join(' | '), !elementsRefused && 'elements row is not REFUSED · licence…', firstApp !== 'see-through' && 'first of THE APPS is ' + firstApp, st && !(st.maxFont > otherMax) && 'see-through label ' + st.maxFont + ' px, another row ' + otherMax + ' px', st && p.panel && st.maxFont < p.panel.maxFont && 'something in the panel is larger: ' + p.panel.maxFont + ' px'));
     await A.closePanel();
+    { const e1 = A.errors.length, h = await A.probe();
+      await A.page.evaluate(() => { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); });
+      await A.page.keyboard.press('e'); await sleep(2500); const withCard = (await A.probe()).card;
+      await A.page.keyboard.press('Escape'); await sleep(800);
+      await A.page.keyboard.press('e'); await sleep(2500);
+      await A.page.evaluate(() => history.back()); await sleep(1500); const after = await A.probe();
+      const ok = withCard && A.errors.length === e1 && after.marker === h.marker && /\/editions\/202611012135\//.test(after.url.href);
+      record('a-escape-back', 'REVIEW 6566289513: e opens a card; Escape, e and one back gesture (history.back) on the cut page: no page error, the page stays', ok,
+        { cardAfterE: withCard, newErrors: A.errors.slice(e1), sameDocument: after.marker === h.marker, href: after.url.href },
+        ok ? '' : why(!withCard && 'e opened no card', A.errors.length !== e1 && (A.errors.length - e1) + ' new error(s): ' + A.errors[e1].text, after.marker !== h.marker && 'the page was left or reloaded: ' + after.url.href)); }
     p = await A.probe();
     record('a-console', 'scenario A: zero console errors, zero page errors, zero failed requests', A.errors.length === 0, errFree(A, { keysJsonRequests: Object.entries(A.requests).filter(([u]) => /keys\.json/.test(u)) }), A.errors.length ? A.errors.length + ' error(s): ' + A.errors[0].text : '');
     await A.close();
@@ -454,6 +464,12 @@ function staticChecks() {
   // data files other steps own (apps.json step 7, drift.json step 8, …) are not layers of the seven records: listed, not gated
   rec('t9-hashes', 'test 9: every data file a record names (editions.json, keys.json, see-through.json, …) hashes to the record\'s sha256 and bytes; data/*.json no record names are listed', hashOk && L.some(r => r.source && r.source.file), { hashes, dataFiles, unrecorded },
     why2(!hashOk && 'mismatch: ' + JSON.stringify(hashes.filter(h => !h.ok).map(h => [h.id, h.file, h.exists ? 'sha ' + String(h.sha256).slice(0, 12) + ' vs ' + String(h.record).slice(0, 12) + ', bytes ' + h.bytes + ' vs ' + h.recordBytes : 'missing'])), unrecorded.length && 'listed, not a layer source: data/' + unrecorded.join(', data/')));
+  { const page = OVR_INDEX ? OVR_INDEX.toString('utf8') : fs.readFileSync(path.join(ED_DIR, 'index.html'), 'utf8'), mod = modBytes ? modBytes.toString('utf8') : '';
+    const has = re => ({ module: re.test(mod), page: re.test(page) });
+    const want = { band96: has(/MINBAND\s*=\s*96\b|minBand\s*[:=]\s*96\b|\b96\b[^\n]{0,80}band|band[^\n]{0,80}\b96\b/i), keeper: has(/ResizeObserver/), flyDuration: has(/tween\.dur\s*=|\.dur\s*=\s*|\bdur(ation)?\s*:\s*[^,}\n]*(dist|reduce)/i), contentVisibility: has(/#lineslist\s*\.ln\s*\{[^}]*content-visibility\s*:\s*auto/) };
+    const ok = Object.values(want).every(w => w.module || w.page);
+    rec('t9-carried', 'REVIEW 6566289513 (admission 4): the 96 px band rule, the card-resize keeper (ResizeObserver), the fly duration by distance and 07-perf content-visibility on #lineslist .ln survive the cut, in layers.js or the served page (found by pattern, as the REVIEW measured)', ok,
+      { found: want, page: OVR_INDEX ? '--index ' + flags['--index'] : 'index.html on disk' }, ok ? '' : 'missing: ' + Object.entries(want).filter(([, w]) => !(w.module || w.page)).map(([k]) => k).join(', ')); }
   const msf = path.join(HERE, 'MODULE.sha256'); let ms = null; if (fs.existsSync(msf)) ms = fs.readFileSync(msf, 'utf8');
   const msOk = ms && modBytes && ms.includes(sha256(modBytes)) && ms.includes(mods[0]);
   rec('t9-module-sha', 'hand-off: MODULE.sha256 names the module file and its measured sha256', !!msOk, { file: ms && ms.trim(), measured: modBytes && sha256(modBytes) }, ms ? (msOk ? '' : 'MODULE.sha256 does not match the module bytes') : 'no MODULE.sha256 in handoff/03-layers/');

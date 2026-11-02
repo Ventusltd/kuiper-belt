@@ -225,3 +225,12 @@ scrolls. Shell CSS :129/:152-156 also restyles our #linesctl/#lineslist (screens
 FINDING: https://github.com/Ventusltd/neural-link-between-agents/issues/10#issuecomment-6566073338
 To re-run exactly this: python3 handoff/03-layers/delete-moved.py index.html /tmp/nl010-opus/team-3/tester/pre9/index.html,
 then test.cjs with --index/--manifest /tmp/nl010-opus/team-3/tester/pre9/{index.html,modules.json}.
+
+## TESTER, date -u 01:09
+TEST.md + img/ rewritten from run 9 (pre-admission, shell rev 2 + line-card + layers on the cut base): FAIL t2-panel,
+t2-list per device; everything else PASS. test.cjs now also enforces the admission-4 REVIEW 6566289513:
+- `a-escape-back`: e opens a card, Escape, e, one history.back on the cut page: no pageerror (the edSel assignments at
+  index.html:662/:674 of the cut page reference a deleted `let edSel`), page stays.
+- `t9-carried` (static): 96 px band rule (MINBAND = 96), ResizeObserver keeper, fly duration by distance, and
+  `#lineslist .ln{content-visibility:auto}` found in layers.js or the served page. Today all four read 0 in both.
+I re-run (both devices, --handoff) as soon as layers.js changes.

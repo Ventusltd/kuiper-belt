@@ -120,7 +120,8 @@ async function waferFromPng(page, b64, yFrom) {
     const W = innerWidth, H = innerHeight, c = document.createElement('canvas'); c.width = W; c.height = H;
     const g = c.getContext('2d'); g.drawImage(img, 0, 0, W, H); const d = g.getImageData(0, 0, W, H).data;
     let lit = 0, tot = 0, minx = 1e9, miny = 1e9, maxx = -1, maxy = -1;
-    for (let y = Math.max(0, Math.floor(yFrom)); y < H; y++) for (let x = 0; x < W; x++) { if (ex.some(r => x >= r.left - 1 && x <= r.right + 1 && y >= r.top - 1 && y <= r.bottom + 1)) continue; const i = (y * W + x) * 4; tot++;
+    // NL-010: ceil, so the bar's own 1 px bottom rule (row 45 when the bar ends at 45.6) is not counted as wafer
+    for (let y = Math.max(0, Math.ceil(yFrom)); y < H; y++) for (let x = 0; x < W; x++) { if (ex.some(r => x >= r.left - 1 && x <= r.right + 1 && y >= r.top - 1 && y <= r.bottom + 1)) continue; const i = (y * W + x) * 4; tot++;
       const lum = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
       if (lum > 34) { lit++; if (x < minx) minx = x; if (y < miny) miny = y; if (x > maxx) maxx = x; if (y > maxy) maxy = y; } }
     return { excluded: ex.map(r => [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)]), litFraction: +(lit / Math.max(1, tot)).toFixed(4), litPx: lit, bbox: lit ? [minx, miny, maxx, maxy] : null, bboxW: lit ? maxx - minx + 1 : 0, bboxH: lit ? maxy - miny + 1 : 0 };
@@ -308,15 +309,18 @@ async function runDevice(browser, deviceName) {
       [p.panels.lines.visible ? 'LINES still open' : '', p.card.open ? '' : 'no card', cs6.ok ? '' : cs6.why, cap6.ok ? '' : 'card over its cap', hdr6.ok ? '' : 'card header is not the line of code (equals line_text ' + hdr6.equalsLineText + ', first text ' + hdr6.headerIsFirstText + ')'].filter(Boolean).join('; '));
 
     // 7 details
-    const h1 = p.card.height; if (p.card.detailsRect) await tapRect(p.card.detailsRect); await sleep(700); p = await probe();
+    // NL-010: a control is tapped where a person can see it: the part of its box inside #card's visible box and the viewport
+    const visPart = (r, p) => { if (!r || !p.card.rect) return null; const t = Math.max(r.top, p.card.rect.top), b = Math.min(r.bottom, p.card.rect.bottom, p.viewport.h), l = Math.max(r.left, p.card.rect.left, 0), rr = Math.min(r.right, p.card.rect.right, p.viewport.w); return { left: l, top: t, right: rr, bottom: b, width: +(rr - l).toFixed(1), height: +(b - t).toFixed(1), fraction: +(Math.max(0, b - t) / Math.max(1, r.height)).toFixed(2) }; };
+    const dv = visPart(p.card.detailsRect, p), detailsReach = dv && dv.height >= 8 && dv.width >= 8;
+    const h1 = p.card.height; if (detailsReach) await tapRect(dv); await sleep(700); p = await probe();
     const cap7 = cardUnderCap(p), cs7 = clearSpace(p);
     record('card-details', 'tap details: the card grows, stays under its cap and on screen', p.card.open && p.card.detailsOpen && p.card.detailsVisible && p.card.height > h1 && cap7.ok,
-      { heightBefore: h1, heightAfter: p.card.height, ...cap7, cardRect: p.card.rect, cardScrollHeight: p.card.scrollHeight, detailsOpen: p.card.detailsOpen, sparkStillClear: cs7.ok, clear: cs7, screenshot: await shot('card-details') },
-      [p.card.detailsOpen ? '' : 'details did not open', p.card.height > h1 ? '' : 'card did not grow', cap7.ok ? '' : 'card ' + p.card.height + ' px over cap ' + cap7.cap, cs7.ok ? '' : 'spark no longer clear: ' + cs7.why].filter(Boolean).join('; '));
+      { detailsVisiblePart: dv, detailsReachable: !!detailsReach, heightBefore: h1, heightAfter: p.card.height, ...cap7, cardRect: p.card.rect, cardScrollHeight: p.card.scrollHeight, detailsOpen: p.card.detailsOpen, sparkStillClear: cs7.ok, clear: cs7, screenshot: await shot('card-details') },
+      [detailsReach ? '' : 'details control not visible on the card (visible part ' + JSON.stringify(dv) + ')', p.card.detailsOpen ? '' : 'details did not open', p.card.height > h1 ? '' : 'card did not grow', cap7.ok ? '' : 'card ' + p.card.height + ' px over cap ' + cap7.cap, cs7.ok ? '' : 'spark no longer clear: ' + cs7.why].filter(Boolean).join('; '));
 
     // 8 ×
-    const xr = p.card.closeRect; if (xr) await tapRect(xr); await sleep(600); p = await probe();
-    record('card-close', 'tap ×: the card closes and the selection clears', !p.card.open && !p.magenta, { closeRect: xr, closeSize: xr ? [xr.width, xr.height] : null, cardOpen: p.card.open, magenta: p.magenta, screenshot: await shot('card-close') }, p.card.open ? 'card still open' : (p.magenta ? 'spark still selected' : (xr && (xr.width < 24 || xr.height < 24) ? 'note: × is ' + xr.width + 'x' + xr.height + ' px (under 24)' : '')));
+    const xr = p.card.closeRect, xv = visPart(xr, p); if (xv && xv.height >= 8 && xv.width >= 8) await tapRect(xv); await sleep(600); p = await probe();
+    record('card-close', 'tap ×: the card closes and the selection clears', !p.card.open && !p.magenta, { closeRect: xr, closeVisiblePart: xv, closeSize: xr ? [xr.width, xr.height] : null, cardOpen: p.card.open, magenta: p.magenta, screenshot: await shot('card-close') }, p.card.open ? 'card still open' : (p.magenta ? 'spark still selected' : (xr && (xr.width < 24 || xr.height < 24) ? 'note: × is ' + xr.width + 'x' + xr.height + ' px (under 24)' : '')));
 
     // 9 e × 3
     let prevIndex = null;

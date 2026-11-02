@@ -144,3 +144,22 @@ PASS (wafer tap (352,547), back closes, URL unchanged); lines-pick PASS, card 40
 (" *"), first text node; card-details 198.4 → 265.19 px under cap 265.2; pinch ratio 0.503, drag (−90,70) → (−90,70);
 spark-tap card 323 = nearest (1.8 px; second 26.1); modules [hello, line-card] admitted, refused []; console 0.
 
+**Pixel 7 landscape (00:46:59–01:03:35, load 41→63): 12 PASS, 6 FAIL, 0 console errors.** Report
+`runs/r3-pixel-7-landscape.json`. No landscape run exists on the base (run 0 was Pixel 7 only), so "turned red" cannot
+be decided from this run alone; each red is analysed:
+
+| step | landscape | cause, measured |
+|---|---|---|
+| load | FAIL → **SCRIPT** | bbox [0,45,862,324]: row 45 is the Edition 4 bar's 1 px bottom rule (bar bottom 45.6; 863 lit px in row 45, 0 in rows 44, 46, 47). Re-measured on the step's own PNG from row 47: disc 245×245 at (309,80)-(553,324): passes every disc rule. Script now starts at `ceil(bar bottom)` |
+| whole-wafer | FAIL → **SCRIPT** | same row 45; from row 47 the disc is 245×245, whole under the bar |
+| card-details | **FAIL, real (line-card, landscape)** | the card is capped at 30dvh = 108 px (top 240 of 360); its action row "open on GitHub · details" is cut by the cap (07-lines-pick.png), and the script tapped the centre of `details`, which lies in the clipped part: the tap went through to the wafer, the spark picker opened a pixel card (57.8 px, no ×). A person sees half of "details" at the bottom edge. Script now taps the visible part of a card control (and fails with "not visible" when under 8 px shows) |
+| card-close | FAIL (follows card-details) | the pixel card has no `.lc-x` |
+| spark-tap | FAIL | no unambiguous green spark in view after the zoom-out (greens 0), and the selected spark at y 242.1 is 0.7 px under the card top 241.4 (hit `div.lc-in`): the 108 px card takes the lower third of a 360 px screen |
+| see-through | FAIL (still red) | no control without the shell |
+| lines-pick | PASS | card 40, header = `line_text`, spark y 142.2 in [55.6, 230], card cap 108 |
+| panel-dismiss, edition-open/close, lines-open/filter, key-e-1..3, pinch-drag, modules, console | PASS | |
+
+Run 3 verdict for the integrator: on Pixel 7 and Galaxy S24 line-card turns no step red (both reds are run 0's).
+In landscape, line-card's 30dvh cap hides its action row (`details` half visible): reported to team 2 as a landscape
+MAJOR, not decided as "turned red" for lack of a landscape base; run 4 re-measures it with the fair tap.
+
