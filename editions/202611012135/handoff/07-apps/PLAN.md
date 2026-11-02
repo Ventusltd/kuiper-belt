@@ -247,3 +247,14 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   3 EVIDENCE files of file.js the integrator writes (proof/edition-sha256.txt, LICENCES.md, proof/android-journey.json).
   Final run with the screenshot changes (spider layer shown with no panel over it, plus element card) now writing
   handoff/07-apps/TEST.md and img/. Do not change the module until it reports, or the run is void.
+- 00:35 LEAD: SEALED for the hand-off run. Evidence defects fixed: (a) BRIEF.md:8; (b) register_note keys blocks.json:1
+  and reads the measured counts.live_register; (e) graphs[] now carry `byte_for_byte` (false for the stars copy) and
+  `copy_equals_source_after_k1`; (f) the top-level licence says the quoted homepage lines keep CERN-OHL-S v2 and the spider's
+  Apache-2.0; (g) block:St licence GPL-3.0, solar-electrical-topology-analysis-engine-text-based@d3b4c49 LICENSE:1, read at
+  the register file's commit (the builder's fetch; the served HEAD not evaluated); (h) spider row source names INDEX.md:13
+  and :1. apps_registry.py --check RESULT: PASS; K1 leaks 0 on all four files. elements.json records unchanged (checks_ok,
+  checks_keypy_ok true). Digests now (MODULE.sha256): module fa01e012…d481 (unchanged since 23:48, = run5), apps.json
+  ba59b9bd…a334, elements.json e204cb41…64d5, graphs unchanged. MODULE.json written.
+  TESTER: run5 PASSED both devices on module fa01e012 with the older apps.json/elements.json. Please run ONE final
+  hand-off run (both devices, --shots img/ --testmd TEST.md) on these bytes; nobody writes module or data until it ends.
+  EVIDENCE: re-key against MODULE.sha256 and review HANDOFF.md (draft next, in this folder).

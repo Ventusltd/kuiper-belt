@@ -289,14 +289,16 @@ class T1Parse(Base):
         self.assertFails(self.f.run(), {'E1'}, ['editions/%s/index.html script' % OLD])
 
     def test_unreferenced_js_in_modules_is_parsed(self):
-        self.f.edit('modules/%s-loader.js' % G_REF, "'redraw']);", "'redraw'];")
+        # the loader reference is in no `modules` record (E7/E8 never read it) and its hook-table block is untouched (E6)
+        self.f.edit('modules/%s-loader.js' % G_REF, '// fixture: the reviewable copy', '(; // fixture: the reviewable copy')
         self.f.rehash()
-        self.assertFails(self.f.run(), {'E1'}, ['modules/%s-loader.js' % G_REF], code='E1')
+        self.assertFails(self.f.run(), {'E1'}, ['modules/%s-loader.js' % G_REF, 'SyntaxError'])
 
     def test_json_script_block_is_not_parsed_as_javascript(self):
         r = self.f.run()
         self.assertPasses(r)
-        self.assertIn('1 script blocks in 2 editions/*/index.html', r.text['E1'])
+        # one JavaScript block per page; the application/json block of the new page is not handed to node --check
+        self.assertIn('2 script blocks in 2 editions/*/index.html', r.text['E1'])
 
 
 class T2Manifest(Base):
@@ -304,7 +306,7 @@ class T2Manifest(Base):
 
     def test_one_altered_byte_is_refused_sha256_mismatch(self):
         p = self.f.p('modules/%s-hello.js' % G_HELLO)
-        b = bytearray(open(p, 'rb').read()); i = b.index(b'ky-hello'); b[i + 3] = ord('H')
+        b = bytearray(open(p, 'rb').read()); i = b.index(b"'use strict'"); b[i + 5] = ord('S')   # 'use Strict': parses, same length
         write(p, bytes(b)); self.f.recut()           # same length; the proof re-cut so only the manifest can see it
         self.assertFails(self.f.run(), {'E2'}, ['hello refused: sha256 mismatch'])
 
@@ -318,9 +320,17 @@ class T2Manifest(Base):
         self.assertFails(self.f.run(), {'E2'}, ['greet: modules/%s-greet.js missing' % G_GREET])
 
     def test_path_outside_modules(self):
+        man = self.f.manifest(); man['modules'][1]['path'] = '../%s/greet.js' % OLD
+        self.f.set_manifest(man)
+        # greet's own file is now named by no record: E2 also reports it as a stray file
+        self.assertFails(self.f.run(), {'E2'}, ['greet: path', 'is not inside modules/', 'stray file'])
+
+    def test_path_outside_modules_to_an_existing_file(self):
+        # a record that escapes modules/ is refused by E2; E6-E8 still read the file it names (here the older
+        # folder's keys.json) and fail on it too, so the verdict is FAIL either way
         man = self.f.manifest(); man['modules'][1]['path'] = '../%s/keys.json' % OLD
         self.f.set_manifest(man)
-        self.assertFails(self.f.run(), {'E2'}, ['is not inside modules/'])
+        self.assertFails(self.f.run(), {'E2', 'E6', 'E7', 'E8'}, ['is not inside modules/'])
 
     def test_stray_file_named_by_nobody(self):
         write(self.f.p('modules/202601020003-stray.js'), '/* stray */\nvar s = 1;\n'); self.f.recut()
@@ -395,7 +405,7 @@ class T3Proof(Base):
         self.assertTrue(any(s.startswith('E3: ') and 'no proof/edition-sha256.txt yet' in s for s in r.skips), r.out)
         r = self.f.run('--strict')
         self.assertEqual((r.result, r.code), ('FAIL', 1), r.out)
-        self.assertIn('NOT EVALUATED under --strict', r.out) if 'NOT EVALUATED under' in r.out else None
+        self.assertIn('NOT EVALUATED:', r.out)
         r = self.f.run('--strict', '--pre-cut')
         self.assertPasses(r)
         self.assertIn('(allowed by --pre-cut)', r.out)
@@ -623,7 +633,7 @@ class T9Drift(Base):
         self.assertIn('repob', r.text['E9'])
         r = self.f.run('--strict')
         self.assertEqual((r.result, r.code), ('FAIL', 1), r.out)
-        self.assertIn('NOT EVALUATED under --strict', r.out) if 'under --strict' in r.out else None
+        self.assertIn('NOT EVALUATED:', r.out)
 
 
 @unittest.skipIf(not REAL, 'pass --real to mutate a copy of this repository\'s Edition 5 folder')

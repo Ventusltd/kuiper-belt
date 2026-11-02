@@ -344,7 +344,7 @@ def main():
                         'at that commit, licensed by its own repository, as keys.json carries line_text.'
                         % ((head or 'UNKNOWN')[:7]),
         'register_note': 'the catalogue is pinned to the register of 2026-09-15 (244 blocks, elements CATALOGUE.md:3); '
-                         'the live register holds 606 (stars@cbca125 blocks/blocks.json:2)',
+                         'the live register holds %d (counts.live_register, stars@cbca125 blocks/blocks.json:1, a one-line file)' % (lr['blocks'] if lr else -1) + '',
         'law': 'key = k0(wafer row of files[0].commit) + lines before files[0].path in `git ls-tree -r <commit>` + '
                '(1 - 1), by tools/edition_keys.py walk_commit(); placed only when the walk lands on the wafer '
                'row\'s lines and the file holds a text line',

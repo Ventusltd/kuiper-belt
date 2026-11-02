@@ -41,6 +41,7 @@ KEY_RE = re.compile(r'^(block:[A-Za-z0-9]+|surface:https://)')
 LICENCE_FILES = ('LICENSE', 'LICENSE.md', 'LICENSE.txt', 'LICENCE', 'LICENCE.md', 'NOTICE', 'NOTICE.md')
 LICENCE_NAMES = [(re.compile(r'CERN[- ]O(pen )?H(ardware )?L(icence)?[- ]?(Version 2|v2)?[^\n]*Strongly Reciprocal|CERN[- ]OHL-S', re.I), 'CERN-OHL-S-2.0'),
                  (re.compile(r'Apache License|Apache-2\.0|Apache License, Version 2\.0', re.I), 'Apache-2.0'),
+                 (re.compile(r'GNU GENERAL PUBLIC LICENSE', re.I), 'GPL'),
                  (re.compile(r'\bMIT License\b', re.I), 'MIT'),
                  (re.compile(r'CC BY 4\.0|Creative Commons Attribution 4\.0', re.I), 'CC-BY-4.0')]
 
@@ -53,9 +54,13 @@ def git(d, *a):
 
 
 def find_clone(roots, name):
-    for root in roots:
+    for root in roots:                                   # a working clone first, then a bare fetch (objects/ + HEAD)
         d = os.path.join(root, name)
         if os.path.isdir(os.path.join(d, '.git')):
+            return d
+    for root in roots:
+        d = os.path.join(root, name)
+        if os.path.isdir(os.path.join(d, 'objects')) and os.path.exists(os.path.join(d, 'HEAD')):
             return d
     return None
 
@@ -82,16 +87,24 @@ def repo_of(url):
     return None, None
 
 
-def licence_of(roots, url):
-    """quote the licence of the folder the link lands in, nearest file first, then the repository root"""
+def licence_of(roots, url, at=None):
+    """quote the licence of the folder the link lands in, nearest file first, then the repository root; `at` is a
+    recorded commit (a register file's) to read when the only copy of the repository is a fetch of that commit"""
     repo, sub = repo_of(url)
     if not repo:
         return {'licence': 'NOT EVALUATED: no repository rule for %s' % url, 'licence_key': None}
     d = find_clone(roots, repo)
     if not d:
         return {'licence': 'NOT EVALUATED: no clone of %s on this machine' % repo, 'licence_key': None}
-    head = git(d, 'rev-parse', 'HEAD').decode().strip()
-    tracked = set(git(d, 'ls-files').decode('utf-8', 'replace').split('\n'))
+    note = None
+    try:
+        head = git(d, 'rev-parse', '--verify', 'HEAD^{commit}').decode().strip()
+    except RuntimeError:
+        if not at:
+            return {'licence': 'NOT EVALUATED: the copy of %s has no HEAD' % repo, 'licence_key': None}
+        head = at
+        note = 'read at the register file\'s commit %s; the served HEAD was not evaluated' % at[:7]
+    tracked = set(git(d, 'ls-tree', '-r', '--name-only', head).decode('utf-8', 'replace').split('\n'))
     parts = [p for p in sub.split('#')[0].split('?')[0].split('/') if p]
     if parts and '.' in parts[-1]:
         parts = parts[:-1]
@@ -105,8 +118,13 @@ def licence_of(roots, url):
             for i, line in enumerate(text[:40], 1):
                 for rx, name in LICENCE_NAMES:
                     if rx.search(line):
-                        return {'licence': name, 'licence_key': '%s@%s %s:%d' % (repo, head[:7], p, i),
-                                'licence_line': line.strip()}
+                        if name == 'GPL':
+                            v = re.search(r'Version (\d)', '\n'.join(text[:4]))
+                            name = 'GPL-%s.0' % v.group(1) if v else 'GPL (version not stated)'
+                        r = {'licence': name, 'licence_key': '%s@%s %s:%d' % (repo, head[:7], p, i), 'licence_line': line.strip()}
+                        if note:
+                            r['licence_note'] = note
+                        return r
     return {'licence': 'not stated', 'licence_key': '%s@%s (no LICENSE, NOTICE or licence sentence tracked)' % (repo, head[:7])}
 
 
@@ -146,7 +164,7 @@ def build(roots, edition):
         r = {'key': k, 'id': k, 'key_source': 'register', 'name': k, 'kind': 'app',
              'purpose': 'not copied: elements@f7a92fb states no licence (owner question Q1); read it at the catalogue link',
              'catalogue': cat, 'link': link}
-        r.update(licence_of(roots, link))
+        r.update(licence_of(roots, link, at=next((f['commit'] for f in a.get('files', []) if repo_of(link)[0] and f['repo'].split('/')[-1] == repo_of(link)[0]), None)))
         r.update({'source': 'elements@f7a92fb APPS.md:%d' % n,
                   'wafer': w, 'wafer_why': None if w else 'no register file of this app has its commit on cosmos/wafer.tsv',
                   'same_as': [SAME_AS[k]] if k in SAME_AS else [], 'copied': 'linked (key only, Q1)'})
@@ -191,7 +209,8 @@ def build(roots, edition):
         graphs.append({'file': g['file'], 'source': '%s@%s %s' % (g['repo'], g['commit'][:7], g['path']),
                        'source_sha256': sha256(raw), 'source_bytes': len(raw), 'k1_redacted_tokens': nred,
                        'sha256': sha256(b), 'bytes': len(b), 'nodes': len(j.get('nodes', [])), 'edges': len(j.get('edges', [])),
-                       'copy_matches_source': (here == b) if here is not None else 'not copied yet',
+                       'byte_for_byte': nred == 0,
+                       'copy_equals_source_after_k1': (here == b) if here is not None else 'not copied yet',
                        'licence': licence_of(roots, 'https://ventusltd.github.io/%s/' % g['repo'])['licence'],
                        'status': 'DISCLOSED (owner question Q5): copied with its sha256 and source address, byte for byte'
                                  + ('' if not nred else ' except %d token(s) naming a non-public repository, replaced by not-public (K1)' % nred)})
@@ -200,7 +219,7 @@ def build(roots, edition):
          'purpose': re.split(r'\s*\|\s*', il[SRC['spider']['line'] - 1].strip('| '))[2],
          'link': link, 'link_note': 'GitHub tree at the recorded commit: no served address of the spider is keyed (elements SURFACES.md records none; UNVERIFIED)'}
     r.update(licence_of(roots, link))
-    r.update({'source': 'testcode@d09c185 spider/INDEX.md:13', 'wafer': None,
+    r.update({'source': 'testcode@d09c185 spider/INDEX.md:13 (purpose), :1 (name)', 'wafer': None,
               'wafer_why': 'the spider is a folder of testcode, not a register block',
               'same_as': [], 'copied': 'linked; 2 graphs copied (DISCLOSED, Q5)', 'graphs': graphs})
     rows.append(r)
@@ -210,7 +229,7 @@ def build(roots, edition):
     link = 'https://ventusltd.github.io/stars/blocks/'
     r = {'key': 'surface:' + link, 'id': 'periodic-table', 'key_source': 'issued-here', 'issued_by': 'data/apps.json',
          'name': 'Periodic table', 'kind': 'catalogue',
-         'purpose': "the owner's words: \"bring in periodic table\" (neural-link FIXES/NL-010/BRIEF.md:9); the catalogue's own text is not copied (Q1)",
+         'purpose': "the owner's words: \"bring in periodic table\" (neural-link FIXES/NL-010/BRIEF.md:8); the catalogue's own text is not copied (Q1)",
          'catalogue': 'https://github.com/Ventusltd/elements/blob/%s/CATALOGUE.md' % E, 'link': link}
     r.update(licence_of(roots, link))
     r.update({'source': 'elements@f7a92fb CATALOGUE.md:1', 'wafer': None,
@@ -231,7 +250,10 @@ def build(roots, edition):
             if other != r['id'] and other not in r['same_as']:
                 r['same_as'].append(other)
     out = {'schema': 'kuiper.apps.v1', 'edition': os.path.basename(os.path.normpath(edition)),
-           'built_by': 'tools/apps_registry.py', 'licence': 'CC BY 4.0 (kuiper-belt data); each row carries its target\'s own licence',
+           'built_by': 'tools/apps_registry.py',
+           'licence': 'CC BY 4.0 (kuiper-belt data) for the fields written here; quoted words keep their source\'s licence: '
+                      'the 25 homepage name, kind and purpose lines globalgrid2050 CERN-OHL-S v2 (LICENSE.txt:1), the spider '
+                      'row\'s testcode Apache-2.0 (LICENSE:2); each row\'s `licence` is its TARGET app\'s licence',
            'provenance': {'sources': [
                {'repo': 'elements', 'commit': E, 'path': 'APPS.md', 'lines': '7-13', 'sha256': sha256(apps_md)},
                {'repo': 'elements', 'commit': E, 'path': 'catalogue/apps.json', 'use': 'live[0], files[] only', 'sha256': sha256(show(el, E, 'catalogue/apps.json'))},
@@ -282,7 +304,7 @@ def check(edition, roots):
     for g in sp['graphs']:
         p = os.path.join(edition, g['file'])
         b = open(p, 'rb').read() if os.path.exists(p) else b''
-        ok(sha256(b) == g['sha256'] and len(b) == g['bytes'] and g['copy_matches_source'] is True,
+        ok(sha256(b) == g['sha256'] and len(b) == g['bytes'] and g['copy_equals_source_after_k1'] is True and g['byte_for_byte'] == (g['k1_redacted_tokens'] == 0),
            'Q5 %s is the copy of %s (sha256 %s; source %s; K1 tokens replaced %d)' % (g['file'], g['source'], g['sha256'][:12], g['source_sha256'][:12], g['k1_redacted_tokens']))
     gfiles = sorted(os.listdir(os.path.join(edition, 'data', 'graphs')))
     ok(gfiles == ['overview.json', 'periodic-table.json'], 'Q5 data/graphs holds only the two DISCLOSED graphs %s' % gfiles)

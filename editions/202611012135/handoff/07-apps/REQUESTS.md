@@ -9,6 +9,9 @@
    'apps', load, draw})`. Keep the `elements` licence `UNSETTLED: …` until the owner answers Q1: that is what makes the
    row read `REFUSED · licence unsettled` (layers.js:598), which this team must honour. `data/apps.json` is not a layer
    (a registry the launcher reads); please do not count it as an unrecorded layer file, or record it as `registry`.
+   Measured: layers.json `elements` already records `source.sha256` 781dc0d9…a620, an earlier data/elements.json; the
+   sealed file is e204cb414d38d4c174083f55a46a57179fd48b4c8ed8248a7ba0f995601964d5 (MODULE.sha256 here): please re-run
+   tools/build_layers.py so the record carries it.
 2. **Opus 10 (integrator), modules.json.** Admit `apps` after `see-through` (order 7): path
    `modules/202611012309-apps.js`, generation `202611012309`, licence `Apache-2.0`, requires (16): wafer keyPlace flyTo
    esc fmt cv o2 hud card repos commits SPACE cam sel redraw draw, provides `apps`; sha256 and bytes in

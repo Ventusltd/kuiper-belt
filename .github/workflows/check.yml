@@ -24,3 +24,5 @@ jobs:
           node-version: '20'
       - name: Check, and fail closed
         run: python tools/ci_check.py
+      - name: Check the editions by their law (editions/LAW.md 9.3), and fail closed
+        run: python tools/edition_check.py
