@@ -1,9 +1,9 @@
 {
  "id": "drift",
- "generation": "202611012325",
- "path": "modules/202611012325-drift.js",
- "sha256": "df511ccb7ae6596aea29827d2eca5eb531b95b46af3699a4d101c53b22976dd7",
- "bytes": 22637,
+ "generation": "202611020240",
+ "path": "modules/202611020240-drift.js",
+ "sha256": "f03b78350694362f0d0203647231c9809661a0aac7392f6fd776f519ce391480",
+ "bytes": 23124,
  "byte_budget": 65536,
  "requires": [
   "wafer",
@@ -40,7 +40,7 @@
   "#card .ky-drift-cl",
   "#hud (one DRIFT line per frame, appended)"
  ],
- "creates_controls": "the drift section: five class filters (44 px) and the list of the chosen class, in the shell's WAFER panel when the shell is admitted, else inside the page's LINES panel (#lines, before #lineslist); a tap on an amber MOVED spark opens its card",
+ "creates_controls": "the drift section: one collapsed 44 px row after #lineslist (LINES panel; the shell's WAFER panel only when the page has no #lineslist), holding five class filters (44 px) and the list of the chosen class; a tap on an amber MOVED spark opens its card",
  "licence": "Apache-2.0",
  "team": "08",
  "step": 8,

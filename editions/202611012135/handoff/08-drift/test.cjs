@@ -61,6 +61,7 @@ function manifest(withDrift) {
 }
 const MOVED = DRIFT.rows.filter(r => r.class === 'MOVED');
 const BASEBAR = {};
+const BASEPICK = {};
 const C = DRIFT.summary.counts;
 
 async function overlay(page, x, y, rad) {   // classify overlay pixels in a box (or the whole canvas)
@@ -73,6 +74,26 @@ async function overlay(page, x, y, rad) {   // classify overlay pixels in a box 
       if (r > 200 && g > 120 && g < 200 && b < 70) amber++; else if (g > 180 && r < 90 && b < 150 && g > b + 60) green++; }
     return { amber, green, w: ov.width, cssW: innerWidth };
   }, [x, y, rad || 0]);
+}
+
+// the integrator's journey step lines-pick, in our own run (OPUS-CONTROLLER REVIEW, issue #10 comment 6567584787):
+// open LINES by a tap, type "acceptance" into #lyFind, tap the first .ln[data-i]; the card must open. The first row's
+// rect is recorded so B (drift admitted) can be compared with A (no drift module): the rows must not move.
+async function linesPick(page, ok) {
+  const t = await page.evaluate(() => { const b = document.querySelector('#kuiper-menu-bar') ? [...document.querySelectorAll('#kuiper-menu-bar .gm-title')].find(x => x.textContent.trim().toUpperCase() === 'WAFER')
+      : [...document.querySelectorAll('#bar button, #bar a, #bar [role=button]')].find(x => x.textContent.trim().toUpperCase() === 'LINES');
+    if (!b) return null; const r = b.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
+  if (t) { await page.touchscreen.tap(t[0], t[1]); await sleep(1500); }
+  const f = await page.evaluate(() => { const i = document.querySelector('#lyFind'); if (!i) return null; const r = i.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
+  if (f) { await page.touchscreen.tap(f[0], f[1]); await sleep(300); await page.keyboard.type('acceptance', { delay: 30 }); await sleep(900); }
+  const row = await page.evaluate(() => { const r = document.querySelector('#lineslist .ln[data-i]'); if (!r) return null; const q = r.getBoundingClientRect(); const x = q.left + q.width / 2, y = q.top + Math.min(q.height / 2, 20);
+    const e = document.elementFromPoint(x, y); return { x, y, top: +q.top.toFixed(1), h: +q.height.toFixed(1), i: +r.dataset.i, onTop: !!(e && r.contains(e)), vh: innerHeight }; });
+  if (row) { await page.touchscreen.tap(row.x, row.y); await sleep(5000); }
+  const card = await page.evaluate(() => { const c = document.querySelector('#card'); return { open: !!c && c.style.display === 'block', text: c ? c.textContent.slice(0, 80) : '' }; });
+  const pass = !!row && row.onTop && row.y < row.vh && card.open;
+  ok('lines-pick: filter "acceptance", tap the first row, the card opens', pass, row ? 'first row .ln[data-i=' + row.i + '] at top ' + row.top + ' px (' + (row.onTop ? 'on top' : 'COVERED') + '), card ' + (card.open ? 'open: ' + JSON.stringify(card.text) : 'NOT open') : 'no row after filtering');
+  await page.evaluate(() => { const c = document.querySelector('#card'); const x = c && c.querySelector('.lc-x,.cx'); if (x) x.click(); }); await sleep(1200);
+  return row;
 }
 
 async function run(devName, scen) {
@@ -97,7 +118,8 @@ async function run(devName, scen) {
     const b = document.querySelector(shell ? '#kuiper-menu-bar' : '#bar'); return { bar: shell ? '#kuiper-menu-bar (the shell)' : '#bar (the page, no shell admitted)', shell, titles: ts.map(t => t.textContent.trim()), rows: tops.size, h: b ? Math.round(b.getBoundingClientRect().height) : null, sw: b ? b.scrollWidth : 0, cw: b ? b.clientWidth : 0 }; });
   const bar = await barOf();
   const res = { device: devName, scenario: scen, base, bar };
-  if (scen === 'A') { BASEBAR[devName] = bar; ok('baseline wafer', base.green > 0, base.green + ' green overlay px, no drift module; bar ' + bar.bar + ' ' + bar.rows + ' row(s): ' + bar.titles.join('|')); }
+  if (scen === 'A') { BASEBAR[devName] = bar; ok('baseline wafer', base.green > 0, base.green + ' green overlay px, no drift module; bar ' + bar.bar + ' ' + bar.rows + ' row(s): ' + bar.titles.join('|'));
+    res.pick = await linesPick(page, ok); BASEPICK[devName] = res.pick; }
   if (scen === 'B') {
     let s = await ins();
     const hud = await page.evaluate(() => document.querySelector('#hud').textContent);
@@ -155,6 +177,10 @@ async function run(devName, scen) {
       ok('tap within 9 px opens its card', s.taps === before + 1 && card2.open && card2.drift && card2.drift.includes(line), 'tap at +6,+6 (8.5 px): taps ' + before + '→' + s.taps + ', ' + JSON.stringify(card2.drift));
       await page.evaluate(() => { const c = document.querySelector('#card'); const x = c.querySelector('.lc-x,.cx'); if (x) x.click(); }); await sleep(1500);
     }
+    const pk = await linesPick(page, ok), bp = BASEPICK[devName];
+    ok('lines-pick: the first row is where it is without drift', !!pk && !!bp && Math.abs(pk.top - bp.top) <= 1 && pk.i === bp.i,
+      'first filtered row: without drift top ' + (bp ? bp.top + ' px, data-i ' + bp.i : '?') + ', with drift top ' + (pk ? pk.top + ' px, data-i ' + pk.i : '?'));
+    await page.evaluate(() => { const i = document.querySelector('#lyFind'); if (i) { i.value = ''; i.dispatchEvent(new Event('input', { bubbles: true })); } });
     // the LINES filter "moved", reached the way a finger reaches it: the shell's WAFER title when the shell is admitted,
     // else the page's own LINES button (ROADMAP step 8: "LINES gains a filter by class"); no programmatic panel opening
     const w = await page.evaluate(() => { const t = document.querySelector('#kuiper-menu-bar') ? [...document.querySelectorAll('#kuiper-menu-bar .gm-title')].find(b => b.textContent.trim().toUpperCase() === 'WAFER')
@@ -162,6 +188,13 @@ async function run(devName, scen) {
       if (!t) return null; const r = t.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2, t.textContent.trim()]; });
     if (w) { await page.touchscreen.tap(w[0], w[1]); await sleep(2500); }
     await page.evaluate(() => { const d = document.querySelector('#ky-drift'); if (d) d.scrollIntoView({ block: 'start' }); }); await sleep(800);
+    // the section is one collapsed 44 px row after #lineslist: open it with a finger
+    const sm = await page.evaluate(() => { const x = document.querySelector('#ky-drift summary'); if (!x) return null; const r = x.getBoundingClientRect(); return [r.left + Math.min(r.width / 2, 120), r.top + r.height / 2, r.height, !!x.parentNode.open]; });
+    if (sm && !sm[3]) { await page.touchscreen.tap(sm[0], sm[1]); await sleep(1000); }
+    const opened = await page.evaluate(() => { const d = document.querySelector('#ky-drift details'); const r = document.querySelector('#ky-drift'); const l = document.querySelector('#lineslist');
+      return { open: !!(d && d.open), after: !!(l && r && (l.compareDocumentPosition(r) & Node.DOCUMENT_POSITION_FOLLOWING)) }; });
+    ok('drift section: one 44 px row after #lineslist, opened by a tap', !!sm && sm[2] >= 44 && opened.open && opened.after, 'summary ' + (sm ? sm[2].toFixed(0) + ' px' : 'missing') + ', opened ' + opened.open + ', after #lineslist ' + opened.after);
+    await page.evaluate(() => { const d = document.querySelector('#ky-drift'); if (d) d.scrollIntoView({ block: 'start' }); }); await sleep(600);
     const chip = await page.evaluate(() => { const b = document.querySelector('#ky-drift .kd-c button[data-class=MOVED]'); if (!b) return null; const r = b.getBoundingClientRect(); const x = r.left + r.width / 2, y = r.top + r.height / 2;
       const e = document.elementFromPoint(x, y); return [x, y, r.height, !!(e && b.contains(e)), e ? (e.id || e.className || e.tagName) : 'none', (b.closest('.gm-panel,[id]:not(#ky-drift)') || {}).id || ''];
     });

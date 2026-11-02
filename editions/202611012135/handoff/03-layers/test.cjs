@@ -333,6 +333,33 @@ async function runDevice(browser, deviceName, shots) {
     record('a-console', 'scenario A: zero console errors, zero page errors, zero failed requests', A.errors.length === 0, errFree(A, { keysJsonRequests: Object.entries(A.requests).filter(([u]) => /keys\.json/.test(u)) }), A.errors.length ? A.errors.length + ' error(s): ' + A.errors[0].text : '');
     await A.close();
 
+    // ============================================================ C: pick -> details -> close (REVIEW issuecomment-6567442274)
+    // a LINES row opens the card (line-card's when admitted, else Edition 4's); a tap on details grows it and keeps it
+    // open; a tap on x closes it and clears the selection. Measured on the card's own display and height.
+    {
+      const C = await open('C-card', ED_URL);
+      p = await C.until(C.settled, STATE_MAX); await sleep(FIXED_WAIT);
+      await C.openPanel(); await sleep(600);
+      const cardM = () => C.page.evaluate(() => { const c = document.getElementById('card'), cs = getComputedStyle(c), r = c.getBoundingClientRect();
+        const q = s => { const e = c.querySelector(s); if (!e) return null; const b = e.getBoundingClientRect(); return { left: b.left, top: b.top, right: b.right, bottom: b.bottom, width: b.width, height: b.height }; };
+        let t = null; try { t = window.KY.sel.target; } catch (e) {}
+        return { display: cs.display, visibility: cs.visibility, height: Math.round(r.height), shown: cs.display !== 'none' && cs.visibility !== 'hidden' && r.height > 0,
+          details: q('.lc-t') || q('.ct'), close: q('.lc-x') || q('.cx'), open: c.classList.contains('lc-open') || c.classList.contains('open'), target: !!t }; });
+      const row = await C.page.evaluate(() => { const r = document.querySelector('#lineslist [data-i]'); if (!r) return null; r.scrollIntoView({ block: 'center' }); const b = r.getBoundingClientRect(); return { left: b.left, top: b.top, right: b.right, bottom: b.bottom }; });
+      if (row) { await C.tap(row); await sleep(2500); }
+      const c1 = await cardM();
+      if (c1.details) { await C.tap(c1.details); await sleep(1500); }
+      const c2 = await cardM();
+      if (c2.close) { await C.tap(c2.close); await sleep(1500); }
+      const c3 = await cardM();
+      const okD = !!row && c1.shown && c2.shown && c2.open && c2.height > c1.height;
+      const okX = okD && !c3.shown && !c3.target;
+      record('t10-card-details', 'pick a LINES row, tap details: the card stays shown, opens its details and grows (REVIEW 6567442274)', okD, { picked: !!row, afterPick: c1, afterDetails: c2 },
+        okD ? '' : 'after pick ' + JSON.stringify({ shown: c1.shown, h: c1.height }) + ', after details ' + JSON.stringify({ shown: c2.shown, open: c2.open, h: c2.height, display: c2.display }));
+      record('t10-card-close', 'tap x: the card closes and the selection (KY.sel.target) clears', okX, { afterClose: c3 }, okX ? '' : 'after close ' + JSON.stringify({ shown: c3.shown, target: c3.target }));
+      await C.close();
+    }
+
     // ============================================================ B, C, D: the link restores the layers (hash, query, through the pointer)
     const pointerSrc = fs.readFileSync(path.join(REPO, 'editions/index.html'), 'utf8');
     const target = (pointerSrc.match(/location\.replace\('(\d{12})\//) || [])[1];
@@ -439,11 +466,15 @@ function staticChecks() {
   while (tries++ < 4) { try { ci = cp.execFileSync('python3', ['tools/ci_check.py'], { cwd: REPO, encoding: 'utf8', timeout: 300000, stdio: ['ignore', 'pipe', 'pipe'] }); } catch (e) { ci = String(e.stdout || '') + String(e.stderr || '') + ' (exit ' + e.status + ')'; }
     if (!/FileNotFoundError[^\n]*\.ci-|FileExistsError[^\n]*\.ci-/.test(ci)) break; cp.execFileSync('sleep', [String(5 + Math.floor(Math.random() * 20))]); }   // another run's temp file at the repo root (tools/ci_check.py:77)
   rec('t9-ci', 'test 9: python3 tools/ci_check.py prints RESULT: PASS', /RESULT: PASS/.test(ci), { tail: ci.trim().split('\n').slice(-5), tries }, /RESULT: PASS/.test(ci) ? '' : ci.trim().split('\n').slice(-1)[0]);
-  const mods = fs.readdirSync(path.join(ED_DIR, 'modules')).filter(f => /^\d{12}-layers\.js$/.test(f));
+  // lead: a revision is a new stamped file beside the old one (ROADMAP 4.3, never edited after publication); test the one
+  // MODULE.json names (else the newest stamp), and list the earlier generations
+  const allMods = fs.readdirSync(path.join(ED_DIR, 'modules')).filter(f => /^\d{12}-layers\.js$/.test(f)).sort();
+  let named = null; try { named = JSON.parse(fs.readFileSync(path.join(HERE, 'MODULE.json'), 'utf8')).file; } catch (e) {}
+  const mods = [allMods.includes(named) ? named : allMods[allMods.length - 1]].filter(Boolean);
   let nc = null; if (mods.length === 1) { try { cp.execFileSync(process.execPath, ['--check', path.join(ED_DIR, 'modules', mods[0])], { stdio: 'pipe' }); nc = 'exit 0'; } catch (e) { nc = String(e.stderr || e.message).split('\n').slice(0, 4).join(' '); } }
   const modBytes = mods.length === 1 ? fs.readFileSync(path.join(ED_DIR, 'modules', mods[0])) : null;
   const regs = modBytes ? (modBytes.toString('utf8').match(/KY\.register\(/g) || []).length : 0;
-  rec('t9-module', 'test 9: exactly one modules/<stamp>-layers.js, node --check exits 0, exactly one KY.register(', mods.length === 1 && nc === 'exit 0' && regs === 1, { files: mods, nodeCheck: nc, registers: regs, sha256: modBytes && sha256(modBytes), bytes: modBytes && modBytes.length },
+  rec('t9-module', 'test 9: exactly one modules/<stamp>-layers.js, node --check exits 0, exactly one KY.register(', mods.length === 1 && nc === 'exit 0' && regs === 1, { files: mods, earlierGenerations: allMods.filter(f => !mods.includes(f)), nodeCheck: nc, registers: regs, sha256: modBytes && sha256(modBytes), bytes: modBytes && modBytes.length },
     mods.length !== 1 ? mods.length + ' layers modules' : (nc !== 'exit 0' ? nc : (regs !== 1 ? regs + ' KY.register( calls' : '')));
   let man = null, manErr = null; try { man = JSON.parse(fs.readFileSync(path.join(ED_DIR, 'data/layers.json'), 'utf8')); } catch (e) { manErr = e.message; }
   const palette = (fs.readFileSync(path.join(REPO, 'PALETTE.md'), 'utf8').match(/#[0-9a-fA-F]{6}\b/g) || []).map(s => s.toLowerCase());
