@@ -4,7 +4,7 @@ Written by `handoff/08-drift/test.cjs` (OPUS-8 tester). P1 determinism, P2 refus
 
 tools/drift.py sha256 `29fdb05e5717aee41a5b0ed149b715bf4d997cdbee045bef90da9dd7a6b6080e`; keys.json sha256 `1c293c337b4c3c8442c12746ce3cd08d920c763344f18333f75e73aa9fc7242b`.
 
-Run 2026-11-02T03:36:37.871Z · http://127.0.0.1:8480/editions/202611012135/ · **pre-integration** (modules.json routed: served records re-hashed from disk + line-card + drift)
+Run 2026-11-02T04:03:42.305Z · http://127.0.0.1:8480/editions/202611012135/ · **pre-integration** (modules.json routed: served records re-hashed from disk + line-card + drift)
 Module `modules/202611020240-drift.js` sha256 `f03b78350694362f0d0203647231c9809661a0aac7392f6fd776f519ce391480` (23124 bytes); data/drift.json sha256 `388103129b904a4a038d18adc26b703c144dede2d09497d13fe6223b30b5d103`.
 
 | device | scenario | step | result | measured |
@@ -20,11 +20,11 @@ Module `modules/202611020240-drift.js` sha256 `f03b78350694362f0d0203647231c9809
 | Pixel 7 | B | card names head and new line | PASS | "at head 01a4491: MOVED to line 128 (+6)\ndata-grid-gb@01a4491 datacentres/lanes/dc-a7-merge/dcmerge.py:128 · key 63,134,296,269 · head observed 2026-10-31T23:26:49+00:00" |
 | Pixel 7 | B | MOVED spark amber | PASS | at (206.0, 419.5): 46 amber px in a 9x9 box |
 | Pixel 7 | B | tap within 9 px opens its card | PASS | tap at +6,+6 (8.5 px): taps 0→1, "at head 01a4491: MOVED to line 128 (+6)\ndata-grid-gb@01a4491 datacentres/lanes/dc-a7-merge/dcmerge.py:128 · key 63,134,296,269 · head observed 2026-10-31T23:26:49+00:00" |
-| Pixel 7 | B | lines-pick: filter "acceptance", tap the first row, the card opens | PASS | first row .ln[data-i=39] at top 191.2 px (on top), card open: " *gridatlas@cacb69a tools/release/acceptance.mjs:15 · key 62,884,836,484register" |
-| Pixel 7 | B | lines-pick: the first row is where it is without drift | PASS | first filtered row: without drift top 191.2 px, data-i 39, with drift top 191.2 px, data-i 39 |
-| Pixel 7 | B | drift section: one 44 px row after #lineslist, opened by a tap | FAIL | summary 44 px, opened false, after #lineslist true |
-| Pixel 7 | B | filter "moved" lists exactly the MOVED rows | FAIL | opened by a tap on "lines"; chip 0 px tall, COVERED by bar, in lines; listed 309 rows, drift.json MOVED 7 |
+| Pixel 7 | B | drift section: one 44 px row after #lineslist, opened by a tap | PASS | summary 44 px, opened true, after #lineslist true |
+| Pixel 7 | B | filter "moved" lists exactly the MOVED rows | PASS | opened by a tap on "lines"; chip 44 px tall, on top, in lines; listed 7 rows, drift.json MOVED 7 |
 | Pixel 7 | B | bar unchanged with the panel open | PASS | #bar (the page, no shell admitted) 3 row(s) |
+| Pixel 7 | B | lines-pick: filter "acceptance", tap the first row, the card opens | FAIL | first row .ln[data-i=0] at top 0 px (COVERED), card open: "NEW CODE · the last 24 hours before the newest commit\n273,745,535 lines in 164 c" |
+| Pixel 7 | B | lines-pick: the first row is where it is without drift | FAIL | first filtered row: without drift top 191.2 px, data-i 39, with drift top 0 px, data-i 0 |
 | Pixel 7 | B | zero console errors | PASS | 0 |
 | Pixel 7 | C | drift.json missing: refused in words | PASS | DRIFT · data/drift.json did not load. The wafer will not invent a head. (data/drift.json HTTP 404) |
 | Pixel 7 | C | drift.json missing: no amber drawn by drift | PASS | marks 0 |
@@ -41,11 +41,11 @@ Module `modules/202611020240-drift.js` sha256 `f03b78350694362f0d0203647231c9809
 | Galaxy S24 | B | card names head and new line | PASS | "at head 01a4491: MOVED to line 128 (+6)\ndata-grid-gb@01a4491 datacentres/lanes/dc-a7-merge/dcmerge.py:128 · key 63,134,296,269 · head observed 2026-10-31T23:26:49+00:00" |
 | Galaxy S24 | B | MOVED spark amber | PASS | at (180.0, 390.0): 48 amber px in a 9x9 box |
 | Galaxy S24 | B | tap within 9 px opens its card | PASS | tap at +6,+6 (8.5 px): taps 0→1, "at head 01a4491: MOVED to line 128 (+6)\ndata-grid-gb@01a4491 datacentres/lanes/dc-a7-merge/dcmerge.py:128 · key 63,134,296,269 · head observed 2026-10-31T23:26:49+00:00" |
-| Galaxy S24 | B | lines-pick: filter "acceptance", tap the first row, the card opens | PASS | first row .ln[data-i=39] at top 191.2 px (on top), card open: " *gridatlas@cacb69a tools/release/acceptance.mjs:15 · key 62,884,836,484register" |
-| Galaxy S24 | B | lines-pick: the first row is where it is without drift | PASS | first filtered row: without drift top 191.2 px, data-i 39, with drift top 191.2 px, data-i 39 |
-| Galaxy S24 | B | drift section: one 44 px row after #lineslist, opened by a tap | FAIL | summary 44 px, opened false, after #lineslist true |
-| Galaxy S24 | B | filter "moved" lists exactly the MOVED rows | FAIL | opened by a tap on "lines"; chip 0 px tall, COVERED by bar, in lines; listed 309 rows, drift.json MOVED 7 |
+| Galaxy S24 | B | drift section: one 44 px row after #lineslist, opened by a tap | PASS | summary 44 px, opened true, after #lineslist true |
+| Galaxy S24 | B | filter "moved" lists exactly the MOVED rows | PASS | opened by a tap on "lines"; chip 44 px tall, on top, in lines; listed 7 rows, drift.json MOVED 7 |
 | Galaxy S24 | B | bar unchanged with the panel open | PASS | #bar (the page, no shell admitted) 3 row(s) |
+| Galaxy S24 | B | lines-pick: filter "acceptance", tap the first row, the card opens | FAIL | first row .ln[data-i=0] at top 0 px (COVERED), card open: "NEW CODE · the last 24 hours before the newest commit\n273,745,535 lines in 164 c" |
+| Galaxy S24 | B | lines-pick: the first row is where it is without drift | FAIL | first filtered row: without drift top 191.2 px, data-i 39, with drift top 0 px, data-i 0 |
 | Galaxy S24 | B | zero console errors | PASS | 0 |
 | Galaxy S24 | C | drift.json missing: refused in words | PASS | DRIFT · data/drift.json did not load. The wafer will not invent a head. (data/drift.json HTTP 404) |
 | Galaxy S24 | C | drift.json missing: no amber drawn by drift | PASS | marks 0 |
@@ -56,20 +56,20 @@ Module `modules/202611020240-drift.js` sha256 `f03b78350694362f0d0203647231c9809
 | python | P2 | P2a no clone -> UNVERIFIED | PASS | repositories of keys.json without a clone in /home/user/estate: ['pipelinenews']; their 22 rows all UNVERIFIED, head null |
 | python | P2 | P2b clone gridatlas removed | PASS | exit 0; its 121 rows UNVERIFIED: True; other rows unchanged: True; denominator 318 -> 197 (drop 121 expected); printed "REFUSED: no clone of gridatlas in the estate; 121 lines UNVERIFIED" |
 | python | P2 | P2b clone data-grid-gb removed | PASS | exit 0; its 35 rows UNVERIFIED: True; other rows unchanged: True; denominator 318 -> 283 (drop 35 expected); printed "REFUSED: no clone of data-grid-gb in the estate; 35 lines UNVERIFIED" |
-| python | P2 | P2c heads emptied {"heads": {}} | PASS | exit 2, file written: False; "['REFUSED: no heads recorded in /tmp/nl010-opus/team-8/lead/out5/py-scratch/drift-test-qdo7xmiu/empty-heads.json; drift.json not written']" |
-| python | P2 | P2c heads emptied {} | PASS | exit 2, file written: False; "['REFUSED: no heads recorded in /tmp/nl010-opus/team-8/lead/out5/py-scratch/drift-test-qdo7xmiu/empty-heads.json; drift.json not written']" |
+| python | P2 | P2c heads emptied {"heads": {}} | PASS | exit 2, file written: False; "['REFUSED: no heads recorded in /tmp/nl010-opus/team-8/lead/out9/py-scratch/drift-test-ys71o3mj/empty-heads.json; drift.json not written']" |
+| python | P2 | P2c heads emptied {} | PASS | exit 2, file written: False; "['REFUSED: no heads recorded in /tmp/nl010-opus/team-8/lead/out9/py-scratch/drift-test-ys71o3mj/empty-heads.json; drift.json not written']" |
 | python | P3 | P3 ground truth by git show | PASS | {'SAME': 309, 'UNVERIFIED': 28, 'MOVED': 7, 'GONE': 2} re-derived from 192 `git show` blobs at the recorded heads (each held by its clone and an ancestor of its origin/HEAD); 0 disagreements |
 | python | P4 | P4 summary = rows | PASS | 309 SAME / 7 MOVED / 2 GONE / 0 FILE_GONE / 28 UNVERIFIED; 309 SAME / 318 (rows 346 - UNVERIFIED 28) |
 | python | P4 | P4 README paragraph = drift.json | PASS | "309 SAME, 7 MOVED, 2 GONE, 0 FILE_GONE, 28 UNVERIFIED" present; "309 SAME / 318 (rows 346 − UNVERIFIED 28)" present |
 | python | P5 | P5 drift.json inside the law | PASS | 346 rows = 346 bodies in keys.json order: True; repositories outside repos.tsv: none (matched by case only: ['kuiper-belt']); keys outside keys.json: none; line texts quoted: 0 |
 | python | P5 | P5 reads (observe, strace) | PASS | exit 0; opened under /home/user: 45 files = repos.tsv, keys.json, tools/drift.py + 21 clones; directories listed: ['/home/user/estate', '/home/user/estate/kuiper-belt/tools']; outside /home/user only system dirs ['dev', 'etc', 'proc', 'root', 'tmp', 'usr']; sockets: 0; stray: none |
 | python | P5 | P5 reads (--heads, strace) | PASS | exit 0; opened under /home/user: 25 files = repos.tsv, keys.json, tools/drift.py, data/drift.json (the recorded heads) + 21 clones; directories listed: ['/home/user/estate', '/home/user/estate/kuiper-belt/tools']; outside /home/user only system dirs ['dev', 'etc', 'proc', 'root', 'tmp', 'usr']; sock |
-| python | P5 | P5 minimal root, same bytes | PASS | root = repos.tsv + keys.json + tools/drift.py only (/tmp/nl010-opus/team-8/lead/out5/py-scratch/drift-test-qdo7xmiu/mini-root): exit 0, 118553 bytes, identical to data/drift.json |
-| files | - | img/ at most 4 PNG, each < 300 KB | PASS | 1-moved-card-Pixel_7.png 39 KB, 2-filter-moved-Galaxy_S24.png 30 KB, 3-drift-missing-Galaxy_S24.png 96 KB, 4-moved-sparks-Pixel_7.png 120 KB |
+| python | P5 | P5 minimal root, same bytes | PASS | root = repos.tsv + keys.json + tools/drift.py only (/tmp/nl010-opus/team-8/lead/out9/py-scratch/drift-test-ys71o3mj/mini-root): exit 0, 118553 bytes, identical to data/drift.json |
+| files | - | img/ at most 4 PNG, each < 300 KB | PASS | 1-moved-card-Pixel_7.png 39 KB, 2-filter-moved-Galaxy_S24.png 73 KB, 3-drift-missing-Galaxy_S24.png 96 KB, 4-moved-sparks-Pixel_7.png 120 KB |
 
 RESULT: FAIL (53 of 57)
 
 Measured, not pass/fail (drift_test.py):
 
-- heads moved since drift.json was written (fetched later; the drift is as of its recorded heads): globalgrid2050 35b5be2fa446 -> 18aa446e9788; kuiper-belt 018b46aed50f -> 521dca75be8a
+- heads moved since drift.json was written (fetched later; the drift is as of its recorded heads): globalgrid2050 35b5be2fa446 -> 18aa446e9788; kuiper-belt 018b46aed50f -> 8cb22350ce3d
 - observing the heads now instead of the recorded ones: differs; counts now 309 SAME / 7 MOVED / 2 GONE / 0 FILE_GONE / 28 UNVERIFIED; rows whose class would change: 0 []

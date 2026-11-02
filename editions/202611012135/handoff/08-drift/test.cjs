@@ -79,12 +79,17 @@ async function overlay(page, x, y, rad) {   // classify overlay pixels in a box 
 // the integrator's journey step lines-pick, in our own run (OPUS-CONTROLLER REVIEW, issue #10 comment 6567584787):
 // open LINES by a tap, type "acceptance" into #lyFind, tap the first .ln[data-i]; the card must open. The first row's
 // rect is recorded so B (drift admitted) can be compared with A (no drift module): the rows must not move.
+// a screenshot is evidence, not an assertion: under the machine's load a WebGL screenshot can time out at 180 s; the
+// run goes on and the miss is printed (the image then keeps its previous run's bytes, named in TEST.md by its mtime)
+async function shotSafe(page, opts) { try { await page.screenshot(opts); } catch (e) { console.log('NOTE screenshot not written: ' + path.basename(opts.path) + ' (' + String(e.message).split('\n')[0] + ')'); } }
 async function linesPick(page, ok) {
   const t = await page.evaluate(() => { const b = document.querySelector('#kuiper-menu-bar') ? [...document.querySelectorAll('#kuiper-menu-bar .gm-title')].find(x => x.textContent.trim().toUpperCase() === 'WAFER')
       : [...document.querySelectorAll('#bar button, #bar a, #bar [role=button]')].find(x => x.textContent.trim().toUpperCase() === 'LINES');
     if (!b) return null; const r = b.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
   const isOpen = await page.evaluate(() => { const l = document.querySelector('#lines'); return !!(l && l.getBoundingClientRect().height > 0); });
-  if (t && !isOpen) { await page.touchscreen.tap(t[0], t[1]); await sleep(1500); }
+  // from a closed LINES, as the journey starts its lines steps: close it first if it is open, then open it with a tap
+  if (t && isOpen) { await page.touchscreen.tap(t[0], t[1]); await sleep(1500); await page.evaluate(() => document.activeElement && document.activeElement.blur && document.activeElement.blur()); }
+  if (t) { await page.touchscreen.tap(t[0], t[1]); await sleep(1500); }
   await page.evaluate(() => { const i = document.querySelector('#lyFind'); if (i && i.value) { i.value = ''; i.dispatchEvent(new Event('input', { bubbles: true })); } }); await sleep(500);
   const f = await page.evaluate(() => { const i = document.querySelector('#lyFind'); if (!i) return null; const r = i.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
   if (f) { await page.touchscreen.tap(f[0], f[1]); await sleep(300); await page.keyboard.type('acceptance', { delay: 30 }); await sleep(900); }
@@ -154,7 +159,7 @@ async function run(devName, scen) {
         good.length + ' of ' + onScreen.length + ' on-screen MOVED sparks amber (>=4 px in 9x9) with a canvas on top; ' + (all.length - onScreen.length) + ' off-screen; ' +
         all.map(x => x.repo + ' ' + (x.at ? x.at.join(',') : '-') + ' ' + x.top + ' ' + x.amber + 'px').join('; '));
       res.moved = all;
-      if (HANDOFF && devName === 'Pixel 7') await page.screenshot({ path: path.join(HERE, 'img', '4-moved-sparks-Pixel_7.png'), scale: 'css', timeout: 180000 });
+      if (HANDOFF && devName === 'Pixel 7') await shotSafe(page, { path: path.join(HERE, 'img', '4-moved-sparks-Pixel_7.png'), scale: 'css', timeout: 180000 });
     }
     // the amber spark at its new key, and its card
     const mv = (s && s.moved || []).find(m => m.atNew);
@@ -168,7 +173,7 @@ async function run(devName, scen) {
       let p = await page.evaluate(id => KY.modules.drift.api.screen(id), mv.id);
       const px = await overlay(page, p[0], p[1], 4);
       ok('MOVED spark amber', px.amber >= 4, 'at (' + p.map(v => v.toFixed(1)).join(', ') + '): ' + px.amber + ' amber px in a 9x9 box');
-      if (HANDOFF && devName === 'Pixel 7') await page.screenshot({ path: path.join(HERE, 'img', '1-moved-card-Pixel_7.png'), scale: 'css', timeout: 180000 });
+      if (HANDOFF && devName === 'Pixel 7') await shotSafe(page, { path: path.join(HERE, 'img', '1-moved-card-Pixel_7.png'), scale: 'css', timeout: 180000 });
       // close the card, then tap within 9 px of the amber spark with a finger
       await page.evaluate(() => { const c = document.querySelector('#card'); const x = c.querySelector('.lc-x,.cx'); if (x) x.click(); }); await sleep(2500);
       p = await page.evaluate(id => KY.modules.drift.api.screen(id), mv.id);
@@ -209,7 +214,7 @@ async function run(devName, scen) {
     const wantRows = DRIFT.rows.map((r, i) => r.class === 'MOVED' ? i : -1).filter(i => i >= 0);
     ok('filter "moved" lists exactly the MOVED rows', chip && chip[2] >= 44 && chip[3] && listed.length === wantRows.length && listed.every((x, i) => x.cls === 'MOVED' && x.row === wantRows[i]),
       'opened by a tap on ' + (w ? '"' + w[2] + '"' : 'NOTHING (no WAFER title, no LINES button)') + '; chip ' + (chip ? chip[2].toFixed(0) + ' px tall, ' + (chip[3] ? 'on top' : 'COVERED by ' + chip[4]) + ', in ' + (chip[5] || 'body') : 'missing') + '; listed ' + listed.length + ' rows, drift.json MOVED ' + wantRows.length);
-    if (HANDOFF && devName === 'Galaxy S24') await page.screenshot({ path: path.join(HERE, 'img', '2-filter-moved-Galaxy_S24.png'), scale: 'css', timeout: 180000 });
+    if (HANDOFF && devName === 'Galaxy S24') await shotSafe(page, { path: path.join(HERE, 'img', '2-filter-moved-Galaxy_S24.png'), scale: 'css', timeout: 180000 });
     const bar2 = await barOf();
     ok('bar unchanged with the panel open', bar2.rows === bar.rows && (!bar2.shell || bar2.rows === 1), bar2.bar + ' ' + bar2.rows + ' row(s)');
     // then the integrator's lines-pick, with the drift section open at the end of LINES
@@ -225,7 +230,7 @@ async function run(devName, scen) {
     ok('drift.json missing: refused in words', s && s.status === 'REFUSED' && hud.includes('data/drift.json did not load. The wafer will not invent a head.'), (hud.split('\n').find(l => /^DRIFT/.test(l)) || 'no DRIFT line'));
     ok('drift.json missing: no amber drawn by drift', s && s.marks === 0, 'marks ' + (s && s.marks));
     res.hud = hud;
-    if (HANDOFF && devName === 'Galaxy S24') await page.screenshot({ path: path.join(HERE, 'img', '3-drift-missing-Galaxy_S24.png'), scale: 'css', timeout: 180000 });
+    if (HANDOFF && devName === 'Galaxy S24') await shotSafe(page, { path: path.join(HERE, 'img', '3-drift-missing-Galaxy_S24.png'), scale: 'css', timeout: 180000 });
   }
   const errs = scen === 'C' ? errors.filter(e => !/404/.test(e) || !/Failed to load resource/.test(e)) : errors;
   ok('zero console errors', errs.length === 0, errs.length ? errs.slice(0, 3).join(' | ') : '0' + (scen === 'C' ? ' (the deliberate 404 of data/drift.json excluded: ' + (errors.length - errs.length) + ')' : ''));
