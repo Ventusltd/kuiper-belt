@@ -1,0 +1,158 @@
+--- a/editions/202611012135/index.html	2026-11-01 23:11:50.082598726 +0000
++++ b/editions/202611012135/index.html	2026-11-01 23:11:50.211945526 +0000
+@@ -67,12 +67,6 @@
+     z-index:11;background:#090c13f2;border:1px solid #1d6470;border-radius:0 0 6px 6px;padding:10px 12px;pointer-events:auto;text-align:left}
+   #hud{right:0;left:auto;max-width:min(560px,96vw)} #foot{border-top:1px solid #1d6470}
+   #top #sub{max-height:none;overflow:visible;margin-top:4px}
+-  #lines{left:0;right:0;max-width:none;width:min(720px,96vw)}
+-  #linesctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+-  #linesctl label{color:#8fb3bd} #linesctl input[type=text],#linesctl #lyFind{flex:1 1 180px;background:var(--bg);color:var(--ink);border:1px solid #12414a;padding:5px 8px;font:inherit}
+-  #linesctl button{background:#0b1a20;color:#8fb3bd;border:1px solid #12414a;padding:5px 9px;font:inherit;text-transform:uppercase;cursor:pointer}
+-  #lineslist .ln{padding:5px 6px;border-top:1px solid #121a26;cursor:pointer;color:var(--dim)} #lineslist .ln b{color:var(--ink);font-weight:600}
+-  #lineslist .ln.focus b{color:var(--gn)} #lineslist .ln.sel{background:rgba(255,43,214,.12)} #lineslist .ln:hover{background:rgba(80,220,240,.10)}
+   #card{bottom:12px!important;z-index:13;max-height:30vh;overflow:auto;padding:8px 36px 8px 12px;position:fixed}
+   #card .cx{position:absolute;right:6px;top:4px;width:26px;height:26px;border:1px solid #12414a;color:#8fb3bd;background:transparent;font:inherit;cursor:pointer;touch-action:manipulation}
+   #card .cq{color:#cde;border-left:2px solid #3a4150;padding-left:8px;margin:4px 0;white-space:pre-wrap}
+@@ -232,7 +226,7 @@
+     + repos.length + ' repositories, in the order time issued them · ' + words(SPACE - N) + ' keys left unissued as silence · '
+     + new Date(commits[0].unix*1000).toISOString().slice(0,10) + ' at the centre, ' + new Date(commits[commits.length-1].unix*1000).toISOString().slice(0,10)
+     + ' at the rim, and the next line ever written lands beyond it';
+-  home(); dirty = true; loadEdition();
++  home(); dirty = true;
+   { const st = new URLSearchParams(location.search).get('selftest') || '', mt = st.match(/^(20\d\d)-(\d\d)$/);
+     if (mt) setTimeout(() => { tween = null; const R = Math.sqrt(SPACE); cx = 0; cy = 0; zoom = (Math.min(cv.width, cv.height)/2)*0.80/R;
+       const got = lightTime(+mt[1], +mt[2], 0); tween = null; cx = 0; cy = 0; zoom = (Math.min(cv.width, cv.height)/2)*0.80/R; draw();
+@@ -639,80 +633,7 @@
+   else if (e.key === '/') { e.preventDefault(); gbox.style.display = 'block'; gin.value = ''; gin.focus(); }
+   else if (e.key === 'Backspace') { e.preventDefault(); target = null; litRepo = -1; newFrom = -1; flash = 0; pulse = -1; litK = [-1,-1]; litCi = null; card.style.display = 'none'; home(); } });
+ 
+-// ============================================================ KUIPER EDITION 2: the verified lines
+-// Edition 1 (../202610311905/) verified 354 keyed findings of the estate and placed 346 distinct lines
+-// on a belt of their own. Edition 2 draws the same lines where they already are on THIS wafer: each
+-// line's key was computed by tools/edition_keys.py with key.py's walk (ls-tree order, lines_of), so a
+-// spark here is a key that python tools/key.py would resolve to that very line. Lines whose commit is
+-// not on the wafer are counted and named, never placed: the seventh law.
+-let ED = [], edPlaced = [], edSel = -1, edMeta = null;
+-const EDPATH = 'keys.json';
+-async function loadEdition(){
+-  try { const r = await fetch(EDPATH); if (!r.ok) throw new Error(EDPATH); const j = await r.json();
+-    edMeta = j.summary || {}; ED = j.bodies || j; }
+-  catch (e) { ED = []; edMeta = { error: 'keys.json did not load' }; }
+-  edPlaced = ED.filter(b => b.on_wafer && b.verified && Number.isFinite(b.key) && b.key >= 0 && b.key < SPACE)
+-               .map(b => { const p = keyPlace(b.key); return Object.assign({}, b, { x:p[0], y:p[1] }); });
+-  big.textContent = 'Kuiper Edition 5 · ' + (edMeta && edMeta.error ? edMeta.error + ' · no verified lines lit' : fmt(edPlaced.length) + ' verified lines lit');
+-  sub.textContent = 'Edition 1 verified ' + fmt(ED.length) + ' lines of the estate (354 keyed findings, 495 keys re-resolved; see ../202610311905/). '
+-    + 'Here each is a green spark at its own key on the one wafer: ' + sub.textContent;
+-  dirty = true;
+-}
+-function edScreen(b){ return [(b.x - cx)*zoom + ov.width/2, ov.height/2 - (b.y - cy)*zoom]; }
+-function drawEdition(){
+-  if (!edPlaced.length) { if (edMeta) hud.textContent += '\nEDITION 5 · ' + (edMeta.error || 'no lines placed'); return; }
+-  let onScreen = 0;
+-  for (let i = 0; i < edPlaced.length; i++) { const b = edPlaced[i], [x, y] = edScreen(b);
+-    if (x < -8 || y < -8 || x > ov.width + 8 || y > ov.height + 8) continue; onScreen++;
+-    const sel = i === edSel, focus = b.class === 'focus';
+-    o2.beginPath(); o2.arc(x, y, sel ? 6 : (focus ? 3.2 : 2.6), 0, 6.2832);
+-    o2.fillStyle = sel ? 'rgba(255,43,214,.95)' : (focus ? 'rgba(34,238,119,.95)' : 'rgba(34,238,119,.70)'); o2.fill();
+-    if (sel) { o2.strokeStyle = 'rgba(255,43,214,.9)'; o2.lineWidth = 1.5; o2.beginPath(); o2.arc(x, y, 14, 0, 6.2832); o2.stroke(); } }
+-  const notOn = ED.length - edPlaced.length;
+-  hud.textContent += '\nEDITION 2 · ' + fmt(edPlaced.length) + ' verified lines on this wafer, ' + fmt(onScreen) + ' in view'
+-    + (notOn ? ' · ' + fmt(notOn) + ' not on the wafer (named in keys.json), counted, not placed' : '')
+-    + ' · bright green: gridatlas and the data-centre repositories · green: the rest of the estate';
+-}
+-{ const _draw = draw; draw = function(){ _draw(); drawEdition(); }; }
+-function edCard(i){
+-  const b = edPlaced[i], a = address(b.key);
+-  card.style.display = 'block'; card.classList.remove('open');
+-  card.setAttribute('role', 'region'); card.setAttribute('aria-label', 'verified line'); card.setAttribute('aria-live', 'polite');
+-  card.innerHTML = '<button class="cx" aria-label="close">×</button>'
+-    + '<b>' + esc(b.title) + '</b>  <span style="color:var(--dim)">' + fmt(i + 1) + ' of ' + fmt(edPlaced.length) + '</span>'
+-    + '\n' + esc(b.repo) + '  ' + esc(b.path) + ':' + b.line
+-    + (b.quote ? '<div class="cq">' + esc(b.quote) + '</div>' : '')
+-    + '<a href="' + esc(b.destination) + '" target="_blank" rel="noopener">open on GitHub at ' + esc(String(b.commit).slice(0,7)) + '</a>'
+-    + '  ·  <button class="ct" aria-expanded="false">details</button>'
+-    + '<div class="cd">' + (b.pattern ? 'pattern: ' + esc(b.pattern) + '\n' : '') + 'found by ' + esc(b.worker) + ' ' + esc(b.finding) + ', verified by a controller\n' + describe(a) + '</div>';
+-  if (a && !a.silent) litRepo = a.c.repo;
+-  target = { x:b.x, y:b.y }; edSel = i; dirty = true;
+-}
+-// the card toggles its details, closes on ×, and never swallows the link
+-card.addEventListener('click', e => {
+-  if (e.target.closest('.cx')) { card.style.display = 'none'; edSel = -1; target = null; dirty = true; e.stopPropagation(); return; }
+-  if (e.target.closest('.ct')) { const on = card.classList.toggle('open'); e.target.closest('.ct').setAttribute('aria-expanded', on ? 'true' : 'false'); e.stopPropagation(); return; }
+-  if (e.target.closest('a')) { e.stopPropagation(); return; }
+-  e.stopImmediatePropagation();                                  // a tap on the card body keeps it open (also from the engine's own close-on-click)
+-}, true);
+-// fly so that the spark lands in the clear space: under the bar, above the card
+-function edFly(b){
+-  const z = 14, s = safeBox(); const cardH = card.style.display === 'block' ? card.getBoundingClientRect().height + 12 : 0;
+-  const mx = (s.x0 + s.x1)/2, my = (s.y0 + Math.max(s.y0 + 40, s.y1 - cardH))/2;
+-  atHome = false; flyTo(b.x - (mx - innerWidth/2)/z, b.y + (my - innerHeight/2)/z, z);
+-}
+ function esc(v){ return String(v == null ? '' : v).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+-function edNext(step){ if (!edPlaced.length) return; edSel = (edSel + step + edPlaced.length) % edPlaced.length;
+-  const b = edPlaced[edSel]; edCard(edSel); edFly(b); }
+-// a tap within 9 px of a spark opens that line (runs after the engine's own tap handler)
+-addEventListener('pointerup', e => {
+-  if (!edPlaced.length || !tapUp || pts.size > 0) return;          // tapUp: the press began on the canvas and was a tap
+-  let best = -1, bd = 81;
+-  for (let i = 0; i < edPlaced.length; i++) { const [x, y] = edScreen(edPlaced[i]); const d = (x - e.clientX)**2 + (y - e.clientY)**2; if (d < bd) { bd = d; best = i; } }
+-  if (best >= 0) { edCard(best); edFly(edPlaced[best]); }
+-});
+-addEventListener('keydown', e => { if (gbox.style.display === 'block') return;
+-  if (e.key === 'e') edNext(1); else if (e.key === 'E') edNext(-1); else if (e.key === 'Backspace') edSel = -1; });
+ 
+ // ============================================================ EDITION 3: the menu bar, panels at rest hidden
+ // Borrowed in spirit from gridatlas atlas/modules/202609031958-menu-bar.js: one row of titles, every panel
+@@ -725,12 +646,7 @@
+   + '<button class="gm-title" data-panel="lines" aria-controls="lines" aria-expanded="false">lines</button>'
+   + '<button class="gm-title" data-panel="foot" aria-controls="foot" aria-expanded="false">commands</button>';
+ document.body.prepend(bar);
+-const linesPanel = document.createElement('div'); linesPanel.id = 'lines'; linesPanel.className = 'gm-panel';
+-linesPanel.innerHTML = '<div id="linesctl"><label><input type="checkbox" id="lyAll" checked> verified lines layer</label>'
+-  + '<label><input type="checkbox" id="lyFocus"> gridatlas + data centres only</label>'
+-  + '<button data-k="e">next</button><button data-k="E">previous</button><input id="lyFind" aria-label="filter lines" placeholder="filter: repository, file or title"></div><div id="lineslist"></div>';
+-document.body.appendChild(linesPanel);
+-const PANELS = { top: elTop, hud: hud, lines: linesPanel, foot: elFoot };
++const PANELS = { top: elTop, hud: hud, foot: elFoot };
+ for (const [k, el] of Object.entries(PANELS)) { el.setAttribute('role', 'region'); el.setAttribute('aria-label', { top:'edition', hud:'readout', lines:'lines', foot:'commands' }[k]); }
+ let openPanel = null;
+ function placePanels(){ const h = bar.getBoundingClientRect().height; for (const el of Object.values(PANELS)) el.style.top = (h + 2) + 'px'; }
+@@ -739,7 +655,6 @@
+   openPanel = (openPanel === name) ? null : name;
+   for (const [k, el] of Object.entries(PANELS)) el.classList.toggle('gm-open', k === openPanel);
+   for (const b of bar.querySelectorAll('.gm-title')) { const on = b.dataset.panel === openPanel; b.classList.toggle('gm-on', on); b.setAttribute('aria-expanded', on ? 'true' : 'false'); }
+-  if (openPanel === 'lines') fillLines();
+   dirty = true;
+ }
+ bar.addEventListener('click', e => { const b = e.target.closest('.gm-title'); if (b) { e.stopPropagation(); setPanel(b.dataset.panel); } });
+@@ -763,30 +678,6 @@
+ { const _safe = safeBox; safeBox = function(){ const s = _safe(); placePanels(); s.y0 = Math.max(s.y0, bar.getBoundingClientRect().bottom + 8); s.y1 = Math.max(s.y0 + 24, innerHeight - 8); return s; }; }
+ // prefers-reduced-motion: the camera lands at once instead of flying for 900 ms
+ { const _fly = flyTo, rm = matchMedia('(prefers-reduced-motion: reduce)'); flyTo = function(x, y, z){ _fly(x, y, z); if (rm.matches && tween) tween.t0 -= tween.dur; }; }
+-// the lines layer: on/off and focus-only, the list, the filter
+-let lyOn = true, lyFocus = false, lyQuery = '';
+-document.getElementById('lyAll').addEventListener('change', e => { lyOn = e.target.checked; dirty = true; });
+-document.getElementById('lyFocus').addEventListener('change', e => { lyFocus = e.target.checked; dirty = true; fillLines(); });
+-document.getElementById('lyFind').addEventListener('input', e => { lyQuery = e.target.value.trim().toLowerCase(); fillLines(); });
+-document.getElementById('lyFind').addEventListener('keydown', e => e.stopPropagation());
+-linesPanel.addEventListener('keydown', e => { const row = e.target.closest('[data-i]'); if (row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.stopPropagation(); row.click(); } });
+-linesPanel.addEventListener('click', e => { const k = e.target.getAttribute('data-k'); if (k) { e.stopPropagation(); dispatchEvent(new KeyboardEvent('keydown', { key:k })); return; }
+-  const row = e.target.closest('[data-i]'); if (row) { e.stopPropagation(); const i = +row.dataset.i; const b = edPlaced[i]; if (openPanel) setPanel(openPanel); edCard(i); edFly(b); } });
+-function visibleLine(b){ return lyOn && (!lyFocus || b.class === 'focus'); }
+-function fillLines(){
+-  const list = document.getElementById('lineslist'); if (!list) return;
+-  const rows = [];
+-  edPlaced.forEach((b, i) => { if (!visibleLine(b)) return;
+-    const hay = (b.repo + ' ' + b.path + ' ' + b.title).toLowerCase(); if (lyQuery && !hay.includes(lyQuery)) return;
+-    rows.push('<div class="ln' + (i === edSel ? ' sel' : '') + (b.class === 'focus' ? ' focus' : '') + '" data-i="' + i + '" role="button" tabindex="0"><b>' + esc(b.repo) + '</b> ' + esc(b.path) + ':' + b.line + '<br>' + esc(b.title) + '</div>'); });
+-  list.innerHTML = rows.join('') || '<div class="ln">' + (edMeta && edMeta.error ? esc(edMeta.error) : 'no line matches') + '</div>';
+-}
+-// the sparks obey the layer switches
+-{ const _drawEd = drawEdition; drawEdition = function(){ if (!lyOn) { hud.textContent += '\nEDITION 5 · verified lines layer off'; return; }
+-    const keep = edPlaced; if (lyFocus) edPlaced = keep.filter(b => b.class === 'focus'); try { _drawEd(); } finally { edPlaced = keep; } }; }
+-{ const _edNext = edNext; edNext = function(step){ if (!edPlaced.length) return; let i = edSel, n = edPlaced.length;
+-    for (let t = 0; t < n; t++) { i = (i + step + n) % n; if (visibleLine(edPlaced[i])) break; }
+-    edSel = i; const b = edPlaced[edSel]; edCard(edSel); edFly(b); }; }
+ // ======================================== KUIPER HOOK TABLE AND LOADER kuiper.hooks.v1 · begin (Opus team 4, step 4)
+ // Engine lines this patch changes: the wafer promise (one line after `let N = 0`, and kyWaferOk/kyWaferNo at the belt
+ // check, after `N = issued` and in the wafer.tsv catch), and the NL-009 round-1 fixes folded in by team 4: 09-robust

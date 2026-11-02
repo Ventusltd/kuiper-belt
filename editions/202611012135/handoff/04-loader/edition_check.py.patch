@@ -1,0 +1,240 @@
+--- /dev/null
++++ b/tools/edition_check.py
+@@ -0,0 +1,237 @@
++#!/usr/bin/env python3
++"""edition_check.py: the edition law's checks for one folder editions/<stamp>/ (NL-010; Opus team 9 owns this file).
++Apache-2.0 (kuiper-belt), kuiper-belt README.md:157.
++
++  python3 tools/edition_check.py [editions/<stamp>]     default: the newest editions/<12 digits>/
++
++Prints one line per check and `RESULT: PASS` or `RESULT: FAIL` (exit 1). A check that cannot be evaluated on this
++folder yet prints NOT EVALUATED with the reason and does not count as a pass or a fail; the list is repeated at the end.
++
++E6-E8 are Opus team 4's (NL-010 step 4; ROADMAP.md step 4, 4.9; team-2/STEPS.md 4.9), handed to team 9 as
++handoff/04-loader/edition_check.py.patch. E1-E5 below are MINIMAL DRAFTS written by Opus team 4 from
++team-5/STEPS.md:84-89 only so that step 4's test 8 can run E1-E8; team 9 replaces them and adds E9. K1-K4 stay in
++tools/ci_check.py, byte-identical (ROADMAP.md R5).
++
++E1 the page's module script and every modules/*.js pass `node --check` (K3 scope widened: ci_check.py:68 is root only)
++E2 every record of modules.json exists and hashes to its sha256; no file in modules/ is absent from the manifest
++E3 proof/edition-sha256.txt matches every file it lists, and lists every file of the folder
++E4 the pointer editions/index.html names one stamp in its three places, and that folder exists with a proof/
++E5 keys.json is byte-identical to the previous edition's unless README.md says the findings changed
++E6 stamp = header = manifest: each record's generation is twelve digits, equals the file name's leading digits when it
++   has them and the header line's `generation <stamp> (UTC)`; licence non-empty; requires within the admissible set
++   (the page's KY_NAMES literal, else the loader reference's, plus the provides of records earlier in `order`);
++   references hash as recorded and their hook-table block equals the page's
++E7 every reads/writes entry is matched by a literal in the file, and every fetch( literal is in reads
++E8 every module passes `node --check` and contains `KY.register(` exactly once
++"""
++import hashlib, io, json, os, re, subprocess, sys, tempfile
++
++HERE = os.path.dirname(os.path.abspath(__file__))
++ROOT = os.path.dirname(HERE)
++BEGIN = '// ======================================== KUIPER HOOK TABLE AND LOADER kuiper.hooks.v1 · begin'
++END = '// ======================================== KUIPER HOOK TABLE AND LOADER kuiper.hooks.v1 · end'
++HEADER = re.compile(r'^/\* kuiper module ([a-z0-9-]+), generation (\d{12}) \(UTC\),')
++REF_HEADER = re.compile(r'^/\* kuiper loader reference, generation (\d{12}) \(UTC\),')
++NAMES = re.compile(r'const KY_NAMES = Object\.freeze\(\[([\s\S]*?)\]\)')
++PAGE_SCRIPT = re.compile(r'<script type="module">([\s\S]*?)</script>')   # the same idea as ci_check.py:71
++EXTRA = ['cam', 'lit', 'sel', 'redraw', 'draw', 'panels']
++
++def read(p, mode='r'):
++    return io.open(p, mode, **({} if 'b' in mode else {'encoding': 'utf-8'})).read()
++
++def sha(p):
++    return hashlib.sha256(read(p, 'rb')).hexdigest()
++
++def node_check(src, suffix):
++    with tempfile.NamedTemporaryFile('w', suffix=suffix, delete=False, encoding='utf-8') as f:
++        f.write(src); name = f.name
++    try:
++        r = subprocess.run(['node', '--check', name], capture_output=True, text=True)
++        if r.returncode == 0: return None
++        err = [l for l in r.stderr.split('\n') if re.match(r'^\w*Error\b', l.strip())]
++        return (err[0] if err else r.stderr.strip().split('\n')[0]).strip()[:160]
++    finally:
++        os.remove(name)
++
++def block_of(text):
++    i, j = text.find(BEGIN), text.find(END)
++    return text[i:j + len(END)] if i >= 0 and j > i else None
++
++class Report:
++    def __init__(self): self.lines, self.fails, self.skips = [], [], []
++    def check(self, code, errs, ok_text, skip=None):
++        if skip:
++            self.skips.append('%s: %s' % (code, skip)); self.lines.append('%s NOT EVALUATED: %s' % (code, skip)); return
++        if errs:
++            self.fails += ['%s: %s' % (code, e) for e in errs]; self.lines.append('%s FAIL: %s' % (code, '; '.join(errs[:6]) + (' …' if len(errs) > 6 else '')))
++        else:
++            self.lines.append('%s PASS: %s' % (code, ok_text))
++
++def main(argv):
++    if len(argv) > 1:
++        ed = os.path.abspath(argv[1])
++    else:
++        eds = sorted(d for d in os.listdir(os.path.join(ROOT, 'editions')) if re.match(r'^\d{12}$', d))
++        ed = os.path.join(ROOT, 'editions', eds[-1])
++    stamp = os.path.basename(ed.rstrip('/'))
++    root = os.path.dirname(os.path.dirname(ed.rstrip('/')))   # the repository the folder sits in
++    R = Report()
++    page = read(os.path.join(ed, 'index.html'))
++    try:
++        man = json.loads(read(os.path.join(ed, 'modules.json')))
++    except Exception as e:
++        man = None; R.fails.append('modules.json: %s' % e)
++    man = man or {}
++    recs = [r for r in man.get('modules', []) if isinstance(r, dict)]
++    refs = [r for r in man.get('references', []) if isinstance(r, dict)]
++    order = man.get('order', [])
++    mdir = os.path.join(ed, 'modules')
++    files = sorted(f for f in os.listdir(mdir) if not f.startswith('.')) if os.path.isdir(mdir) else []
++
++    # ---------------------------------------------------------------- E1 (draft)
++    errs = []
++    m = PAGE_SCRIPT.search(page)
++    if m:
++        e = node_check(m.group(1), '.mjs')
++        if e: errs.append('index.html script: ' + e)
++    for f in files:
++        if f.endswith('.js'):
++            e = node_check(read(os.path.join(mdir, f)), '.js')
++            if e: errs.append('modules/%s: %s' % (f, e))
++    R.check('E1', errs, 'the page script and %d modules/*.js parse' % len([f for f in files if f.endswith('.js')]))
++
++    # ---------------------------------------------------------------- E2 (draft)
++    errs = []
++    if man.get('schema') != 'kuiper.modules.v1': errs.append('modules.json schema %r' % man.get('schema'))
++    if man.get('edition') != stamp: errs.append('modules.json edition %r, folder %s' % (man.get('edition'), stamp))
++    listed = set()
++    for r in recs:
++        p = os.path.join(ed, r.get('path', ''))
++        listed.add(os.path.normpath(r.get('path', '')))
++        if not os.path.isfile(p): errs.append('%s: %s missing' % (r.get('id'), r.get('path'))); continue
++        if sha(p) != r.get('sha256'): errs.append('%s: sha256 %s, manifest %s' % (r.get('id'), sha(p)[:12], str(r.get('sha256'))[:12]))
++        if os.path.getsize(p) != r.get('bytes'): errs.append('%s: bytes %d, manifest %s' % (r.get('id'), os.path.getsize(p), r.get('bytes')))
++    for r in refs: listed.add(os.path.normpath(r.get('file', '')))
++    for f in files:
++        if os.path.normpath('modules/' + f) not in listed: errs.append('modules/%s not in modules.json' % f)
++    for i in order:
++        if not any(r.get('id') == i for r in recs): errs.append('order names %s, no record' % i)
++    R.check('E2', errs, '%d records hash as recorded; %d files in modules/, all listed' % (len(recs), len(files)))
++
++    # ---------------------------------------------------------------- E3 (draft)
++    sp = os.path.join(ed, 'proof', 'edition-sha256.txt')
++    if not os.path.isfile(sp):
++        R.check('E3', [], '', skip='no proof/edition-sha256.txt yet (the integrator writes it last)')
++    else:
++        errs, seen = [], set()
++        for ln in read(sp).splitlines():
++            mm = re.match(r'^([0-9a-f]{64})\s+\*?(?:\./)?(.+)$', ln.strip())
++            if not mm: continue
++            seen.add(mm.group(2)); q = os.path.join(ed, mm.group(2))
++            if not os.path.isfile(q): errs.append('%s listed, missing' % mm.group(2))
++            elif sha(q) != mm.group(1): errs.append('%s sha256 differs' % mm.group(2))
++        for dp, dn, fn in os.walk(ed):
++            for f in fn:
++                rel = os.path.relpath(os.path.join(dp, f), ed)
++                if rel != 'proof/edition-sha256.txt' and not rel.startswith('handoff/') and rel not in seen: errs.append('%s not in edition-sha256.txt' % rel)
++        R.check('E3', errs, '%d files match' % len(seen))
++
++    # ---------------------------------------------------------------- E4 (draft)
++    pp = os.path.join(root, 'editions', 'index.html')
++    if not os.path.isfile(pp):
++        R.check('E4', [], '', skip='no editions/index.html')
++    else:
++        st = re.findall(r'(\d{12})/', read(pp)); errs = []
++        if len(st) < 3 or len(set(st)) != 1: errs.append('pointer stamps %s' % st)
++        elif not os.path.isdir(os.path.join(root, 'editions', st[0], 'proof')): errs.append('editions/%s/proof missing' % st[0])
++        R.check('E4', errs, 'the pointer names %s in %d places, folder and proof exist' % (st[0] if st else '?', len(st)))
++
++    # ---------------------------------------------------------------- E5 (draft)
++    prev = sorted(d for d in os.listdir(os.path.join(root, 'editions')) if re.match(r'^\d{12}$', d) and d < stamp)
++    kp = os.path.join(ed, 'keys.json')
++    if not prev or not os.path.isfile(os.path.join(root, 'editions', prev[-1], 'keys.json')):
++        R.check('E5', [], '', skip='no previous edition with keys.json')
++    else:
++        same = os.path.isfile(kp) and sha(kp) == sha(os.path.join(root, 'editions', prev[-1], 'keys.json'))
++        said = os.path.isfile(os.path.join(ed, 'README.md')) and re.search(r'findings? (changed|change)', read(os.path.join(ed, 'README.md')), re.I)
++        R.check('E5', [] if same or said else ['keys.json differs from editions/%s and README.md names no change to the findings' % prev[-1]],
++                'keys.json byte-identical to editions/%s' % prev[-1] if same else 'keys.json changed and README.md says so')
++
++    # ---------------------------------------------------------------- E6
++    errs = []
++    pblock = block_of(page)
++    src_names = NAMES.search(pblock or '')
++    names_from = 'index.html'
++    for r in refs:
++        q = os.path.join(ed, r.get('file', ''))
++        if not os.path.isfile(q): errs.append('reference %s missing' % r.get('file')); continue
++        if sha(q) != r.get('sha256'): errs.append('reference %s sha256 %s, manifest %s' % (r.get('file'), sha(q)[:12], str(r.get('sha256'))[:12]))
++        t = read(q); h = REF_HEADER.match(t); fd = re.match(r'^(\d{12})-', os.path.basename(q))
++        if not h or h.group(1) != r.get('generation') or (fd and fd.group(1) != r.get('generation')):
++            errs.append('reference %s: stamp file %s, header %s, manifest %s' % (r.get('file'), fd and fd.group(1), h and h.group(1), r.get('generation')))
++        rb = block_of(t)
++        if pblock is not None and rb != pblock: errs.append('reference %s: hook-table block differs from index.html' % r.get('file'))
++        if src_names is None and rb:
++            src_names = NAMES.search(rb); names_from = r.get('file')
++    if pblock is None and order: errs.append('index.html has no hook table (apply handoff/04-loader/index.html.patch) but order is not empty')
++    hooks = re.findall(r"'([^']+)'", src_names.group(1)) if src_names else []
++    if not hooks: errs.append('no KY_NAMES literal found in index.html or a loader reference')
++    admissible = set(hooks) | set(EXTRA)
++    by_id = {r.get('id'): r for r in recs}
++    seq = [by_id[i] for i in order if i in by_id] + [r for r in recs if r.get('id') not in order]
++    for r in seq:
++        rid, gen, path = r.get('id'), str(r.get('generation', '')), r.get('path', '')
++        if not re.match(r'^\d{12}$', gen): errs.append('%s: generation %r is not twelve digits' % (rid, gen))
++        fd = re.match(r'^(\d{12})-', os.path.basename(path))
++        if fd and fd.group(1) != gen: errs.append('%s: stamp mismatch: generation %s, file name %s' % (rid, gen, fd.group(1)))
++        q = os.path.join(ed, path)
++        if os.path.isfile(q):
++            h = HEADER.match(read(q).split('\n', 1)[0])
++            if not h: errs.append('%s: no header line `/* kuiper module <name>, generation <stamp> (UTC), <licence>`' % rid)
++            elif h.group(2) != gen: errs.append('%s: stamp mismatch: generation %s, header %s' % (rid, gen, h.group(2)))
++            elif h.group(1) != rid: errs.append('%s: header names %s' % (rid, h.group(1)))
++        if not str(r.get('licence', '')).strip(): errs.append('%s: no licence' % rid)
++        for n in r.get('requires', []):
++            if n not in admissible: errs.append('%s: missing hook %s' % (rid, n))
++        if rid in order: admissible |= set([rid] + list(r.get('provides', [])))
++    R.check('E6', errs, '%d records: stamp = file name = header = manifest, licences present, requires within %d hooks from %s + provides; %d reference(s) equal the page block'
++            % (len(recs), len(hooks), names_from, len(refs)))
++
++    # ---------------------------------------------------------------- E7
++    errs = []
++    for r in recs:
++        q = os.path.join(ed, r.get('path', ''))
++        if not os.path.isfile(q): continue
++        t = read(q); rid = r.get('id')
++        for w in r.get('writes', []):
++            if w == 'window.KY.modules.%s' % rid:
++                ok = re.search(r"""id\s*:\s*['"]%s['"]""" % re.escape(rid), t) or re.search(r"""['"]%s['"]""" % re.escape(rid), t)
++            else:
++                lit = w[1:] if w.startswith('#') else (w[7:] if w.startswith('window.') else w)
++                ok = lit in t or (lit.startswith('ky-') and re.search(r"""['"]ky-['"]\s*\+""", t) and re.search(r"""['"]%s['"]""" % re.escape(lit[3:]), t))
++            if not ok: errs.append('%s: writes %s, no literal in the file' % (rid, w))
++        for rd in r.get('reads', []):
++            if rd not in t: errs.append('%s: reads %s, no literal in the file' % (rid, rd))
++        for f in re.findall(r"""fetch\(\s*['"`]([^'"`]+)['"`]""", t):
++            if f not in r.get('reads', []): errs.append('%s: fetch(%s) not in reads' % (rid, f))
++    R.check('E7', errs, 'every reads/writes entry has its literal; no fetch outside reads')
++
++    # ---------------------------------------------------------------- E8
++    errs = []
++    for r in recs:
++        q = os.path.join(ed, r.get('path', ''))
++        if not os.path.isfile(q): continue
++        t = read(q); e = node_check(t, '.js')
++        if e: errs.append('%s: node --check: %s' % (r.get('id'), e))
++        n = t.count('KY.register(')
++        if n != 1: errs.append('%s: KY.register( appears %d times' % (r.get('id'), n))
++    R.check('E8', errs, '%d modules parse and register exactly once' % len(recs))
++
++    print('edition_check: editions/%s' % stamp)
++    for ln in R.lines: print(ln)
++    if R.skips: print('NOT EVALUATED: ' + ' | '.join(R.skips))
++    print('RESULT: %s' % ('FAIL' if R.fails else 'PASS'))
++    return 1 if R.fails else 0
++
++if __name__ == '__main__':
++    sys.exit(main(sys.argv))
