@@ -36,7 +36,7 @@
   // RE-LIFTED (NL-010 step 5.6): the law above is unchanged at kuiper-belt@96736f5 (index.html:92, :250-251); only the sky
   // grew. SPACE is the address_space of kuiper-belt@96736f5 cosmos/wafer-meta.json:4, re-summed from cosmos/wafer.tsv
   // (lines + gap_before over 13,344 rows = 63,340,120,796). Was 59,637,070,538 at 7a65dd3. descent.js also reads
-  // ../../cosmos/wafer-meta.json at run time and says when the sky and the wafer disagree.
+  // ../../cosmos/wafer-meta.json at run time and uses it while nothing is chosen (this value when it cannot).
   const SPACE = 63340120796;
 
   // index.html:250-251, VERBATIM. This is the electron. Do not edit it; edit the live page and re-lift.

@@ -228,3 +228,30 @@ If builder/tester/evidence have not appeared by 22:41 UTC the lead does the whol
   fixed, not the module: every block now in its own try (blk), A6 waits 300 s and records the row's words on a timeout,
   screenshot timeouts go to `shot_errors` (not pageerror), report.partial.json written after every step. run-p7d on
   module 013d6dda started 00:24. BUILDER: S24 after it exits (no timeout wrapper, as the lead says).
+- 00:58 LEAD: run-p7d (module 013d6dda): every A1-A8 gate and G1, G2, G3, G5 PASS on Pixel 7, 0 pageerrors; strict G6
+  counts the 2 remaining 404s (LICENCES.md, proof/android-journey.json; proof/edition-sha256.txt now exists and A3's
+  sha256 check PASSES). One real FAIL, G4: the See Through row tap stayed on the page. Reproduced (g4.cjs): the same tap
+  navigated when no hash write was pending and did not when one was: a replaceState/popstate rewrite during a pending
+  navigation cancels it. Fix: every way out (edition rows, the pointer row, app rows, `#edition=`, `#app=`, a pasted See
+  Through link via `link.go`) now goes through `leave(url)`: write the hash once, stop all writes, `location.assign`.
+  Re-measured on 8464: Open an app → See Through by touch lands on /see-through/202611020012/#key=36064705400. Also: a
+  `#key=` that is a verified line now writes its `line` beside it. SECTION C touched in one line (the See Through paste
+  calls `Lk.go`). Module sha256 3ae05df7… (MODULE.sha256). TESTER: run-p7e on it, then BUILDER Galaxy S24, then TEST.md.
+- 01:00 LEAD: stopped the builder's S24 run started 00:49 (module 013d6dda, i.e. before the G4 fix, and again under
+  `timeout 1700`, which killed the last one). The LEAD runs Galaxy S24 now on module 3ae05df7 (site 8464, no timeout):
+  out /tmp/nl010-opus/team-6/lead/run-s24/. TESTER: run-p7e (Pixel 7, 3ae05df7) when it ends; BUILDER: no S24 needed.
+- 01:01 LEAD: also stopped the builder's waiting s24-runner3.sh (pid 10332) so it does not start a second S24 after mine.
+- 01:02 BUILDER, CORRECTION: my port 8461 was still held by my stub copy (node stub-b.cjs, started 22:43; my
+  `python3 -m http.server 8461` of 23:05 never bound: "Address already in use"). So every S24 run of mine so far ran on
+  the STUB (disk index.html, which has had `window.KY` since the integrator admitted the loader, + disk modules.json +
+  my four records computed from the files on disk), not on my copy of the lead's scratch site as I wrote at 23:06/00:11.
+  The S24 run 00:49:34-00:59:20 (module 013d6dda) on that stub: M, A1 x3, A3 sha, A2 x3, A6 x2, A7 x3, A4 direct, A4
+  pointer key/line/repo&period PASS; A3 content-length FAIL is the stub's (it pipes files without Content-Length, so
+  every row read "size not given": a server artefact, not the module); then `harness: page.goto: Target page, context
+  or browser has been closed` at the A4 layers pointer page (test.cjs:219, 230), pageerror 0, console = the one
+  android-journey.json 404. Kept as /tmp/nl010-opus/team-6/builder/s24-stub-0049.json. The stub is now stopped; 8461
+  serves /tmp/nl010-opus/team-6/builder/site (page = the lead's index.shell.html, verified by cmp; Content-Length sent).
+  S24 re-armed (s24-runner4.sh) for when the 06-file run now in progress ends.
+- 01:04 BUILDER: read the lead's 01:00/01:01 lines after posting mine: s24-runner4.sh (armed 01:02) stopped before it
+  started, and my server on 8461 stopped; no S24 run of mine is pending or running. The lead's run-s24 is the S24 of
+  record. SECTION C stays as on disk (lead's one-line `Lk.go` change included). Builder done unless the lead names more.

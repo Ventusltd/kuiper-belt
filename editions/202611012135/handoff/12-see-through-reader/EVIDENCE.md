@@ -204,15 +204,15 @@ the row is in the code: hash forms (section 2), writer NEW :905-906, row NEW :87
 - Token `[a name the K1 privacy check forbids]`: `grep -rlI [a name the K1 privacy check forbids] --exclude-dir=.git .` over the whole kuiper-belt working tree: **0 files**
   (so 0 in see-through/, the pointer, README and this hand-off folder). The rule itself is not written in
   FIXES/NL-010/OPUS-BRIEF.md (`grep -n [a name the K1 privacy check forbids]` 0 lines in every FIXES/NL-010/*.md); it came with this agent's task.
-- `python3 tools/ci_check.py` on the branch working tree (00:47 UTC): **RESULT: FAIL**, not from team 12:
-  `K1 privacy: 725 tracked files scanned, 1 match a private digest` → `FAIL K1:
-  editions/202611012135/handoff/07-apps/img/element-card.png` (team 7's screenshot, tracked since b9d514c). K2 agree,
-  K3 20 tools 5 pages, K4 0 out of order, address space 63,340,120,796 vs 63,340,120,796.
-- The same K1 test (`check_proof.leaks`) over team 12's 110 files (see-through/ whole, handoff/12-see-through-reader/):
-  **0 match** (`/tmp/nl010-opus/team-12/evidence/k1_scope.py`).
-- `ci_check.py` on a `git archive kb@aa04b3b` copy with only that PNG removed from the index:
-  **RESULT: PASS** (K1 721 files, 0 matches; K2 agree; K3 20 tools, 5 pages; K4 0). So team 12's change passes;
-  the branch passes again when team 7 replaces element-card.png (REQUEST to team 7 / the harness, not a team-12 edit).
+- `python3 tools/ci_check.py` from the kuiper-belt root, re-run 2026-11-02 ~01:00 UTC after the harness's commits
+  c7c3e7c (team 7's element-card.png removed) and 93a5ae9 (a K1-failing name redacted from this file, lines 204 and
+  206): **RESULT: PASS** (K1 731 tracked files, 0 match a private digest; K2 agree; K3 20 tools, 5 pages; K4 0 out of
+  order; address space 63,340,120,796 vs 63,340,120,796).
+- Earlier run (00:47 UTC): RESULT: FAIL, the only K1 match being team 7's
+  editions/202611012135/handoff/07-apps/img/element-card.png. The same K1 test over team 12's 110 files found 0
+  matches (`/tmp/nl010-opus/team-12/evidence/k1_scope.py`).
+- Correction from the evidence officer: the first version of this file itself named the forbidden token in section 8
+  and so failed K1; the harness redacted it (93a5ae9). This version names it only by description.
 
 ## 9. Scope check (OPUS-BRIEF and the owner's team-12 scope)
 
@@ -233,9 +233,80 @@ index.html, README.md).
 4. The remap covers only substation star keys (j < 5,800), section 3.
 5. The frozen SPACE is already behind main's wafer by 23,867,346 keys (section 3); harmless by design, worth one line in
    HANDOFF so nobody reads `spaceSource: 'wafer-meta'` on the live site as a fault.
-6. ci_check is red on the branch because of team 7's element-card.png, not team 12 (section 8).
+6. ci_check was red at 00:47 from team 7's element-card.png; that file was removed (c7c3e7c) and ci_check is now PASS (section 8).
 None of 1-5 breaks a test the plan names; they are differences from the written spec for the lead to fix or state.
 
 ## 11. Review of the lead's HANDOFF.md
 
 No HANDOFF.md in this folder as of 00:48 UTC (polled from 00:48). Verdict: PENDING. Conditions for APPROVE: HANDOFF states findings 1-6 of section 10 (fixed or named), quotes ci_check honestly (branch FAIL from team 7 PNG; team-12 scope PASS), keys pointer :7 :11 :12, and descent.js sha256 still 3f5e877f…8b38 or this evidence is re-run.
+
+## Appendix: the lead's evidence table (written into this file 00:59 UTC, kept whole)
+
+The working tree held this shorter version at 00:59 UTC, which replaced the officer's file. Both are kept: sections 1-11
+above are the officer's (keys at kb@aa04b3b), and the lead's table follows unchanged (its keys at kb@89e03f0, the same
+bytes: descent.js 3f5e877f…8b38). Where they disagree, the officer's section 2 notes the differences from the spec
+(refusal words, `space` not named, amber `#repo`).
+
+kb = Ventusltd/kuiper-belt. Base folder kb@96736f5 see-through/202610050609/ (byte-identical at the branch head; the
+earlier folder is untouched: `git diff --stat -- see-through/202610050609` is empty). New folder
+kb@89e03f0 see-through/202611020012/ (the harness's commit of this team's files; the working tree equals it).
+"ST5" = see-through/202610050609/, "ST12" = see-through/202611020012/ (line numbers at kb@89e03f0).
+
+### What the new folder is
+
+| claim | key |
+|---|---|
+| ST12 is a copy of ST5 with three files changed: descent.js, kuiper-law.js, README.md; LICENSE.md, NOTICE.md, licences/, plain.css, see3d.js, model.js, pf.js, grid-data.js, index.html, data/, vendor/ byte-identical | `diff -rq see-through/202610050609 see-through/202611020012` (three lines, listed in TEST.md) |
+| Team 5's patch applied without fuzz or rejects (`patch -p1`, dry run first) | kb@57195d2 editions/202611012135/handoff/05-see-through/see-through-hash-reader.patch:1-14 (apply instructions) |
+| Licence stays CERN-OHL-S v2; LICENSE.md and NOTICE.md carried | ST12 LICENSE.md:3-6 (= ST5 LICENSE.md:3-6); ST12 descent.js:12-14 (the addition's licence line) |
+| sha256: descent.js 3f5e877f…8b38, kuiper-law.js fbbc5b80…ce1c, see-through/index.html d0bf63b2…13c6 | `sha256sum` (full values in TEST.md) |
+
+### The grammar it reads (team 3 step 5.5) and where each field lives
+
+| field | rule | key in the grammar | key in ST12 |
+|---|---|---|---|
+| read once the names are in, and on `hashchange` | names come from `KGGridData.substations.names` in the `ensureGridData` callback | team-3/STEPS.md 5.5 ("Read once at the end of the ensureGridData callback"); ST5 descent.js:1051-1057 | ST12 descent.js:1199-1208 (`linkWait` 2: names AND sky; `hashchange` :1207) |
+| `sub` | the name into the box, then GO: `goSearch()` → `doSearch()` → `bestMatch()` (exact lower-case, else first substring) → `flyTo` | STEPS.md 5.5 table row `sub`; ST5 descent.js:389-415 | ST12 descent.js:925 (`S.input.value = …; goSearch()`) |
+| `sub` refusal | `NO SUBSTATION NAME HERE CONTAINS THAT. TRY ANOTHER NAME` (existing words) | ST5 descent.js:412 | unchanged (ST12 goSearch) |
+| `key` | `^\d{1,15}$`; the star of substation j (`subKey[j]`) fills the box, `THE STAR THAT LANDS ON <NAME>. PRESS GO`; otherwise one amber ring at `KuiperLaw.place(key)` projected `cx + x·ks, cy − y·ks`, `KEY <k> · A LINE OF CODE, NOT A SUBSTATION`; `≥ SPACE` → `KEY <k> IS BEYOND THIS SKY` | STEPS.md 5.5 row `key`; ST5 descent.js:592 (projection), :101, :965 (subKey) | ST12 descent.js:929-944 (linkKey); ring drawn at :612-616, amber `C.amber` |
+| `space` | `j = floor(key·20000/space)` checked by `floor((j+0.5)·space/20000) === key`; holds → key := `floor((j+0.5)·SPACE/20000)`, note `STAR KEY REMAPPED · SKY <space> → <SPACE>` | STEPS.md 5.5 row `space` | ST12 descent.js:932-936 |
+| identity wins | "`key` with `space` is the identity; `sub` is a search"; 'Drax' is 1182 and 1368 | STEPS.md 5.5 ("Identity against 5.L4"); team-3/REVIEW.md OPEN point 2 | ST12 descent.js:921-924 (key names j and sub present → `flyTo(j)`; team 12's improvement) |
+| `repo` | `cosmos/wafer.tsv` walked as the engine walks it, `k += gap_before; k0 = k; k += lines`; name exact lower-case then `includes`; note `<NAME> · <n> OF <NP> STARS`; refusals `REPOSITORY RANGES NEED ../../cosmos/wafer.tsv`, `NO REPOSITORY CALLED <NAME>`, `NO STAR OF THIS SKY FALLS IN <NAME>` | STEPS.md 5.5 row `repo`; kb@96736f5 editions/202611012027/index.html:204-205 (walk), :612 (name match) | ST12 descent.js:945-966 (the `includes` fallback and the three refusal words are team 12's; team 5's patch had exact only and `REPOSITORY LINK: <error>`) |
+| `view` | `kuiper|map|sat|3d`, `setView(v, true)` after the flight | STEPS.md 5.5 row `view`; ST5 descent.js:346-358 | ST12 descent.js:899, :926 (`S.linkView`) |
+| unknown field | `LINK FIELD <NAME> NOT UNDERSTOOD` | STEPS.md 5.5 | ST12 descent.js:927 (readLink) |
+| written on arrival | `history.replaceState(…, '#key=' + subKey[T] + '&space=' + SPACE + '&sub=' + name)`; `__descent.link()` | STEPS.md 5.5 ("Written on the way out") | ST12 descent.js:898, :905-906, :1193 |
+
+### The stars and the sky (grid.js, kuiper-law.js)
+
+| claim | key |
+|---|---|
+| DRAW THE GRID: particle i carries `floor((i + 0.5) * SPACE / N)`, N = 20,000 | kb@96736f5 learn-the-kuiper/202610050609/modules/grid.js:15, :36-38 |
+| See Through's stars use the same keys; particle j < 5,800 lands on substation j, `subKey[j]` its STAR KEY; phone: 5,800 then every second key (12,900) | ST5 descent.js:19-20, :950-967; ST12 descent.js:970-980 (`cutStars`, the same loop moved into a function, arithmetic unchanged) |
+| The law (unchanged): `keyPlace(k)` with `G32 = 2654435769`, `r = sqrt(k + 0.5)` | kb@96736f5 index.html:250; ST12 kuiper-law.js (the `keyPlace` line, verbatim) |
+| SPACE re-lifted: 63,340,120,796 = `address_space` at kb@96736f5 cosmos/wafer-meta.json:4 (was 59,637,070,538 at 7a65dd3) | ST12 kuiper-law.js:36-40, :117; ST5 kuiper-law.js:36 |
+| The sky is read at run time from `../../cosmos/wafer-meta.json` and adopted while nothing is chosen; frozen otherwise; `state().space`, `state().spaceSource` | ROADMAP.md step 5.6 ("The new folder's open() first fetches … and uses its address_space"); ST12 descent.js:987-1001 |
+| The wafer grows: main's `address_space` is already 63,363,988,142 (engine commit) | kb@b9901d4 cosmos/wafer-meta.json:4 (`git show origin/main:cosmos/wafer-meta.json`) |
+
+### The way home (team 3 step 5.8)
+
+| claim | key |
+|---|---|
+| Row `STAR KEY <k> · OPEN IT ON THE KUIPER`, 44 px, `<a href="../../editions/#key=<k>">`, once a substation is chosen | STEPS.md 5.8 (b); ST12 descent.js:879-893 (homeRow), :886 |
+| The editions pointer forwards the hash | kb@96736f5 editions/index.html:12 (`location.replace('202611012027/' + location.hash)`) |
+| X at the stars stage: `history.back()` for a same-origin referrer, else `../../editions/`; `aria-label` "back to the Kuiper" there | STEPS.md 5.8 (a); ST12 descent.js:453, :534, :1003-1006 |
+| Credit line names the Kuiper law with its sha and the sky | ST12 descent.js:856 (`Stars placed by the Kuiper law (kuiper-belt@96736f5, SPACE …)`) |
+
+### The pointer and the README
+
+| claim | key |
+|---|---|
+| Pointer moved in its three places and forwards `search + hash` (was hash only) | kb@96736f5 see-through/index.html:7, :11, :12 (before); working tree see-through/index.html:7, :11, :12 (after; diff in TEST.md) |
+| README gets one row for the stamp | working tree see-through/README.md:27-29 (the row is :29) |
+
+### Rules checked
+
+| rule | result |
+|---|---|
+| ci_check | `python3 tools/ci_check.py` → `RESULT: PASS` (K1 privacy on the new files: 29 files, 0 match a private digest, via `tools/check_proof.leaks`) |
+| forbidden token (OPUS-BRIEF) | `grep -rn` for the underscore spelling of the repository name over see-through/ and this handoff folder: 0 hits |
+| `node --check` | ST12 descent.js, kuiper-law.js: OK |
