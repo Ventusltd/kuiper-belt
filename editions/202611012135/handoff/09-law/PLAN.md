@@ -17,14 +17,14 @@ team-5/STEPS.md step 9; this edition's handoff/04-loader/edition_check.py.patch 
 
 ## Parts
 
-| part | who | state |
+| part | who | state (00:30 UTC) |
 |---|---|---|
-| A tools/edition_check.py skeleton (E1-E9 stubs, the report shape) | lead | first |
-| B E1-E5 (replacing team 4's minimal drafts), E9 | builder (else lead) | |
-| C E6-E8 folded from team 4's patch verbatim in logic | lead | |
-| D negative tests, one per check, each must FAIL on a mutated copy | tester (else lead) | |
-| E LICENCES.md, EVIDENCE.md, LICENCE.txt | evidence officer (else lead) | |
-| F editions/LAW.md, check.yml, pointer.patch, journey adoption | lead | |
+| A tools/edition_check.py, E1-E9 complete (E1-E5 and E9 new; E6-E8 team 4's logic unchanged) | lead | done 00:15; changes to it go through the lead |
+| B negative tests on a SYNTHETIC repository (runs on a GitHub runner): `test_edition_check.py` | builder (arrived ~00:22) | builder owns this file |
+| C negative tests on a copy of the REAL repository (estate clones, real drift re-run): `test_real_folder.py` | lead | the lead's; was test_edition_check.py until 00:24 |
+| D run B and C, run the journey (`android-journey.cjs --law`) one device at a time, write TEST.md | tester (arrived ~00:21) | |
+| E LICENCES.md, EVIDENCE.md, LICENCE.txt (keys re-read by /tmp/nl010-opus/team-9/evidence/verify_keys.py) | lead (no evidence officer by 00:30) | |
+| F editions/LAW.md, check.yml, pointer.patch, the journey's law layer | lead | pointer.patch and journey done 00:22 |
 
 ## Rules kept
 

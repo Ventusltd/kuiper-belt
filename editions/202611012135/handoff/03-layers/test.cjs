@@ -477,7 +477,7 @@ function writeTestMd(out) {
   const L = [];
   L.push('# Opus team 3, step 3 the layer registry: TEST.md');
   L.push('');
-  L.push((out.preIntegration ? '**PRE-INTEGRATION RUN** (served with ' + [OVR_INDEX && '--index ' + flags['--index'], OVR_MANIFEST && '--manifest ' + flags['--manifest']].filter(Boolean).join(', ') + '): not a hand-off pass. ' : '') + 'Verdict: **' + (out.pass ? 'PASS' : 'FAIL') + '** — written by `test.cjs` at ' + out.generatedAt + ' from ' + out.url + ' (kuiper-belt ' + out.head + ').');
+  L.push((out.preIntegration ? '**PRE-INTEGRATION RUN** (served with ' + (out.overrides || []).join(', ') + '): not a hand-off pass. ' : '') + 'Verdict: **' + (out.pass ? 'PASS' : 'FAIL') + '** — written by `test.cjs` at ' + out.generatedAt + ' from ' + out.url + ' (kuiper-belt ' + out.head + ').');
   L.push('');
   L.push('Run: `node editions/' + STAMP + '/handoff/03-layers/test.cjs http://127.0.0.1:8432/ /tmp/nl010-opus/team-3/tester/out --handoff` from the repository root served by `python3 -m http.server 8432 --bind 127.0.0.1`. Playwright, harness GL flags, `devices[\'Pixel 7\']` and `devices[\'Galaxy S24\']`, real touch (`page.touchscreen.tap`), 6.5 s after load. Failures are served by Playwright routes only (keys.json 404, keys.json with byte ' + TAMPERED.offset + ' changed `' + TAMPERED.from + '`→`' + TAMPERED.to + '` (sha256 ' + TAMPERED.sha.slice(0, 12) + '… against ' + TAMPERED.shaOriginal.slice(0, 12) + '…), cosmos/wafer.tsv 404, cosmos/wafer.tsv and keys.json held to show WAIT and LOAD); no file on disk is changed. The one allowed console line in F and H is Chromium\'s own `Failed to load resource … 404` for the file served 404.');
   L.push('');
@@ -501,10 +501,18 @@ function writeTestMd(out) {
   fs.writeFileSync(path.join(HERE, 'TEST.md'), L.join('\n') + '\n');
 }
 
+// --md-only: rewrite TEST.md and img/ from an earlier run's <outdir>/report.json and screenshots, without running again
+if (flags['--md-only']) {
+  const out = JSON.parse(fs.readFileSync(path.join(OUT, 'report.json'), 'utf8')); const d0 = path.join(OUT, slug(out.devices[0].device));
+  const pick = re => { const f = fs.existsSync(d0) ? fs.readdirSync(d0).find(x => re.test(x)) : null; return f ? path.join(d0, f) : null; };
+  out.images = writeImages({ WAIT: pick(/-wait\.png$/), OK: pick(/-ok\.png$/), FAIL: pick(/-fail-keys-404\.png$/), REFUSED: pick(/-refused-wafer-404\.png$/) });
+  if (out.preIntegration && !OVR_INDEX && !OVR_MANIFEST) { flags['--index'] = '(see report.json)'; }
+  writeTestMd(out); console.log('TEST.md written from ' + path.join(OUT, 'report.json')); process.exit(0);
+}
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
   let head = null; try { head = cp.execFileSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: REPO, encoding: 'utf8' }).trim(); } catch (e) {}
-  const out = { url: ED_URL, outdir: OUT, head, preIntegration: PRE, generatedAt: new Date().toISOString(), devices: [], static: [] };
+  const out = { url: ED_URL, outdir: OUT, head, preIntegration: PRE, overrides: [flags['--index'] && '--index ' + flags['--index'], flags['--manifest'] && '--manifest ' + flags['--manifest']].filter(Boolean), generatedAt: new Date().toISOString(), devices: [], static: [] };
   const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   const shots = {};
   try { for (const d of DEVICES) { const s = d === DEVICES[0] ? shots : {}; out.devices.push(await runDevice(browser, d, s)); fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(out, null, 1)); } }

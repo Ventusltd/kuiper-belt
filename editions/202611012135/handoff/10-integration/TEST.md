@@ -116,3 +116,25 @@ FAIL: tops 6/6/6/39). The loader did what step 4 says. At 00:01 the integrator r
 Team 1: the file `modules/202611012143-kuiper-shell.js` was edited after its admission; a changed module needs a new
 hash (and stamp, if the generation changes) in the manifest before it can be admitted again.
 
+## Run 3: admitted [hello, line-card] (modules.json `be99c8a1…`, index.html `418ae14c…` = loader rev 4 + 02-card index.patch), started 00:02 UTC
+
+Snapshot `snap/r3` (00:02), plain `python3 -m http.server 8502`, script `ecde2f34…`. One device at a time.
+
+**Pixel 7 (00:02:31–00:25:09, load 65→70): 16 PASS, 2 FAIL, 0 console errors.** Report `runs/r3-pixel-7.json`.
+No step turned red against run 0: both reds are run 0's own (the shell is not in this manifest).
+
+| step | run 0 | run 3 Pixel 7 | measured |
+|---|---|---|---|
+| load | FAIL | FAIL (still red) | Edition 4 bar two rows (tops 6/6/6/39, 75.1 px); wafer 322×323; 0 errors; 16.4 s |
+| edition-open / edition-close | PASS | PASS | |
+| panel-dismiss | FAIL | **PASS** | wafer tap (404,549) on `#c` closed EDITION, no card; back: the loader patch's ANDROID BACK pushes `{kuiper:1}`, `history.back()` closed EDITION, URL unchanged |
+| lines-open / lines-filter | PASS | PASS | 7 rows match "acceptance" |
+| lines-pick | PASS | PASS | card 40 of 344 "Owner acceptance cannot be forged by an agent: the ACCEPT line"; **header `.lc-h code` = keys.json `line_text` (" *", 2 chars), first text node of the card**; spark y 357.1 in [85.1, 630.6], hit `#c` |
+| card-details | PASS | PASS | 198.4 → 285.25 px, cap 285.3 (34dvh), spark still clear |
+| card-close, key-e-1..3, pinch-drag, spark-tap, whole-wafer | PASS | PASS | |
+| modules | PASS (empty) | PASS | admitted [hello, line-card], refused [], done, 0 page errors |
+| see-through | FAIL | FAIL (still red) | no control (the shell carries it; not admitted) |
+| console | — | PASS | 0 |
+
+Galaxy S24 and Pixel 7 landscape: running (below).
+
