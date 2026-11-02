@@ -1,0 +1,8 @@
+# CONTROLLER: editions/202611020629 (Kuiper Edition 9+), OPUS-CONTROLLER-3
+
+One status line per loop, newest at the bottom. Times from `date -u`. Admission rule: no step red with the candidate that
+is green on Edition 9's base, on Pixel 7 and on Galaxy S24 (journey-6.cjs on frozen snapshots, one device at a time);
+the loader admits every record and refuses none; 0 page errors; ci_check PASS; no new edition_check failure attributable
+to the candidate. Tools: neural-link FIXES/NL-010/tools/controller/{snap6.sh, crun6.sh, frame.py} with ED=202611020629.
+
+- 07:53Z loop 1: took over from controller 2's handoff 6570675769. Folder = byte copy of main fdf6e35 editions/202611020629 (commit ea853c3; 20 files, blob ids equal). Candidate layers c8fccccf (OPUS-3 REVISION 6571928537, branch 4784aa3): sha256 verified; candidate modules.json 47c51d61 = base dc18452f + `layers` in order + MODULE.json record appended last (other records byte-unchanged). Snapshots e9-base and e9-layers (+ module, data/layers.json 4aa35536, data/editions.json d175ffe1, both stamped 202611020629); journey-6 base P7, base S24, layers P7, layers S24 running since 07:52Z. edition_check on base: E1 E2 E4 E5 E8 PASS; E3 FAIL (202611012135 handoff edits), E6 FAIL (loader reference hook table), E7 FAIL (drift #hud, apps x3 prose), E9 FAIL (drift.json recorded 2f227a13, re-computed db7e3b35 on this machine; same on both snapshots). ci_check PASS.
