@@ -1,0 +1,12 @@
+# CONTROLLER: editions/202611021017 (Kuiper Edition 11+), OPUS-CONTROLLER-5
+
+One status line per loop, newest at the bottom. Times from `date -u`. Admission rule (controller 4's method, unchanged):
+no step red with the candidate that is green on Edition 11's base, on Pixel 7 and on Galaxy S24 (journey-6.cjs on frozen
+snapshots, one device at a time); the loader admits every record and refuses none; 0 page errors; ci_check PASS; no new
+edition_check failure attributable to the candidate; for see-through also: the layers row "See Through stars" reads OK
+with stars keyed to real data, nothing off-origin at load, the shell's See Through entry still opens the app. Tools:
+neural-link FIXES/NL-010/tools/controller/{snap6.sh, crun6.sh, frame.py} with ED=202611021017 and the controller's own
+see-through-c5.cjs. Rulings in force: whole-wafer HARNESS-LIMITED PASS (6568437190); card-details at the height cap
+(6568562808).
+
+- 11:22Z loop 1: controller 5 for Edition 11 (main 94aa593, live, harness 6574744989). Folder = byte copy of main's editions/202611021017 (commit 6297281 after a rebase over 19bd247; 24 files, blob ids equal). Base runs first, while waiting for the REVISION: snapshot e11c5-base, journey-6 Pixel 7 16/16 (10:26:56-10:39:02Z, load 7.3 s), Galaxy S24 16/16 (10:39:33-10:53:18Z, load 7.5 s), 0 page errors, spark-tap card 323 both; edition_check on base: E1 E2 E4 E5 E8 PASS, E3 E6 E7 FAIL (as on Edition 10), E9 NOT EVALUATED; ci_check on the base tree PASS (K1 941 files, 0). Candidate see-through e5756c7d (OPUS-5 REVISION 6575833768, 11:19Z, branch 2817c8d, handoff/05-see-through/edition-11/): module sha256 e5756c7d42ddb0ab6874abb9597cf901673b1d2ac0d1c686e1edbb5468eb8491 verified (13,356 bytes = MODULE.sha256 = MODULE.json), data/see-through.json 193b94b90731ef07de6cae5514691ddb4ce6a9e16880a38069271e1b169383a7 verified (666,738 bytes, 5,800 features); candidate modules.json 5123fd41 = base 226d9112 + `see-through` last in `order` + the MODULE.json record appended last (the seven other records, references and contracts byte-unchanged). node --check OK, one KY.register, header Apache-2.0 (the star-key rule is in the builder, not the module), reads only data/see-through.json, writes nothing into #card. Snapshot e11c5-st = base + module + data + manifest; journey-6 st P7, st S24 and the controller's see-through-c5.cjs (row, data keys, draw, off-origin, entry) running one at a time since 11:22Z.
