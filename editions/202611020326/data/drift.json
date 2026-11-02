@@ -1,0 +1,3765 @@
+{
+ "schema": "kuiper.drift.v1",
+ "edition": "202611020326",
+ "cut_at": "2026-11-02T03:26:00+00:00",
+ "tool": "tools/drift.py",
+ "licence": "CC BY 4.0 (kuiper-belt data); quotes no line text",
+ "law": "per body of keys.json: git show <head>:<path>; SAME if line `line` equals line_text, MOVED if another line does (first occurrence), GONE if none does, FILE_GONE if no blob, UNVERIFIED with its reason when no head, no clone, empty line_text or not on the wafer; share = SAME / (rows - UNVERIFIED)",
+ "inputs": {
+  "keys.json": {
+   "path": "editions/202611020326/keys.json",
+   "sha256": "1c293c337b4c3c8442c12746ce3cd08d920c763344f18333f75e73aa9fc7242b"
+  },
+  "repos.tsv": {
+   "path": "cosmos/repos.tsv",
+   "sha256": "0aadce5b97a3260cf4928cca82030f755a6ce2b63b2f3d96d1cc7e5b0ab72751"
+  }
+ },
+ "head_rule": "heads[repo] = the sha of the ref named, read from the clone under the estate, and when that ref was observed from the host; recorded once, re-used by --heads",
+ "cap_seconds": 1209600,
+ "cap_key": "kuiper-belt@018b46a tools/wafer_keys.py:34",
+ "heads": {
+  "cvaa": {
+   "sha": "877bf380202b6a922932afc0bdcfd7f42a183086",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:26:48+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "data-centres-gb": {
+   "sha": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:26:49+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "data-grid-gb": {
+   "sha": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:26:49+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "data-gridatlas": {
+   "sha": "8bf88da9e210ce9f61dc0398869d3369f3fa2445",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:26:49+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "elements": {
+   "sha": "f7a92fb085c38dcbbd5cb469a66cd5ca61fb95bf",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:26:50+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "energy-transition-simulator": {
+   "sha": "a6b5ae63cc0eeb4d619f154c7e116616c997af77",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:26:50+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "galaxies-wafers": {
+   "sha": "fff6fc6ad4f93a15fe8f6456942a1b44e5547105",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:26:50+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "globalgrid2050": {
+   "sha": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:26:51+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "grid-distance-maths": {
+   "sha": "8e91b07d8312acca5bcaef43e839f06a3b1d642a",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:26:51+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "gridatlas": {
+   "sha": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:26:56+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "gridmachine1": {
+   "sha": "c6cbf9686eea1aa148b2e4616b7d603e6a93b450",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:26:56+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "kuiper-belt": {
+   "sha": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-11-01T21:35:16+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "kuiper-drawing-engine": {
+   "sha": "ee69a07a7ebf71f2f20c052f392991f115fdbee0",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:26:57+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "maths": {
+   "sha": "b898a5ee39aa81a45197c5f17ba1195727aa538e",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:26:57+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "particle-physics-drawing-engine": {
+   "sha": "e51127791aab091ccb96f0b4eab807c02a9d116e",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:26:58+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "pipelinenews": {
+   "sha": null,
+   "why": "no clone of pipelinenews in the estate"
+  },
+  "star-maker": {
+   "sha": "f65c2f381d91eeb1eba75a97ae6765c24e32197d",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:26:59+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "stars": {
+   "sha": "529ae15839ddfb586960fd4805df16e8049c9a01",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:27:04+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "time-stone": {
+   "sha": "c507d8ce86392411afbd14190ccd22ff978c7ca1",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:27:06+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "trillion-loop": {
+   "sha": "35fdea2f2744df338cfa7e28200e18008b307e73",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:27:06+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "ventus-grid-engine": {
+   "sha": "5eead830d99021c90fd58add2f8bf05b0b752340",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:27:07+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  },
+  "worlds-": {
+   "sha": "b5f15716486c3ff509c56914fbee06f2e6aec2d8",
+   "ref": "refs/remotes/origin/main",
+   "observed_at": "2026-10-31T23:27:07+00:00",
+   "observed_by": "FETCH_HEAD names the sha (its mtime)"
+  }
+ },
+ "rows": [
+  {
+   "id": "0048802883266c68d5bdb6f5add0074e8b5b729d:5",
+   "key": 36064705400,
+   "repo": "data-centres-gb",
+   "path": ".gitattributes",
+   "line": 5,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "SAME"
+  },
+  {
+   "id": "00855d9f0f187c99abe557afc8889d85aebe42fc:1",
+   "key": 62737254220,
+   "repo": "globalgrid2050",
+   "path": "testcode/wafer-development-environment/202609180245-real-systems/pilot-rules.js",
+   "line": 1,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "00dafd47a1693591572cf0c05ec350151da8b181:61",
+   "key": 57340379470,
+   "repo": "pipelinenews",
+   "path": "releases/202609060232-pipelinenews/assets/202608311610-grid-proximity.mjs",
+   "line": 61,
+   "edition_commit": "67aa2eb05993c630887b41c3b720ba42a86669a4",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "02dfef53d5a0cf75aa8abfb77c0a5b184d9121f3:1629",
+   "key": 62884780308,
+   "repo": "gridatlas",
+   "path": "tools/ci/lightning/overlay-engine.test.mjs",
+   "line": 1629,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "07cff6340526204371a7c1d2caa2795743ae8592:250",
+   "key": 62818256090,
+   "repo": "data-grid-gb",
+   "path": "datacentres/lanes/dc-a7-merge/dc_pipeline.schema.json",
+   "line": 250,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "07f62fc2a78b134a3f36b6d054c441a524b8111d:1",
+   "key": 63013232774,
+   "repo": "kuiper-belt",
+   "path": "see-through/202610050609/grid-data.js",
+   "line": 1,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "089f6e69eae9bd442483c520ff382901abeec70b:234",
+   "key": 55832512245,
+   "repo": "worlds-",
+   "path": "src/worlds.py",
+   "line": 234,
+   "edition_commit": "b5f15716486c3ff509c56914fbee06f2e6aec2d8",
+   "head": "b5f15716486c3ff509c56914fbee06f2e6aec2d8",
+   "class": "SAME"
+  },
+  {
+   "id": "089f6e69eae9bd442483c520ff382901abeec70b:66",
+   "key": 55832512077,
+   "repo": "worlds-",
+   "path": "src/worlds.py",
+   "line": 66,
+   "edition_commit": "b5f15716486c3ff509c56914fbee06f2e6aec2d8",
+   "head": "b5f15716486c3ff509c56914fbee06f2e6aec2d8",
+   "class": "SAME"
+  },
+  {
+   "id": "089f6e69eae9bd442483c520ff382901abeec70b:74",
+   "key": 55832512085,
+   "repo": "worlds-",
+   "path": "src/worlds.py",
+   "line": 74,
+   "edition_commit": "b5f15716486c3ff509c56914fbee06f2e6aec2d8",
+   "head": "b5f15716486c3ff509c56914fbee06f2e6aec2d8",
+   "class": "SAME"
+  },
+  {
+   "id": "090c30c75bba79ff909955b2c56a6d2fddee6ed0:26",
+   "key": 36982247386,
+   "repo": "data-gridatlas",
+   "path": "releases/current.json",
+   "line": 26,
+   "edition_commit": "8bf88da9e210ce9f61dc0398869d3369f3fa2445",
+   "head": "8bf88da9e210ce9f61dc0398869d3369f3fa2445",
+   "class": "SAME"
+  },
+  {
+   "id": "092df31ee93df9e7a2d055497bd6b7a98c258908:252",
+   "key": 62737254522,
+   "repo": "globalgrid2050",
+   "path": "testcode/wafer-development-environment/202609180245-real-systems/pilot.mjs",
+   "line": 252,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "0a7188585e9aa5e808706fa5faca396d7b716125:3",
+   "key": 62737257623,
+   "repo": "globalgrid2050",
+   "path": "testcode/wafer-development-environment/202609190330-cable-cross-sections/proof/kuiper-pulse.check.mjs",
+   "line": 3,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "0c1fb675ca4e68abf941e540f6cb8b072fd516f4:8",
+   "key": 63013231636,
+   "repo": "kuiper-belt",
+   "path": "see-through/202610050609/NOTICE.md",
+   "line": 8,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "0d558a878e1684191551032c36d3dc6502e27b03:1",
+   "key": 63013119703,
+   "repo": "kuiper-belt",
+   "path": "cosmos/pulse.tsv",
+   "line": 1,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "0f9beadb3eb3e935c6793ae5d3e5953adc822b52:629",
+   "key": 62729241502,
+   "repo": "globalgrid2050",
+   "path": "homepage-shell/data/homepage.json",
+   "line": 629,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "0fa40d2b648f54f8e1417b4ef292281497adca2f:8",
+   "key": 63013109613,
+   "repo": "kuiper-belt",
+   "path": "cosmos/belt.tsv",
+   "line": 8,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "1081cdaf9466195c00406becd7baadf2b1ca119e:106",
+   "key": 62818256395,
+   "repo": "data-grid-gb",
+   "path": "datacentres/lanes/dc-a7-merge/dcingest.py",
+   "line": 106,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "1081cdaf9466195c00406becd7baadf2b1ca119e:264",
+   "key": 62818256553,
+   "repo": "data-grid-gb",
+   "path": "datacentres/lanes/dc-a7-merge/dcingest.py",
+   "line": 264,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "1081cdaf9466195c00406becd7baadf2b1ca119e:395",
+   "key": 62818256684,
+   "repo": "data-grid-gb",
+   "path": "datacentres/lanes/dc-a7-merge/dcingest.py",
+   "line": 395,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "1085c55925157abb1740d303aa0edc14c91c858e:34",
+   "key": 36217297909,
+   "repo": "gridatlas",
+   "path": "tools/proofs/run-current.mjs",
+   "line": 34,
+   "edition_commit": "270c99940d5335af0368ecda487537455bf1e377",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "12896d0462ae9cd65f3697440cfe2d41d558b896:19",
+   "key": 57337906110,
+   "repo": "pipelinenews",
+   "path": "README.md",
+   "line": 19,
+   "edition_commit": "67aa2eb05993c630887b41c3b720ba42a86669a4",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "12896d0462ae9cd65f3697440cfe2d41d558b896:47",
+   "key": 57337906138,
+   "repo": "pipelinenews",
+   "path": "README.md",
+   "line": 47,
+   "edition_commit": "67aa2eb05993c630887b41c3b720ba42a86669a4",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "12994877c4585edf478f4f599d918fcf6677c8c6:23",
+   "key": 63013234851,
+   "repo": "kuiper-belt",
+   "path": "tools/check_proof.py",
+   "line": 23,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "12994877c4585edf478f4f599d918fcf6677c8c6:47",
+   "key": 63013234875,
+   "repo": "kuiper-belt",
+   "path": "tools/check_proof.py",
+   "line": 47,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "15a7f0faf0db8635c2da671829b1a013766ae05d:41",
+   "key": 62714355585,
+   "repo": "globalgrid2050",
+   "path": ".github/workflows/deploy-pages.yml",
+   "line": 41,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "164372f7931538ecf1ea97b0d8358179bde6ab0f:115",
+   "key": null,
+   "repo": "star-maker",
+   "path": "README.md",
+   "line": 115,
+   "edition_commit": "f65c2f381d91eeb1eba75a97ae6765c24e32197d",
+   "head": "f65c2f381d91eeb1eba75a97ae6765c24e32197d",
+   "class": "UNVERIFIED",
+   "reason": "key not on the wafer (on_wafer: false)"
+  },
+  {
+   "id": "1788cb2ed803facbc4998dec2ae6aa1cdb098180:105",
+   "key": 47320907607,
+   "repo": "galaxies-wafers",
+   "path": "build/build_layers.py",
+   "line": 105,
+   "edition_commit": "fff6fc6ad4f93a15fe8f6456942a1b44e5547105",
+   "head": "fff6fc6ad4f93a15fe8f6456942a1b44e5547105",
+   "class": "SAME"
+  },
+  {
+   "id": "17a03321087e6bf2c195ab1d15cd6a85a5019d33:89",
+   "key": 62728320318,
+   "repo": "globalgrid2050",
+   "path": "diary-notes-log/260522-0115-v7-rollback-and-working-method.md",
+   "line": 89,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "UNVERIFIED",
+   "reason": "empty line_text"
+  },
+  {
+   "id": "1b1cc61a1b3b614945baae1d2d1b1e8048f4321d:166",
+   "key": 47100154181,
+   "repo": "elements",
+   "path": "tests/check_catalogue.py",
+   "line": 166,
+   "edition_commit": "f7a92fb085c38dcbbd5cb469a66cd5ca61fb95bf",
+   "head": "f7a92fb085c38dcbbd5cb469a66cd5ca61fb95bf",
+   "class": "SAME"
+  },
+  {
+   "id": "1b1cc61a1b3b614945baae1d2d1b1e8048f4321d:230",
+   "key": 47100154245,
+   "repo": "elements",
+   "path": "tests/check_catalogue.py",
+   "line": 230,
+   "edition_commit": "f7a92fb085c38dcbbd5cb469a66cd5ca61fb95bf",
+   "head": "f7a92fb085c38dcbbd5cb469a66cd5ca61fb95bf",
+   "class": "SAME"
+  },
+  {
+   "id": "1d4e0bbf58efc954f3d50cfe1c7d16a75c444dce:26",
+   "key": 36064708539,
+   "repo": "data-centres-gb",
+   "path": "build/python/202608281626-osm-overpass-retry.py",
+   "line": 26,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "SAME"
+  },
+  {
+   "id": "1d7cec632e6c71c70390735e5873710e72717915:295",
+   "key": 57339915585,
+   "repo": "pipelinenews",
+   "path": "index/202608261927-compile-index.mjs",
+   "line": 295,
+   "edition_commit": "67aa2eb05993c630887b41c3b720ba42a86669a4",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "1f2cb5913d68209993b64913e74965a0ed4e0b86:2",
+   "key": 63033214634,
+   "repo": "pipelinenews",
+   "path": "archive/202608261547-pipelinenews/newsv6/modules/data-centre-identity.mjs",
+   "line": 2,
+   "edition_commit": "6a4c0244b2817c6b8a74661546c8acc35e53a9b7",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "201bb20fe4483fed4abea7109c590ba20d030a9d:1245",
+   "key": 62729235388,
+   "repo": "globalgrid2050",
+   "path": "grid_engine/specs.mjs",
+   "line": 1245,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "201bb20fe4483fed4abea7109c590ba20d030a9d:1279",
+   "key": 62729235422,
+   "repo": "globalgrid2050",
+   "path": "grid_engine/specs.mjs",
+   "line": 1279,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "201bb20fe4483fed4abea7109c590ba20d030a9d:1617",
+   "key": 62729235760,
+   "repo": "globalgrid2050",
+   "path": "grid_engine/specs.mjs",
+   "line": 1617,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "206e0e147b295f8fd0a9e3315eceaa5cf0b07bcd:8",
+   "key": 63013235115,
+   "repo": "kuiper-belt",
+   "path": "tools/count_lines.py",
+   "line": 8,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "24364933f6eb76c90b2572208384ef46cf6f6d66:9",
+   "key": 62736963116,
+   "repo": "globalgrid2050",
+   "path": "testcode/202609142202/data/all-lines.meta.json",
+   "line": 9,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "24fb65b9f7fd84e62edc2cff5d68c77321f1682a:3",
+   "key": 63013295310,
+   "repo": "particle-physics-drawing-engine",
+   "path": "results/SCOPE-STATUS.md",
+   "line": 3,
+   "edition_commit": "eb52ad7ebab151d49fb7cfde56523f5962129530",
+   "head": "e51127791aab091ccb96f0b4eab807c02a9d116e",
+   "class": "SAME"
+  },
+  {
+   "id": "2601ebfde80e121baef3503a973dea5fa6f1d740:26",
+   "key": 62737257829,
+   "repo": "globalgrid2050",
+   "path": "testcode/wafer-development-environment/202609190330-cable-cross-sections/read.mjs",
+   "line": 26,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "264ecc4e24175f257e9a185eba9bddc8fc20f2d4:15",
+   "key": 62884836484,
+   "repo": "gridatlas",
+   "path": "tools/release/acceptance.mjs",
+   "line": 15,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "264ecc4e24175f257e9a185eba9bddc8fc20f2d4:58",
+   "key": 62884836527,
+   "repo": "gridatlas",
+   "path": "tools/release/acceptance.mjs",
+   "line": 58,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "27c9cffeaf2ff01ddd1c8abf756e83ce1d014bca:122",
+   "key": 62818256934,
+   "repo": "data-grid-gb",
+   "path": "datacentres/lanes/dc-a7-merge/dcmerge.py",
+   "line": 122,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "MOVED",
+   "head_line": 128,
+   "delta": 6,
+   "occurrences": 1,
+   "head_lines_before": 40219
+  },
+  {
+   "id": "27c9cffeaf2ff01ddd1c8abf756e83ce1d014bca:211",
+   "key": 62818257023,
+   "repo": "data-grid-gb",
+   "path": "datacentres/lanes/dc-a7-merge/dcmerge.py",
+   "line": 211,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "MOVED",
+   "head_line": 217,
+   "delta": 6,
+   "occurrences": 1,
+   "head_lines_before": 40219
+  },
+  {
+   "id": "27c9cffeaf2ff01ddd1c8abf756e83ce1d014bca:236",
+   "key": 62818257048,
+   "repo": "data-grid-gb",
+   "path": "datacentres/lanes/dc-a7-merge/dcmerge.py",
+   "line": 236,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "MOVED",
+   "head_line": 242,
+   "delta": 6,
+   "occurrences": 1,
+   "head_lines_before": 40219
+  },
+  {
+   "id": "27c9cffeaf2ff01ddd1c8abf756e83ce1d014bca:412",
+   "key": 62818257224,
+   "repo": "data-grid-gb",
+   "path": "datacentres/lanes/dc-a7-merge/dcmerge.py",
+   "line": 412,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "MOVED",
+   "head_line": 418,
+   "delta": 6,
+   "occurrences": 1,
+   "head_lines_before": 40219
+  },
+  {
+   "id": "27c9cffeaf2ff01ddd1c8abf756e83ce1d014bca:514",
+   "key": 62818257326,
+   "repo": "data-grid-gb",
+   "path": "datacentres/lanes/dc-a7-merge/dcmerge.py",
+   "line": 514,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "MOVED",
+   "head_line": 520,
+   "delta": 6,
+   "occurrences": 1,
+   "head_lines_before": 40219
+  },
+  {
+   "id": "285f9a76fb716bf48f27633017e34c68eb2e3ef3:37",
+   "key": 62884787850,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/build.mjs",
+   "line": 37,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "29d2d60df1d26613665409ccc54dcc4d67cf4c2d:94",
+   "key": 62884841367,
+   "repo": "gridatlas",
+   "path": "tools/v9_5/build_streaming_bridge.py",
+   "line": 94,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "2bcd4c5fead19d99b1c0bc9e5aec2c31021305cc:114",
+   "key": 62884839874,
+   "repo": "gridatlas",
+   "path": "tools/scope/lib.mjs",
+   "line": 114,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "2bcd4c5fead19d99b1c0bc9e5aec2c31021305cc:20",
+   "key": 62884839780,
+   "repo": "gridatlas",
+   "path": "tools/scope/lib.mjs",
+   "line": 20,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "2bcd4c5fead19d99b1c0bc9e5aec2c31021305cc:42",
+   "key": 62884839802,
+   "repo": "gridatlas",
+   "path": "tools/scope/lib.mjs",
+   "line": 42,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "2bd1cdd398b89942f672ab420c78830682e18597:80",
+   "key": 63013235468,
+   "repo": "kuiper-belt",
+   "path": "tools/entangle_hosts.mjs",
+   "line": 80,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "2bd6965cfabc9ca699ae1b60dae855964d4bd86c:19",
+   "key": 62884784967,
+   "repo": "gridatlas",
+   "path": "tools/lightning/make-generation.mjs",
+   "line": 19,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "2bd6965cfabc9ca699ae1b60dae855964d4bd86c:38",
+   "key": 62884784986,
+   "repo": "gridatlas",
+   "path": "tools/lightning/make-generation.mjs",
+   "line": 38,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "2c4fb1441b18ef61aff870ebdb3087cba4ca3df4:47",
+   "key": 63013236674,
+   "repo": "kuiper-belt",
+   "path": "tools/twin_register.mjs",
+   "line": 47,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "2c55690d5f3798f4720b4db4040a21eeecbfbcb8:576",
+   "key": 62227879018,
+   "repo": "gridatlas",
+   "path": "atlas/current.json",
+   "line": 576,
+   "edition_commit": "08b5caeac1b0128311d7a5e985f1fbe1c18414ae",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "GONE"
+  },
+  {
+   "id": "2c8121b277e1b152a96688f6a2e0d7ef83471376:1659",
+   "key": 62884099932,
+   "repo": "gridatlas",
+   "path": "atlas/cartridges/202609062358-substation-intelligence-v9-63.js",
+   "line": 1659,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "2c8121b277e1b152a96688f6a2e0d7ef83471376:4050",
+   "key": 62884102323,
+   "repo": "gridatlas",
+   "path": "atlas/cartridges/202609062358-substation-intelligence-v9-63.js",
+   "line": 4050,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "31b5142b40341578a42bc1811479e24a6eeea32d:171",
+   "key": 62729231984,
+   "repo": "globalgrid2050",
+   "path": "grid_engine/202609060316-data-centre-connection/index.html",
+   "line": 171,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "33300c20f9c0c4cf022a2d63d404bc87fb1e8e26:409",
+   "key": 62818221520,
+   "repo": "data-grid-gb",
+   "path": "datacentres/lanes/dc-a1-neso/fetch_neso.py",
+   "line": 409,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "35ace765328aea1ed655ecfe0bcb26f56c30215f:4",
+   "key": 62884789026,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/03-repd-register.js",
+   "line": 4,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "3677697d929ad2bec94da9f3c4bd6ef618f3c8e8:62",
+   "key": 62884840731,
+   "repo": "gridatlas",
+   "path": "tools/scope/payloads/atlas-loader.html",
+   "line": 62,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "36a00f0062f171c3a9c91fd489de7727aef08212:367",
+   "key": 62884777499,
+   "repo": "gridatlas",
+   "path": "tools/ci/202609012200-local-ci.mjs",
+   "line": 367,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "36e77919584c5127775424989d6caf018586847b:83",
+   "key": 36064709045,
+   "repo": "data-centres-gb",
+   "path": "build/python/202608281702-osm-overpass-indexed.py",
+   "line": 83,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "SAME"
+  },
+  {
+   "id": "3852f173403907f01b4be53e00ed78e92a717608:32",
+   "key": 62883337783,
+   "repo": "gridatlas",
+   "path": "202608310050-gridatlas-next-version-builders/inputs/202608310015-attached-sample-findings.md",
+   "line": 32,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "398685a8598e2190cd5211a8a1074ca6af3d1ba3:21",
+   "key": 62884824748,
+   "repo": "gridatlas",
+   "path": "tools/proofs/202610290935-sld-sandbox.proof.mjs",
+   "line": 21,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "3b120fe67787b7182785d0ec4a67cc7a1b2b2b9a:5",
+   "key": 56824526114,
+   "repo": "kuiper-drawing-engine",
+   "path": "web/site.mjs",
+   "line": 5,
+   "edition_commit": "ee69a07a7ebf71f2f20c052f392991f115fdbee0",
+   "head": "ee69a07a7ebf71f2f20c052f392991f115fdbee0",
+   "class": "SAME"
+  },
+  {
+   "id": "3bdea73cb06aed584e76c7f83c0e2fc0996cdc18:32",
+   "key": 57340388963,
+   "repo": "pipelinenews",
+   "path": "releases/202609060232-pipelinenews/release-manifest.json",
+   "line": 32,
+   "edition_commit": "67aa2eb05993c630887b41c3b720ba42a86669a4",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "3cb65ea745d6b89dbd656ea4f69d1889b916430a:76",
+   "key": 63029105840,
+   "repo": "stars",
+   "path": ".github/workflows/refresh.yml",
+   "line": 76,
+   "edition_commit": "cbca125bb5eeb7d0ffb02f4546d60eb5d47dadc9",
+   "head": "529ae15839ddfb586960fd4805df16e8049c9a01",
+   "class": "SAME"
+  },
+  {
+   "id": "3db9a52e76cf5f3709473a34f1d52381bdc5aa76:126",
+   "key": 62884710760,
+   "repo": "gridatlas",
+   "path": "compiler/202608291430-compile-atlas-v9-live.py",
+   "line": 126,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "3ec2fc7f0b8f30aed157de80e03ebab784c06f28:91",
+   "key": 36409523655,
+   "repo": "gridatlas",
+   "path": "atlas/modules/202609020015-injection-response.js",
+   "line": 91,
+   "edition_commit": "60d193827d336a40c91ec64cce4bc56e50074bcb",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "3f2c37a896a6f14858f19ba15e74877a53eaa827:169",
+   "key": 57340379255,
+   "repo": "pipelinenews",
+   "path": "releases/202609060232-pipelinenews/assets/202608311343-project-intelligence.mjs",
+   "line": 169,
+   "edition_commit": "67aa2eb05993c630887b41c3b720ba42a86669a4",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "3f2c37a896a6f14858f19ba15e74877a53eaa827:302",
+   "key": 57340379388,
+   "repo": "pipelinenews",
+   "path": "releases/202609060232-pipelinenews/assets/202608311343-project-intelligence.mjs",
+   "line": 302,
+   "edition_commit": "67aa2eb05993c630887b41c3b720ba42a86669a4",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "4137664b6f4bb71140f4aebc645500747ee9d39b:351",
+   "key": 36308723168,
+   "repo": "gridatlas",
+   "path": "tools/ci/202609012200-local-ci.mjs",
+   "line": 351,
+   "edition_commit": "9118a2db177563a3175c51b9428719c940edc79b",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "MOVED",
+   "head_line": 367,
+   "delta": 16,
+   "occurrences": 1,
+   "head_lines_before": 1448869
+  },
+  {
+   "id": "4152a7a6a16dae322e483db7854dd0e191780958:86",
+   "key": null,
+   "repo": "star-maker",
+   "path": "machinery/bench/starmaker.mjs",
+   "line": 86,
+   "edition_commit": "f65c2f381d91eeb1eba75a97ae6765c24e32197d",
+   "head": "f65c2f381d91eeb1eba75a97ae6765c24e32197d",
+   "class": "UNVERIFIED",
+   "reason": "key not on the wafer (on_wafer: false)"
+  },
+  {
+   "id": "41d0acb21864c539179543eaf843de7c2c526596:12",
+   "key": 62714351949,
+   "repo": "globalgrid2050",
+   "path": ".gitattributes",
+   "line": 12,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "42c454492466ed8057fcbd3a01519ee40b414e83:45",
+   "key": 63013109178,
+   "repo": "kuiper-belt",
+   "path": "SPEC-INFINITE.md",
+   "line": 45,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "42cb7c92adf8ba096ca58fc3132df1bba298ba0d:48",
+   "key": 62883339333,
+   "repo": "gridatlas",
+   "path": "README.md",
+   "line": 48,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "42cb7c92adf8ba096ca58fc3132df1bba298ba0d:7",
+   "key": 62883339292,
+   "repo": "gridatlas",
+   "path": "README.md",
+   "line": 7,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "4324853e8dc80414720dbcf1d02117bd0148301a:159",
+   "key": 60072442575,
+   "repo": "maths",
+   "path": "10-kuiper-placement-law.md",
+   "line": 159,
+   "edition_commit": "b898a5ee39aa81a45197c5f17ba1195727aa538e",
+   "head": "b898a5ee39aa81a45197c5f17ba1195727aa538e",
+   "class": "SAME"
+  },
+  {
+   "id": "4324853e8dc80414720dbcf1d02117bd0148301a:169",
+   "key": 60072442585,
+   "repo": "maths",
+   "path": "10-kuiper-placement-law.md",
+   "line": 169,
+   "edition_commit": "b898a5ee39aa81a45197c5f17ba1195727aa538e",
+   "head": "b898a5ee39aa81a45197c5f17ba1195727aa538e",
+   "class": "SAME"
+  },
+  {
+   "id": "443e97ff58da07daf59b1170f10f988de80fa68b:5",
+   "key": 63013225364,
+   "repo": "kuiper-belt",
+   "path": "proof/20260919T030003Z-counts.json",
+   "line": 5,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "454ab0847135e2bc0dcaae7682a09da981b5bbce:123",
+   "key": 62884783516,
+   "repo": "gridatlas",
+   "path": "tools/lightning/build.mjs",
+   "line": 123,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "454ab0847135e2bc0dcaae7682a09da981b5bbce:59",
+   "key": 62884783452,
+   "repo": "gridatlas",
+   "path": "tools/lightning/build.mjs",
+   "line": 59,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "454ac422659f000c68f5fb45c2924a577679131d:1",
+   "key": 62839831388,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/06b-dc-engine.js",
+   "line": 1,
+   "edition_commit": "4fa72ae0927f335fd1265e93b28992315cdb55a3",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "454ac422659f000c68f5fb45c2924a577679131d:164",
+   "key": 62884789343,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/06b-dc-engine.js",
+   "line": 164,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "454ac422659f000c68f5fb45c2924a577679131d:24",
+   "key": 62884789203,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/06b-dc-engine.js",
+   "line": 24,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "454ac422659f000c68f5fb45c2924a577679131d:50",
+   "key": 62884789229,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/06b-dc-engine.js",
+   "line": 50,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "454ac422659f000c68f5fb45c2924a577679131d:51",
+   "key": 62884789230,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/06b-dc-engine.js",
+   "line": 51,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "454ac422659f000c68f5fb45c2924a577679131d:58",
+   "key": 62884789237,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/06b-dc-engine.js",
+   "line": 58,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "454ac422659f000c68f5fb45c2924a577679131d:7",
+   "key": 62884789186,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/06b-dc-engine.js",
+   "line": 7,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "454ac422659f000c68f5fb45c2924a577679131d:94",
+   "key": 62884789273,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/06b-dc-engine.js",
+   "line": 94,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "4631e4e24e9efe5f779de9e402a6b53bd93fe10d:409",
+   "key": 36347142119,
+   "repo": "gridatlas",
+   "path": "atlas/parts/202609012045-sld-sandbox-body.js",
+   "line": 409,
+   "edition_commit": "93c13cf3d7d59d8c489adc9a11d28214556a27d0",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "MOVED",
+   "head_line": 751,
+   "delta": 342,
+   "occurrences": 1,
+   "head_lines_before": 1283367
+  },
+  {
+   "id": "467930a93d75a23062efcb2724e82ebc159a9bf7:175",
+   "key": 63013109116,
+   "repo": "kuiper-belt",
+   "path": "README.md",
+   "line": 175,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "467930a93d75a23062efcb2724e82ebc159a9bf7:33",
+   "key": 63013108974,
+   "repo": "kuiper-belt",
+   "path": "README.md",
+   "line": 33,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "UNVERIFIED",
+   "reason": "empty line_text"
+  },
+  {
+   "id": "47b983e9df8a268764619486fbadb9c63b4e3de8:67",
+   "key": 63027327903,
+   "repo": "ventus-grid-engine",
+   "path": "engine/compute-observer.js",
+   "line": 67,
+   "edition_commit": "96a800eb01825748936b5a193ce396a960f9302f",
+   "head": "5eead830d99021c90fd58add2f8bf05b0b752340",
+   "class": "SAME"
+  },
+  {
+   "id": "47c38ada2e981e438efb3777fe07a978ddfe9f56:62",
+   "key": 36064706450,
+   "repo": "data-centres-gb",
+   "path": "app.py",
+   "line": 62,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "SAME"
+  },
+  {
+   "id": "4c254479cbcb86ef9d44e73eee890d3bcc572040:133",
+   "key": 62884840201,
+   "repo": "gridatlas",
+   "path": "tools/scope/loop.mjs",
+   "line": 133,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "4c254479cbcb86ef9d44e73eee890d3bcc572040:184",
+   "key": 62884840252,
+   "repo": "gridatlas",
+   "path": "tools/scope/loop.mjs",
+   "line": 184,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "4c254479cbcb86ef9d44e73eee890d3bcc572040:195",
+   "key": 62884840263,
+   "repo": "gridatlas",
+   "path": "tools/scope/loop.mjs",
+   "line": 195,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "4c254479cbcb86ef9d44e73eee890d3bcc572040:238",
+   "key": 62884840306,
+   "repo": "gridatlas",
+   "path": "tools/scope/loop.mjs",
+   "line": 238,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "4c254479cbcb86ef9d44e73eee890d3bcc572040:285",
+   "key": 62884840353,
+   "repo": "gridatlas",
+   "path": "tools/scope/loop.mjs",
+   "line": 285,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "4c254479cbcb86ef9d44e73eee890d3bcc572040:35",
+   "key": 62884840103,
+   "repo": "gridatlas",
+   "path": "tools/scope/loop.mjs",
+   "line": 35,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "4d741952dc7872ead1229b01a456288693812e1b:18",
+   "key": 62732224819,
+   "repo": "globalgrid2050",
+   "path": "scripts/import_homepage_owner.py",
+   "line": 18,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "4d9e95ed37aa5331ee0ed9ef0dab59146ea41ea8:30",
+   "key": 63013107778,
+   "repo": "kuiper-belt",
+   "path": ".github/workflows/engine.yml",
+   "line": 30,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "4e10d9c3eddb3935b5c20b91258a2c09be6d7b72:1",
+   "key": 63013107714,
+   "repo": "kuiper-belt",
+   "path": ".gitattributes",
+   "line": 1,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "4f70bcd2ac67e4cf556cd5447f804bf5d038c487:150",
+   "key": 36064706169,
+   "repo": "data-centres-gb",
+   "path": ".github/workflows/202608281702-osm-data-centres-candidate.yml",
+   "line": 150,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "SAME"
+  },
+  {
+   "id": "4f70bcd2ac67e4cf556cd5447f804bf5d038c487:198",
+   "key": 36064706217,
+   "repo": "data-centres-gb",
+   "path": ".github/workflows/202608281702-osm-data-centres-candidate.yml",
+   "line": 198,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "SAME"
+  },
+  {
+   "id": "4f70bcd2ac67e4cf556cd5447f804bf5d038c487:85",
+   "key": 36064706104,
+   "repo": "data-centres-gb",
+   "path": ".github/workflows/202608281702-osm-data-centres-candidate.yml",
+   "line": 85,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "SAME"
+  },
+  {
+   "id": "532f50a58d69e9dc02eec0ce569a30291a4e5a93:145",
+   "key": 63013283748,
+   "repo": "particle-physics-drawing-engine",
+   "path": "measurements/coax-field-test.mjs",
+   "line": 145,
+   "edition_commit": "eb52ad7ebab151d49fb7cfde56523f5962129530",
+   "head": "e51127791aab091ccb96f0b4eab807c02a9d116e",
+   "class": "SAME"
+  },
+  {
+   "id": "53e50fd477a2d9943ee06ef5068215ec71b8c38e:140",
+   "key": 62884836881,
+   "repo": "gridatlas",
+   "path": "tools/release/flow-lib.mjs",
+   "line": 140,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "53e50fd477a2d9943ee06ef5068215ec71b8c38e:150",
+   "key": 62884836891,
+   "repo": "gridatlas",
+   "path": "tools/release/flow-lib.mjs",
+   "line": 150,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "53e50fd477a2d9943ee06ef5068215ec71b8c38e:48",
+   "key": 62884836789,
+   "repo": "gridatlas",
+   "path": "tools/release/flow-lib.mjs",
+   "line": 48,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "5442841acdb7a1f5bf2d24c7f83fb896da37d249:120",
+   "key": 63013330741,
+   "repo": "particle-physics-drawing-engine",
+   "path": "tools/particles.py",
+   "line": 120,
+   "edition_commit": "eb52ad7ebab151d49fb7cfde56523f5962129530",
+   "head": "e51127791aab091ccb96f0b4eab807c02a9d116e",
+   "class": "SAME"
+  },
+  {
+   "id": "5442841acdb7a1f5bf2d24c7f83fb896da37d249:20",
+   "key": 63013330641,
+   "repo": "particle-physics-drawing-engine",
+   "path": "tools/particles.py",
+   "line": 20,
+   "edition_commit": "eb52ad7ebab151d49fb7cfde56523f5962129530",
+   "head": "e51127791aab091ccb96f0b4eab807c02a9d116e",
+   "class": "SAME"
+  },
+  {
+   "id": "55256da4c181988f2d9dc662927329c005ba63fb:36",
+   "key": 62732204577,
+   "repo": "globalgrid2050",
+   "path": "scripts/check_public_language.py",
+   "line": 36,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "56514b6fa9cbfa61b0944ae18bcb7d599628f22b:38",
+   "key": 47321020409,
+   "repo": "galaxies-wafers",
+   "path": "wafer.mjs",
+   "line": 38,
+   "edition_commit": "fff6fc6ad4f93a15fe8f6456942a1b44e5547105",
+   "head": "fff6fc6ad4f93a15fe8f6456942a1b44e5547105",
+   "class": "SAME"
+  },
+  {
+   "id": "56eed5634e095ab314d56c87c8df884c3f9d43c5:458",
+   "key": 62731917705,
+   "repo": "globalgrid2050",
+   "path": "repd_atlas_grid_model_v1backup.md",
+   "line": 458,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "572b42485237a5d7d0cf41619008367b6fbe56d3:76",
+   "key": 36064709812,
+   "repo": "data-centres-gb",
+   "path": "index.html",
+   "line": 76,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "SAME"
+  },
+  {
+   "id": "586fab4bc6667888620394e845e4a7bb5c286274:237",
+   "key": 36982245033,
+   "repo": "data-gridatlas",
+   "path": "contracts/202608291015-v8-transplant-plan.json",
+   "line": 237,
+   "edition_commit": "8bf88da9e210ce9f61dc0398869d3369f3fa2445",
+   "head": "8bf88da9e210ce9f61dc0398869d3369f3fa2445",
+   "class": "SAME"
+  },
+  {
+   "id": "5a0320ca6db05273fae14f786b20223b088bc60b:372",
+   "key": 55254330392,
+   "repo": "grid-distance-maths",
+   "path": "src/geodesy.mjs",
+   "line": 372,
+   "edition_commit": "8e91b07d8312acca5bcaef43e839f06a3b1d642a",
+   "head": "8e91b07d8312acca5bcaef43e839f06a3b1d642a",
+   "class": "SAME"
+  },
+  {
+   "id": "5a52337b357934bc22ff10d140e18b3af3724441:2",
+   "key": 62731463861,
+   "repo": "globalgrid2050",
+   "path": "kuiper-grid/i0097/current.json",
+   "line": 2,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "5ba604a0a34fb695b5ec253a667be5c8c2a18296:3991",
+   "key": 62731463779,
+   "repo": "globalgrid2050",
+   "path": "kuiper-grid/i0097/cartridges/009700000000-kuiper-programs.js",
+   "line": 3991,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "5ba604a0a34fb695b5ec253a667be5c8c2a18296:824",
+   "key": 62731460612,
+   "repo": "globalgrid2050",
+   "path": "kuiper-grid/i0097/cartridges/009700000000-kuiper-programs.js",
+   "line": 824,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "5c6b7bfd201a3a7860a2b979e32753b763dc1e44:9",
+   "key": 63013167629,
+   "repo": "kuiper-belt",
+   "path": "diary/2026-10-05-public-links.json",
+   "line": 9,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "5c7920ab9b82496d31ad9f9eca2d9acee7c162e6:146",
+   "key": 62884782319,
+   "repo": "gridatlas",
+   "path": "tools/ci/pr-gate.mjs",
+   "line": 146,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "5c7920ab9b82496d31ad9f9eca2d9acee7c162e6:224",
+   "key": 62884782397,
+   "repo": "gridatlas",
+   "path": "tools/ci/pr-gate.mjs",
+   "line": 224,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "5c7920ab9b82496d31ad9f9eca2d9acee7c162e6:9",
+   "key": 62884782182,
+   "repo": "gridatlas",
+   "path": "tools/ci/pr-gate.mjs",
+   "line": 9,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "5ca4b13a0dbf5aec50e333f8cea1412d5851d489:178",
+   "key": 63035688574,
+   "repo": "pipelinenews",
+   "path": "tools/intelligence/cartridges/project-intelligence/assets/{GEN}-project-intelligence.mjs",
+   "line": 178,
+   "edition_commit": "6a4c0244b2817c6b8a74661546c8acc35e53a9b7",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "5d7354d645b9de568c75c9000ad3aa4d47facf2c:153",
+   "key": 57339834261,
+   "repo": "pipelinenews",
+   "path": "atman/202608262014-build-pages.py",
+   "line": 153,
+   "edition_commit": "67aa2eb05993c630887b41c3b720ba42a86669a4",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "601413ab493e006484fc4fc70c50e253407a10c2:26",
+   "key": 62884785423,
+   "repo": "gridatlas",
+   "path": "tools/lightning/src/04-windows.js",
+   "line": 26,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "614c6a7e656b75e7c8c641227c6e2e7b5a6168f4:170",
+   "key": 62884828149,
+   "repo": "gridatlas",
+   "path": "tools/proofs/menu-bar-attrib-clearance.browser.mjs",
+   "line": 170,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "622debc10592f8589d4fcd0f280b732c6d690fae:235",
+   "key": 62818228429,
+   "repo": "data-grid-gb",
+   "path": "datacentres/lanes/dc-a4-osm-wikidata/dc_a4.py",
+   "line": 235,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "622debc10592f8589d4fcd0f280b732c6d690fae:388",
+   "key": 62818228582,
+   "repo": "data-grid-gb",
+   "path": "datacentres/lanes/dc-a4-osm-wikidata/dc_a4.py",
+   "line": 388,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "622debc10592f8589d4fcd0f280b732c6d690fae:477",
+   "key": 62818228671,
+   "repo": "data-grid-gb",
+   "path": "datacentres/lanes/dc-a4-osm-wikidata/dc_a4.py",
+   "line": 477,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "6404c71f7aa0764473e28288c7d0601683a48a0f:30",
+   "key": 62884428190,
+   "repo": "gridatlas",
+   "path": "atlas/current.json",
+   "line": 30,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "6404c71f7aa0764473e28288c7d0601683a48a0f:717",
+   "key": 62884428877,
+   "repo": "gridatlas",
+   "path": "atlas/current.json",
+   "line": 717,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "64db4d0fc7e1f96bcbe4e6003d9802b140c1092b:18",
+   "key": 63013283775,
+   "repo": "particle-physics-drawing-engine",
+   "path": "measurements/exactness-result.txt",
+   "line": 18,
+   "edition_commit": "eb52ad7ebab151d49fb7cfde56523f5962129530",
+   "head": "e51127791aab091ccb96f0b4eab807c02a9d116e",
+   "class": "SAME"
+  },
+  {
+   "id": "658632c13f1ed225bb1bf8cb3986eef375025ba0:46",
+   "key": 62884781568,
+   "repo": "gridatlas",
+   "path": "tools/ci/offtakers/browser-dc-smoke.mjs",
+   "line": 46,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "658632c13f1ed225bb1bf8cb3986eef375025ba0:52",
+   "key": 62884781574,
+   "repo": "gridatlas",
+   "path": "tools/ci/offtakers/browser-dc-smoke.mjs",
+   "line": 52,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "658632c13f1ed225bb1bf8cb3986eef375025ba0:66",
+   "key": 62884781588,
+   "repo": "gridatlas",
+   "path": "tools/ci/offtakers/browser-dc-smoke.mjs",
+   "line": 66,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "659e43df4a1327c74a322296f1a66eff964b5707:211",
+   "key": 62884714050,
+   "repo": "gridatlas",
+   "path": "docs/RELEASE.md",
+   "line": 211,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "659e43df4a1327c74a322296f1a66eff964b5707:40",
+   "key": 62884713879,
+   "repo": "gridatlas",
+   "path": "docs/RELEASE.md",
+   "line": 40,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "664673a4787729101b5eaac45849da9e1d7fa6bf:8",
+   "key": 36064706321,
+   "repo": "data-centres-gb",
+   "path": "README.md",
+   "line": 8,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "UNVERIFIED",
+   "reason": "empty line_text"
+  },
+  {
+   "id": "6857b94a0f65355ae1ba54358677b624962477e7:59",
+   "key": 63035141998,
+   "repo": "pipelinenews",
+   "path": "build/python/202608282200-build-relationship-status-parquet.py",
+   "line": 59,
+   "edition_commit": "6a4c0244b2817c6b8a74661546c8acc35e53a9b7",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "68a413752f72678a6285c578794c937fc595de83:115",
+   "key": 62818258605,
+   "repo": "data-grid-gb",
+   "path": "derived/build_connection_points.py",
+   "line": 115,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "68a413752f72678a6285c578794c937fc595de83:24",
+   "key": 62818258514,
+   "repo": "data-grid-gb",
+   "path": "derived/build_connection_points.py",
+   "line": 24,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "68a413752f72678a6285c578794c937fc595de83:305",
+   "key": 62818258795,
+   "repo": "data-grid-gb",
+   "path": "derived/build_connection_points.py",
+   "line": 305,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "68a413752f72678a6285c578794c937fc595de83:320",
+   "key": 62818258810,
+   "repo": "data-grid-gb",
+   "path": "derived/build_connection_points.py",
+   "line": 320,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "68a413752f72678a6285c578794c937fc595de83:41",
+   "key": 62818258531,
+   "repo": "data-grid-gb",
+   "path": "derived/build_connection_points.py",
+   "line": 41,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "68acb24c2d5b1240007c7ed838bbdcde0adfb6b1:14",
+   "key": 36250408670,
+   "repo": "gridatlas",
+   "path": "atlas/current.json",
+   "line": 14,
+   "edition_commit": "8e017d5e239ee175bd04a3b2de87a8f999a26d25",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "GONE"
+  },
+  {
+   "id": "6975b1445fc708c879d42357caa305689425e90a:48",
+   "key": 36923835910,
+   "repo": "gridatlas",
+   "path": "atlas/modules/202609030137-pinned-products.js",
+   "line": 48,
+   "edition_commit": "4a17fa3a48b2617716070a8a1a7601c31d68c70b",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "6b7c4bf7913700a68273b148b58bb6e051e05f43:31",
+   "key": 63027343611,
+   "repo": "ventus-grid-engine",
+   "path": "verify.mjs",
+   "line": 31,
+   "edition_commit": "96a800eb01825748936b5a193ce396a960f9302f",
+   "head": "5eead830d99021c90fd58add2f8bf05b0b752340",
+   "class": "SAME"
+  },
+  {
+   "id": "6c4f1432fc1a3e2bc2a068e4ab4b0cfc9297040c:22",
+   "key": 63013330521,
+   "repo": "particle-physics-drawing-engine",
+   "path": "tools/networks.py",
+   "line": 22,
+   "edition_commit": "eb52ad7ebab151d49fb7cfde56523f5962129530",
+   "head": "e51127791aab091ccb96f0b4eab807c02a9d116e",
+   "class": "SAME"
+  },
+  {
+   "id": "6d95be0c27b2e5594fac89f20a0bcfaa3bae35f2:58",
+   "key": 62818220828,
+   "repo": "data-grid-gb",
+   "path": "datacentres/NOTICE",
+   "line": 58,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "6d95be0c27b2e5594fac89f20a0bcfaa3bae35f2:60",
+   "key": 62818220830,
+   "repo": "data-grid-gb",
+   "path": "datacentres/NOTICE",
+   "line": 60,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "6f113e8bc53760b4ac522fa9b9cc17f42b6936d3:615",
+   "key": 62737255913,
+   "repo": "globalgrid2050",
+   "path": "testcode/wafer-development-environment/202609190330-cable-cross-sections/app.mjs",
+   "line": 615,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "724b090236e913230a705026e7284d95a751eb2f:206",
+   "key": 62818577985,
+   "repo": "data-grid-gb",
+   "path": "derived/verify_connection_points.py",
+   "line": 206,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "725803df7618a67da68809603170b6d06bafaf0c:190",
+   "key": 62714352503,
+   "repo": "globalgrid2050",
+   "path": ".github/workflows/000_freeze_all_workflows_to_manual.yml",
+   "line": 190,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "748dd2fc72935e22a623edf24f6a6db85513761b:3",
+   "key": 57337885695,
+   "repo": "pipelinenews",
+   "path": ".github/workflow-archive/20260830-email-storm/README.md",
+   "line": 3,
+   "edition_commit": "67aa2eb05993c630887b41c3b720ba42a86669a4",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "750adbcc869eed11a18c1bf9cee49a747c2b89a2:21",
+   "key": 62884777043,
+   "repo": "gridatlas",
+   "path": "tools/cartridges/audit.mjs",
+   "line": 21,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "75f1c288c98cb99807d936dfd4a1bfbd2f440bc9:18",
+   "key": 62844366850,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/01-data.js",
+   "line": 18,
+   "edition_commit": "5cf426a1fd545499bfb2972afc14bf74defe899e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "75f1c288c98cb99807d936dfd4a1bfbd2f440bc9:29",
+   "key": 62884788907,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/01-data.js",
+   "line": 29,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "75f1c288c98cb99807d936dfd4a1bfbd2f440bc9:4",
+   "key": 62884788882,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/01-data.js",
+   "line": 4,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "75f1c288c98cb99807d936dfd4a1bfbd2f440bc9:5",
+   "key": 62884788883,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/01-data.js",
+   "line": 5,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "75f1c288c98cb99807d936dfd4a1bfbd2f440bc9:54",
+   "key": 62884788932,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/01-data.js",
+   "line": 54,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "75f1c288c98cb99807d936dfd4a1bfbd2f440bc9:62",
+   "key": 62884788940,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/01-data.js",
+   "line": 62,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "75f1c288c98cb99807d936dfd4a1bfbd2f440bc9:70",
+   "key": 62884788948,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/01-data.js",
+   "line": 70,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "75f1c288c98cb99807d936dfd4a1bfbd2f440bc9:79",
+   "key": 62884788957,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/01-data.js",
+   "line": 79,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "772200ea08728fe7083962255e799dba6b60aacb:17",
+   "key": 60072442240,
+   "repo": "maths",
+   "path": "08a-which-way-the-golden-turn-goes.md",
+   "line": 17,
+   "edition_commit": "b898a5ee39aa81a45197c5f17ba1195727aa538e",
+   "head": "b898a5ee39aa81a45197c5f17ba1195727aa538e",
+   "class": "SAME"
+  },
+  {
+   "id": "7743bbb635d4cdbc54c7f255cd4bd130f4249dbc:3",
+   "key": 62737256449,
+   "repo": "globalgrid2050",
+   "path": "testcode/wafer-development-environment/202609190330-cable-cross-sections/kuiper-weigh.mjs",
+   "line": 3,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "77d10a8caac8a15d5ebaaba295e51d1ae11be17e:208",
+   "key": 36064706712,
+   "repo": "data-centres-gb",
+   "path": "build/python/202608271727-build-data-centres-intelligence.py",
+   "line": 208,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "SAME"
+  },
+  {
+   "id": "7803e8f9aa74a886da4ab622d4bbe8eeb0e161ab:293",
+   "key": 62818227922,
+   "repo": "data-grid-gb",
+   "path": "datacentres/lanes/dc-a3-gov/gov_sites.py",
+   "line": 293,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "786a9cafaacbcf51eb6ca7e0298d53aa41e63a83:95",
+   "key": 63013233845,
+   "repo": "kuiper-belt",
+   "path": "see-through/202610050609/pf.js",
+   "line": 95,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "78a38feeb7afe86ed7190e7cd7f159f8845f7656:52",
+   "key": 55254331802,
+   "repo": "grid-distance-maths",
+   "path": "test/verify_placement.mjs",
+   "line": 52,
+   "edition_commit": "8e91b07d8312acca5bcaef43e839f06a3b1d642a",
+   "head": "8e91b07d8312acca5bcaef43e839f06a3b1d642a",
+   "class": "SAME"
+  },
+  {
+   "id": "79488f292a75a02a19d39739c7294ef7a8a0667a:148",
+   "key": 62884838291,
+   "repo": "gridatlas",
+   "path": "tools/release/release-generation.mjs",
+   "line": 148,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "79488f292a75a02a19d39739c7294ef7a8a0667a:152",
+   "key": 62884838295,
+   "repo": "gridatlas",
+   "path": "tools/release/release-generation.mjs",
+   "line": 152,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "79488f292a75a02a19d39739c7294ef7a8a0667a:189",
+   "key": 62884838332,
+   "repo": "gridatlas",
+   "path": "tools/release/release-generation.mjs",
+   "line": 189,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "79488f292a75a02a19d39739c7294ef7a8a0667a:342",
+   "key": 62884838485,
+   "repo": "gridatlas",
+   "path": "tools/release/release-generation.mjs",
+   "line": 342,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "79fbba3140d2bc03d12c6633ec92c4f84161bb45:60",
+   "key": 62714363509,
+   "repo": "globalgrid2050",
+   "path": ".github/workflows/public-language-gate.yml",
+   "line": 60,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "7c04e9d03d995ae984afdc5d56cb4df81c28369c:400",
+   "key": 62737257231,
+   "repo": "globalgrid2050",
+   "path": "testcode/wafer-development-environment/202609190330-cable-cross-sections/pilot.mjs",
+   "line": 400,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "7c04e9d03d995ae984afdc5d56cb4df81c28369c:488",
+   "key": 62737257319,
+   "repo": "globalgrid2050",
+   "path": "testcode/wafer-development-environment/202609190330-cable-cross-sections/pilot.mjs",
+   "line": 488,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "7d0946a703fafc3baefae2af43f01878f03550cc:131",
+   "key": 62884839128,
+   "repo": "gridatlas",
+   "path": "tools/rollback.mjs",
+   "line": 131,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "7e8738541df5eb97d6919d1a74ed34acab977f9e:81",
+   "key": 63013109503,
+   "repo": "kuiper-belt",
+   "path": "conductor.html",
+   "line": 81,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "83e5d83beb59315e882ad0f6b1efb188448de581:15",
+   "key": 62714368369,
+   "repo": "globalgrid2050",
+   "path": "AGENTS.md",
+   "line": 15,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "84728ca0746fe1e744fdca7f240eb295d0947efc:127",
+   "key": 63025960986,
+   "repo": "time-stone",
+   "path": "tools/watch.py",
+   "line": 127,
+   "edition_commit": "a1703b1bb0170ed0f0c162126315049fa157d3bf",
+   "head": "c507d8ce86392411afbd14190ccd22ff978c7ca1",
+   "class": "SAME"
+  },
+  {
+   "id": "84728ca0746fe1e744fdca7f240eb295d0947efc:15",
+   "key": 63025960874,
+   "repo": "time-stone",
+   "path": "tools/watch.py",
+   "line": 15,
+   "edition_commit": "a1703b1bb0170ed0f0c162126315049fa157d3bf",
+   "head": "c507d8ce86392411afbd14190ccd22ff978c7ca1",
+   "class": "SAME"
+  },
+  {
+   "id": "84728ca0746fe1e744fdca7f240eb295d0947efc:33",
+   "key": 63025960892,
+   "repo": "time-stone",
+   "path": "tools/watch.py",
+   "line": 33,
+   "edition_commit": "a1703b1bb0170ed0f0c162126315049fa157d3bf",
+   "head": "c507d8ce86392411afbd14190ccd22ff978c7ca1",
+   "class": "SAME"
+  },
+  {
+   "id": "84728ca0746fe1e744fdca7f240eb295d0947efc:92",
+   "key": 63025960951,
+   "repo": "time-stone",
+   "path": "tools/watch.py",
+   "line": 92,
+   "edition_commit": "a1703b1bb0170ed0f0c162126315049fa157d3bf",
+   "head": "c507d8ce86392411afbd14190ccd22ff978c7ca1",
+   "class": "SAME"
+  },
+  {
+   "id": "84f8aaeddffe47ab92723f4f36dde6d190ae12c1:287",
+   "key": 62884812717,
+   "repo": "gridatlas",
+   "path": "tools/proofs/202609041250-menu-bar-instrument-panel.browser.mjs",
+   "line": 287,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "86248f737d25159347bda8ba29f7505cc391cc81:114",
+   "key": 62818257481,
+   "repo": "data-grid-gb",
+   "path": "datacentres/lanes/dc-a7-merge/dcschema.py",
+   "line": 114,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "887e5c075c88817e89419be13da6fedd36c01874:34",
+   "key": 42864281442,
+   "repo": "gridmachine1",
+   "path": "reports/20260907T230000Z-engine-capsule/CAPSULE.json",
+   "line": 34,
+   "edition_commit": "c6cbf9686eea1aa148b2e4616b7d603e6a93b450",
+   "head": "c6cbf9686eea1aa148b2e4616b7d603e6a93b450",
+   "class": "SAME"
+  },
+  {
+   "id": "898fcc3cd2e18eb6f353a29f6c11c9f57fad39e2:11",
+   "key": 42864278710,
+   "repo": "gridmachine1",
+   "path": "CABLE-ENGINE-DATASHEETS.md",
+   "line": 11,
+   "edition_commit": "c6cbf9686eea1aa148b2e4616b7d603e6a93b450",
+   "head": "c6cbf9686eea1aa148b2e4616b7d603e6a93b450",
+   "class": "SAME"
+  },
+  {
+   "id": "898fcc3cd2e18eb6f353a29f6c11c9f57fad39e2:95",
+   "key": 42864278794,
+   "repo": "gridmachine1",
+   "path": "CABLE-ENGINE-DATASHEETS.md",
+   "line": 95,
+   "edition_commit": "c6cbf9686eea1aa148b2e4616b7d603e6a93b450",
+   "head": "c6cbf9686eea1aa148b2e4616b7d603e6a93b450",
+   "class": "SAME"
+  },
+  {
+   "id": "8b08d72a3732ce5469c70f2ad83c5b9ea4033c83:1",
+   "key": 63013231619,
+   "repo": "kuiper-belt",
+   "path": "see-through/202610050609/LICENSE.md",
+   "line": 1,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "8c87c71f29cc27970305c3109efeb22b66fbe568:16",
+   "key": 63027329555,
+   "repo": "ventus-grid-engine",
+   "path": "engine/firm-capacity.js",
+   "line": 16,
+   "edition_commit": "96a800eb01825748936b5a193ce396a960f9302f",
+   "head": "5eead830d99021c90fd58add2f8bf05b0b752340",
+   "class": "SAME"
+  },
+  {
+   "id": "8c87c71f29cc27970305c3109efeb22b66fbe568:200",
+   "key": 63027329739,
+   "repo": "ventus-grid-engine",
+   "path": "engine/firm-capacity.js",
+   "line": 200,
+   "edition_commit": "96a800eb01825748936b5a193ce396a960f9302f",
+   "head": "5eead830d99021c90fd58add2f8bf05b0b752340",
+   "class": "SAME"
+  },
+  {
+   "id": "8d637668d74e08ba09dd9b0d0d7a556e14df8b5e:96",
+   "key": 59005306972,
+   "repo": "energy-transition-simulator",
+   "path": "prototype/mod/engine/connect-here.mjs",
+   "line": 96,
+   "edition_commit": "a6b5ae63cc0eeb4d619f154c7e116616c997af77",
+   "head": "a6b5ae63cc0eeb4d619f154c7e116616c997af77",
+   "class": "SAME"
+  },
+  {
+   "id": "8e065767709877fdbe8faf37fff9d19d28709a0a:1",
+   "key": 63013167769,
+   "repo": "kuiper-belt",
+   "path": "estate-network.json",
+   "line": 1,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "8f615def7fea7bab74c8921d09a47e9df280e481:144",
+   "key": 63013167913,
+   "repo": "kuiper-belt",
+   "path": "index.html",
+   "line": 144,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "8f615def7fea7bab74c8921d09a47e9df280e481:250",
+   "key": 63013168019,
+   "repo": "kuiper-belt",
+   "path": "index.html",
+   "line": 250,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "90d0268eadcf797c0e36c642bf54bc613342a75b:68",
+   "key": 62884838929,
+   "repo": "gridatlas",
+   "path": "tools/release/split-lightning-cartridge.mjs",
+   "line": 68,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "90f98489567e84ac654da99686a763146bd3d08c:127",
+   "key": 62884786844,
+   "repo": "gridatlas",
+   "path": "tools/offshore/fetch_neso_connection_sites.py",
+   "line": 127,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "90f98489567e84ac654da99686a763146bd3d08c:31",
+   "key": 62884786748,
+   "repo": "gridatlas",
+   "path": "tools/offshore/fetch_neso_connection_sites.py",
+   "line": 31,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "9414e6716cfb7fadd02009acd956e7e2a7734839:98",
+   "key": 62884716847,
+   "repo": "gridatlas",
+   "path": "governance/202609012148-stamps-ran-ahead-of-the-clock.md",
+   "line": 98,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "94b20bb9a853da8861de254cdd8cfca164eabcda:145",
+   "key": 62884776985,
+   "repo": "gridatlas",
+   "path": "tools/build-cartridge.mjs",
+   "line": 145,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "94b20bb9a853da8861de254cdd8cfca164eabcda:66",
+   "key": 62884776906,
+   "repo": "gridatlas",
+   "path": "tools/build-cartridge.mjs",
+   "line": 66,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "962d8a42656464b644982583bd313fa768eaa031:950",
+   "key": 63013232649,
+   "repo": "kuiper-belt",
+   "path": "see-through/202610050609/descent.js",
+   "line": 950,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "983d76ad34150b5251a345ef24cf959dd7d46d0c:37",
+   "key": 57340381456,
+   "repo": "pipelinenews",
+   "path": "releases/202609060232-pipelinenews/assets/202609040044-wider-fleet.mjs",
+   "line": 37,
+   "edition_commit": "67aa2eb05993c630887b41c3b720ba42a86669a4",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "989255cd41b30bd14a9f7490767b57d4af070ebc:31",
+   "key": 62732209708,
+   "repo": "globalgrid2050",
+   "path": "scripts/fetch_datacentres.py",
+   "line": 31,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "989255cd41b30bd14a9f7490767b57d4af070ebc:57",
+   "key": 62732209734,
+   "repo": "globalgrid2050",
+   "path": "scripts/fetch_datacentres.py",
+   "line": 57,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "99737004213b41e74ccedf0a28db7124256bf3ce:3",
+   "key": 57340433420,
+   "repo": "pipelinenews",
+   "path": "ui/atlas-v9-deep-links.js",
+   "line": 3,
+   "edition_commit": "67aa2eb05993c630887b41c3b720ba42a86669a4",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "9a0fd7228751df4658c744d1b50a90a4ccff4792:153",
+   "key": 62884838810,
+   "repo": "gridatlas",
+   "path": "tools/release/rollback-generation.mjs",
+   "line": 153,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "9a0fd7228751df4658c744d1b50a90a4ccff4792:91",
+   "key": 62884838748,
+   "repo": "gridatlas",
+   "path": "tools/release/rollback-generation.mjs",
+   "line": 91,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "9b8a75051afd53b2d6e365cfe7c8b83a57f69808:283",
+   "key": 60072193205,
+   "repo": "cvaa",
+   "path": "inoculate.mjs",
+   "line": 283,
+   "edition_commit": "877bf380202b6a922932afc0bdcfd7f42a183086",
+   "head": "877bf380202b6a922932afc0bdcfd7f42a183086",
+   "class": "SAME"
+  },
+  {
+   "id": "9b8a75051afd53b2d6e365cfe7c8b83a57f69808:400",
+   "key": 60072193322,
+   "repo": "cvaa",
+   "path": "inoculate.mjs",
+   "line": 400,
+   "edition_commit": "877bf380202b6a922932afc0bdcfd7f42a183086",
+   "head": "877bf380202b6a922932afc0bdcfd7f42a183086",
+   "class": "SAME"
+  },
+  {
+   "id": "9b8a75051afd53b2d6e365cfe7c8b83a57f69808:60",
+   "key": 60072192982,
+   "repo": "cvaa",
+   "path": "inoculate.mjs",
+   "line": 60,
+   "edition_commit": "877bf380202b6a922932afc0bdcfd7f42a183086",
+   "head": "877bf380202b6a922932afc0bdcfd7f42a183086",
+   "class": "SAME"
+  },
+  {
+   "id": "9bc4d0c892563cbb2b2d47627424829ab33fb7cc:263",
+   "key": 62731534935,
+   "repo": "globalgrid2050",
+   "path": "papers/202609060203-electrification/index.md",
+   "line": 263,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "9bf69053e57d2eed21a3434c959faffb58eb4495:220",
+   "key": 62818217588,
+   "repo": "data-grid-gb",
+   "path": "assetpipe/lanes.py",
+   "line": 220,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "9db4cfeb2a2c5c88853dcf1f1c9c0dddc7749545:39",
+   "key": 62884840922,
+   "repo": "gridatlas",
+   "path": "tools/scope/verify-live-bytes.mjs",
+   "line": 39,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "9e2be018bb8d57cc3140ad80e448a31cea193e83:7",
+   "key": 63029531357,
+   "repo": "stars",
+   "path": "modular-star/check-permanent.mjs",
+   "line": 7,
+   "edition_commit": "cbca125bb5eeb7d0ffb02f4546d60eb5d47dadc9",
+   "head": "529ae15839ddfb586960fd4805df16e8049c9a01",
+   "class": "SAME"
+  },
+  {
+   "id": "9ed7f9c7491c16a7877d27d7cc98bb0c94d3d2b2:78",
+   "key": 62714355347,
+   "repo": "globalgrid2050",
+   "path": ".github/workflows/count-lines.yml",
+   "line": 78,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "9f640176af0a3779d37f181562b481a9a30ce260:16",
+   "key": 62884787070,
+   "repo": "gridatlas",
+   "path": "tools/offshore/reconcile_offshore_coordinates.py",
+   "line": 16,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "9f640176af0a3779d37f181562b481a9a30ce260:342",
+   "key": 62884787396,
+   "repo": "gridatlas",
+   "path": "tools/offshore/reconcile_offshore_coordinates.py",
+   "line": 342,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "9f8b425a86f9636cba39539333c39fa9e4598cc2:6",
+   "key": 63013236469,
+   "repo": "kuiper-belt",
+   "path": "tools/swarm.py",
+   "line": 6,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "9ff831aee0c4fac41734c9a19f440a5bf03ed45c:11",
+   "key": 62714368257,
+   "repo": "globalgrid2050",
+   "path": "202608300453-atlas-v9/index.html",
+   "line": 11,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "a06efc9a41b5e9dc9dfc0f9e3d57a684b2e0f002:150",
+   "key": 63013236971,
+   "repo": "kuiper-belt",
+   "path": "tools/wafer_topup.py",
+   "line": 150,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "a06efc9a41b5e9dc9dfc0f9e3d57a684b2e0f002:22",
+   "key": 63013236843,
+   "repo": "kuiper-belt",
+   "path": "tools/wafer_topup.py",
+   "line": 22,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "a24c62bfb4e9aa01d30088f9ba2288b520915fd3:108",
+   "key": 57339920158,
+   "repo": "pipelinenews",
+   "path": "index/202608291310-compile-atlas-v9-deep-link.mjs",
+   "line": 108,
+   "edition_commit": "67aa2eb05993c630887b41c3b720ba42a86669a4",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "a3a446322424e91b3b7d578d00b69b94d69f1bfd:32",
+   "key": 42864278840,
+   "repo": "gridmachine1",
+   "path": "CABLE-ENGINES.md",
+   "line": 32,
+   "edition_commit": "c6cbf9686eea1aa148b2e4616b7d603e6a93b450",
+   "head": "c6cbf9686eea1aa148b2e4616b7d603e6a93b450",
+   "class": "SAME"
+  },
+  {
+   "id": "a3a446322424e91b3b7d578d00b69b94d69f1bfd:58",
+   "key": 42864278866,
+   "repo": "gridmachine1",
+   "path": "CABLE-ENGINES.md",
+   "line": 58,
+   "edition_commit": "c6cbf9686eea1aa148b2e4616b7d603e6a93b450",
+   "head": "c6cbf9686eea1aa148b2e4616b7d603e6a93b450",
+   "class": "SAME"
+  },
+  {
+   "id": "a51edfd83c83ccf98b395af75172131d9f8f1d05:408",
+   "key": 62884836393,
+   "repo": "gridatlas",
+   "path": "tools/recompose.mjs",
+   "line": 408,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "a51edfd83c83ccf98b395af75172131d9f8f1d05:62",
+   "key": 62884836047,
+   "repo": "gridatlas",
+   "path": "tools/recompose.mjs",
+   "line": 62,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "a5fce3ef41ef7df1b7ef7938ec8822a1f1678c09:104",
+   "key": 63013235855,
+   "repo": "kuiper-belt",
+   "path": "tools/harvest.py",
+   "line": 104,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "a5fce3ef41ef7df1b7ef7938ec8822a1f1678c09:69",
+   "key": 63013235820,
+   "repo": "kuiper-belt",
+   "path": "tools/harvest.py",
+   "line": 69,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "a5fce3ef41ef7df1b7ef7938ec8822a1f1678c09:77",
+   "key": 63013235828,
+   "repo": "kuiper-belt",
+   "path": "tools/harvest.py",
+   "line": 77,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "a9150f42e562747d9552fcb1b38a56ee438777a5:43",
+   "key": 62884712722,
+   "repo": "gridatlas",
+   "path": "docs/CI-CD-PLAN.md",
+   "line": 43,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "aadb5776a4d1421c94f3d5daee4db1d8b758d4d8:27",
+   "key": 63013224076,
+   "repo": "kuiper-belt",
+   "path": "learn-the-kuiper/README.md",
+   "line": 27,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "aadb5776a4d1421c94f3d5daee4db1d8b758d4d8:31",
+   "key": 63013224080,
+   "repo": "kuiper-belt",
+   "path": "learn-the-kuiper/README.md",
+   "line": 31,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "acd8df34a9d14d3d6c90bb6f7c38f68f6baf8e7a:7",
+   "key": 62884783560,
+   "repo": "gridatlas",
+   "path": "tools/lightning/generations.json",
+   "line": 7,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "aeb2936aae54c82d1a7f216924d58eaa771bae4d:75",
+   "key": 62884498462,
+   "repo": "gridatlas",
+   "path": "atlas/index.html",
+   "line": 75,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "af07532d81f3269d69ef0936b8d620f846b77599:26",
+   "key": 36064709699,
+   "repo": "data-centres-gb",
+   "path": "docs/data-sources.md",
+   "line": 26,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "SAME"
+  },
+  {
+   "id": "b0f3e42633f8b64d9c96b96a61d3851087b3fa2e:114",
+   "key": 62818221740,
+   "repo": "data-grid-gb",
+   "path": "datacentres/lanes/dc-a2-planning/dc_planning_fetch.py",
+   "line": 114,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "b0f3e42633f8b64d9c96b96a61d3851087b3fa2e:385",
+   "key": 62818222011,
+   "repo": "data-grid-gb",
+   "path": "datacentres/lanes/dc-a2-planning/dc_planning_fetch.py",
+   "line": 385,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "b12dadb971f163b67d6f0fb2207ef6e1e6e68e7d:138",
+   "key": 62818218055,
+   "repo": "data-grid-gb",
+   "path": "assetpipe/schema.py",
+   "line": 138,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "b1468c8612bfb25f139df85e02fe6ad2e4237f45:11",
+   "key": 62737253969,
+   "repo": "globalgrid2050",
+   "path": "testcode/wafer-development-environment/202609180245-real-systems/lib.mjs",
+   "line": 11,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "b1ea2f0780193d2836afcfdd420051cdb546194f:202",
+   "key": 63027341471,
+   "repo": "ventus-grid-engine",
+   "path": "sources/v9-extracts/sizing-arithmetic.mjs",
+   "line": 202,
+   "edition_commit": "96a800eb01825748936b5a193ce396a960f9302f",
+   "head": "5eead830d99021c90fd58add2f8bf05b0b752340",
+   "class": "SAME"
+  },
+  {
+   "id": "b3c205a780d219341eb902d582b68cfb570e873d:75",
+   "key": 62883337127,
+   "repo": "gridatlas",
+   "path": ".github/workflows/offshore-coordinate-reconcile.yml",
+   "line": 75,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "b3c205a780d219341eb902d582b68cfb570e873d:83",
+   "key": 62883337135,
+   "repo": "gridatlas",
+   "path": ".github/workflows/offshore-coordinate-reconcile.yml",
+   "line": 83,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "bbe2fb43d63483c91621c476501591971b6feeef:63",
+   "key": 62884825348,
+   "repo": "gridatlas",
+   "path": "tools/proofs/all-layer-clicks.browser.mjs",
+   "line": 63,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "bc3b520945fce967c20ff8fdf69c0433eaeee5be:58",
+   "key": 62884789149,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/06-tap-card.js",
+   "line": 58,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "bc3b520945fce967c20ff8fdf69c0433eaeee5be:75",
+   "key": 62884789166,
+   "repo": "gridatlas",
+   "path": "tools/offtakers/src/06-tap-card.js",
+   "line": 75,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "bce8ab6093b1591bc013934ad72e48dd75b48b89:70",
+   "key": 63013108031,
+   "repo": "kuiper-belt",
+   "path": "CHAINS.md",
+   "line": 70,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "be4c5c27ae715c586abf59066eb6eec9bd830dfe:23",
+   "key": 63035165054,
+   "repo": "pipelinenews",
+   "path": "discovery/javascript/202609010015-sector-topic-evidence.mjs",
+   "line": 23,
+   "edition_commit": "6a4c0244b2817c6b8a74661546c8acc35e53a9b7",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "be93d76c6c000f941f6acde1e97fac25ce65057c:102",
+   "key": 62884710203,
+   "repo": "gridatlas",
+   "path": "compiler/202608290716-compile-atlas-v9.py",
+   "line": 102,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "be93d76c6c000f941f6acde1e97fac25ce65057c:180",
+   "key": 62884710281,
+   "repo": "gridatlas",
+   "path": "compiler/202608290716-compile-atlas-v9.py",
+   "line": 180,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "be93d76c6c000f941f6acde1e97fac25ce65057c:50",
+   "key": 62884710151,
+   "repo": "gridatlas",
+   "path": "compiler/202608290716-compile-atlas-v9.py",
+   "line": 50,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "be93d76c6c000f941f6acde1e97fac25ce65057c:87",
+   "key": 62884710188,
+   "repo": "gridatlas",
+   "path": "compiler/202608290716-compile-atlas-v9.py",
+   "line": 87,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "beda6bb5a412e9fb90b804ace68500e2cb5fcade:152",
+   "key": 57340157161,
+   "repo": "pipelinenews",
+   "path": "releases/202609010836-index.html",
+   "line": 152,
+   "edition_commit": "67aa2eb05993c630887b41c3b720ba42a86669a4",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "bf0bf559f02da8ae912fd02f27d57492623b52e9:31",
+   "key": 63013283908,
+   "repo": "particle-physics-drawing-engine",
+   "path": "measurements/shader-law-result.json",
+   "line": 31,
+   "edition_commit": "eb52ad7ebab151d49fb7cfde56523f5962129530",
+   "head": "e51127791aab091ccb96f0b4eab807c02a9d116e",
+   "class": "SAME"
+  },
+  {
+   "id": "bf2b510076844cb6f849545ccdf6067393ed2e3a:28",
+   "key": 63025959395,
+   "repo": "time-stone",
+   "path": ".github/workflows/watch.yml",
+   "line": 28,
+   "edition_commit": "a1703b1bb0170ed0f0c162126315049fa157d3bf",
+   "head": "c507d8ce86392411afbd14190ccd22ff978c7ca1",
+   "class": "SAME"
+  },
+  {
+   "id": "c0c9103f9198d2e8c76221fdc5138ad1e1f1da73:29",
+   "key": 63027326202,
+   "repo": "ventus-grid-engine",
+   "path": "deeplink/contract.js",
+   "line": 29,
+   "edition_commit": "96a800eb01825748936b5a193ce396a960f9302f",
+   "head": "5eead830d99021c90fd58add2f8bf05b0b752340",
+   "class": "SAME"
+  },
+  {
+   "id": "c0c9103f9198d2e8c76221fdc5138ad1e1f1da73:67",
+   "key": 63027326240,
+   "repo": "ventus-grid-engine",
+   "path": "deeplink/contract.js",
+   "line": 67,
+   "edition_commit": "96a800eb01825748936b5a193ce396a960f9302f",
+   "head": "5eead830d99021c90fd58add2f8bf05b0b752340",
+   "class": "SAME"
+  },
+  {
+   "id": "c4c18a54cf35bf071fb964c9fb313aab7cf50f67:38",
+   "key": 62737255275,
+   "repo": "globalgrid2050",
+   "path": "testcode/wafer-development-environment/202609190330-cable-cross-sections/QUANTUM-STAR-PROTOCOL.md",
+   "line": 38,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "c506a252f27fa8b80e849eb63bbb6699eaf674f0:22",
+   "key": 63013214349,
+   "repo": "kuiper-belt",
+   "path": "learn-the-kuiper/202610050609/kuiper-law.js",
+   "line": 22,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "c506a252f27fa8b80e849eb63bbb6699eaf674f0:23",
+   "key": 63013214350,
+   "repo": "kuiper-belt",
+   "path": "learn-the-kuiper/202610050609/kuiper-law.js",
+   "line": 23,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "c506a252f27fa8b80e849eb63bbb6699eaf674f0:38",
+   "key": 63013214365,
+   "repo": "kuiper-belt",
+   "path": "learn-the-kuiper/202610050609/kuiper-law.js",
+   "line": 38,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "c506a252f27fa8b80e849eb63bbb6699eaf674f0:61",
+   "key": 63013214388,
+   "repo": "kuiper-belt",
+   "path": "learn-the-kuiper/202610050609/kuiper-law.js",
+   "line": 61,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "c7fa34a54ba82db777e17e38c86f6b53d26cbf4d:102",
+   "key": 63013235617,
+   "repo": "kuiper-belt",
+   "path": "tools/estate.py",
+   "line": 102,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "c7fa34a54ba82db777e17e38c86f6b53d26cbf4d:152",
+   "key": 63013235667,
+   "repo": "kuiper-belt",
+   "path": "tools/estate.py",
+   "line": 152,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "c7fa34a54ba82db777e17e38c86f6b53d26cbf4d:159",
+   "key": 63013235674,
+   "repo": "kuiper-belt",
+   "path": "tools/estate.py",
+   "line": 159,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "c7fa34a54ba82db777e17e38c86f6b53d26cbf4d:166",
+   "key": 63013235681,
+   "repo": "kuiper-belt",
+   "path": "tools/estate.py",
+   "line": 166,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "c7fa34a54ba82db777e17e38c86f6b53d26cbf4d:184",
+   "key": 63013235699,
+   "repo": "kuiper-belt",
+   "path": "tools/estate.py",
+   "line": 184,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "c7fa34a54ba82db777e17e38c86f6b53d26cbf4d:20",
+   "key": 63013235535,
+   "repo": "kuiper-belt",
+   "path": "tools/estate.py",
+   "line": 20,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "c7fa34a54ba82db777e17e38c86f6b53d26cbf4d:206",
+   "key": 63013235721,
+   "repo": "kuiper-belt",
+   "path": "tools/estate.py",
+   "line": 206,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "c7fa34a54ba82db777e17e38c86f6b53d26cbf4d:217",
+   "key": 63013235732,
+   "repo": "kuiper-belt",
+   "path": "tools/estate.py",
+   "line": 217,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "c7fa34a54ba82db777e17e38c86f6b53d26cbf4d:22",
+   "key": 63013235537,
+   "repo": "kuiper-belt",
+   "path": "tools/estate.py",
+   "line": 22,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "c7fa34a54ba82db777e17e38c86f6b53d26cbf4d:23",
+   "key": 63013235538,
+   "repo": "kuiper-belt",
+   "path": "tools/estate.py",
+   "line": 23,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "c7fa34a54ba82db777e17e38c86f6b53d26cbf4d:24",
+   "key": 63013235539,
+   "repo": "kuiper-belt",
+   "path": "tools/estate.py",
+   "line": 24,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "c7fa34a54ba82db777e17e38c86f6b53d26cbf4d:63",
+   "key": 63013235578,
+   "repo": "kuiper-belt",
+   "path": "tools/estate.py",
+   "line": 63,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "c7fa34a54ba82db777e17e38c86f6b53d26cbf4d:98",
+   "key": 63013235613,
+   "repo": "kuiper-belt",
+   "path": "tools/estate.py",
+   "line": 98,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "cfc5ca228326be4bae37e04e8027d0ec9aa87585:364",
+   "key": 62818578382,
+   "repo": "data-grid-gb",
+   "path": "derived/verify_phase0_acceptance.py",
+   "line": 364,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "cfc5ca228326be4bae37e04e8027d0ec9aa87585:410",
+   "key": 62818578428,
+   "repo": "data-grid-gb",
+   "path": "derived/verify_phase0_acceptance.py",
+   "line": 410,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "d016b7b1f0ce4b28518de11d9990401c0d553632:117",
+   "key": 63013236191,
+   "repo": "kuiper-belt",
+   "path": "tools/key.py",
+   "line": 117,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "d0a9c3d4e8532ee37ab9121d4cddb8a53bc9f615:85",
+   "key": 62883337650,
+   "repo": "gridatlas",
+   "path": ".github/workflows/teleprint-parse-gate.yml",
+   "line": 85,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "d2ab3b111eb09f7af3df3a9fce9ad0a9dc1dea99:66",
+   "key": 63027331812,
+   "repo": "ventus-grid-engine",
+   "path": "engine/v9-nearest-search.js",
+   "line": 66,
+   "edition_commit": "96a800eb01825748936b5a193ce396a960f9302f",
+   "head": "5eead830d99021c90fd58add2f8bf05b0b752340",
+   "class": "SAME"
+  },
+  {
+   "id": "d30dfec04bfa7f5ab240d240d4297575de5a3a02:13",
+   "key": 63013236746,
+   "repo": "kuiper-belt",
+   "path": "tools/wafer_keys.py",
+   "line": 13,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "d30dfec04bfa7f5ab240d240d4297575de5a3a02:33",
+   "key": 63013236766,
+   "repo": "kuiper-belt",
+   "path": "tools/wafer_keys.py",
+   "line": 33,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "d30dfec04bfa7f5ab240d240d4297575de5a3a02:80",
+   "key": 63013236813,
+   "repo": "kuiper-belt",
+   "path": "tools/wafer_keys.py",
+   "line": 80,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "d379c9ce4e097d3a460b2414714e37f6ed18884b:116",
+   "key": 57340381407,
+   "repo": "pipelinenews",
+   "path": "releases/202609060232-pipelinenews/assets/202609040044-atlas-pointer-deep-link.mjs",
+   "line": 116,
+   "edition_commit": "67aa2eb05993c630887b41c3b720ba42a86669a4",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "d379c9ce4e097d3a460b2414714e37f6ed18884b:75",
+   "key": 57340381366,
+   "repo": "pipelinenews",
+   "path": "releases/202609060232-pipelinenews/assets/202609040044-atlas-pointer-deep-link.mjs",
+   "line": 75,
+   "edition_commit": "67aa2eb05993c630887b41c3b720ba42a86669a4",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "d39d454245a1d606d1f180d7a23347229ad81ddc:33",
+   "key": 57339898266,
+   "repo": "pipelinenews",
+   "path": "discovery/bbc_rss.py",
+   "line": 33,
+   "edition_commit": "67aa2eb05993c630887b41c3b720ba42a86669a4",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "d3f065b0a2b324c6533a383d61e48750f6b4af9e:50",
+   "key": 62818579958,
+   "repo": "data-grid-gb",
+   "path": "pipelines/fetch_sources.py",
+   "line": 50,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "d873de43487eae43567e77fd5c80815fe72d3af4:14",
+   "key": 62737149419,
+   "repo": "globalgrid2050",
+   "path": "testcode/202609151413/physics.mjs",
+   "line": 14,
+   "edition_commit": "c66759f0d7ac3489df9158da6eaa1330a37c069f",
+   "head": "35b5be2fa44603defb47a924f611a748b2db29c7",
+   "class": "SAME"
+  },
+  {
+   "id": "d8f657518bf9b41b49b5204c454d519050f9ecc4:2",
+   "key": 63013119688,
+   "repo": "kuiper-belt",
+   "path": "cosmos/permanence.json",
+   "line": 2,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "d9f16001c179c3f82a0379812e645c5b47a8dcad:6",
+   "key": 63013178579,
+   "repo": "kuiper-belt",
+   "path": "learn-the-kuiper/202610050144/NOTICE.md",
+   "line": 6,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "UNVERIFIED",
+   "reason": "empty line_text"
+  },
+  {
+   "id": "da6286796bd8ae3097e5f5a56967c657e1dba1aa:1",
+   "key": 62884753532,
+   "repo": "gridatlas",
+   "path": "local-arrival-grid.mjs",
+   "line": 1,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "dfe0770424b2a19faf507a501ebfc23be8f54e7b:1",
+   "key": 47100024339,
+   "repo": "elements",
+   "path": ".gitattributes",
+   "line": 1,
+   "edition_commit": "f7a92fb085c38dcbbd5cb469a66cd5ca61fb95bf",
+   "head": "f7a92fb085c38dcbbd5cb469a66cd5ca61fb95bf",
+   "class": "SAME"
+  },
+  {
+   "id": "e39ebc8a8e3b78b7081cc59e01669c18188c663a:39",
+   "key": 42864278233,
+   "repo": "gridmachine1",
+   "path": "202609071322-linux-handover/rig-kit/validity.mjs",
+   "line": 39,
+   "edition_commit": "c6cbf9686eea1aa148b2e4616b7d603e6a93b450",
+   "head": "c6cbf9686eea1aa148b2e4616b7d603e6a93b450",
+   "class": "SAME"
+  },
+  {
+   "id": "e5b9422d6cace5045101430354b355eb0026c758:241",
+   "key": 62818579703,
+   "repo": "data-grid-gb",
+   "path": "pipelines/build_network_model.py",
+   "line": 241,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "e5b9422d6cace5045101430354b355eb0026c758:256",
+   "key": 62818579718,
+   "repo": "data-grid-gb",
+   "path": "pipelines/build_network_model.py",
+   "line": 256,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "e5b9422d6cace5045101430354b355eb0026c758:283",
+   "key": 62818579745,
+   "repo": "data-grid-gb",
+   "path": "pipelines/build_network_model.py",
+   "line": 283,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "e77e2d704a85d2991f52047c49f97ea1bb422413:7",
+   "key": 63013224923,
+   "repo": "kuiper-belt",
+   "path": "learn-the-kuiper/index.html",
+   "line": 7,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "e7d8b38c80f16674480c62c18c1cf38ca4085cf6:27",
+   "key": 63013108554,
+   "repo": "kuiper-belt",
+   "path": "MEASURED.md",
+   "line": 27,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "ea671160959c862102abb7ae5f8d78789c86b0b8:184",
+   "key": 62818580369,
+   "repo": "data-grid-gb",
+   "path": "reproduce.py",
+   "line": 184,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "ea67375f10e3fdc5046ee01dda13f507a1a77402:29",
+   "key": 62883336856,
+   "repo": "gridatlas",
+   "path": ".github/workflows/202608312212-cartridge-proof.yml",
+   "line": 29,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "ea67375f10e3fdc5046ee01dda13f507a1a77402:46",
+   "key": 62883336873,
+   "repo": "gridatlas",
+   "path": ".github/workflows/202608312212-cartridge-proof.yml",
+   "line": 46,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "ea77ddffe77046731f57fd8c1e904a47cc3ac561:135",
+   "key": 62884837460,
+   "repo": "gridatlas",
+   "path": "tools/release/lib.mjs",
+   "line": 135,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "ea77ddffe77046731f57fd8c1e904a47cc3ac561:25",
+   "key": 62884837350,
+   "repo": "gridatlas",
+   "path": "tools/release/lib.mjs",
+   "line": 25,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "ea87579915aecfd9edaea4c2409f98f52ff6015b:30",
+   "key": 57340436245,
+   "repo": "pipelinenews",
+   "path": "ui/javascript/202608261804-projects-v9-5-1.js",
+   "line": 30,
+   "edition_commit": "67aa2eb05993c630887b41c3b720ba42a86669a4",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "eb5aa903c59e92edb09231d6b41fab46c86e3c7a:22",
+   "key": 62884789410,
+   "repo": "gridatlas",
+   "path": "tools/overnight/202609012200-shift.mjs",
+   "line": 22,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "eb5aa903c59e92edb09231d6b41fab46c86e3c7a:317",
+   "key": 62884789705,
+   "repo": "gridatlas",
+   "path": "tools/overnight/202609012200-shift.mjs",
+   "line": 317,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "eb6d8d00bc327e0f092179bf21d22002cecd2570:32",
+   "key": 62883336252,
+   "repo": "gridatlas",
+   "path": ".github/workflows/202608310015-gridatlas-overnight-next-versions.yml",
+   "line": 32,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "ebcef2671fd437a9bbbf05df4ecfa340ace5599f:176",
+   "key": 62884428146,
+   "repo": "gridatlas",
+   "path": "atlas/coordinate-systems.json",
+   "line": 176,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "ec6f835a0e04a5d42dcfc78ec05b4b15c28061d8:6",
+   "key": 63033214611,
+   "repo": "pipelinenews",
+   "path": "archive/202608261547-pipelinenews/newsv6/fixtures/data_centre_sources.v1.json",
+   "line": 6,
+   "edition_commit": "6a4c0244b2817c6b8a74661546c8acc35e53a9b7",
+   "head": null,
+   "class": "UNVERIFIED",
+   "reason": "no clone of pipelinenews in the estate"
+  },
+  {
+   "id": "eded6daf4c70e203deeadd496cea10ff3c1637ea:12",
+   "key": 62883339035,
+   "repo": "gridatlas",
+   "path": "AGENTS.md",
+   "line": 12,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "eded6daf4c70e203deeadd496cea10ff3c1637ea:16",
+   "key": 62883339039,
+   "repo": "gridatlas",
+   "path": "AGENTS.md",
+   "line": 16,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "eeb5558d7fc9b0caa7d2da096fc3856e64c3a467:372",
+   "key": 62884711328,
+   "repo": "gridatlas",
+   "path": "compiler/202608292126-build-map-ready-v9.py",
+   "line": 372,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "ef33bd6e8ce1563f51dcef5df4c56bf520aab02c:255",
+   "key": 36064707923,
+   "repo": "data-centres-gb",
+   "path": "build/python/202608281053-osm-data-centres.py",
+   "line": 255,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "SAME"
+  },
+  {
+   "id": "ef33bd6e8ce1563f51dcef5df4c56bf520aab02c:316",
+   "key": 36064707984,
+   "repo": "data-centres-gb",
+   "path": "build/python/202608281053-osm-data-centres.py",
+   "line": 316,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "SAME"
+  },
+  {
+   "id": "ef33bd6e8ce1563f51dcef5df4c56bf520aab02c:389",
+   "key": 36064708057,
+   "repo": "data-centres-gb",
+   "path": "build/python/202608281053-osm-data-centres.py",
+   "line": 389,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "SAME"
+  },
+  {
+   "id": "ef33bd6e8ce1563f51dcef5df4c56bf520aab02c:464",
+   "key": 36064708132,
+   "repo": "data-centres-gb",
+   "path": "build/python/202608281053-osm-data-centres.py",
+   "line": 464,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "SAME"
+  },
+  {
+   "id": "ef33bd6e8ce1563f51dcef5df4c56bf520aab02c:735",
+   "key": 36064708403,
+   "repo": "data-centres-gb",
+   "path": "build/python/202608281053-osm-data-centres.py",
+   "line": 735,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "SAME"
+  },
+  {
+   "id": "ef33bd6e8ce1563f51dcef5df4c56bf520aab02c:749",
+   "key": 36064708417,
+   "repo": "data-centres-gb",
+   "path": "build/python/202608281053-osm-data-centres.py",
+   "line": 749,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "SAME"
+  },
+  {
+   "id": "ef33bd6e8ce1563f51dcef5df4c56bf520aab02c:763",
+   "key": 36064708431,
+   "repo": "data-centres-gb",
+   "path": "build/python/202608281053-osm-data-centres.py",
+   "line": 763,
+   "edition_commit": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "head": "f9f47286fae63872375c558fc89ff4b1793914e4",
+   "class": "SAME"
+  },
+  {
+   "id": "f0c2f5856134e1d041c40234331bee0ae0482bb6:70",
+   "key": 62884838107,
+   "repo": "gridatlas",
+   "path": "tools/release/release-accepted.mjs",
+   "line": 70,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "f2d1d21e25e54d314640941fb4ac11855b111c64:7",
+   "key": 55716664785,
+   "repo": "trillion-loop",
+   "path": "README.md",
+   "line": 7,
+   "edition_commit": "35fdea2f2744df338cfa7e28200e18008b307e73",
+   "head": "35fdea2f2744df338cfa7e28200e18008b307e73",
+   "class": "SAME"
+  },
+  {
+   "id": "f30244adda8c1f10e27a9be45c200eee3dd473c5:46",
+   "key": 62818219008,
+   "repo": "data-grid-gb",
+   "path": "conventional/lanes/dc-a6/build_conventional.py",
+   "line": 46,
+   "edition_commit": "b57c94d4e964df2de0dea2786781c6d07a967ea1",
+   "head": "01a4491dc66ec4e6319a05a394926043b9d992f9",
+   "class": "SAME"
+  },
+  {
+   "id": "f303b6550a5d23a2d3a7b0345edc2bee056f1bbe:16",
+   "key": 38646804723,
+   "repo": "gridatlas",
+   "path": ".github/workflows/teleprint-parse-gate.yml",
+   "line": 16,
+   "edition_commit": "78e49b0f35f3471feb05b28f496b31449fdd06f9",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "f4f93e963bb6ff1c32550014ae210c9723a8fd50:1",
+   "key": 63013233261,
+   "repo": "kuiper-belt",
+   "path": "see-through/202610050609/model.js",
+   "line": 1,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "f6214a855d22573b499d83e2763778f71179f08f:102",
+   "key": 63013219824,
+   "repo": "kuiper-belt",
+   "path": "learn-the-kuiper/202610050609/one.js",
+   "line": 102,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "f72d1276538c6ceb525515ed3e602f84bfd8b694:18",
+   "key": 59144883264,
+   "repo": "gridatlas",
+   "path": "atlas/cartridges/README.md",
+   "line": 18,
+   "edition_commit": "efb844b9bba70edd42671aa56a9877709d7526c3",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "f7a49f4aa792f6460e6009453e9c0e99e983916f:21",
+   "key": 62884841791,
+   "repo": "gridatlas",
+   "path": "tools/v9_5/compiler.py",
+   "line": 21,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "f7f672ae9b80478ab3c475415cc7e77692ceaf9f:73",
+   "key": 60072442666,
+   "repo": "maths",
+   "path": "11-deterministic-square-root.md",
+   "line": 73,
+   "edition_commit": "b898a5ee39aa81a45197c5f17ba1195727aa538e",
+   "head": "b898a5ee39aa81a45197c5f17ba1195727aa538e",
+   "class": "SAME"
+  },
+  {
+   "id": "f9ea639bfab961517ac682b37cdef2bc6b6e8e51:55",
+   "key": 63013330410,
+   "repo": "particle-physics-drawing-engine",
+   "path": "tools/fault.py",
+   "line": 55,
+   "edition_commit": "eb52ad7ebab151d49fb7cfde56523f5962129530",
+   "head": "e51127791aab091ccb96f0b4eab807c02a9d116e",
+   "class": "SAME"
+  },
+  {
+   "id": "f9fb427696f0ffde8d07b360af914cc5138e7236:14",
+   "key": 62884782850,
+   "repo": "gridatlas",
+   "path": "tools/interconnectors/fetch_far_end_converters.py",
+   "line": 14,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "fa6816bfd4e0a5d9cc0a36a15622a26fc0121ba2:28",
+   "key": 36986586730,
+   "repo": "gridatlas",
+   "path": "tools/rollback.mjs",
+   "line": 28,
+   "edition_commit": "1762170b3274559a1c880150a1a93df5d346210d",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "fc91899073b3bf6cc44839e93840fb12f5233116:98",
+   "key": 55254331001,
+   "repo": "grid-distance-maths",
+   "path": "src/placement.py",
+   "line": 98,
+   "edition_commit": "8e91b07d8312acca5bcaef43e839f06a3b1d642a",
+   "head": "8e91b07d8312acca5bcaef43e839f06a3b1d642a",
+   "class": "SAME"
+  },
+  {
+   "id": "fca42c5e3901863d0703ba617078af17dc21b009:359",
+   "key": 62883336134,
+   "repo": "gridatlas",
+   "path": ".github/workflows/202608301321-verify-live.yml",
+   "line": 359,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "fdf41fb5be98e00b0678f1e8cfd94009d7f31430:8073",
+   "key": 63029528145,
+   "repo": "stars",
+   "path": "library/standalone.mjs",
+   "line": 8073,
+   "edition_commit": "cbca125bb5eeb7d0ffb02f4546d60eb5d47dadc9",
+   "head": "529ae15839ddfb586960fd4805df16e8049c9a01",
+   "class": "SAME"
+  },
+  {
+   "id": "fe8b2b2f98eec09d8c9e4a9cd5e40b12ee4b0200:1663",
+   "key": 62884223315,
+   "repo": "gridatlas",
+   "path": "atlas/cartridges/202609241334-sld-sandbox-v9-8.js",
+   "line": 1663,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "fe8b2b2f98eec09d8c9e4a9cd5e40b12ee4b0200:4474",
+   "key": 62884226126,
+   "repo": "gridatlas",
+   "path": "atlas/cartridges/202609241334-sld-sandbox-v9-8.js",
+   "line": 4474,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "fe8b2b2f98eec09d8c9e4a9cd5e40b12ee4b0200:626",
+   "key": 62884222278,
+   "repo": "gridatlas",
+   "path": "atlas/cartridges/202609241334-sld-sandbox-v9-8.js",
+   "line": 626,
+   "edition_commit": "cacb69a7c4abc3b1a90fd75807ce8ef8cbc46d9e",
+   "head": "41729af0b49dcfbe8f2a3ebc485eff217a61b84d",
+   "class": "SAME"
+  },
+  {
+   "id": "ff5ebcf7bd4b0c133731cf5a8d4ff4b51fda1659:13",
+   "key": 63013235018,
+   "repo": "kuiper-belt",
+   "path": "tools/ci_check.py",
+   "line": 13,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  },
+  {
+   "id": "ff5ebcf7bd4b0c133731cf5a8d4ff4b51fda1659:8",
+   "key": 63013235013,
+   "repo": "kuiper-belt",
+   "path": "tools/ci_check.py",
+   "line": 8,
+   "edition_commit": "b243e38d4964557458fcaf636fd8d49c799f91a6",
+   "head": "018b46aed50f28f7b1882a0dcaba6593ce522beb",
+   "class": "SAME"
+  }
+ ],
+ "summary": {
+  "rows": 346,
+  "counts": {
+   "SAME": 309,
+   "MOVED": 7,
+   "GONE": 2,
+   "FILE_GONE": 0,
+   "UNVERIFIED": 28
+  },
+  "denominator": 318,
+  "share_same": 0.971698,
+  "share_text": "309 SAME / 318 (rows 346 - UNVERIFIED 28)",
+  "heads_observed": 21,
+  "repositories": 22,
+  "unverified_reasons": {
+   "empty line_text": 4,
+   "key not on the wafer (on_wafer: false)": 2,
+   "no clone of pipelinenews in the estate": 22
+  },
+  "per_repo": {
+   "cvaa": {
+    "SAME": 3
+   },
+   "data-centres-gb": {
+    "SAME": 17,
+    "UNVERIFIED": 1
+   },
+   "data-grid-gb": {
+    "SAME": 30,
+    "MOVED": 5
+   },
+   "data-gridatlas": {
+    "SAME": 2
+   },
+   "elements": {
+    "SAME": 3
+   },
+   "energy-transition-simulator": {
+    "SAME": 1
+   },
+   "galaxies-wafers": {
+    "SAME": 2
+   },
+   "globalgrid2050": {
+    "SAME": 33,
+    "UNVERIFIED": 1
+   },
+   "grid-distance-maths": {
+    "SAME": 3
+   },
+   "gridatlas": {
+    "SAME": 117,
+    "MOVED": 2,
+    "GONE": 2
+   },
+   "gridmachine1": {
+    "SAME": 6
+   },
+   "kuiper-belt": {
+    "SAME": 59,
+    "UNVERIFIED": 2
+   },
+   "kuiper-drawing-engine": {
+    "SAME": 1
+   },
+   "maths": {
+    "SAME": 4
+   },
+   "particle-physics-drawing-engine": {
+    "SAME": 8
+   },
+   "pipelinenews": {
+    "UNVERIFIED": 22
+   },
+   "star-maker": {
+    "UNVERIFIED": 2
+   },
+   "stars": {
+    "SAME": 3
+   },
+   "time-stone": {
+    "SAME": 5
+   },
+   "trillion-loop": {
+    "SAME": 1
+   },
+   "ventus-grid-engine": {
+    "SAME": 8
+   },
+   "worlds-": {
+    "SAME": 3
+   }
+  }
+ }
+}

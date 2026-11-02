@@ -5,7 +5,8 @@
  "order": [
   "hello",
   "kuiper-shell",
-  "line-card"
+  "line-card",
+  "drift"
  ],
  "modules": [
   {
@@ -119,6 +120,54 @@
    "team": "02",
    "step": 2,
    "proof": "handoff/02-card/edition-6/"
+  },
+  {
+   "id": "drift",
+   "generation": "202611020240",
+   "path": "modules/202611020240-drift.js",
+   "sha256": "f03b78350694362f0d0203647231c9809661a0aac7392f6fd776f519ce391480",
+   "bytes": 23124,
+   "byte_budget": 65536,
+   "requires": [
+    "wafer",
+    "keyPlace",
+    "o2",
+    "ov",
+    "cv",
+    "card",
+    "esc",
+    "fmt",
+    "commits",
+    "repos",
+    "SPACE",
+    "hud",
+    "flyTo",
+    "cam",
+    "sel",
+    "draw",
+    "redraw",
+    "panels"
+   ],
+   "provides": [
+    "drift"
+   ],
+   "reads": [
+    "data/drift.json",
+    "keys-min.json",
+    "keys.json"
+   ],
+   "writes": [
+    "window.KY.modules.drift",
+    "#ky-drift",
+    "#ky-drift-css",
+    "#card .ky-drift-cl",
+    "#hud (one DRIFT line per frame, appended)"
+   ],
+   "creates_controls": "the drift section: one collapsed 44 px row after #lineslist (LINES panel; the shell's WAFER panel only when the page has no #lineslist), holding five class filters (44 px) and the list of the chosen class; a tap on an amber MOVED spark opens its card",
+   "licence": "Apache-2.0",
+   "team": "08",
+   "step": 8,
+   "proof": "handoff/08-drift/"
   }
  ],
  "references": [
