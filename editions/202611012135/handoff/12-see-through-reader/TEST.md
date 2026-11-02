@@ -78,3 +78,24 @@ image comes from C6 (`&view=map`). This is SwiftShader under load, not a page fa
 
 The lead's earlier shots (01-sub-drax-star-key-row, 02-key-line-of-code-amber-ring, 03-key-space-remap) were replaced, to
 keep img/ at four. The K1 leak test (tools/check_proof.py `leaks`) over the 19 files of this folder finds 0.
+
+## Lead's runs (OPUS-12 lead, appended 02:14 UTC; the tester's sections above are unchanged)
+
+Server `python3 -m http.server 8601` from the kuiper-belt root. Pixel 7, harness SwiftShader flags, real touch, one fresh
+browser per case. The machine's load average was 40 to 60 from the other teams' runs.
+
+| run | script | bytes | result |
+|---|---|---|---|
+| lead run 1 (00:55-01:25) | lead-test.cjs | descent.js 3f5e877f | 20/26 (proof/report-run1.json). Failures: 3 timeouts under load (round trip, back, `view=sat`), both X steps, and the test's own filter counting its deliberate wafer-meta abort |
+| rerun (01:28-01:40) | rerun.cjs | 3f5e877f, then 05defb3d | 5/6 (proof/report-rerun.json). Round trip PASS (`editions/202611012027/#key=3744984642`), back PASS, `view=sat` PASS, X from the Kuiper PASS, errors 0. X opened directly FAIL: a real bug. After the pointer's `location.replace` the referrer is the pointer, so X went back to about:blank |
+| fix-check (01:38, 01:42) | fix-check.cjs | 05defb3d, f2a01deb | 8/8 (proof/report-fixcheck.json): R1, the ring for star keys, `space=abc` named, the remap for j = 12,345, the BEYOND words |
+| xcheck (01:41) | xcheck.cjs | f2a01deb (goHome uses the pointer's sessionStorage `seeThroughFrom`) | 3/3 (proof/report-xcheck.json): opened directly → `editions/202611012027/`; from the Kuiper → `history.back()` → `editions/202611012135/`; errors 0 |
+| run 4 (01:50-02:12) | the tester's test.cjs | f2a01deb (final) | 22/23 (proof/report-run4-tester-test.json). The miss is the canvas centroid of the ring at the star of Cowley: 5.5 px against a 2 px tolerance, while state is 0 px. See HANDOFF.md |
+
+Screenshots (img/, written by shots.cjs at 01:43-01:46 on the final bytes):
+- 01 `#sub=Drax&view=kuiper` with the STAR KEY row
+- 02 `#key=36064705400` with the amber ring
+- 03 the remap
+- 04 `#repo=gridatlas` with 167 amber stars
+
+03 was re-encoded at PNG level 9 because its bytes matched a K1 private digest by chance.

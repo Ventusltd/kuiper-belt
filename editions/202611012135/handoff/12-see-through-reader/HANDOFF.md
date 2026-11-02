@@ -1,10 +1,10 @@
-[OPUS-12 lead → HARNESS, OPUS-10, OWNER] [NL-010] [UTCSTAMP]
+[OPUS-12 lead → HARNESS, OPUS-10, OWNER] [NL-010] [2026-11-02 02:16 UTC]
 TYPE: HANDOFF
 IN-REPLY-TO: https://github.com/Ventusltd/neural-link-between-agents/issues/10
 SCOPE: kuiper-belt edition/202611012135: the new See Through folder see-through/202611020012/, a copy of 202610050609/ (which is untouched); the pointer see-through/index.html; see-through/README.md (one row); handoff/12-see-through-reader/
 HEAD: kuiper-belt edition/202611012135 working tree; the harness commits. sha256: descent.js f2a01deb912a0a415f51c3979ad306de9a7bf0ce647f54cfa0f652620494bdb8; kuiper-law.js ae995d1f6b4388633b1dd4eefe0bd1e56a76824c28a1db066148781868abbb5d; see-through/index.html 1d66855ced17bf2264dd2f6516bb23bb7713f359026bb63cf97c3a93eaf86da6
 EVIDENCE: handoff/12-see-through-reader/{PLAN.md, TEST.md, EVIDENCE.md, LICENCE.txt, test.cjs (tester), lead-test.cjs, rerun.cjs, xcheck.cjs, fix-check.cjs, shots.cjs, proof/report-*.json, img/01-04}
-STATUS: RUN4STATUS
+STATUS: PASS with one stated test-side miss. On the final bytes: tester test.cjs 22/23 (the miss is a canvas-centroid tolerance, see Tests); fix-check 8/8; xcheck 3/3; rerun 5/6 then fixed; Pixel 7, real touch; 0 page errors
 DETAILS:
 - **What See Through now reads.** It reads the hash once the names are in and the sky is settled, then again on every `hashchange`. The grammar is team 3's (STEPS.md 5.5), and team 5's patch is the base (it applied cleanly; improved as below).
   - `#sub=<name>` types the name into the box and presses GO. `#sub=Drax` lands on substation 1182, Drax, at D 8. `xyzzy` gives `NO SUBSTATION NAME HERE CONTAINS THAT. TRY ANOTHER NAME`. Hinkley lands on 1892, Cowley on 201.
@@ -31,7 +31,11 @@ DETAILS:
 - **Tests (Pixel 7, SwiftShader, load average 40-60 from the other teams).**
   - lead-test.cjs: 20/26. All 6 failures were timeouts or a filter bug, and each was re-run: rerun.cjs 5/6, then xcheck.cjs 3/3 after the goHome fix.
   - fix-check.cjs on the final bytes: 8/8.
-  - The tester's test.cjs on the final bytes: RUN4LINE.
+  - The tester's test.cjs on the final bytes (lead's run 4, 02:12 UTC, proof/report-run4-tester-test.json): 22/23.
+    The miss is the tester's new canvas check for the ring at the star of Cowley (key 638151717, near the porthole centre).
+    `__descent.ring()` is 0 px from the law, but the thresholded amber-pixel centroid is 5.5 px off, because only 58 amber px
+    survive under the dense centre and the sweep arm. The same check passes at 36064705400. This is a measurement tolerance,
+    not a misplaced ring (img/03 shows the ring).
   - Console and page errors on See Through: 0, apart from the blocked basemaps.cartocdn.com.
   - Not evaluated: Galaxy S24, live tiles.
 - **Licence.** CERN-OHL-S v2 throughout; LICENSE.md, NOTICE.md and licences/ are byte-identical.

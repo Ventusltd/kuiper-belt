@@ -1,0 +1,316 @@
+{
+ "base": "http://127.0.0.1:8601/",
+ "stamp": "202611020012",
+ "space": 63340120796,
+ "frozen": 63340120796,
+ "when": "2026-11-02T01:48:26.572Z",
+ "devices": {
+  "Pixel 7": {
+   "pass": false,
+   "n": 23,
+   "failed": 1,
+   "timings": {
+    "C1 #sub=Drax": 61923,
+    "C2 #key&space": 2501,
+    "C3 #key own sky": 14985,
+    "C4 #repo=gridatlas": 7738,
+    "C5 #view=3d": 795,
+    "C6 pointer": 11880
+   },
+   "results": [
+    {
+     "name": "pointer see-through/index.html names one stamp in its three places, forwarding search + hash; 202611020012/index.html exists",
+     "ok": true,
+     "got": {
+      "stamps": [
+       "202611020012",
+       "202611020012",
+       "202611020012"
+      ]
+     }
+    },
+    {
+     "name": "the sky: frozen SPACE of 202611020012/kuiper-law.js equals cosmos/wafer-meta.json address_space",
+     "ok": true,
+     "got": {
+      "frozen": 63340120796,
+      "wafer": 63340120796
+     }
+    },
+    {
+     "name": "C1 #sub=Drax: box \"Drax\", flight to 1182 Drax, D 8 (61923 ms from goto)",
+     "ok": true,
+     "got": {
+      "box": "Drax",
+      "T": 1182,
+      "name": "Drax",
+      "D": 8,
+      "view": "sat"
+     }
+    },
+    {
+     "name": "C1 arrival writes #key=3744984642&space=63340120796&sub=Drax (= __descent.link())",
+     "ok": true,
+     "got": {
+      "hash": "#key=3744984642&space=63340120796&sub=Drax",
+      "link": "#key=3744984642&space=63340120796&sub=Drax"
+     }
+    },
+    {
+     "name": "C1 sky: space = address_space, spaceSource wafer-meta",
+     "ok": true,
+     "got": {
+      "space": 63340120796,
+      "src": "wafer-meta"
+     }
+    },
+    {
+     "name": "C1 row \"STAR KEY 3,744,984,642 · OPEN IT ON THE KUIPER\": <a href=\"../../editions/#key=3744984642\">, visible, >= 44 px, not covered",
+     "ok": true,
+     "got": {
+      "text": "STAR KEY 3,744,984,642 · OPEN IT ON THE KUIPER",
+      "href": "../../editions/#key=3744984642",
+      "abs": "http://127.0.0.1:8601/editions/#key=3744984642",
+      "h": 44,
+      "w": 396,
+      "x": 206,
+      "y": 657,
+      "vis": true,
+      "hit": true
+     }
+    },
+    {
+     "name": "C1 the row resolves to http://127.0.0.1:8601/editions/#key=3744984642, HEAD 200",
+     "ok": true,
+     "got": {
+      "abs": "http://127.0.0.1:8601/editions/#key=3744984642"
+     }
+    },
+    {
+     "name": "C2 #key=3744984642&space=63340120796: nothing moves (T -1, D 0), box \"Drax\", note \"THE STAR THAT LANDS ON DRAX. PRESS GO\"",
+     "ok": true,
+     "got": {
+      "T": -1,
+      "D": 0,
+      "box": "Drax",
+      "note": "THE STAR THAT LANDS ON DRAX. PRESS GO",
+      "space": 63340120796,
+      "src": "wafer-meta",
+      "ring": {
+       "x": 183.00587225630096,
+       "y": 452.5882911806679,
+       "key": 3744984642
+      }
+     }
+    },
+    {
+     "name": "C2 the selected star: one amber ring at KuiperLaw.place(3744984642) (STEPS 5.5 table)",
+     "ok": true,
+     "got": {
+      "ok": true,
+      "statePx": 0,
+      "canvasPx": 0.862,
+      "radiusPx": 9.84,
+      "amberPx": 137,
+      "starCheckPx": 0
+     }
+    },
+    {
+     "name": "C3 #key=638151717 (no &space): T -1, D 0, box \"Cowley Substation\", note \"THE STAR THAT LANDS ON COWLEY SUBSTATION. PRESS GO\"",
+     "ok": true,
+     "got": {
+      "name201": "Cowley Substation",
+      "T": -1,
+      "box": "Cowley Substation",
+      "note": "THE STAR THAT LANDS ON COWLEY SUBSTATION. PRESS GO"
+     }
+    },
+    {
+     "name": "C3 the selected star: one amber ring at KuiperLaw.place(638151717)",
+     "ok": false,
+     "got": {
+      "ok": false,
+      "statePx": 0,
+      "canvasPx": 5.462,
+      "radiusPx": 7.74,
+      "amberPx": 58,
+      "starCheckPx": 0
+     }
+    },
+    {
+     "name": "C3 hashchange #key=36064705400: note \"KEY 36,064,705,400 · A LINE OF CODE, NOT A SUBSTATION\", T -1, D 0, the box emptied, one amber ring at KuiperLaw.place(k)",
+     "ok": true,
+     "got": {
+      "note": "KEY 36,064,705,400 · A LINE OF CODE, NOT A SUBSTATION",
+      "box": "",
+      "noteFit": {
+       "textRight": 410.9,
+       "boxRight": 404,
+       "innerWidth": 412,
+       "fits": false
+      },
+      "ring": {
+       "ok": true,
+       "statePx": 0,
+       "canvasPx": 1.834,
+       "radiusPx": 9.82,
+       "amberPx": 190,
+       "starCheckPx": 0
+      }
+     }
+    },
+    {
+     "name": "C3 hashchange #key=<SPACE>: \"KEY 63,340,120,796 IS BEYOND THIS SKY (SPACE 63,340,120,796)\"",
+     "ok": true,
+     "got": {
+      "note": "KEY 63,340,120,796 IS BEYOND THIS SKY (SPACE 63,340,120,796)",
+      "ring": null
+     }
+    },
+    {
+     "name": "C3 hashchange #key=3526041795&space=59637070538: remapped to the star of Drax",
+     "ok": true,
+     "got": {
+      "box": "Drax",
+      "note": "STAR KEY REMAPPED · SKY 59,637,070,538 → 63,340,120,796 · THE STAR THAT LANDS ON DRAX. PRESS GO"
+     }
+    },
+    {
+     "name": "C3 hashchange #sub=xyzzy: refusal words, no flight",
+     "ok": true,
+     "got": {
+      "T": -1,
+      "note": "NO SUBSTATION NAME HERE CONTAINS THAT. TRY ANOTHER NAME"
+     }
+    },
+    {
+     "name": "C3 hashchange #repo=nosuchrepo: \"NO REPOSITORY CALLED NOSUCHREPO\"",
+     "ok": true,
+     "got": {
+      "note": "NO REPOSITORY CALLED NOSUCHREPO"
+     }
+    },
+    {
+     "name": "C3 hashchange #bogus=1 (after #repo=nosuchrepo on the same page): \"LINK FIELD BOGUS NOT UNDERSTOOD\" (a re-read link replaces the earlier note)",
+     "ok": true,
+     "got": {
+      "note": "LINK FIELD BOGUS NOT UNDERSTOOD"
+     }
+    },
+    {
+     "name": "C4 #repo=gridatlas: note \"GRIDATLAS · 167 OF 12,900 STARS\", n = the count from cosmos/wafer.tsv (938 ranges), repoLit() = n, marks drawn",
+     "ok": true,
+     "got": {
+      "note": "GRIDATLAS · 167 OF 12,900 STARS",
+      "lit": 167,
+      "want": 167,
+      "amberPx": 982
+     }
+    },
+    {
+     "name": "C5 #view=3d without a target: caption \"CHOOSE A SUBSTATION FIRST\", view not 3d, T -1, D 0, no \"LINK FIELD\" note",
+     "ok": true,
+     "got": {
+      "cap": "CHOOSE A SUBSTATION FIRST",
+      "view": "map",
+      "in3d": false,
+      "T": -1,
+      "note": ""
+     }
+    },
+    {
+     "name": "C6 pointer see-through/?via=pointer#sub=Drax&view=map forwards to see-through/202611020012/?via=pointer#sub=Drax&view=map (search and hash kept; the hash then rewritten on arrival)",
+     "ok": true,
+     "got": {
+      "navs": [
+       "http://127.0.0.1:8601/see-through/?via=pointer#sub=Drax&view=map",
+       "http://127.0.0.1:8601/see-through/202611020012/?via=pointer#sub=Drax&view=map",
+       "http://127.0.0.1:8601/see-through/202611020012/?via=pointer#key=3744984642&space=63340120796&sub=Drax"
+      ],
+      "now": "http://127.0.0.1:8601/see-through/202611020012/?via=pointer#key=3744984642&space=63340120796&sub=Drax"
+     }
+    },
+    {
+     "name": "C6 arrival at 1182 in the map view (view field after the flight)",
+     "ok": true,
+     "got": {
+      "T": 1182,
+      "view": "map",
+      "in3d": false
+     }
+    },
+    {
+     "name": "C6 a real touch on the STAR KEY row opens http://127.0.0.1:8601/editions/#key=3744984642 (then the editions pointer forwards the hash)",
+     "ok": true,
+     "got": {
+      "navs": [
+       "http://127.0.0.1:8601/editions/#key=3744984642",
+       "http://127.0.0.1:8601/editions/202611012027/#key=3744984642"
+      ],
+      "url": "http://127.0.0.1:8601/editions/202611012027/#key=3744984642"
+     }
+    },
+    {
+     "name": "zero console errors and page errors on See Through apart from basemaps\\.cartocdn\\.com (10 blocked, logged)",
+     "ok": true,
+     "got": []
+    }
+   ],
+   "errors": [],
+   "blocked": [
+    {
+     "tag": "C1 #sub=Drax",
+     "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+     "err": "net::ERR_TUNNEL_CONNECTION_FAILED"
+    },
+    {
+     "tag": "C1 #sub=Drax",
+     "text": "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED",
+     "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+    },
+    {
+     "tag": "C2 #key&space",
+     "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+     "err": "net::ERR_TUNNEL_CONNECTION_FAILED"
+    },
+    {
+     "tag": "C2 #key&space",
+     "text": "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED",
+     "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+    },
+    {
+     "tag": "C3 #key own sky",
+     "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+     "err": "net::ERR_TUNNEL_CONNECTION_FAILED"
+    },
+    {
+     "tag": "C3 #key own sky",
+     "text": "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED",
+     "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+    },
+    {
+     "tag": "C4 #repo=gridatlas",
+     "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+     "err": "net::ERR_TUNNEL_CONNECTION_FAILED"
+    },
+    {
+     "tag": "C4 #repo=gridatlas",
+     "text": "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED",
+     "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+    },
+    {
+     "tag": "C6 pointer",
+     "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+     "err": "net::ERR_TUNNEL_CONNECTION_FAILED"
+    },
+    {
+     "tag": "C6 pointer",
+     "text": "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED",
+     "url": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+    }
+   ],
+   "requests": []
+  }
+ },
+ "pass": false
+}
