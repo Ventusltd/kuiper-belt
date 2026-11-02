@@ -53,7 +53,7 @@ sha256, the 18 hooks (each one is used, and no hook is used that is not listed),
 
 | file | bytes | sha256 | header licence line |
 |---|---|---|---|
-| `editions/202611012135/modules/202611012325-drift.js` | 22,294 | `18f7019aad915920e79c1f279ad688f3ccd4f1dd96ff23a992520c19b37fdd8d` (= MODULE.sha256, = MODULE.json) | line 1 `Apache-2.0 (kuiper-belt code)`; name, stamp, requires, provides present (:1, :18-20) |
+| `editions/202611012135/modules/202611012325-drift.js` | 22,637 | `df511ccb7ae6596aea29827d2eca5eb531b95b46af3699a4d101c53b22976dd7` (= MODULE.sha256, = MODULE.json) | line 1 `Apache-2.0 (kuiper-belt code)`; name, stamp, requires, provides present (:1, :18-20) |
 | `editions/202611012135/data/drift.json` | 118,553 | `388103129b904a4a038d18adc26b703c144dede2d09497d13fe6223b30b5d103` (= MODULE.sha256) | `licence` field `CC BY 4.0 (kuiper-belt data); quotes no line text` |
 | `tools/drift.py` | 26,522 | `29fdb05e5717aee41a5b0ed149b715bf4d997cdbee045bef90da9dd7a6b6080e` (= MODULE.sha256 since about 00:24Z; the HANDOFF's posted file list predates it, verdict item 3) | line 2 `Apache-2.0 (kuiper-belt code)` |
 | `handoff/08-drift/drift_test.py` (tester) | being edited | n/a | line 2 `Apache-2.0` |
@@ -314,3 +314,11 @@ The step: neural-link FIXES/NL-010/ROADMAP.md:589-648; team-4/STEPS.md:233-352.
   branch), so the tool fell back to the reflog of refs/remotes/origin/main (00:06:59Z), and said so in `observed_by`.
 - DISCLOSED: the edition README states no stale-head cap. The tool borrows 14 d (section K), and README.md (handoff) proposes it.
 - DISCLOSED: who re-serialised keys.json is not found (section B note).
+
+## H. Revision (00:55 UTC): the shell was withdrawn at 00:03
+
+The tester refused the hand-off at 47 of 49: with no shell, the drift section sat in a WAFER panel that no control
+opens. The tester's two-line patch was applied. With no shell WAFER panel, the section goes inside the page's #lines
+before #lineslist; the WAFER-panel path is kept for when the shell returns. Module sha256 df511ccb… (22,637 bytes).
+test.cjs (the tester's current version), both devices: RESULT: PASS 49 of 49 pre-integration (TEST.md). The
+one-row bar check is NOT EVALUATED without the shell: the page's own #bar is three rows, unchanged by drift.

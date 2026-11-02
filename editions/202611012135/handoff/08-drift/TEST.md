@@ -1,13 +1,11 @@
 # TEST.md — Opus team 8, step 8 the drift (P1-P5: drift_test.py and P4 on Android)
 
-**Tester's verdict (OPUS-8 tester, 00:46 UTC): REFUSED.** 47 of 49. drift_test.py 14 of 14 PASS (P1, P2, P3, P4 data, P5). On the page both devices fail one step only: the LINES filter. The shell is withdrawn from the served modules.json (HARNESS 00:18Z), so `#ky-drift` lands in a page panel that no control opens, and a finger cannot reach its "moved" chip because `#linesctl` covers it. A two-line fix (put the section inside `#lines` before `#lineslist` when the shell has no WAFER panel) was measured in scratch only: Pixel 7 17 of 17 (issue #10 comment 6566200296). The module is the lead's file, so it is unchanged. Re-run with `node test.cjs <url> <out> --device "Pixel 7" --handoff`, then the same with `--device "Galaxy S24"`.
-
 Written by `handoff/08-drift/test.cjs` (OPUS-8 tester). P1 determinism, P2 refusal, P3 ground truth by `git show`, the data half of P4 and P5 are `drift_test.py` (device `python`, independent of `tools/drift.py --check`); P4 on the page is Playwright with real touch on Pixel 7 and Galaxy S24, scenario A no drift module, B drift admitted, C drift admitted and data/drift.json answering 404.
 
 tools/drift.py sha256 `29fdb05e5717aee41a5b0ed149b715bf4d997cdbee045bef90da9dd7a6b6080e`; keys.json sha256 `1c293c337b4c3c8442c12746ce3cd08d920c763344f18333f75e73aa9fc7242b`.
 
-Run 2026-11-02T00:33:11.071Z · http://127.0.0.1:8482/editions/202611012135/ · **pre-integration** (modules.json routed: served records re-hashed from disk + line-card + drift)
-Module `modules/202611012325-drift.js` sha256 `18f7019aad915920e79c1f279ad688f3ccd4f1dd96ff23a992520c19b37fdd8d` (22294 bytes); data/drift.json sha256 `388103129b904a4a038d18adc26b703c144dede2d09497d13fe6223b30b5d103`.
+Run 2026-11-02T00:54:10.617Z · http://127.0.0.1:8480/editions/202611012135/ · **pre-integration** (modules.json routed: served records re-hashed from disk + line-card + drift)
+Module `modules/202611012325-drift.js` sha256 `df511ccb7ae6596aea29827d2eca5eb531b95b46af3699a4d101c53b22976dd7` (22637 bytes); data/drift.json sha256 `388103129b904a4a038d18adc26b703c144dede2d09497d13fe6223b30b5d103`.
 
 | device | scenario | step | result | measured |
 |---|---|---|---|---|
@@ -21,7 +19,7 @@ Module `modules/202611012325-drift.js` sha256 `18f7019aad915920e79c1f279ad688f3c
 | Pixel 7 | B | card names head and new line | PASS | "at head 01a4491: MOVED to line 128 (+6)\ndata-grid-gb@01a4491 datacentres/lanes/dc-a7-merge/dcmerge.py:128 · key 63,134,296,269 · head observed 2026-10-31T23:26:49+00:00" |
 | Pixel 7 | B | MOVED spark amber | PASS | at (206.0, 419.5): 46 amber px in a 9x9 box |
 | Pixel 7 | B | tap within 9 px opens its card | PASS | tap at +6,+6 (8.5 px): taps 0→1, "at head 01a4491: MOVED to line 128 (+6)\ndata-grid-gb@01a4491 datacentres/lanes/dc-a7-merge/dcmerge.py:128 · key 63,134,296,269 · head observed 2026-10-31T23:26:49+00:00" |
-| Pixel 7 | B | filter "moved" lists exactly the MOVED rows | FAIL | opened by a tap on "lines"; chip 44 px tall, COVERED by linesctl, in ky-drift; listed 309 rows, drift.json MOVED 7 |
+| Pixel 7 | B | filter "moved" lists exactly the MOVED rows | PASS | opened by a tap on "lines"; chip 44 px tall, on top, in lines; listed 7 rows, drift.json MOVED 7 |
 | Pixel 7 | B | bar unchanged with the panel open | PASS | #bar (the page, no shell admitted) 3 row(s) |
 | Pixel 7 | B | zero console errors | PASS | 0 |
 | Pixel 7 | C | drift.json missing: refused in words | PASS | DRIFT · data/drift.json did not load. The wafer will not invent a head. (data/drift.json HTTP 404) |
@@ -38,7 +36,7 @@ Module `modules/202611012325-drift.js` sha256 `18f7019aad915920e79c1f279ad688f3c
 | Galaxy S24 | B | card names head and new line | PASS | "at head 01a4491: MOVED to line 128 (+6)\ndata-grid-gb@01a4491 datacentres/lanes/dc-a7-merge/dcmerge.py:128 · key 63,134,296,269 · head observed 2026-10-31T23:26:49+00:00" |
 | Galaxy S24 | B | MOVED spark amber | PASS | at (180.0, 390.0): 48 amber px in a 9x9 box |
 | Galaxy S24 | B | tap within 9 px opens its card | PASS | tap at +6,+6 (8.5 px): taps 0→1, "at head 01a4491: MOVED to line 128 (+6)\ndata-grid-gb@01a4491 datacentres/lanes/dc-a7-merge/dcmerge.py:128 · key 63,134,296,269 · head observed 2026-10-31T23:26:49+00:00" |
-| Galaxy S24 | B | filter "moved" lists exactly the MOVED rows | FAIL | opened by a tap on "lines"; chip 44 px tall, COVERED by linesctl, in ky-drift; listed 309 rows, drift.json MOVED 7 |
+| Galaxy S24 | B | filter "moved" lists exactly the MOVED rows | PASS | opened by a tap on "lines"; chip 44 px tall, on top, in lines; listed 7 rows, drift.json MOVED 7 |
 | Galaxy S24 | B | bar unchanged with the panel open | PASS | #bar (the page, no shell admitted) 3 row(s) |
 | Galaxy S24 | B | zero console errors | PASS | 0 |
 | Galaxy S24 | C | drift.json missing: refused in words | PASS | DRIFT · data/drift.json did not load. The wafer will not invent a head. (data/drift.json HTTP 404) |
@@ -50,18 +48,18 @@ Module `modules/202611012325-drift.js` sha256 `18f7019aad915920e79c1f279ad688f3c
 | python | P2 | P2a no clone -> UNVERIFIED | PASS | repositories of keys.json without a clone in /home/user/estate: ['pipelinenews']; their 22 rows all UNVERIFIED, head null |
 | python | P2 | P2b clone gridatlas removed | PASS | exit 0; its 121 rows UNVERIFIED: True; other rows unchanged: True; denominator 318 -> 197 (drop 121 expected); printed "REFUSED: no clone of gridatlas in the estate; 121 lines UNVERIFIED" |
 | python | P2 | P2b clone data-grid-gb removed | PASS | exit 0; its 35 rows UNVERIFIED: True; other rows unchanged: True; denominator 318 -> 283 (drop 35 expected); printed "REFUSED: no clone of data-grid-gb in the estate; 35 lines UNVERIFIED" |
-| python | P2 | P2c heads emptied {"heads": {}} | PASS | exit 2, file written: False; "['REFUSED: no heads recorded in /tmp/nl010-opus/team-8/tester/out1/py-scratch/drift-test-ayxo_8d8/empty-heads.json; drift.json not written']" |
-| python | P2 | P2c heads emptied {} | PASS | exit 2, file written: False; "['REFUSED: no heads recorded in /tmp/nl010-opus/team-8/tester/out1/py-scratch/drift-test-ayxo_8d8/empty-heads.json; drift.json not written']" |
+| python | P2 | P2c heads emptied {"heads": {}} | PASS | exit 2, file written: False; "['REFUSED: no heads recorded in /tmp/nl010-opus/team-8/lead/out3/py-scratch/drift-test-a1t8jqvm/empty-heads.json; drift.json not written']" |
+| python | P2 | P2c heads emptied {} | PASS | exit 2, file written: False; "['REFUSED: no heads recorded in /tmp/nl010-opus/team-8/lead/out3/py-scratch/drift-test-a1t8jqvm/empty-heads.json; drift.json not written']" |
 | python | P3 | P3 ground truth by git show | PASS | {'SAME': 309, 'UNVERIFIED': 28, 'MOVED': 7, 'GONE': 2} re-derived from 192 `git show` blobs at the recorded heads (each held by its clone and an ancestor of its origin/HEAD); 0 disagreements |
 | python | P4 | P4 summary = rows | PASS | 309 SAME / 7 MOVED / 2 GONE / 0 FILE_GONE / 28 UNVERIFIED; 309 SAME / 318 (rows 346 - UNVERIFIED 28) |
 | python | P4 | P4 README paragraph = drift.json | PASS | "309 SAME, 7 MOVED, 2 GONE, 0 FILE_GONE, 28 UNVERIFIED" present; "309 SAME / 318 (rows 346 − UNVERIFIED 28)" present |
 | python | P5 | P5 drift.json inside the law | PASS | 346 rows = 346 bodies in keys.json order: True; repositories outside repos.tsv: none (matched by case only: ['kuiper-belt']); keys outside keys.json: none; line texts quoted: 0 |
 | python | P5 | P5 reads (observe, strace) | PASS | exit 0; opened under /home/user: 45 files = repos.tsv, keys.json, tools/drift.py + 21 clones; directories listed: ['/home/user/estate', '/home/user/estate/kuiper-belt/tools']; outside /home/user only system dirs ['dev', 'etc', 'proc', 'root', 'tmp', 'usr']; sockets: 0; stray: none |
 | python | P5 | P5 reads (--heads, strace) | PASS | exit 0; opened under /home/user: 25 files = repos.tsv, keys.json, tools/drift.py, data/drift.json (the recorded heads) + 21 clones; directories listed: ['/home/user/estate', '/home/user/estate/kuiper-belt/tools']; outside /home/user only system dirs ['dev', 'etc', 'proc', 'root', 'tmp', 'usr']; sock |
-| python | P5 | P5 minimal root, same bytes | PASS | root = repos.tsv + keys.json + tools/drift.py only (/tmp/nl010-opus/team-8/tester/out1/py-scratch/drift-test-ayxo_8d8/mini-root): exit 0, 118553 bytes, identical to data/drift.json |
-| files | - | img/ at most 4 PNG, each < 300 KB | PASS | 1-moved-card-Pixel_7.png 39 KB, 2-filter-moved-Galaxy_S24.png 71 KB, 3-drift-missing-Galaxy_S24.png 96 KB, 4-moved-sparks-Pixel_7.png 120 KB |
+| python | P5 | P5 minimal root, same bytes | PASS | root = repos.tsv + keys.json + tools/drift.py only (/tmp/nl010-opus/team-8/lead/out3/py-scratch/drift-test-a1t8jqvm/mini-root): exit 0, 118553 bytes, identical to data/drift.json |
+| files | - | img/ at most 4 PNG, each < 300 KB | PASS | 1-moved-card-Pixel_7.png 39 KB, 2-filter-moved-Galaxy_S24.png 73 KB, 3-drift-missing-Galaxy_S24.png 96 KB, 4-moved-sparks-Pixel_7.png 120 KB |
 
-RESULT: FAIL (47 of 49)
+RESULT: PASS (49 of 49)
 
 Measured, not pass/fail (drift_test.py):
 

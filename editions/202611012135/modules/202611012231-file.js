@@ -122,8 +122,14 @@
   }
   var wTimer = null;
   function writeSoon() { clearTimeout(wTimer); wTimer = setTimeout(writeNow, 400); }       // 400 ms (lesson.js:336)
+  // leave(url): the page is navigating away; the hash is written once, now, and nothing writes after it (a replaceState
+  // or popstate rewrite during a pending navigation can cancel it in Chromium: measured, Open an app tap on Pixel 7 that
+  // stayed on the page at 00:5x while the same tap navigated when no write was pending)
+  var leaving = false;
+  function leave(url) { writeNow(); leaving = true; clearTimeout(wTimer); st.left = url; location.assign(url); }
   function writeNow() {
     clearTimeout(wTimer); wTimer = null;
+    if (leaving) return;
     syncLayers();
     var h = hashText(), url = location.pathname + location.search + (h ? '#' + h : '');
     if (location.hash.replace(/^#/, '') === h) { st.last_written = h; mine(h); return; }
@@ -232,11 +238,11 @@
   function apply(f, how) {
     how = how || {}; st.reads++; st.last_read = { fields: JSON.parse(JSON.stringify(f)), from: how.from || 'hash', at: new Date().toISOString() };
     if (f.edition && f.edition !== KY.edition) {                     // navigate, stop (never kept in this page's hash)
-      location.href = editionTarget(f.edition, restOf(f, ['edition'])); return Promise.resolve('edition');
+      leave(editionTarget(f.edition, restOf(f, ['edition']))); return Promise.resolve('edition');
     }
     if (f.app) {
       var u = appLink(f.app, f);
-      if (!u) refuse('no app called ' + f.app); else { location.href = u; return Promise.resolve('app'); }
+      if (!u) refuse('no app called ' + f.app); else { leave(u); return Promise.resolve('app'); }
     }
     var chain = Promise.resolve();
     if ('layers' in f && how.from !== 'hash') {                       // on arrival Opus 3 applies its own field (layers.js applyLink)
@@ -267,7 +273,11 @@
     });
     if (f.key) chain = chain.then(function () {
       if (cam.key === f.key) return;                                  // the line already put the camera on this key
-      return openKey(+f.key, true).then(function (ok) { if (ok) cam.key = f.key; });
+      return openKey(+f.key, true).then(function (ok) {
+        if (!ok) return; cam.key = f.key;
+        var j = st.fields.line ? indexOfId(st.fields.line) : -1;       // a key that is a verified line writes its line too
+        if (j >= 0 && String(bodies[j].key) === f.key) cam.line = st.fields.line;
+      });
     });
     return chain.then(function () {
       var nf = {}; if ('layers' in st.fields) nf.layers = st.fields.layers;
@@ -334,6 +344,7 @@
   function wireHashchange() {
     mine(location.hash.replace(/^#/, ''));
     function seen() {
+      if (leaving) return;
       var h = location.hash.replace(/^#/, '');
       if (h === lastSeen) return;                                     // popstate and hashchange both report one change
       lastSeen = h;
@@ -707,11 +718,11 @@
           cur.setAttribute('data-ky-edition', e.stamp); box.appendChild(cur); return;
         }
         var a = mk('a', 'gm-row', label); a.setAttribute('data-ky-edition', e.stamp); a.href = editionTarget(e.stamp, '');
-        a.addEventListener('click', function (ev) { ev.stopPropagation(); writeNow(); var h = hashText(); a.href = editionTarget(e.stamp, e.stamp === '202610311905' ? '' : h); st.opened.push('edition ' + e.stamp); });
+        a.addEventListener('click', function (ev) { ev.stopPropagation(); ev.preventDefault(); syncLayers(); var h = hashText(); a.href = editionTarget(e.stamp, e.stamp === '202610311905' ? '' : h); st.opened.push('edition ' + e.stamp); leave(a.href); });
         box.appendChild(a);
       });
       var ptr = mk('a', 'gm-row', 'editions/ · the newest edition'); ptr.setAttribute('data-ky-edition', 'pointer'); ptr.href = '../';
-      ptr.addEventListener('click', function (ev) { ev.stopPropagation(); writeNow(); var h = hashText(); ptr.href = '../' + (h ? '#' + h : ''); });
+      ptr.addEventListener('click', function (ev) { ev.stopPropagation(); ev.preventDefault(); syncLayers(); var h = hashText(); ptr.href = '../' + (h ? '#' + h : ''); leave(ptr.href); });
       box.appendChild(ptr); box.setAttribute('data-filled', 'ok');
     }).catch(function (e) {
       st.editions = 'FAIL · ' + (e && e.message || e); box.setAttribute('data-filled', '');
@@ -726,7 +737,7 @@
         ev.stopPropagation();
         var f = {}; if (a.id === 'see-through') { if (st.sub) f.sub = st.sub; else if (st.fields.key) f.key = st.fields.key; }
         else if (st.fields.key) f.key = st.fields.key;
-        el.href = appLink(a.id, f) || a.link; st.opened.push('app ' + a.id);
+        ev.preventDefault(); el.href = appLink(a.id, f) || a.link; st.opened.push('app ' + a.id); leave(el.href);
       });
       box.appendChild(el);
     });

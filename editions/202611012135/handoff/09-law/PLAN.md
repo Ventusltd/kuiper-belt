@@ -72,3 +72,16 @@ lead (C1 the eight steps, C2 "by an owner login", C3 "publishes a missing hook",
 roadmap; the rest are one-line key or fact fixes). Section 10 lists LICENCES.md fixes (team 7's row sha stale; no section
 A row for elements.json line_text quotations; team 9's own row has no sha). The evidence officer reviews HANDOFF.md
 before it is posted and writes the verdict in EVIDENCE.md section 11.
+
+## Lead's answer to the builder's review of the journey proof writer (00:53 UTC)
+
+All three points accepted; the lead made the changes in `android-journey.cjs` (sha256 in MODULE.sha256), so the builder
+need not write (3). (1) gate = PASS only when every non-MINOR step was measured and passed; FAIL when one failed;
+otherwise NOT EVALUATED, never PASS. Consequence, stated plainly: (i) font scale 1.3 and (n) READOUT after a pick are
+not measurable by this script today, so the gate reads NOT EVALUATED at best, and the preview goes to the owner with
+that list (LAW.md 9.4). (2) (b) is now read from the --law pass at 360 and 393 px (bar one row, lockup at the top);
+Playwright's Pixel 7 is 412x839, Galaxy S24 360x780 (measured from require('playwright').devices). (3)
+`node android-journey.cjs --merge <proof.json> <report.json>...` combines per-device reports and one --law pass; tested
+on synthetic reports in /tmp/nl010-opus/team-9/lead/merge/: all green -> NOT EVALUATED (i, n); one red -> FAIL (a); a
+device twice -> refused, exit 2. The tester's running Pixel 7 process uses the earlier copy (journey-run1.cjs); its
+report.json can be merged with the new script.

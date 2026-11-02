@@ -90,7 +90,7 @@ function probe() {
 }
 // amber (#ffb000) pixels on the See Through canvas inside a box around (x, y) CSS px; centroid in CSS px
 function amberAt(arg) {
-  const cv = document.querySelector('canvas[aria-label]') || document.querySelector('canvas'); const r = cv.getBoundingClientRect(), sc = cv.width / r.width;
+  const cv = document.querySelector('canvas[aria-label="See through the universe to one substation"]'); const r = cv.getBoundingClientRect(), sc = cv.width / r.width;
   const g = cv.getContext('2d'), half = arg.half;
   const x0 = Math.max(0, Math.round((arg.x - half - r.left) * sc)), y0 = Math.max(0, Math.round((arg.y - half - r.top) * sc));
   const w = Math.min(cv.width - x0, Math.round(2 * half * sc)), h = Math.min(cv.height - y0, Math.round(2 * half * sc));
@@ -200,7 +200,7 @@ function lawAt(k) {
     s = await P(p);
     const rc = repoCount('gridatlas', s.NP, SPACE);
     const marks = await p.evaluate(() => { const d = window.__descent, s = d.state(); let lit = 0, tot = 0;   // amber 3 px marks at lit stars
-      const cv = document.querySelector('canvas[aria-label]'), r = cv.getBoundingClientRect(), sc = cv.width / r.width, g = cv.getContext('2d'), px = g.getImageData(0, 0, cv.width, cv.height).data;
+      const cv = document.querySelector('canvas[aria-label="See through the universe to one substation"]'), r = cv.getBoundingClientRect(), sc = cv.width / r.width, g = cv.getContext('2d'), px = g.getImageData(0, 0, cv.width, cv.height).data;
       for (let y = 0; y < cv.height; y++) for (let x = 0; x < cv.width; x++) { const i = (y * cv.width + x) * 4; if (px[i] > 200 && px[i + 1] > 120 && px[i + 1] < 210 && px[i + 2] < 90) lit++; }
       return { amberPx: lit, NP: s.NP }; });
     check('C4 #repo=gridatlas: note "GRIDATLAS · ' + fmt(rc.n) + ' OF ' + fmt(s.NP) + ' STARS", n = the count from cosmos/wafer.tsv (' + rc.ranges + ' ranges), repoLit() = n, marks drawn',

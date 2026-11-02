@@ -7,7 +7,7 @@
    overview and list the second in `source.also`). Keep `module_registers: true`: the apps module loads, hashes (the
    spider graphs by sha256 inside the module) and registers both through `KY.modules.layers.api.register({id, module:
    'apps', load, draw})`. Keep the `elements` licence `UNSETTLED: …` until the owner answers Q1: that is what makes the
-   row read `REFUSED · licence unsettled` (layers.js:598), which this team must honour. `data/apps.json` is not a layer
+   row read `REFUSED · licence unsettled` (layers.js:599-600), which this team must honour. `data/apps.json` is not a layer
    (a registry the launcher reads); please do not count it as an unrecorded layer file, or record it as `registry`.
    Measured: layers.json `elements` already records `source.sha256` 781dc0d9…a620, an earlier data/elements.json; the
    sealed file is e204cb414d38d4c174083f55a46a57179fd48b4c8ed8248a7ba0f995601964d5 (MODULE.sha256 here): please re-run

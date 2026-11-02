@@ -42,22 +42,25 @@
 // sha256 ecde2f34...e911, itself FIXES/NL-009/android-journey.cjs with the selector changes above) adopted as the release
 // law's Android journey (editions/LAW.md 9.4) so the gate and the integrator's runs are one script. Added, nothing removed:
 //   --proof <file>   writes the law-shaped record to <file>; the integrator passes editions/<stamp>/proof/android-journey.json
+//   --merge <proof> <report.json>...  combines saved per-device report.json files (one device per process, as the
+//                    integrator runs) and any run's --law extras into one record, written to <proof>
+//   (b) is read from the --law pass at 360 and 393 px: Playwright's 'Pixel 7' is 412x839 and 'Galaxy S24' 360x780.
 //   --law            also runs the law's extra measurements (9.4 (k) bar one row at 360/393/412/430 px, (l) every bar
 //                    title at least 44 px tall, (m) "see through" named on the page and its control on the bar row,
 //                    (o) with --disable-webgl --disable-webgl2 the page shows a sentence, not a blank screen), one
 //                    context at a time.
 //   The record maps every journey step to the law's letters (a)-(o); a law step no measurement covers is written
 //   NOT EVALUATED with the reason (LAWS.md:156); MINOR steps are reported and do not block. gate = PASS only when every
-//   non-MINOR evaluated step passed; the NOT EVALUATED list goes in PR A's body.
+//   non-MINOR step was measured and passed; FAIL when one failed; otherwise NOT EVALUATED, never PASS (LAW.md 9.4).
 'use strict';
 const { chromium, devices } = require('playwright');
 const fs = require('fs'), path = require('path');
 
 const argv = process.argv.slice(2);
-const positional = argv.filter((a, i) => !a.startsWith('--') && !['--device', '--devices', '--proof'].includes(argv[i - 1]));
+const positional = argv.filter((a, i) => !a.startsWith('--') && !['--device', '--devices', '--proof', '--merge'].includes(argv[i - 1]));
 const flag = (n) => { const i = argv.indexOf(n); return i >= 0 ? (argv[i + 1] || true) : null; };
-if (positional.length < 2) { console.error('usage: node android-journey.cjs <url> <outdir> [--device NAME] [--all] [--devices A,B] [--law] [--proof FILE]'); process.exit(2); }
-const URL0 = positional[0], OUT = path.resolve(positional[1]);
+if (positional.length < (argv.includes('--merge') ? 1 : 2)) { console.error('usage: node android-journey.cjs <url> <outdir> [--device NAME] [--all] [--devices A,B] [--law] [--proof FILE]\n       node android-journey.cjs --merge <proof.json> <report.json> [<report.json> ...]   (one report per device process; any run with --law adds its extras)'); process.exit(2); }
+const URL0 = positional[0], OUT = path.resolve(positional[1] || ".");
 let DEVICES = ['Pixel 7'];
 if (flag('--all')) DEVICES = ['Pixel 7', 'Galaxy S24', 'Pixel 7 landscape'];
 if (flag('--device')) DEVICES = [String(flag('--device'))];
@@ -498,6 +501,7 @@ async function lawExtras(browser) {
           minHitHeight: titles.length ? Math.min(...titles.map(hit)) : null,
           seeThroughTextCount: ((document.body.innerText || '').match(/see.through/gi) || []).length,
           seeThroughControls: st.map(el => ({ text: el.textContent.trim().slice(0, 24), rect: R(el), onBarRow: !!bR && el.getBoundingClientRect().top >= bR.top - 1 && el.getBoundingClientRect().bottom <= bR.bottom + 1 })),
+          lockup: (() => { const l = (shell && shell.querySelector('.ventus-brand')) || document.querySelector('#barname'); if (!l || !vis(l)) return null; const r = l.getBoundingClientRect(); return { text: l.textContent.trim().slice(0, 60), rect: R(l), inBar: !!bR && r.top >= bR.top - 1 && r.bottom <= bR.bottom + 1, atTop: r.top < 60 }; })(),
           docScrollWidth: document.documentElement.scrollWidth, innerWidth };
       });
       res.widths.push({ width: w, ...m, pageErrors: errs });
@@ -528,8 +532,8 @@ function lawRecord(out, extras) {
     try { return f(); } catch (e) { return { status: 'NOT EVALUATED', reason: why + ': ' + String(e.message || e) }; } };
   const steps = [
     ['a', 'load editions/<stamp>/ with zero console errors', verdict(pick(['load', 'console']), 'no device ran')],
-    ['b', 'the bar is one row at 360 px and 393 px wide and the Ventus lockup is at the top', (() => { const v = verdict(pick(['load'], ['Galaxy S24', 'Pixel 7']), 'Pixel 7 and Galaxy S24 not run');
-      if (v.status !== 'NOT EVALUATED' && !(ran.includes('Galaxy S24') && ran.includes('Pixel 7'))) { v.status = v.status === 'FAIL' ? 'FAIL' : 'NOT EVALUATED'; v.reason = 'only ' + ran.join(', ') + ' ran; both 360 px (Galaxy S24) and 393 px (Pixel 7) are needed'; } return v; })()],
+    ['b', 'the bar is one row at 360 px and 393 px wide and the Ventus lockup is at the top', ex(() => { const m = [360, 393].map(w => ({ width: w, rows: W(w).titleRows, bar: W(w).bar, lockup: W(w).lockup, error: W(w).error }));
+      return { status: m.every(x => !x.error && x.rows === 1 && x.lockup && x.lockup.atTop) ? 'PASS' : 'FAIL', measured: m, note: "read from the --law pass at 360 and 393 px (Playwright's Pixel 7 is 412 px wide, Galaxy S24 360 px)" }; }, 'measurement failed')],
     ['c', 'each menu title opens, the same tap closes it, a wafer tap closes it, the back gesture closes it', verdict(pick(['edition-open', 'edition-close', 'lines-open', 'panel-dismiss']), 'no device ran')],
     ['d', 'SEE THROUGH opens ../../see-through/ on the same host', verdict(pick(['see-through']), 'no device ran')],
     ['e', 'LINES pick closes the panel; the card header is the line of code; the spark is in clear space', verdict(pick(['lines-filter', 'lines-pick', 'card-details', 'card-close']), 'no device ran')],
@@ -556,13 +560,32 @@ function lawRecord(out, extras) {
   for (const t of MINORS) steps.push({ step: 'minor', text: t, minor: true, status: 'NOT EVALUATED', reason: 'MINOR: not measured by this script; reported, does not block ACCEPT' });
   const blocking = steps.filter(s => !s.minor && s.status === 'FAIL');
   const notEval = steps.filter(s => s.status === 'NOT EVALUATED' || /\(.*only\)/.test(s.status));
+  const unmeasured = steps.filter(s => !s.minor && s.status !== 'PASS');   // a required step not measured is never a PASS
+  const gate = blocking.length ? 'FAIL' : unmeasured.length ? 'NOT EVALUATED' : 'PASS';
   return { schema: 'kuiper.android-journey.v1', law: 'editions/LAW.md 9.4', url: out.url, generatedAt: out.generatedAt, finishedAt: new Date().toISOString(),
     script: { file: 'android-journey.cjs', bytes: fs.statSync(__filename).size, sha256: require('crypto').createHash('sha256').update(fs.readFileSync(__filename)).digest('hex') },
-    devices: out.summary, steps, gate: blocking.length ? 'FAIL' : 'PASS', failed: blocking.map(s => s.step), not_evaluated: notEval.map(s => s.step + ': ' + (s.reason || s.status)),
-    rule: 'gate PASS only when every non-MINOR evaluated step is PASS; the NOT EVALUATED list goes in PR A\'s body; agents never post ACCEPT' };
+    devices: out.summary, steps, gate, failed: blocking.map(s => s.step), not_evaluated: notEval.map(s => s.step + ': ' + (s.reason || s.status)),
+    rule: 'gate PASS only when every non-MINOR step was measured and is PASS; FAIL when one failed; otherwise NOT EVALUATED, never PASS; the NOT EVALUATED list goes in PR A\'s body; agents never post ACCEPT' };
 }
 
 (async () => {
+  if (flag('--merge')) {                              // one device per process: combine the saved report.json files
+    const pf = path.resolve(String(flag('--merge')));
+    const out = { url: null, outdir: null, generatedAt: null, devices: [], merged_from: [] }; let extras = null;
+    for (const f of positional) {
+      const r = JSON.parse(fs.readFileSync(f, 'utf8'));
+      if (out.url && r.url !== out.url) throw new Error('reports name different urls: ' + out.url + ' and ' + r.url);
+      out.url = r.url; out.generatedAt = out.generatedAt && out.generatedAt < r.generatedAt ? out.generatedAt : r.generatedAt;
+      for (const d of r.devices || []) { if (out.devices.some(x => x.device === d.device)) throw new Error('device twice: ' + d.device); out.devices.push(d); }
+      if (r.law_extras) { if (extras) throw new Error('two --law passes in the merge'); extras = r.law_extras; }
+      out.merged_from.push({ file: path.resolve(f), sha256: require('crypto').createHash('sha256').update(fs.readFileSync(f)).digest('hex'), devices: (r.devices || []).map(d => d.device), law: !!r.law_extras });
+    }
+    out.summary = out.devices.map(d => ({ device: d.device, passed: d.passed, failed: d.failed, failedSteps: d.steps.filter(s => !s.pass).map(s => s.id), consoleErrors: (d.consoleErrors || []).length }));
+    const law = lawRecord(out, extras); law.merged_from = out.merged_from;
+    fs.mkdirSync(path.dirname(pf), { recursive: true }); fs.writeFileSync(pf, JSON.stringify(law, null, 1) + '\n');
+    console.log('LAW GATE: ' + law.gate + (law.failed.length ? ' (failed: ' + law.failed.join(', ') + ')' : '') + '; NOT EVALUATED: ' + law.not_evaluated.length + '; wrote ' + pf);
+    process.exit(law.gate === 'PASS' ? 0 : 1);
+  }
   fs.mkdirSync(OUT, { recursive: true });
   const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   const out = { url: URL0, outdir: OUT, generatedAt: new Date().toISOString(), devices: [] };

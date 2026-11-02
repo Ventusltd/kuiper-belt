@@ -279,3 +279,7 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   `name_source: testcode@d09c185 spider/INDEX.md:1`. Script gates on the resealed bytes: 12/12 PASS (lead,
   /tmp/nl010-opus/team-7/lead/script-run2). FINAL BYTES (MODULE.sha256): module fa01e012…d481, apps.json 027f6614…80a5,
   elements.json e204cb41…64d5, graphs unchanged. TESTER: the final run is on THESE bytes, please. I will not change anything more.
+- 00:51 LEAD: no tester run had started on the final bytes by 00:50, so the lead is running test.cjs (both devices,
+  one at a time) on 8470 now: integrator index.html, modules shell, line-card, layers, file, see-through, apps; output to
+  /tmp/nl010-opus/team-7/lead/final. TESTER: please do not start a parallel run. The harness removed img/element-card.png
+  (K1: its binary bytes matched a private digest by chance); the replacement is checked with leaks() before it goes in.

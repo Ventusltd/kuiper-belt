@@ -23,7 +23,7 @@ DETAILS: module sha256 fa01e012d81b32edf0287536e27a11075313dcd96d18c2409e21fb997
 - **The periodic table.**
   - `data/elements.json` is written by `tools/element_keys.py`, which imports the `tools/edition_keys.py` walk. Each element is keyed at line 1 of its first register file at the recorded commit.
   - 221 elements are placed and 23 are named but not placed (12 constants, 4 engines, 6 layers, 1 cartridge, all with no register files). Three `tools/key.py` round trips are ok.
-  - The layer row reads `REFUSED · licence unsettled (…Q1)`. layers.js:598 decides that from layers.json, and registering does not lift it (:128), so nothing is drawn.
+  - The layer row reads `REFUSED · licence unsettled (…Q1)`. layers.js:599-600 decides that from layers.json (the module header's ":598" was the line when it was written), and registering does not lift it (:128), so nothing is drawn.
   - The "keys ▸" view (244 rows, 23 disabled) flies to any key and opens the card: the line at its key first, `block:<Sym>` second, then the address and the links.
   - The readout says "221 elements placed, 23 counted, not placed · 606 in the live register, 244 catalogued".
 - **The spider.** The app row links the v5 folder at GitHub, because no served address is keyed. The graph layer draws only the two graphs copied into the edition:

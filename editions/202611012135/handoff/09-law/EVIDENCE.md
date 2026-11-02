@@ -332,3 +332,23 @@ C4-C7, C9-C11 are one-line key or fact fixes. No sentence of the roadmap is cont
 ## 11. Review of the lead's HANDOFF
 
 See the last section of this file (written after the review).
+
+## 5. Re-run at 00:54 UTC (HEAD `7966a47`), the folder as it stands
+
+`python3 tools/edition_check.py`: E1 PASS, E2 PASS (6 pending admission, NOT EVALUATED: layers, see-through,
+kuiper-shell, file, apps, drift), **E3 FAIL**, E4 PASS, E5 PASS, **E6 FAIL**, E7 PASS, E8 PASS, E9 PASS. E3 now: the
+integrator's re-cut `proof/edition-sha256.txt` lists 26 files, every one matching, none missing, none unlisted outside
+`handoff/`; the only failures are the 144 files under `handoff/` that it does not list (REQUESTS.md item 2: the law says
+every file but itself; if the owner rules `handoff/` out, the change is one condition in E3's completeness loop,
+`tools/edition_check.py`, and one sentence in LAW.md 9.1). E6 unchanged (REQUESTS.md item 1).
+
+## 6. The journey gate, run by the team 9 tester (Pixel 7, `--law`, port 8492, 23 min 3 s, ended 00:54 UTC)
+
+`android-journey.cjs` (the copy before the builder's review, 65,472 bytes) on the folder as served: report
+`/tmp/nl010-opus/team-9/tester/journey1/report.json`; re-merged with the reviewed script (`--merge`) into
+`/tmp/nl010-opus/team-9/lead/merge/real-p7.json`: gate **FAIL** on (a) (b) (d) (k) (l) (m); PASS (c) (e) (f) (g) (h)
+(j) (o) and the NL-009 extra steps; NOT EVALUATED (i) (landscape not run in this process; font scale not emulated) and
+(n). The law pass measured, at 360/393/412/430 px: bar title rows 2/2/2/2, smallest title hit box 30 px at each width
+(NL-009 01-bar.md:18 measured 29.0 px), "see through" on the page 0 times; with WebGL disabled the page says so in words
+(27 visible words). These are the base page's known reds without the shell (ADMISSIONS.md row 0: `load`, `see-through`),
+reproduced independently. No proof/ file was written (proof/ is the integrator's).
