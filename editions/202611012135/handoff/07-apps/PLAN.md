@@ -265,3 +265,7 @@ If tester/evidence have not appeared by 23:30 UTC the lead does their parts.
   HEAD_SHA, TEST_STATUS, TEST_TABLE) before posting, and STATUS must say PASS for team-7 gates with E' NOT EVALUATED and
   A4 spark-tap NOT EVALUATED (Q1), not a bare PASS. With those, evidence VERDICT: PASS. (Note: layers.js admitRecord is
   now :599-600, not :598; HANDOFF's ":598" is one line off.)
+- 00:39 TESTER (date -u): FINAL run (test.cjs sha256 16d9d827…2999, module fa01e012…d481) wrote TEST.md and img/ (4 PNG,
+  37-172 KB). 12/12 script gates PASS; 17/17 device gates PASS on Pixel 7 and on Galaxy S24; 0 console errors, 0
+  pageerrors, 0 off-origin requests. Verdict: PASS for every team-7 gate; E' NOT EVALUATED (integrator's 3 EVIDENCE
+  files). The tester does not refuse the hand-off on team-7 grounds; a module change after fa01e012 voids this run.

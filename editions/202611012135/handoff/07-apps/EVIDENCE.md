@@ -326,10 +326,12 @@ HANDOFF review (what must hold when it is posted):
    `line_text` lines (section 5); "nothing goes off-origin at load" (section 4).
 4. Wording: "The app row links the v5 folder at GitHub" is accurate; TEST.md's "A5 the spider row opens the dashboard"
    means it navigates to that GitHub folder, not a running dashboard (section 2); the HANDOFF does not overclaim it.
-5. The envelope and footer follow the brief (PROTOCOL envelope, ACTION REQUESTED, blank line, `---`, the generated
+5. "layers.js:598 decides that": layers.js moved one line after 23:49; `admitRecord` is now :599-600 (:128 unchanged).
+   Cite :599-600 or the function name.
+6. The envelope and footer follow the brief (PROTOCOL envelope, ACTION REQUESTED, blank line, `---`, the generated
    line). It posts no ACCEPT.
 
-VERDICT (evidence officer): PASS for evidence, keys and licences, on condition of items 1 and 2 above. Every claim in
+VERDICT (evidence officer): PASS for evidence, keys and licences, on condition of items 1, 2 and 5 above. Every claim in
 the HANDOFF has a key in this file or in TEST.md; every source licence is keyed or written DISCLOSED / NOT EVALUATED;
 the module header is correct (Apache-2.0, no See Through code, requires exact). Open for the owner: Q1 (elements), Q5
 (the two copied graphs), one-line GPL and unlicensed `line_text` quotes (section 5), and the K1 tokens already pushed in
