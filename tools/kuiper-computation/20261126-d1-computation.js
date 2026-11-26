@@ -7,16 +7,16 @@ const ID="computation", GEN="202611261720";
 // Only an independently trusted local launcher may inject this value BEFORE boot.
 // Never fetch a trust key from the runtime response or from the application origin.
 const trustConfigured=Object.hasOwn(window,"__KUIPER_RUNTIME_TRUST__");
-const launchTrust=trustConfigured?Object.freeze({spki_hex:window.__KUIPER_RUNTIME_TRUST__?.spki_hex,key_id:window.__KUIPER_RUNTIME_TRUST__?.key_id}):null;
+const launchTrust=trustConfigured?Object.freeze({spki_hex:window.__KUIPER_RUNTIME_TRUST__?.spki_hex,key_id:window.__KUIPER_RUNTIME_TRUST__?.key_id,algorithm:window.__KUIPER_RUNTIME_TRUST__?.algorithm}):null;
 let trustKeyPromise=null,originState="NOT CHECKED",dependencyEpoch=null,currentSigned=null;
 const hex=bytes=>Array.from(bytes,x=>x.toString(16).padStart(2,"0")).join("");
 const unhex=x=>{require(typeof x==="string"&&x.length%2===0&&/^[0-9a-f]+$/.test(x),"INVALID HEX");return Uint8Array.from(x.match(/../g),n=>parseInt(n,16));};
 async function trustedKey(){
- require(trustConfigured&&launchTrust&&shaShape(launchTrust.key_id)&&typeof launchTrust.spki_hex==="string"&&launchTrust.spki_hex.length===88,"TRUST PIN REQUIRED");
+ require(trustConfigured&&launchTrust&&launchTrust.algorithm==="ECDSA-P256-SHA256"&&shaShape(launchTrust.key_id)&&typeof launchTrust.spki_hex==="string"&&launchTrust.spki_hex.length===182&&launchTrust.spki_hex.startsWith("3059301306072a8648ce3d020106082a8648ce3d03010703420004"),"TRUST PIN REQUIRED");
  if(!trustKeyPromise)trustKeyPromise=(async()=>{
    const spki=unhex(launchTrust.spki_hex);
    require(await digest(spki)===launchTrust.key_id,"TRUST PIN MISMATCH");
-   return crypto.subtle.importKey("spki",spki,{name:"Ed25519"},false,["verify"]);
+   return crypto.subtle.importKey("spki",spki,{name:"ECDSA",namedCurve:"P-256"},false,["verify"]);
  })();
  return trustKeyPromise;
 }
@@ -24,9 +24,9 @@ async function signedPayload(raw,challenge,attempt,allowStale=false){
  const o=JSON.parse(raw);
  require(o&&Object.keys(o).sort().join(",")==="key_id,payload,signature"&&o.key_id===launchTrust.key_id&&typeof o.payload==="string"&&o.payload.length<=1000000&&typeof o.signature==="string"&&o.signature.length===128,"SIGNED RESPONSE FORMAT / KEY");
  const key=await trustedKey();
- require(await crypto.subtle.verify({name:"Ed25519"},key,unhex(o.signature),new TextEncoder().encode(o.payload)),"RUNTIME SIGNATURE INVALID");
+ require(await crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},key,unhex(o.signature),new TextEncoder().encode(o.payload)),"RUNTIME SIGNATURE INVALID");
  const body=JSON.parse(o.payload);
- require(body.auth_schema==="kuiper.runtime-origin.v1"&&body.challenge===challenge&&body.generation===attempt,"AUTHENTICATED RESPONSE REPLAY / GENERATION");
+ require(body.auth_schema==="kuiper.runtime-origin.p256.v1"&&body.challenge===challenge&&body.generation===attempt,"AUTHENTICATED RESPONSE REPLAY / GENERATION");
  require(Number.isSafeInteger(body.dependency_epoch)&&body.dependency_epoch>=0&&Array.isArray(body.stale_operations)&&body.stale_operations.every(x=>["orient","nearest-orient","electrical"].includes(x)),"DEPENDENCY STATE");
  if(!allowStale)require(!body.stale_operations.includes("orient"),"ORIENT DEPENDENCY STALE");
  return {raw:o.payload,body,key_id:o.key_id,signature:o.signature};
