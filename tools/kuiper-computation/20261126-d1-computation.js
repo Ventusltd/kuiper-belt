@@ -108,6 +108,10 @@ async function select(q,expr=[]){
     if(body.schema!=="kuiper.local-selection.v1"||body.manifest_sha256!=="821abf96d3e4c2f42e61d578dcefdfbda366c145b067f9cc9206fdaa91b6cf2d"||body.authority!=="SELECTION_ONLY_NO_EXECUTION")throw Error("EVIDENCE PIN");
     await authenticate(body,q,m);if(epoch!==generation)return;
     const {selected,unknown}=filterRows(m,body.rows,expr);unknownKeys=unknown;
+    if(q.property_name&&q.state&&q.state!=="UNKNOWN"){
+      const baseline=expected(m,{...q,state:"UNKNOWN"});
+      unknownKeys=[...new Set([...unknownKeys,...filterRows(m,baseline.rows,expr).selected.map(r=>r.key)])].sort((a,b)=>Number(a)-Number(b));
+    }
     const next=selected.map(r=>{
       const k=key(r.key), a=H.address(k);
       if(!a||a.silent)throw Error("UNISSUED KEY");
@@ -117,7 +121,7 @@ async function select(q,expr=[]){
       return {...r,key:k,xy:H.keyPlace(k)};
     });
     if(new Set(next.map(r=>r.key)).size!==next.length)throw Error("DUPLICATE");
-    rows=next;bonds=rows.length?body.bonds:[];proof=body.receipt_sha256;stageOperation=expr.some(x=>x.name)?null:body.stage_operation;selectedQuery=body.query;status="SELECTED · "+rows.length+" authenticated keys · NOT EXECUTED"+(expr.some(x=>x.name)?" · LOCAL EXPRESSION / SELECTION ONLY":"");
+    rows=next;bonds=rows.length?body.bonds:[];proof=expr.some(x=>x.name)?null:body.receipt_sha256;stageOperation=expr.some(x=>x.name)?null:body.stage_operation;selectedQuery=body.query;status="SELECTED · "+rows.length+" authenticated keys · NOT EXECUTED"+(expr.some(x=>x.name)?" · LOCAL EXPRESSION / SELECTION ONLY":"");
     if(unknownKeys.length)status+=" · "+unknownKeys.length+" indeterminate, not selected";
     ui.result.textContent=status;ui.stage.disabled=!stageOperation;ui.execute.disabled=stageOperation!=="orient"; if(rows.length)L.set(ID,true);
     for(const r of rows){
@@ -146,7 +150,7 @@ function draw(ctx){
 function install(k){
  K=k;H=k.hooks;L=k.modules.layers.api;
  const section=document.createElement("section");section.id="ky-computation";section.setAttribute("aria-label","Kuiper research selection");
- const css=element("style",document.head);css.textContent="#ky-computation{padding:8px;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere;color:#d8eeee}#ky-computation label{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0;align-items:center}#ky-computation input,#ky-computation select,#ky-computation button{max-width:100%;min-height:44px;box-sizing:border-box;background:#0b2029;color:#eafafa;border:1px solid #567985;border-radius:4px}#ky-computation ul{padding-left:18px}#ky-computation small{display:block}#ky-computation pre{white-space:pre-wrap;overflow-wrap:anywhere}";
+ const css=element("style",document.head);css.textContent="#ky-computation{padding:8px;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere;color:#d8eeee}#ky-computation label{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0;align-items:center}#ky-computation input,#ky-computation select,#ky-computation button{max-width:100%;min-height:44px;box-sizing:border-box;background:#0b2029;color:#eafafa;border:1px solid #567985;border-radius:4px}#ky-computation fieldset{min-width:0;max-width:100%;box-sizing:border-box}#ky-computation ul{padding-left:18px}#ky-computation small{display:block}#ky-computation pre{white-space:pre-wrap;overflow-wrap:anywhere}";
  const title=element("h3",section,"Computational selection — local research");
  const mode=field(section,"Instrument",[["machine","Machine predicate"],["vedic","VEDIC meaning"]]);
  const family=field(section,"Family / operation",[["Vg","Vg / ORIENT"],["Vn","Vn / nearest only"],["Vn+Vg","Nearest → ORIENT (four-key closure)"],["Vd","Vd / electrical"]]);
@@ -160,7 +164,7 @@ function install(k){
  const min=field(section,"Minimum key"),max=field(section,"Maximum key");min.inputMode=max.inputMode="numeric";
  const run=element("button",section,"Select");run.type="button";
  const reset=element("button",section,"Reset");reset.type="button";
- const result=element("p",section,"NOT SELECTED");result.setAttribute("role","status");
+ const result=element("p",section,"NOT SELECTED");result.setAttribute("role","status");result.setAttribute("aria-live","polite");
  const list=element("ul",section),bond=element("pre",section);
  const label=element("label",section,"Typed inputs (JSON; explicit user declaration)");const input=element("textarea",label);input.rows=4;input.style.cssText="width:100%;box-sizing:border-box;max-width:100%;background:#0b2029;color:#eafafa";
  const stage=element("button",section,"Stage B request");stage.type="button";stage.disabled=true;
@@ -210,7 +214,7 @@ function install(k){
    }catch(e){if(epoch===generation&&attempt===requestEpoch)stageStatus.textContent="REFUSED · "+e.message;}
  };
  for(const el of [mode,family,prop,state,min,max,inc,incState,exc,excState])el.addEventListener("change",()=>clear("INPUT CHANGED · NOT SELECTED"));
- reset.onclick=()=>{min.value=max.value=prop.value=state.value=inc.value=incState.value=exc.value=excState.value="";for(const e of coordFields)e.value="";clear();};
+ reset.onclick=()=>{min.value=max.value=prop.value=state.value=inc.value=incState.value=exc.value=excState.value="";for(const e of coordFields)e.value="";clear();mode.focus();};
  run.onclick=()=>{const q={mode:mode.value,family:family.value};for(const [n,e] of [["property_name",prop],["state",state],["key_min",min],["key_max",max]])if(e.value)q[n]=e.value;select(q,[{name:inc.value,state:incState.value,exclude:false},{name:exc.value,state:excState.value,exclude:true}]);};
  K.panels.add("wafer",section,"Computational selection");
  const wait=()=>{if(!L.get(ID)){setTimeout(wait,100);return;}L.register({id:ID,module:ID,load:async()=>{await H.wafer;const res=await fetch("/__kuiper/select?mode=machine&family=Vg"); if(!res.ok)throw Error("Evidence unavailable");const d=await res.json();if(d.manifest_sha256!=="821abf96d3e4c2f42e61d578dcefdfbda366c145b067f9cc9206fdaa91b6cf2d")throw Error("Evidence pin");return {placed:d.rows.length,total:d.rows.length,why:"Availability probe only; selection requires authenticated manifest"};},draw});};wait();

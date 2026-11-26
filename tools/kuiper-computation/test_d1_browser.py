@@ -11,18 +11,32 @@ with zipfile.ZipFile(os.environ["BONDS_ZIP"]) as z:
 assert hashlib.sha256(raw).hexdigest()=="821abf96d3e4c2f42e61d578dcefdfbda366c145b067f9cc9206fdaa91b6cf2d"
 out=Path("evidence");out.mkdir(exist_ok=True)
 results=[]
+engine=os.environ.get("D1_BROWSER","chromium")
+runtime=os.environ.get("D1_RUNTIME")=="1"
+manifest_fixture=not runtime or os.environ.get("D1_MANIFEST_FIXTURE")=="1"
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True,args=["--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"])
+    browser=p.chromium.launch(headless=True,args=["--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"]) if engine=="chromium" else p.webkit.launch(headless=True)
     for width,height in [(1280,800),(390,844)]:
         page=browser.new_page(viewport={"width":width,"height":height},has_touch=width<500,is_mobile=width<500)
         errors=[];page.on("pageerror",lambda e:errors.append(str(e)))
-        mode={"tamper":False,"manifest":False}
+        mode={"tamper":None,"manifest":True,"hold":False,"held":None}
         def route(r):
             url=r.request.url
-            if url==base+"/__kuiper/manifest":
+            if url==base+"/__kuiper/manifest" and (manifest_fixture or mode["manifest"]):
                 return r.fulfill(status=200,content_type="application/json",body=raw+(b" " if mode["manifest"] else b""))
+            if mode["hold"] and "/__kuiper/select?" in url:
+                mode["held"]=r;return
             if mode["tamper"] and "/__kuiper/select?" in url:
-                response=r.fetch();body=response.json();body["rows"][0]["source"]["first"]+=1
+                response=r.fetch();body=response.json()
+                case=mode["tamper"]
+                if case=="span":body["rows"][0]["source"]["first"]+=1
+                elif case=="key":body["rows"][0]["key"]=str(int(body["rows"][0]["key"])+1)
+                elif case=="blob":body["rows"][0]["source"]["blob"]="0"*40
+                elif case=="review":body["review"]="VERIFIED"
+                elif case=="bond":body["bonds"]=[{"from":"fake","to":"fake","state":"CONDITIONAL","conditions":[]}]
+                # Even a self-consistent rehash is not a trusted exact join.
+                body.pop("receipt_sha256")
+                body["receipt_sha256"]=hashlib.sha256(json.dumps(body,sort_keys=True,separators=(",",":"),ensure_ascii=True).encode()).hexdigest()
                 return r.fulfill(response=response,json=body)
             if url.startswith(base+"/") or url.startswith("blob:"):return r.continue_()
             return r.abort()
@@ -35,9 +49,23 @@ with sync_playwright() as p:
         select=panel.get_by_role("button",name="Select",exact=True)
         inspect=lambda:page.evaluate("KY.modules.computation.api.inspect()")
         wait_count=lambda n:page.wait_for_function("n=>KY.modules.computation.api.inspect().count===n",arg=n)
-        select.click();wait_count(2);a=inspect()["keys"]
-        panel.get_by_label("Instrument").select_option("vedic");select.click();wait_count(2)
-        assert inspect()["keys"]==a
+        select.click()
+        page.wait_for_function("KY.modules.computation.api.inspect().status.includes('MANIFEST BYTES MISMATCH')")
+        assert inspect()["count"]==0
+        mode["manifest"]=False
+        for family,count in [("Vg",2),("Vn",2),("Vn+Vg",4),("Vd",4)]:
+            panel.get_by_label("Family / operation").select_option(family)
+            panel.get_by_label("Instrument").select_option("machine")
+            select.focus();page.keyboard.press("Enter");wait_count(count);a=inspect()["keys"]
+            panel.get_by_label("Instrument").select_option("vedic");select.click();wait_count(count)
+            assert inspect()["keys"]==a
+            panel.get_by_label("Exclude property").select_option("runtime_effects")
+            panel.get_by_label("Exclude state").select_option("OBSERVED")
+            select.click()
+            page.wait_for_function("KY.modules.computation.api.inspect().status.includes('indeterminate')")
+            assert inspect()["count"]==0 and len(inspect()["unknownKeys"])==count
+            panel.get_by_role("button",name="Reset").click()
+            assert panel.get_by_label("Instrument").evaluate("el=>el===document.activeElement")
         panel.get_by_label("Family / operation").select_option("Vd")
         panel.get_by_label("Intersect property").select_option("runtime_effects")
         panel.get_by_label("Intersect state").select_option("UNKNOWN")
@@ -55,17 +83,29 @@ with sync_playwright() as p:
         assert inspect()["count"]==0 and len(inspect()["unknownKeys"])==4
         panel.get_by_role("button",name="Reset").click()
         panel.get_by_label("Family / operation").select_option("Vg")
-        mode["tamper"]=True;select.click()
-        page.wait_for_function("KY.modules.computation.api.inspect().status.startsWith('REFUSED')")
-        assert inspect()["count"]==0 and panel.get_by_role("button",name="Execute ORIENT").is_disabled()
-        mode["tamper"]=False;select.click();wait_count(2)
+        for case in ["span","key","blob","review","bond"]:
+            mode["tamper"]=case;select.click()
+            page.wait_for_function("KY.modules.computation.api.inspect().status.startsWith('REFUSED')")
+            assert inspect()["count"]==0 and panel.get_by_role("button",name="Execute ORIENT").is_disabled()
+        mode["tamper"]=None
+        mode["hold"]=True;select.click()
+        for _ in range(20):
+            if mode["held"]:break
+            page.wait_for_timeout(100)
+        assert mode["held"] is not None
+        panel.get_by_role("button",name="Reset").click()
+        mode["hold"]=False
+        mode["held"].continue_()
+        page.wait_for_timeout(300)
+        assert inspect()["count"]==0 and inspect()["status"]=="NOT SELECTED"
+        select.click();wait_count(2)
         assert panel.get_by_role("button",name="Execute ORIENT").is_enabled()
         panel.get_by_role("button",name="Execute ORIENT").click()
         assert panel.get_by_role("status").last.inner_text().startswith("REFUSED")
         for label,value in [("A longitude","0"),("A latitude","0"),("B longitude","0"),("B latitude","2")]:
             panel.get_by_label(label).fill(value)
         panel.get_by_role("button",name="Execute ORIENT").click()
-        if os.environ.get("D1_RUNTIME")=="1":
+        if runtime:
             page.wait_for_function("KY.modules.computation.api.inspect().execution==='REPORTED EXECUTED'",timeout=30000)
             first=json.loads(panel.locator("textarea[readonly]").input_value())
             assert abs(first["receipt"]["output"]["distance_km"]-222.63898158654712)<1e-8
@@ -82,10 +122,10 @@ with sync_playwright() as p:
             page.wait_for_function("KY.modules.computation.api.inspect().execution==='REFUSED'")
         assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
         assert page.evaluate("document.getElementById('ky-computation').scrollWidth<=document.getElementById('ky-computation').clientWidth+2")
-        page.screenshot(path=str(out/f"d1-{width}.png"),mask=[panel.locator("ul"),panel.locator("pre"),panel.locator("textarea[readonly]")])
+        page.screenshot(path=str(out/f"d1-{engine}-{width}.png"),mask=[panel.locator("ul"),panel.locator("pre"),panel.locator("textarea[readonly]")])
         panel.get_by_role("button",name="Reset").click();assert inspect()["count"]==0
         assert not errors,errors
-        results.append({"viewport":[width,height],"machine_vedic_parity":True,"intersection":True,"exclusion":True,"forged_occurrence_refused":True,"missing_inputs_refused":True,"reset":True,"overflow":False,"fresh_runtime":"TWO_ACTUAL_E1_REQUESTS" if os.environ.get("D1_RUNTIME")=="1" else "UNAVAILABLE_REFUSED","manifest_transport":"CI-only browser fixture; exact original bytes"})
+        results.append({"viewport":[width,height],"machine_vedic_parity":True,"intersection":True,"exclusion":True,"forged_occurrence_refused":True,"missing_inputs_refused":True,"reset":True,"overflow":False,"fresh_runtime":"TWO_ACTUAL_E1_REQUESTS" if runtime else "UNAVAILABLE_REFUSED","manifest_transport":"CI-only browser fixture; exact original bytes" if manifest_fixture else "actual E1 manifest route","engine":engine,"tamper_cases":5,"manifest_tamper":True,"stale_selection":True,"keyboard":True,"all_pattern_parity":True,"all_eight_unknown_exclusion":True})
         page.close()
     browser.close()
 (out/"d1-browser.json").write_text(json.dumps(results,indent=2))

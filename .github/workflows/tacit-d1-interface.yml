@@ -12,6 +12,10 @@ jobs:
   browser:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, webkit]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,7 +33,7 @@ jobs:
         run: |
           gh api repos/Ventusltd/vedic-/actions/artifacts/15138897783/zip > "$RUNNER_TEMP/bonds.zip"
           python -m pip install playwright==1.51.0
-          python -m playwright install chromium
+          python -m playwright install --with-deps ${{ matrix.browser }}
           node --check tools/kuiper-computation/20261126-d1-computation.js
       - name: Real predecessor server and successor cartridge
         run: |
@@ -38,10 +42,10 @@ jobs:
           python tools/kuiper_research.py "$RUNNER_TEMP/bonds.zip" --port 8765 > "$RUNNER_TEMP/server.log" 2>&1 &
           trap 'kill $! 2>/dev/null || true' EXIT
           for i in {1..30}; do curl -fsS 'http://127.0.0.1:8765/__kuiper/select?mode=machine&family=Vg' > /dev/null && break; sleep 1; done
-          BONDS_ZIP="$RUNNER_TEMP/bonds.zip" python tools/kuiper-computation/test_d1_browser.py
+          D1_BROWSER="${{ matrix.browser }}" BONDS_ZIP="$RUNNER_TEMP/bonds.zip" python tools/kuiper-computation/test_d1_browser.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: tacit-d1-browser-proof
+          name: tacit-d1-browser-proof-${{ matrix.browser }}
           path: evidence/
           if-no-files-found: warn
