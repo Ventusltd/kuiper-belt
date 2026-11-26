@@ -6,14 +6,17 @@ permissions:
   contents: read
 jobs:
   learning:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: |
+          mkdir -p /tmp/kuiper-d
           python -m pip install playwright==1.51.0
           python -m playwright install --with-deps chromium
       - name: Play the frozen learning edition using Chromium
