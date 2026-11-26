@@ -1,7 +1,7 @@
 """Real HTTP + actual B Bridge. No independent oracle claim; C1 owns it."""
 import hashlib,json,sys,unittest,urllib.request,urllib.error,subprocess,time,os
 from pathlib import Path
-from kuiper_runtime import bcanon,strict_body,ARCHIVE
+from kuiper_runtime import bcanon,strict_body,ARCHIVE,MANIFEST
 ROOT=Path(__file__).resolve().parents[1]
 BONDS=Path(sys.argv.pop(1));STAGE=Path(sys.argv.pop(1));OUT=Path(sys.argv.pop(1))
 BASE="http://127.0.0.1:8765"
@@ -47,20 +47,27 @@ class Checks(unittest.TestCase):
             self.assertEqual(r["generation"],n);self.assertEqual(r["selection_receipt_sha256"],e["selection_receipt_sha256"])
             self.assertEqual(r["request_sha256"],sha(e["request"]));self.assertEqual(r["archive_sha256"],ARCHIVE)
             receipt=r["receipt"];self.assertEqual(receipt["receipt_sha256"],sha({k:v for k,v in receipt.items() if k!="receipt_sha256"}))
+            v2=r["pattern_receipt"];self.assertEqual(v2["request_sha256"],sha(r["pattern_request"]))
+            self.assertEqual(v2["result_sha256"],sha(v2["result"]));self.assertEqual(v2["pattern_sha256"],sha(v2["pattern"]))
             self.assertEqual(post(e),(200,r));results.append(r)
         self.assertEqual(results[0]["pattern_sha256"],results[1]["pattern_sha256"])
         self.assertNotEqual(results[0]["request_sha256"],results[1]["request_sha256"])
+        self.assertEqual(results[0]["pattern_receipt"]["pattern_sha256"],results[1]["pattern_receipt"]["pattern_sha256"])
+        self.assertNotEqual(results[0]["pattern_receipt"]["result_sha256"],results[1]["pattern_receipt"]["result_sha256"])
         self.assertNotEqual(results[0]["output"],results[1]["output"])
         self.assertAlmostEqual(results[0]["output"]["initial_bearing_deg"],90)
         self.assertAlmostEqual(results[1]["output"]["initial_bearing_deg"],0)
         self.assertAlmostEqual(results[0]["output"]["distance_km"],222.638981586547,places=7)
         self.assertAlmostEqual(results[1]["output"]["distance_km"],333.958472379821,places=7)
-        OUT.write_text(json.dumps({"runtime":"ACTUAL_PREDECESSOR_B","fresh_results":results,"review":"PENDING_C1","peer_successor_assembly":"OPEN"},indent=2))
+        OUT.write_text(json.dumps({"runtime":"ACTUAL_B1_PATTERN_BRIDGE","fresh_results":results,"review":"PENDING_C1","peer_successor_assembly":"HTTP_VERIFIED_BROWSER_SEPARATE"},indent=2))
     def test_refusal(self):
         for f,op in (("Vd","electrical"),("Vn+Vg","nearest-orient")):
             status,r=post(envelope(f,op,{}))
             self.assertEqual(status,200,r);self.assertEqual(r["state"],"REFUSED")
             self.assertFalse(r["receipt"]["admission"]);self.assertIsNone(r["output"])
+    def test_raw_manifest(self):
+        raw=urllib.request.urlopen(BASE+'/__kuiper/manifest').read()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),MANIFEST)
     def test_manifest(self):
         e=envelope("Vg","orient",inputs(point(0,0),point(2,0)));e["request"]["manifest_sha256"]="0"*64
         self.assertEqual(post(e)[0],400)

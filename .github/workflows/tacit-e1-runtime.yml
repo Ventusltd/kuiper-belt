@@ -5,6 +5,7 @@ on:
       - 'tools/kuiper_runtime.py'
       - 'tools/kuiper_research.py'
       - 'tools/test_kuiper_runtime.py'
+      - 'tools/test_kuiper_runtime_browser.py'
       - '.github/workflows/tacit-e1-runtime.yml'
 permissions:
   contents: read
@@ -27,8 +28,17 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: Ventusltd/vedic-
-          ref: dbca4db3658850f421e8f7319b7cef7e540c1a46
+          ref: d9e49e45821ae1da72347fdc6e47647518101b75
           path: e1-acquire/b
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Ventusltd/kuiper-belt
+          ref: 5a2a1b1bb521d558137647ada73ebc6c348e987d
+          path: e1-acquire/d1
+          sparse-checkout: |
+            tools/kuiper-computation/20261126-d1-computation.js
+          sparse-checkout-cone-mode: false
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
@@ -45,7 +55,24 @@ jobs:
           p="$RUNNER_TEMP/e1-input"
           mkdir -p "$s" "$p" evidence
           mv e1-acquire/{factory,b} "$s/"
+          test "$(git -C e1-acquire/d1 rev-parse HEAD)" = 5a2a1b1bb521d558137647ada73ebc6c348e987d
+          test "$(git hash-object e1-acquire/d1/tools/kuiper-computation/20261126-d1-computation.js)" = 8ff4a3d4e2647f0934aa7685828eb70260ed4c6b
+          cp e1-acquire/d1/tools/kuiper-computation/20261126-d1-computation.js tools/kuiper-computation/202611261720-computation.js
+          mv e1-acquire/d1 "$RUNNER_TEMP/e1-d1"
           rmdir e1-acquire
+          gh api repos/Ventusltd/vedic-/actions/artifacts/15143370771/zip > "$s/a1.zip"
+          echo "5b3dc6d98ea6f3dec757263869d77a6261ce29d57ddce8a8659dfcd633ab1a86  $s/a1.zip" | sha256sum -c -
+          python - "$s" <<'PY'
+          import pathlib,sys,zipfile,hashlib
+          s=pathlib.Path(sys.argv[1])
+          with zipfile.ZipFile(s/"a1.zip") as z:
+              hits=[x for x in z.infolist() if x.filename.split("/")[-1]=="property-impact.json"]
+              assert len(hits)==1 and hits[0].file_size<=2_000_000
+              raw=z.read(hits[0]);assert hashlib.sha256(raw).hexdigest()=="1233591210b19b006bb5970ecc85bdf0e5951cc3bef92e5e670871a4da0ca9e3"
+              s.joinpath("a1-property-impact.json").write_bytes(raw)
+          PY
+          python -m pip install playwright==1.51.0
+          PLAYWRIGHT_BROWSERS_PATH="$RUNNER_TEMP/e1-browser" python -m playwright install chromium
           gh api repos/Ventusltd/vedic-/actions/artifacts/15138897783/zip > "$s/bonds.zip"
           echo "649209e8723af1efd4c73f85ebd90b524a2312907d8a5e24759c8bf72ad1f72a  $s/bonds.zip" | sha256sum -c -
           gh api repos/Ventusltd/vedic-/actions/artifacts/15126683549/zip > "$p/producer.zip"
@@ -81,8 +108,19 @@ jobs:
           ' bash "$(id -u)" "$(id -g)" "$PATH" "$s" "$p"
           sha256sum "$s/package.zip" evidence/runtime.json
           echo 'No live endpoint, source bytes, or package archive published.'
+      - name: Actual D1 browser to B1 runtime and A1 exact parity
+        run: |
+          set -euo pipefail
+          sudo unshare --net -- bash -c '
+            set -euo pipefail
+            ip link set lo up
+            exec setpriv --reuid "$1" --regid "$2" --clear-groups env -i PATH="$3" HOME=/nonexistent PLAYWRIGHT_BROWSERS_PATH="$4" PYTHONDONTWRITEBYTECODE=1 python -B tools/test_kuiper_runtime_browser.py "$5" evidence/browser.json
+          ' bash "$(id -u)" "$(id -g)" "$PATH" "$RUNNER_TEMP/e1-browser" "$RUNNER_TEMP/e1-stage"
+          sha256sum evidence/browser.json
       - uses: actions/upload-artifact@v4
         with:
           name: tacit-e1-sanitised-runtime-proof
-          path: evidence/runtime.json
+          path: |
+            evidence/runtime.json
+            evidence/browser.json
           if-no-files-found: error

@@ -4,7 +4,7 @@ from pathlib import Path
 
 MAX_BODY=32000
 FACTORY="2ccc717933f97e7d191dae85360559a12de7ed21"
-B_HEAD="dbca4db3658850f421e8f7319b7cef7e540c1a46"
+B_HEAD="d9e49e45821ae1da72347fdc6e47647518101b75"
 BONDS_ZIP="649209e8723af1efd4c73f85ebd90b524a2312907d8a5e24759c8bf72ad1f72a"
 MANIFEST="821abf96d3e4c2f42e61d578dcefdfbda366c145b067f9cc9206fdaa91b6cf2d"
 ARCHIVE="e83937c040499a7060b03ca2c4969e4414cdca48cb7f28a3ef9039f002486787"
@@ -85,14 +85,21 @@ class Runtime:
                 except subprocess.TimeoutExpired:
                     os.killpg(proc.pid,signal.SIGKILL);proc.communicate();return None,"TIMEOUT"
                 if proc.returncode:return None,"RUNTIME_REFUSED"
-            result=strict_body(out,128000)
+            proof=strict_body(out,128000)
+            fields(proof,("receipt","pattern_request","pattern_receipt"))
+            result=proof["receipt"];v2=proof["pattern_receipt"];q2=proof["pattern_request"]
+            require(v2["schema"]=="tacit-b.kuiper-execution.v2" and v2["legacy_receipt"]==result,"V2_LEGACY")
+            require({k:v for k,v in q2.items() if k not in ("schema","pattern_sha256")}=={k:v for k,v in q.items() if k!="schema"},"V2_REQUEST_BINDING")
+            require(v2["request_sha256"]==sha(bcanon(q2)) and v2["pattern_sha256"]==q2["pattern_sha256"]==sha(bcanon(v2["pattern"])),"V2_PATTERN_BINDING")
+            require(v2["result_sha256"]==sha(bcanon(v2["result"])) and v2["receipt_sha256"]==sha(bcanon({k:v for k,v in v2.items() if k!="receipt_sha256"})),"V2_RESULT_BINDING")
+            require(v2["result"]["output"]==result["output"] and v2["result"]["state"]==result["state"] and v2["rights"]=="BLOCKED","V2_RESULT")
             require(result["request_sha256"]==sha(bcanon(q)),"RUNTIME_REQUEST")
             require(result["receipt_sha256"]==sha(bcanon({k:v for k,v in result.items() if k!="receipt_sha256"})),"RUNTIME_RECEIPT")
             require(result["rights"]=="BLOCKED","RUNTIME_RIGHTS")
             if q["operation"]=="orient":
                 require(result["state"]=="EXECUTED_INTERNAL" and result["archive_sha256"]==ARCHIVE and result["descriptor_sha256"]==DESCRIPTOR and result["admission"] is True,"RUNTIME_ADMISSION")
             else:require(result["state"]=="REFUSED" and result["admission"] is False and result["output"] is None,"RUNTIME_REFUSAL")
-            return result,None
+            return proof,None
         except (OSError,ValueError,KeyError,TypeError,subprocess.SubprocessError):return None,"RUNTIME_UNAVAILABLE"
         finally:self.lock.release()
 def worker(stage,bonds):
@@ -104,13 +111,16 @@ def worker(stage,bonds):
     sys.path[:0]=[str(stage/"factory"/"tools"),str(stage/"b"/"tools")]
     import package_factory as f
     import typed_package_execution as t
-    from tacit_b_kuiper import Bridge
+    from tacit_b_patterns import PatternBridge
     from kuiper_select import Space
     q=strict_body(sys.stdin.buffer.read(MAX_BODY+1))
     require(q["operation"] in OPS,"OPERATION")
-    bridge=Bridge(f,t,Space,manifest_bytes(bonds),exact_file(stage/"package.zip",ARCHIVE),
+    bridge=PatternBridge(f,t,Space,manifest_bytes(bonds),exact_file(stage/"package.zip",ARCHIVE),
                   f.strict((stage/"build-receipt.json").read_bytes()),None,None,None)
-    print(f.canonical(bridge.execute(q,experiment=False)).decode(),end="")
+    q2=bridge.request_v2(q["operation"],q["inputs"])
+    require(q2["keys"]==q["keys"] and q2["manifest_sha256"]==q["manifest_sha256"],"V2_SELECTION")
+    r2=bridge.execute_raw(f.canonical(q2))
+    print(f.canonical({"receipt":r2["legacy_receipt"],"pattern_request":q2,"pattern_receipt":r2}).decode(),end="")
 def execute_envelope(space,body,runtime,match_receipt):
     fields(body,("request","query","selection_receipt_sha256","generation"))
     generation=body["generation"];require(type(generation) is int and 0<=generation<=2**53-1,"GENERATION")
@@ -123,10 +133,11 @@ def execute_envelope(space,body,runtime,match_receipt):
     base={"schema":"kuiper.local-execution.v1","generation":generation,"selection_receipt_sha256":body["selection_receipt_sha256"],
           "request_sha256":pending["request_sha256"],"pattern_sha256":pending["pattern_sha256"],"review":"PENDING_EXACT_REQUEST_REVIEW","rights":"BLOCKED"}
     if runtime is None:return 503,{**base,"state":"RUNTIME_UNAVAILABLE","receipt":None}
-    result,err=runtime.run(q)
+    proof,err=runtime.run(q)
     if err:return (429 if err=="BUSY" else 422 if err=="RUNTIME_REFUSED" else 503),{**base,"state":err,"receipt":None}
+    result=proof["receipt"]
     require(result["pattern_sha256"]==pending["pattern_sha256"],"RUNTIME_PATTERN")
-    return 200,{**base,"state":result["state"],"receipt":result,"output":result["output"],"archive_sha256":result["archive_sha256"]}
+    return 200,{**base,"state":result["state"],"receipt":result,"output":result["output"],"archive_sha256":result["archive_sha256"],"pattern_request":proof["pattern_request"],"pattern_receipt":proof["pattern_receipt"]}
 if __name__=="__main__":
     require(len(sys.argv)==4 and sys.argv[1]=="--worker","WORKER_ARGS")
     worker(Path(sys.argv[2]),Path(sys.argv[3]))

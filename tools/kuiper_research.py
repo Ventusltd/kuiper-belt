@@ -3,7 +3,7 @@ python tools/kuiper_research.py /path/to/bonds.zip --port 8765
 Open http://127.0.0.1:8765/editions/202611021201/
 """
 import argparse, hashlib, json, time, tracemalloc, zipfile, threading
-from kuiper_runtime import Runtime, strict_body, execute_envelope, MAX_BODY
+from kuiper_runtime import Runtime, strict_body, execute_envelope, MAX_BODY, manifest_bytes
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
@@ -105,7 +105,7 @@ def match_receipt(space,b,envelope):
     return {**pending,"state":out["state"],"scope":"HISTORICAL_PINNED_B_EXECUTION_NOT_LIVE","output":out["output"],
         "admission":out["admission"],"formal_gate":out["formal_gate"],"receipt_sha256":out["receipt_sha256"],
         "producer_proof_sha256":B_JSON,"review":"PENDING_EXACT_REQUEST_REVIEW"}
-def serve(space,port,b=None,runtime=None):
+def serve(space,port,b=None,runtime=None,manifest_raw=None):
     slots=threading.BoundedSemaphore(8)
     class LocalServer(ThreadingHTTPServer):
         def process_request(self,request,address):
@@ -150,7 +150,10 @@ def serve(space,port,b=None,runtime=None):
             if self.headers.get("Host")!=f"127.0.0.1:{port}" or self.headers.get("Sec-Fetch-Site")=="cross-site":
                 self.send_error(403);return
             u=urlsplit(self.path)
-            if u.path=="/__kuiper/select":
+            if u.path=="/__kuiper/manifest":
+                if manifest_raw is None:self.send_error(503)
+                else:self.send_bytes(manifest_raw)
+            elif u.path=="/__kuiper/select":
                 try:
                     q=parse_qs(u.query,strict_parsing=True,max_num_fields=8)
                     require(all(len(x)==1 for x in q.values()),"DUPLICATE_QUERY")
@@ -182,5 +185,5 @@ def main():
     p=argparse.ArgumentParser();p.add_argument("zip",type=Path);p.add_argument("--port",type=int,default=8765);p.add_argument("--benchmark",action="store_true");p.add_argument("--b-proof",type=Path);p.add_argument("--runtime-stage",type=Path)
     a=p.parse_args();t=time.perf_counter_ns();s=Space(load(a.zip));parse=time.perf_counter_ns()-t
     if a.benchmark:print(json.dumps({**benchmark(s),"local_zip_load_and_validation_ns":parse},sort_keys=True))
-    else:serve(s,a.port,load_b(a.b_proof),Runtime(a.runtime_stage,a.zip) if a.runtime_stage else None)
+    else:serve(s,a.port,load_b(a.b_proof),Runtime(a.runtime_stage,a.zip) if a.runtime_stage else None,manifest_bytes(a.zip))
 if __name__=="__main__":main()
