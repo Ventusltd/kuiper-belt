@@ -142,7 +142,7 @@ def serve(space,port,b=None,runtime=None,manifest_raw=None,origin=None):
                 body=strict_body(raw)
                 if self.path in ("/__kuiper/execute-auth","/__kuiper/status-auth"):
                     if origin is None:self.send_bytes(canonical({"state":"AUTH_UNAVAILABLE"}),status=503);return
-                    status,result=origin.handle(body,lambda args,enabled:execute_envelope(space,args,runtime if enabled else None,match_receipt),self.path=="/__kuiper/status-auth")
+                    status,result=origin.handle(body,lambda args,enabled,context:execute_envelope(space,args,runtime if enabled else None,match_receipt,context),self.path=="/__kuiper/status-auth")
                     self.send_bytes(canonical(result),status=status)
                 elif self.path=="/__kuiper/execute":
                     if origin is not None:self.send_bytes(canonical({"state":"AUTH_REQUIRED"}),status=403);return

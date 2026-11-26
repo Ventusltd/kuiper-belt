@@ -18,12 +18,20 @@ def envelope(family,operation,inputs,generation):
     return {"challenge":secrets.token_hex(32),"generation":generation,"query":s["query"],"selection_receipt_sha256":s["receipt_sha256"],
       "request":{"schema":"tacit-b.kuiper-request.v1","operation":operation,"manifest_sha256":s["manifest_sha256"],"keys":[r["key"] for r in s["rows"]],"inputs":inputs}}
 def points(lon,lat):return {"crs":"WGS84","unit":"degrees","point_a":{"longitude":0,"latitude":0},"point_b":{"longitude":lon,"latitude":lat}}
+def raw_to_der(raw):
+    assert len(raw)==64
+    parts=[]
+    for n in (raw[:32],raw[32:]):
+        v=n.lstrip(b"\x00") or b"\x00"
+        if v[0]&128:v=b"\x00"+v
+        parts.append(bytes([2,len(v)])+v)
+    body=b"".join(parts);return bytes([48,len(body)])+body
 def main():
     checks=[]
     def check(name,ok):assert ok,name;checks.append(name)
     with tempfile.TemporaryDirectory(prefix="e1-trust-",dir=stage) as tmp:
         tmp=Path(tmp);key=tmp/"private.pem";pub=tmp/"public.der";events=tmp/"events.json";rows=[]
-        openssl("genpkey","-algorithm","ED25519","-out",str(key));key.chmod(0o600)
+        openssl("genpkey","-algorithm","EC","-pkeyopt","ec_paramgen_curve:prime256v1","-out",str(key));key.chmod(0o600)
         pub.write_bytes(openssl("pkey","-in",str(key),"-pubout","-outform","DER"))
         pin=sha(pub.read_bytes())
         def write_events():
@@ -39,19 +47,20 @@ def main():
             def verify(wrapper,request):
                 assert wrapper["key_id"]==pin
                 raw=wrapper["payload"].encode("ascii");sig=bytes.fromhex(wrapper["signature"])
-                payload=tmp/"message";payload.write_bytes(raw);signature=tmp/"sig";signature.write_bytes(sig)
-                openssl("pkeyutl","-verify","-pubin","-keyform","DER","-inkey",str(pub),"-rawin","-in",str(payload),"-sigfile",str(signature))
+                payload=tmp/"message";payload.write_bytes(raw);signature=tmp/"sig";signature.write_bytes(raw_to_der(sig))
+                openssl("dgst","-sha256","-verify",str(pub),"-keyform","DER","-signature",str(signature),str(payload))
                 r=json.loads(raw);assert r["challenge"]==request["challenge"] and r["generation"]==request["generation"]
                 return r
             e=envelope("Vg","orient",points(0,2),1)
             status,wrap=post("/__kuiper/execute-auth",e);check("fresh_signed_http",status==200)
             r=verify(wrap,e);check("fresh_math",r["state"]=="EXECUTED_INTERNAL" and abs(r["output"]["distance_km"]-222.63898158654712)<1e-8)
             rid=r["pattern_receipt"]["receipt_sha256"]
+            bound=r["bound_receipt"];check("B1_context_bound",bound["context"]=={k:e[k] for k in ("challenge","generation","selection_receipt_sha256")} and bound["pattern_receipt"]==r["pattern_receipt"] and bound["receipt_sha256"]==sha(bcanon({k:v for k,v in bound.items() if k!="receipt_sha256"})))
             check("legacy_downgrade_refused",post("/__kuiper/execute",{k:v for k,v in e.items() if k!="challenge"})[0]==403)
             check("duplicate_challenge_refused",post("/__kuiper/execute-auth",e)[0]==400)
             check("cross_origin_refused",post("/__kuiper/execute-auth",e,"https://invalid.example")[0]==403)
             # Execute D1 own exact trusted UI regression before invalidating sources.
-            subprocess.run([sys.executable,"-B",str(stage/"d1-auth-browser.py")],check=True,timeout=240,env={**os.environ,"BONDS_ZIP":str(stage/"bonds.zip"),"D1_RUNTIME":"1","D1_BROWSER":"chromium","D1_TRUST_JSON":json.dumps({"spki_hex":pub.read_bytes().hex(),"key_id":pin})})
+            subprocess.run([sys.executable,"-B",str(stage/"d1-auth-browser.py")],check=True,timeout=240,env={**os.environ,"BONDS_ZIP":str(stage/"bonds.zip"),"D1_RUNTIME":"1","D1_BROWSER":"chromium","D1_TRUST_JSON":json.dumps({"spki_hex":pub.read_bytes().hex(),"key_id":pin,"algorithm":"ECDSA-P256-SHA256"})})
             check("D1_actual_authenticated_UI",True)
             Path("evidence/d1-browser.json").replace("evidence/d1-auth-browser.json")
             # Browser verifies using a key passed independently by the launch harness, not retrieved from server.
@@ -66,7 +75,7 @@ def main():
                   const w=await res.json(); if(mutate==='payload')w.payload=w.payload.replace('EXECUTED_INTERNAL','FORGED');
                   if(mutate==='key')w.key_id='0'.repeat(64);
                   if(mutate==='signature')w.signature='0'.repeat(128);
-                  const key=await crypto.subtle.importKey('spki',bytes(spki),{name:'Ed25519'},false,['verify']);
+                  const key=await crypto.subtle.importKey('spki',bytes(spki),{name:'ECDSA',namedCurve:'P-256'},false,['verify']);
                   if(w.key_id!==pin||hex(await crypto.subtle.digest('SHA-256',bytes(spki)))!==pin||!await crypto.subtle.verify({name:'Ed25519'},key,bytes(w.signature),new TextEncoder().encode(w.payload)))return {valid:false};
                   const r=JSON.parse(w.payload);return {valid:r.challenge===req.challenge&&r.generation===req.generation,body:r,status:res.status};
                 }"""

@@ -4,7 +4,7 @@ from pathlib import Path
 
 MAX_BODY=32000
 FACTORY="2ccc717933f97e7d191dae85360559a12de7ed21"
-B_HEAD="988e2293fd740ca434a9cf087fa873f841b7dc6f"
+B_HEAD="3c921cb913d35ad8bd8a0cf94fe9ede55fa0e529"
 BONDS_ZIP="649209e8723af1efd4c73f85ebd90b524a2312907d8a5e24759c8bf72ad1f72a"
 MANIFEST="821abf96d3e4c2f42e61d578dcefdfbda366c145b067f9cc9206fdaa91b6cf2d"
 ARCHIVE="e83937c040499a7060b03ca2c4969e4414cdca48cb7f28a3ef9039f002486787"
@@ -22,11 +22,11 @@ def unique(pairs):
         require(k not in out,"DUPLICATE_FIELD");out[k]=v
     return out
 def invalid_constant(x):raise ValueError("NONFINITE")
-def strict_body(raw,limit=MAX_BODY):
+def strict_body(raw,limit=MAX_BODY,max_depth=12):
     require(0<len(raw)<=limit,"BODY_SIZE")
     x=json.loads(raw.decode("utf-8"),object_pairs_hook=unique,parse_constant=invalid_constant)
     def validate(v,depth=0):
-        require(depth<=12,"DEPTH")
+        require(depth<=max_depth,"DEPTH")
         if type(v) is float:require(math.isfinite(v),"NONFINITE")
         elif type(v) is int:require(abs(v)<=2**53-1,"INTEGER_RANGE")
         elif type(v) is dict:
@@ -72,7 +72,7 @@ class Runtime:
         self.stage=stage.resolve();self.bonds=bonds.resolve()
         validate_stage(self.stage,self.bonds)
         self.lock=threading.BoundedSemaphore(1)
-    def run(self,q):
+    def run(self,q,context=None):
         if not self.lock.acquire(blocking=False):return None,"BUSY"
         try:
             # Process group bounds both Python and the Node child. No caller args,
@@ -81,18 +81,22 @@ class Runtime:
                     stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,
                     env={"PATH":os.environ["PATH"],"HOME":"/nonexistent","PYTHONDONTWRITEBYTECODE":"1"},
                     cwd=self.stage,start_new_session=True) as proc:
-                try:out,_=proc.communicate(bcanon(q),timeout=35)
+                try:out,_=proc.communicate(bcanon({"request":q,"context":context}),timeout=35)
                 except subprocess.TimeoutExpired:
                     os.killpg(proc.pid,signal.SIGKILL);proc.communicate();return None,"TIMEOUT"
                 if proc.returncode:return None,"RUNTIME_REFUSED"
-            proof=strict_body(out,128000)
-            fields(proof,("receipt","pattern_request","pattern_receipt"))
+            proof=strict_body(out,128000,24)
+            fields(proof,("receipt","pattern_request","pattern_receipt","bound_receipt") if context is not None else ("receipt","pattern_request","pattern_receipt"))
             result=proof["receipt"];v2=proof["pattern_receipt"];q2=proof["pattern_request"]
             require(v2["schema"]=="tacit-b.kuiper-execution.v2" and v2["legacy_receipt"]==result,"V2_LEGACY")
             require({k:v for k,v in q2.items() if k not in ("schema","pattern_sha256")}=={k:v for k,v in q.items() if k!="schema"},"V2_REQUEST_BINDING")
             require(v2["request_sha256"]==sha(bcanon(q2)) and v2["pattern_sha256"]==q2["pattern_sha256"]==sha(bcanon(v2["pattern"])),"V2_PATTERN_BINDING")
             require(v2["result_sha256"]==sha(bcanon(v2["result"])) and v2["receipt_sha256"]==sha(bcanon({k:v for k,v in v2.items() if k!="receipt_sha256"})),"V2_RESULT_BINDING")
             require(v2["result"]["output"]==result["output"] and v2["result"]["state"]==result["state"] and v2["rights"]=="BLOCKED","V2_RESULT")
+            if context is not None:
+                bound=proof["bound_receipt"]
+                require(bound["schema"]=="tacit-b.execution-context.v1" and bound["context"]==context and bound["request"]==q2 and bound["pattern_receipt"]==v2,"B1_CONTEXT")
+                require(bound["origin_authentication"]=="HOST_REQUIRED" and bound["rights"]=="BLOCKED" and bound["receipt_sha256"]==sha(bcanon({k:v for k,v in bound.items() if k!="receipt_sha256"})),"B1_CONTEXT_RECEIPT")
             require(result["request_sha256"]==sha(bcanon(q)),"RUNTIME_REQUEST")
             require(result["receipt_sha256"]==sha(bcanon({k:v for k,v in result.items() if k!="receipt_sha256"})),"RUNTIME_RECEIPT")
             require(result["rights"]=="BLOCKED","RUNTIME_RIGHTS")
@@ -113,15 +117,20 @@ def worker(stage,bonds):
     import typed_package_execution as t
     from tacit_b_patterns import PatternBridge
     from kuiper_select import Space
-    q=strict_body(sys.stdin.buffer.read(MAX_BODY+1))
+    wire=strict_body(sys.stdin.buffer.read(MAX_BODY+1));fields(wire,("request","context"));q=wire["request"];context=wire["context"]
     require(q["operation"] in OPS,"OPERATION")
     bridge=PatternBridge(f,t,Space,manifest_bytes(bonds),exact_file(stage/"package.zip",ARCHIVE),
                   f.strict((stage/"build-receipt.json").read_bytes()),None,None,None)
     q2=bridge.request_v2(q["operation"],q["inputs"])
     require(q2["keys"]==q["keys"] and q2["manifest_sha256"]==q["manifest_sha256"],"V2_SELECTION")
-    r2=bridge.execute_raw(f.canonical(q2))
-    print(f.canonical({"receipt":r2["legacy_receipt"],"pattern_request":q2,"pattern_receipt":r2}).decode(),end="")
-def execute_envelope(space,body,runtime,match_receipt):
+    if context is not None:
+        from tacit_b_convergence import bind_execution
+        bound=bind_execution(bridge,q2,context);r2=bound["pattern_receipt"]
+    else:r2=bridge.execute_raw(f.canonical(q2))
+    proof={"receipt":r2["legacy_receipt"],"pattern_request":q2,"pattern_receipt":r2}
+    if context is not None:proof["bound_receipt"]=bound
+    print(f.canonical(proof).decode(),end="")
+def execute_envelope(space,body,runtime,match_receipt,context=None):
     fields(body,("request","query","selection_receipt_sha256","generation"))
     generation=body["generation"];require(type(generation) is int and 0<=generation<=2**53-1,"GENERATION")
     fields(body["request"],("schema","operation","manifest_sha256","keys","inputs"))
@@ -133,11 +142,11 @@ def execute_envelope(space,body,runtime,match_receipt):
     base={"schema":"kuiper.local-execution.v1","generation":generation,"selection_receipt_sha256":body["selection_receipt_sha256"],
           "request_sha256":pending["request_sha256"],"pattern_sha256":pending["pattern_sha256"],"review":"PENDING_EXACT_REQUEST_REVIEW","rights":"BLOCKED"}
     if runtime is None:return 503,{**base,"state":"RUNTIME_UNAVAILABLE","receipt":None}
-    proof,err=runtime.run(q)
+    proof,err=runtime.run(q,context)
     if err:return (429 if err=="BUSY" else 422 if err=="RUNTIME_REFUSED" else 503),{**base,"state":err,"receipt":None}
     result=proof["receipt"]
     require(result["pattern_sha256"]==pending["pattern_sha256"],"RUNTIME_PATTERN")
-    return 200,{**base,"state":result["state"],"receipt":result,"output":result["output"],"archive_sha256":result["archive_sha256"],"pattern_request":proof["pattern_request"],"pattern_receipt":proof["pattern_receipt"]}
+    return 200,{**base,"state":result["state"],"receipt":result,"output":result["output"],"archive_sha256":result["archive_sha256"],"pattern_request":proof["pattern_request"],"pattern_receipt":proof["pattern_receipt"],**({"bound_receipt":proof["bound_receipt"]} if context is not None else {})}
 if __name__=="__main__":
     require(len(sys.argv)==4 and sys.argv[1]=="--worker","WORKER_ARGS")
     worker(Path(sys.argv[2]),Path(sys.argv[3]))

@@ -10,6 +10,22 @@ B1_SHA="a5540a0978117750fd54739e423dbd4e7c0150ce1eba81d5139609ed2db7ee97"
 def hex64(v):return type(v) is str and re.fullmatch("[0-9a-f]{64}",v) is not None
 def command(*args):
     return subprocess.check_output(["openssl",*args],timeout=5,stderr=subprocess.DEVNULL,env={"PATH":os.environ["PATH"],"HOME":"/nonexistent"})
+def der_to_raw(der):
+    # OpenSSL emits ASN.1 DER ECDSA; WebCrypto expects fixed-width IEEE P1363.
+    require(8<=len(der)<=72 and der[0]==48 and der[1]==len(der)-2,"SIGNATURE_DER")
+    i=2;out=[]
+    for _ in range(2):
+        require(i+2<=len(der) and der[i]==2,"SIGNATURE_INTEGER")
+        n=der[i+1];i+=2
+        require(1<=n<=33 and i+n<=len(der),"SIGNATURE_INTEGER_SIZE")
+        v=der[i:i+n];i+=n
+        require(not v[0]&128 and (len(v)==1 or v[0]!=0 or v[1]&128),"SIGNATURE_INTEGER_CANONICAL")
+        num=int.from_bytes(v,"big")
+        require(0<num<0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551,"SIGNATURE_SCALAR")
+        out.append(num.to_bytes(32,"big"))
+    require(i==len(der),"SIGNATURE_TRAILING")
+    return b"".join(out)
+
 class Origin:
     def __init__(self,key,stage,events):
         offline()
@@ -18,7 +34,7 @@ class Origin:
         require(stat.S_ISREG(st.st_mode) and st.st_uid==os.getuid() and not st.st_mode&0o077,"PRIVATE_KEY_MODE")
         require(not key.is_symlink(),"KEY_SYMLINK")
         self.spki=command("pkey","-in",str(self.key),"-pubout","-outform","DER")
-        require(len(self.spki)==44 and self.spki[:12].hex()=="302a300506032b6570032100","ED25519_ONLY")
+        require(len(self.spki)==91 and self.spki[:27].hex()=="3059301306072a8648ce3d020106082a8648ce3d03010703420004","P256_ONLY")
         self.key_id=sha(self.spki)
         self.events=events
         self.lock=threading.Lock();self.challenges=set();self.issued={};self.history=[];self.stale=set()
@@ -37,7 +53,7 @@ class Origin:
         fields(current,("schema","events"));require(current["schema"]=="kuiper.local-source-events.v1","EVENT_SCHEMA")
         rows=current["events"];require(type(rows) is list and len(rows)<=128 and rows[:len(self.history)]==self.history,"EVENT_ROLLBACK")
         # Ledger owns all source-to-pattern impact semantics. Validate the entire
-        # appended suffix first, then apply only trusted local events; no browser authority.
+        # appended events, fail closed on malformed input; no browser authority.
         for e in rows[len(self.history):]:
             require(type(e) is dict and e.get("kind") in ("source","presentation","property","closure"),"EVENT_KIND")
             if e["kind"]=="source":
@@ -50,7 +66,7 @@ class Origin:
         raw=bcanon(payload)
         with tempfile.TemporaryDirectory(prefix="kuiper-origin-") as tmp:
             path=Path(tmp)/"payload";path.write_bytes(raw)
-            sig=command("pkeyutl","-sign","-inkey",str(self.key),"-rawin","-in",str(path))
+            sig=der_to_raw(command("dgst","-sha256","-sign",str(self.key),str(path)))
         require(len(sig)==64,"SIGNATURE_SIZE")
         return {"payload":raw.decode("ascii"),"signature":sig.hex(),"key_id":self.key_id}
     def handle(self,body,execute,status_only=False):
@@ -74,12 +90,12 @@ class Origin:
                 # Existing exact selection/request checks execute even for stale operations,
                 # but never call the mathematical worker if the dependency is invalidated.
                 if op in self.stale:
-                    status,result=execute(args,False)
+                    status,result=execute(args,False,None)
                     result.update(state="STALE_DEPENDENCY",receipt=None)
                     status=409
                 else:
                     epoch=self.ledger.begin(op)
-                    status,result=execute(args,True)
+                    status,result=execute(args,True,{"generation":body["generation"],"selection_receipt_sha256":body["selection_receipt_sha256"],"challenge":challenge})
                     self.refresh()
                     if op in self.stale:
                         status=409;result={k:v for k,v in result.items() if k not in ("receipt","output","pattern_request","pattern_receipt","archive_sha256")}
@@ -90,4 +106,4 @@ class Origin:
                     if status==200 and result["state"]=="EXECUTED_INTERNAL":
                         require(len(self.issued)<4096 or rid in self.issued,"RECEIPT_LIMIT")
                         self.issued[rid]=op
-            return status,self.sign({**result,"auth_schema":"kuiper.runtime-origin.v1","challenge":challenge,"dependency_epoch":len(self.history),"stale_operations":sorted(self.stale)})
+            return status,self.sign({**result,"auth_schema":"kuiper.runtime-origin.p256.v1","challenge":challenge,"dependency_epoch":len(self.history),"stale_operations":sorted(self.stale)})
