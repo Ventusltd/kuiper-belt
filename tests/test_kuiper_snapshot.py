@@ -20,12 +20,15 @@ def fixture(second=False,missed=0):
 def counter(data,pin=PIN,status="measured"):
     m,c=s.verify_register(data)
     count=1 if status!="unavailable" else 0
-    target=2 if status=="partial" else 1
-    return s.canonical(dict(schema_version=1,calculation_version="kuiper-counter-v1",wafer_commit=pin,
+    repo_target=m["repositories"]
+    commit_target=m["commits"]
+    return s.canonical(dict(schema_version=1,calculation_version="kuiper-counter-v1",classification_policy="source-path-utf8-exact-v1",wafer_commit=pin,
+        wafer=dict(repositories=m["repositories"],commits=m["commits"],unissued_positions=str(m["unissued_keys"]),address_space=str(m["address_space"])),
         as_of_utc=c["indexed_utc"],inputs={p:s.digest(data[p]) for p in s.PATHS[:4]},
         metrics=dict(total_historical_line_occurrences=dict(status="measured",value=str(m["issued_keys"]),population="pinned_wafer_all_text"),
-        unique_code_lines=dict(status=status,value=None if not count else "2",population="public_pinned_wafer_source",coverage=dict(repositories_measured=count,repositories_target=target,commits_measured=count,commits_target=target)),
-        same_cohort_source_line_occurrences=dict(status=status,value=None if not count else "3",population="public_pinned_wafer_source_nonblank"))))
+        unique_code_lines=dict(status=status,value=None if not count else "2",population="public_pinned_wafer_source",coverage=dict(repositories_measured=repo_target if status=="measured" else count,repositories_target=repo_target,commits_measured=commit_target if status=="measured" else count,commits_target=commit_target)),
+        same_cohort_source_line_occurrences=dict(status=status,value=None if not count else "3",population="public_pinned_wafer_source_nonblank"),
+        current_standing_text_lines=dict(status="measured",value=c["lines"],population="pinned_standing_all_text",repositories=c["measured"],files=c["files"]))))
 
 class SnapshotTests(unittest.TestCase):
     def test_successive_and_nochange(self):
@@ -58,7 +61,7 @@ class SnapshotTests(unittest.TestCase):
         with self.assertRaises(ValueError): s.assemble(b,NEXT,previous=a)
     def test_partial_and_unavailable(self):
         for status in ("partial","unavailable"):
-            a=fixture()
+            a=fixture(status=="partial")
             self.assertEqual(s.assemble(a,PIN,counter(a,status=status))[0]["counter_status"],status)
     def test_hash_mismatch(self):
         a=fixture(); c=json.loads(counter(a));c["inputs"][s.PATHS[0]]="0"*64
@@ -69,6 +72,9 @@ class SnapshotTests(unittest.TestCase):
         with self.assertRaises(ValueError): s.verify_bundle(s.canonical(m),files)
     def test_duplicate_json(self):
         with self.assertRaises(ValueError): s.parse_json(b'{"a":1,"a":2}')
+    def test_false_complete_coverage(self):
+        a=fixture(True); c=json.loads(counter(a)); c["metrics"]["unique_code_lines"]["coverage"]["commits_target"]=1; c["metrics"]["unique_code_lines"]["coverage"]["commits_measured"]=1
+        with self.assertRaises(ValueError): s.assemble(a,PIN,s.canonical(c))
     def test_extra_member_refused(self):
         m,files=s.assemble(fixture(),PIN)
         files["evil.js"]=b"1"

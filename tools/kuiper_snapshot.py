@@ -130,6 +130,13 @@ def counter_gate(body, data, pin, meta, coverage):
     need(status in ("measured","partial","unavailable") and s["status"]==status, "unique status")
     need(u["population"]=="public_pinned_wafer_source" and s["population"]=="public_pinned_wafer_source_nonblank", "unique population")
     cov = u["coverage"]
+    named = {int(i) for i,name,_ in rows(data[PATHS[1]],3) if not name.startswith("unnamed-")}
+    named_commits = sum(int(r[2]) in named for r in rows(data[PATHS[0]],5))
+    need(cov["repositories_target"]==len(named) and cov["commits_target"]==named_commits, "coverage target does not match pinned named wafer")
+    need(c.get("classification_policy")=="source-path-utf8-exact-v1", "counter classification")
+    need(c.get("wafer")==dict(repositories=meta["repositories"],commits=meta["commits"],unissued_positions=str(meta["unissued_keys"]),address_space=str(meta["address_space"])), "counter wafer summary")
+    st=metrics["current_standing_text_lines"]
+    need(st.get("status")=="measured" and st.get("population")=="pinned_standing_all_text" and st.get("value")==coverage["lines"] and st.get("repositories")==coverage["measured"] and st.get("files")==coverage["files"], "counter standing summary")
     for noun in ("repositories","commits"):
         x,y = cov[noun+"_measured"],cov[noun+"_target"]
         need(type(x) is int and type(y) is int and 0<=x<=y, "unique coverage")
