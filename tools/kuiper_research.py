@@ -13,8 +13,8 @@ ED="/editions/202611021201/"
 MODULE="202611261720-computation.js"
 CODE=ROOT/"tools/kuiper-computation"/MODULE
 # VEDIC operation groups are explicit supported meanings; not free-text interpretation.
-MEANINGS={"Vg":(1,5),"Vn":(15,16),"Vd":(24,25,26,27)}
-OPERATIONS={"Vg":"orient","Vd":"electrical"}  # nearest closure awaits B exact contract
+MEANINGS={"Vg":(1,5),"Vn":(15,16),"Vd":(24,25,26,27),"Vn+Vg":(1,5,15,16)}
+OPERATIONS={"Vg":"orient","Vd":"electrical","Vn+Vg":"nearest-orient"}
 def selection(space,q):
     require(set(q)<= {"mode","family","property_name","state","key_min","key_max"},"UNKNOWN_QUERY_FIELD")
     mode=q.get("mode");family=q.get("family")
@@ -24,7 +24,7 @@ def selection(space,q):
         if k in filters:
             require(filters[k].isascii() and filters[k].isdigit() and len(filters[k])<=15,"INVALID_RANGE")
             filters[k]=int(filters[k])
-    if mode=="machine": keys=space.select(module=family,**filters)
+    if mode=="machine": keys=tuple(sorted(k for module in family.split("+") for k in space.select(module=module,**filters)))
     else:
         keys=tuple(sorted(k for n in MEANINGS[family] for k in space.select(meaning=f"GG2050-VEDIC-{n:06d}",**filters)))
     rows=[]
@@ -39,7 +39,7 @@ def selection(space,q):
         for b in space.bonds:
             if family=="Vd" and b["from"].split(".")[0] in ("voltageDropVolts","lossesWatts"):
                 bonds.append({"from":b["from"],"to":b["to"],"state":"CONDITIONAL","conditions":b.get("conditions")})
-            if family=="Vn" and b["from"].split(".")[0] in ("nearestSubstation","selected_location"):
+            if family in ("Vn","Vn+Vg") and b["from"].split(".")[0] in ("nearestSubstation","selected_location"):
                 bonds.append({"from":b["from"],"to":b["to"],"state":"CONDITIONAL","conditions":b.get("conditions")})
     result={"schema":"kuiper.local-selection.v1","manifest_sha256":JSON_SHA,"authority":"SELECTION_ONLY_NO_EXECUTION",
       "rows":rows,"bonds":bonds,"bond_scope":"FAMILY_CANDIDATES_NOT_PROVEN_SELECTED_ENDPOINTS","query":q,
