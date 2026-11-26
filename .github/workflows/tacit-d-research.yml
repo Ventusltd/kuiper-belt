@@ -29,7 +29,8 @@ jobs:
         run: |
           gh api repos/Ventusltd/vedic-/actions/artifacts/15138897783/zip > "$RUNNER_TEMP/bonds.zip"
           pip install playwright==1.51.0
-          python -m playwright install --with-deps chromium
+          mkdir -p evidence
+          python -m playwright install chromium
       - name: Offline CPU measurements and real Edition 12 Chromium replay
         run: |
           mkdir -p evidence
@@ -76,7 +77,13 @@ jobs:
                   page.wait_for_function("KY.modules.computation.api.inspect().count===2")
                   b=page.evaluate("KY.modules.computation.api.inspect()")
                   assert a["keys"]==b["keys"]
+                  panel.locator("textarea").first.fill('{"crs":"WGS84","unit":"degrees","point_a":{"longitude":0,"latitude":0},"point_b":{"longitude":1,"latitude":0}}')
+                  panel.get_by_role("button",name="Stage B request").click()
+                  page.wait_for_function("document.querySelector('#ky-computation textarea[readonly]').value.includes('tacit-b.kuiper-request.v1')")
+                  staged=json.loads(panel.locator("textarea[readonly]").input_value())
+                  assert staged["request"]["operation"]=="orient" and staged["request"]["keys"]==[str(k) for k in b["keys"]] and staged["execution"]=="NOT EXECUTED"
                   panel.locator("select").nth(1).select_option("Vd")
+                  assert panel.locator("textarea[readonly]").input_value()==""
                   panel.locator("select").nth(2).select_option("runtime_effects")
                   panel.locator("select").nth(3).select_option("UNKNOWN")
                   panel.get_by_role("button",name="Select",exact=True).click()
@@ -89,7 +96,7 @@ jobs:
                   panel.get_by_role("button",name="Reset").click()
                   assert page.evaluate("KY.modules.computation.api.inspect().count") == 0
                   assert not errors, errors
-                  results.append({"viewport":[width,height],"mode_parity":True,"unknown":True,"reset":True,"overflow":False,"rendering":"WebGL2 SwiftShader + original Canvas2D overlay","page_errors":len(errors)})
+                  results.append({"viewport":[width,height],"mode_parity":True,"staged_request":True,"unknown":True,"reset":True,"overflow":False,"rendering":"WebGL2 SwiftShader + original Canvas2D overlay","page_errors":len(errors)})
                   page.close()
               browser.close()
           Path("evidence/browser.json").write_text(json.dumps(results,indent=2))
