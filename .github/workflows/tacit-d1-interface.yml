@@ -1,0 +1,47 @@
+name: TACIT D1 authenticated research interface
+on:
+  pull_request:
+    paths:
+      - tools/kuiper-computation/20261126-d1-computation.js
+      - tools/kuiper-computation/test_d1_browser.py
+      - .github/workflows/tacit-d1-interface.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Stage pinned input and browser
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/Ventusltd/vedic-/actions/artifacts/15138897783/zip > "$RUNNER_TEMP/bonds.zip"
+          python -m pip install playwright==1.51.0
+          python -m playwright install chromium
+          node --check tools/kuiper-computation/20261126-d1-computation.js
+      - name: Real predecessor server and successor cartridge
+        run: |
+          cp tools/kuiper-computation/20261126-d1-computation.js tools/kuiper-computation/202611261720-computation.js
+          python tools/kuiper_select.py "$RUNNER_TEMP/bonds.zip" --self-test
+          python tools/kuiper_research.py "$RUNNER_TEMP/bonds.zip" --port 8765 > "$RUNNER_TEMP/server.log" 2>&1 &
+          trap 'kill $! 2>/dev/null || true' EXIT
+          for i in {1..30}; do curl -fsS 'http://127.0.0.1:8765/__kuiper/select?mode=machine&family=Vg' > /dev/null && break; sleep 1; done
+          BONDS_ZIP="$RUNNER_TEMP/bonds.zip" python tools/kuiper-computation/test_d1_browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tacit-d1-browser-proof
+          path: evidence/
+          if-no-files-found: warn
