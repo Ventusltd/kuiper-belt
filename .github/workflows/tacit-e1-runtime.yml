@@ -1,0 +1,235 @@
+name: TACIT E1 local runtime integration
+on:
+  pull_request:
+    paths:
+      - 'tools/kuiper_runtime.py'
+      - 'tools/kuiper_origin.py'
+      - 'tools/kuiper_vedic.py'
+      - 'tools/test_kuiper_vedic.py'
+      - 'tools/test_kuiper_origin.py'
+      - 'tools/kuiper_research.py'
+      - 'tools/test_kuiper_runtime.py'
+      - 'tools/test_kuiper_runtime_browser.py'
+      - '.github/workflows/tacit-e1-runtime.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  runtime:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 32
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Ventusltd/vedic-
+          ref: 2ccc717933f97e7d191dae85360559a12de7ed21
+          path: e1-acquire/factory
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Ventusltd/vedic-
+          ref: 3c921cb913d35ad8bd8a0cf94fe9ede55fa0e529
+          path: e1-acquire/b
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Ventusltd/kuiper-belt
+          ref: dd55e05e789f2fdc4163f9a84046a8f71c8f309e
+          path: e1-acquire/d1
+          sparse-checkout: |
+            tools/kuiper-computation/20261126-d1-computation.js
+            tools/kuiper-computation/test_d1_browser.py
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Ventusltd/vedic-
+          ref: 46d21c7ef45c1133d1ef24039a79b8dd9978d667
+          path: e1-acquire/a1
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Ventusltd/kuiper-belt
+          ref: af78cdec7a3adbcf13f742f80d7b654abff0f7ce
+          path: e1-acquire/d1-auth
+          sparse-checkout: |
+            tools/kuiper-computation/20261126-d1-computation.js
+            tools/kuiper-computation/test_d1_browser.py
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Ventusltd/vedic-
+          ref: 8e3dff7c905095349843c6b5341766019a67ee82
+          path: e1-acquire/a17
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Ventusltd/vedic-
+          ref: 1bdea5ffa295effa0417d22f4dd37b381da9e18b
+          path: e1-acquire/b17
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Ventusltd/kuiper-belt
+          ref: 8c1d5c509284e5c9b75d7c3255d338bea0536362
+          path: e1-acquire/d17
+          sparse-checkout: |
+            tools/kuiper-computation/20261126-d1-computation.js
+            tools/kuiper-computation/test_d1_browser.py
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Acquire fixed reviewed inputs, never caller-selected
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          s="$RUNNER_TEMP/e1-stage"
+          p="$RUNNER_TEMP/e1-input"
+          mkdir -p "$s" "$p" "$s/browser-home" evidence
+          mv e1-acquire/{factory,b} "$s/"
+          test "$(git -C e1-acquire/d1 rev-parse HEAD)" = dd55e05e789f2fdc4163f9a84046a8f71c8f309e
+          test "$(git hash-object e1-acquire/d1/tools/kuiper-computation/20261126-d1-computation.js)" = 26485d0689c6aeccad1c1401243093d9ec47d3a3
+          cp e1-acquire/d1/tools/kuiper-computation/20261126-d1-computation.js tools/kuiper-computation/202611261720-computation.js
+          test "$(git hash-object e1-acquire/d1/tools/kuiper-computation/test_d1_browser.py)" = 6c45e3ea4ee61f5add23a1b48bee8855ed201d6a
+          cp e1-acquire/d1/tools/kuiper-computation/test_d1_browser.py "$s/d1-browser.py"
+          mv e1-acquire/d1 "$RUNNER_TEMP/e1-d1"
+          mv e1-acquire/a1 "$s/a1"
+          test "$(git -C e1-acquire/d1-auth rev-parse HEAD)" = af78cdec7a3adbcf13f742f80d7b654abff0f7ce
+          test "$(git hash-object e1-acquire/d1-auth/tools/kuiper-computation/20261126-d1-computation.js)" = e470d8041b9be7760cc525197b4a3c2901592665
+          test "$(git hash-object e1-acquire/d1-auth/tools/kuiper-computation/test_d1_browser.py)" = 0d1eb49e6ff740fc8645a9483536866e00757200
+          cp e1-acquire/d1-auth/tools/kuiper-computation/20261126-d1-computation.js "$s/d1-auth.js"
+          cp e1-acquire/d1-auth/tools/kuiper-computation/test_d1_browser.py "$s/d1-auth-browser.py"
+          mv e1-acquire/d1-auth "$RUNNER_TEMP/e1-d1-auth"
+          mv e1-acquire/{a17,b17} "$s/"
+          test "$(git -C e1-acquire/d17 rev-parse HEAD)" = 8c1d5c509284e5c9b75d7c3255d338bea0536362
+          test "$(git hash-object e1-acquire/d17/tools/kuiper-computation/20261126-d1-computation.js)" = 42dd54673245f736a102ce8792efa4a3da252f0c
+          test "$(git hash-object e1-acquire/d17/tools/kuiper-computation/test_d1_browser.py)" = 41e0f173d91b0696488dd6fd2969e7a1c6849cd7
+          cp e1-acquire/d17/tools/kuiper-computation/20261126-d1-computation.js "$s/d17.js"
+          cp e1-acquire/d17/tools/kuiper-computation/test_d1_browser.py "$s/d17-browser.py"
+          mv e1-acquire/d17 "$RUNNER_TEMP/e1-d17"
+          rmdir e1-acquire
+          python -B "$s/a17/tools/tacit_a1_semantics.py" acquire --root "$s/semantics"
+          gh api repos/Ventusltd/vedic-/actions/artifacts/15140897950/zip > "$s/impact.zip"
+          gh api repos/Ventusltd/vedic-/actions/artifacts/15140134078/zip > "$s/b-final.zip"
+          gh api repos/Ventusltd/kuiper-belt/actions/artifacts/15141534328/zip > "$s/e1.zip"
+          git merge-base --is-ancestor e625da97e76a7d3b99361e01767e0fef0984c445 HEAD
+          git diff --name-only e625da97e76a7d3b99361e01767e0fef0984c445 HEAD > "$s/candidate-changes.txt"
+          python - "$s/candidate-changes.txt" <<'PY'
+          import pathlib,sys
+          actual=set(pathlib.Path(sys.argv[1]).read_text().splitlines())
+          assert actual=={".github/workflows/tacit-e1-runtime.yml","tools/kuiper_research.py","tools/kuiper_runtime.py","tools/test_kuiper_runtime.py","tools/test_kuiper_runtime_browser.py","tools/TACIT-E1-RUNTIME.md","tools/kuiper_origin.py","tools/test_kuiper_origin.py","tools/kuiper_vedic.py","tools/test_kuiper_vedic.py"}, actual
+          PY
+          gh api repos/Ventusltd/vedic-/actions/artifacts/15142906371/zip > "$s/b1.zip"
+          echo "77561125ed5829483f30f84391c9998a21915654737fbfa34ca336b43686dbe5  $s/b1.zip" | sha256sum -c -
+          python - "$s" <<'PY'
+          import pathlib,sys,zipfile,hashlib
+          s=pathlib.Path(sys.argv[1])
+          with zipfile.ZipFile(s/"b1.zip") as z:
+              hits=[x for x in z.infolist() if x.filename.split("/")[-1]=="tacit-b1-patterns.json"]
+              assert len(hits)==1 and hits[0].file_size<=2_000_000
+              raw=z.read(hits[0]);assert hashlib.sha256(raw).hexdigest()=="a5540a0978117750fd54739e423dbd4e7c0150ce1eba81d5139609ed2db7ee97"
+              s.joinpath("b1-patterns.json").write_bytes(raw)
+          PY
+          gh api repos/Ventusltd/vedic-/actions/artifacts/15143370771/zip > "$s/a1.zip"
+          echo "5b3dc6d98ea6f3dec757263869d77a6261ce29d57ddce8a8659dfcd633ab1a86  $s/a1.zip" | sha256sum -c -
+          python - "$s" <<'PY'
+          import pathlib,sys,zipfile,hashlib
+          s=pathlib.Path(sys.argv[1])
+          with zipfile.ZipFile(s/"a1.zip") as z:
+              hits=[x for x in z.infolist() if x.filename.split("/")[-1]=="property-impact.json"]
+              assert len(hits)==1 and hits[0].file_size<=2_000_000
+              raw=z.read(hits[0]);assert hashlib.sha256(raw).hexdigest()=="1233591210b19b006bb5970ecc85bdf0e5951cc3bef92e5e670871a4da0ca9e3"
+              s.joinpath("a1-property-impact.json").write_bytes(raw)
+          PY
+          python -m pip install playwright==1.51.0
+          PLAYWRIGHT_BROWSERS_PATH="$RUNNER_TEMP/e1-browser" python -m playwright install --with-deps chromium webkit
+          gh api repos/Ventusltd/vedic-/actions/artifacts/15138897783/zip > "$s/bonds.zip"
+          echo "649209e8723af1efd4c73f85ebd90b524a2312907d8a5e24759c8bf72ad1f72a  $s/bonds.zip" | sha256sum -c -
+          gh api repos/Ventusltd/vedic-/actions/artifacts/15126683549/zip > "$p/producer.zip"
+          python - "$p" <<'PY'
+          import pathlib,sys,zipfile,hashlib
+          p=pathlib.Path(sys.argv[1])
+          assert p.joinpath("producer.zip").stat().st_size<=8_000_000
+          with zipfile.ZipFile(p/"producer.zip") as z:
+              for src,dest,digest in [("source-receipt/receipt.json","receipt.json","83147e90c0f0831ee1f82ce5e721a3521dc843421a96ae9cba3425343d0b3c19"),("source-receipt/v9-geodesy.mjs","module.mjs","af9b5a8796b51a1e4368491b98961a197adec539f2fa0f3ed226552a876864bb")]:
+                  assert z.namelist().count(src)==1 and z.getinfo(src).file_size<=2_000_000
+                  raw=z.read(src);assert hashlib.sha256(raw).hexdigest()==digest
+                  p.joinpath(dest).write_bytes(raw)
+          PY
+          curl -fsSL --max-time 60 --max-filesize 2097152 https://raw.githubusercontent.com/Ventusltd/ventus-grid-engine/487ec7bd38dfa5aecb1c75da53b4a866ab2101cb/LICENSE -o "$p/LICENSE"
+          curl -fsSL --max-time 60 --max-filesize 2097152 https://raw.githubusercontent.com/Ventusltd/vedic-/2adc1fa9c52f1d242e601b1580927996e7cb31da/tools/package_builder.py -o "$p/prototype.py"
+          test "$(git hash-object "$p/LICENSE")" = d645695673349e3947e8e5ae42332d0ac3164cd7
+          test "$(git hash-object "$p/prototype.py")" = 63849940adf32580e5c3aab4ea9dc2b36a35c319
+      - name: Reproduce admitted archive and actual HTTP execution inside offline namespace
+        run: |
+          set -euo pipefail
+          s="$RUNNER_TEMP/e1-stage"
+          p="$RUNNER_TEMP/e1-input"
+          mkdir "$p/out"
+          sudo unshare --net -- bash -c '
+            set -euo pipefail
+            ip link set lo up
+            exec setpriv --reuid "$1" --regid "$2" --clear-groups env -i PATH="$3" HOME=/nonexistent PYTHONDONTWRITEBYTECODE=1 bash -c "
+              set -euo pipefail
+              python -B \"\$1/factory/tools/package_factory.py\" build --descriptor \"\$1/factory/packages/factory/admissions/orient.json\" --inputs \"\$2\" --out \"\$2/out/package.zip\" > \"\$1/build-receipt.json\"
+              mv \"\$2/out/package.zip\" \"\$1/package.zip\"
+              python -B tools/test_kuiper_runtime.py \"\$1/bonds.zip\" \"\$1\" evidence/runtime.json
+            " bash "$4" "$5"
+          ' bash "$(id -u)" "$(id -g)" "$PATH" "$s" "$p"
+          sha256sum "$s/package.zip" evidence/runtime.json
+          echo 'No live endpoint, source bytes, or package archive published.'
+      - name: Actual D1 browser to B1 runtime and A1 exact parity
+        run: |
+          set -euo pipefail
+          sudo unshare --net -- bash -c '
+            set -euo pipefail
+            ip link set lo up
+            exec setpriv --reuid "$1" --regid "$2" --clear-groups env -i PATH="$3" HOME="$5/browser-home" PLAYWRIGHT_BROWSERS_PATH="$4" PYTHONDONTWRITEBYTECODE=1 python -B tools/test_kuiper_runtime_browser.py "$5" evidence/browser.json
+          ' bash "$(id -u)" "$(id -g)" "$PATH" "$RUNNER_TEMP/e1-browser" "$RUNNER_TEMP/e1-stage"
+          sha256sum evidence/browser.json
+      - name: Authenticated runtime origin and live selective invalidation
+        run: |
+          set -euo pipefail
+          cp "$RUNNER_TEMP/e1-stage/d1-auth.js" tools/kuiper-computation/202611261720-computation.js
+          sudo unshare --net -- bash -c '
+            set -euo pipefail
+            ip link set lo up
+            exec setpriv --reuid "$1" --regid "$2" --clear-groups env -i PATH="$3" HOME="$5/browser-home" PLAYWRIGHT_BROWSERS_PATH="$4" PYTHONDONTWRITEBYTECODE=1 python -B tools/test_kuiper_origin.py "$5" evidence/origin.json
+          ' bash "$(id -u)" "$(id -g)" "$PATH" "$RUNNER_TEMP/e1-browser" "$RUNNER_TEMP/e1-stage"
+          sha256sum evidence/origin.json
+      - name: Actual VEDIC compound instruction via signed browser runtime
+        run: |
+          set -euo pipefail
+          cp "$RUNNER_TEMP/e1-stage/d17.js" tools/kuiper-computation/202611261720-computation.js
+          sudo unshare --net -- bash -c '
+            set -euo pipefail
+            ip link set lo up
+            exec setpriv --reuid "$1" --regid "$2" --clear-groups env -i PATH="$3" HOME="$5/browser-home" PLAYWRIGHT_BROWSERS_PATH="$4" PYTHONDONTWRITEBYTECODE=1 python -B tools/test_kuiper_vedic.py "$5" evidence/vedic.json
+          ' bash "$(id -u)" "$(id -g)" "$PATH" "$RUNNER_TEMP/e1-browser" "$RUNNER_TEMP/e1-stage"
+          sha256sum evidence/vedic.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tacit-e1-sanitised-runtime-proof
+          path: |
+            evidence/runtime.json
+            evidence/browser.json
+            evidence/d1-browser.json
+            evidence/origin.json
+            evidence/d1-auth-browser.json
+            evidence/d1-auth-webkit.json
+            evidence/vedic.json
+            evidence/d17-chromium.json
+            evidence/d17-webkit.json
+          if-no-files-found: error
