@@ -29,7 +29,7 @@ async function select(q){
     });
     if(new Set(next.map(r=>r.key)).size!==next.length)throw Error("DUPLICATE");
     rows=next;bonds=body.bonds;proof=body.receipt_sha256;status="SELECTED · "+rows.length+" keys · NOT EXECUTED";
-    ui.result.textContent=status;
+    ui.result.textContent=status; if(rows.length)L.set(ID,true);
     for(const r of rows){
       const li=element("li",ui.list);
       element("span",li,r.key+" · "+r.meaning+" · "+r.module+" · "+r.evidence);
@@ -67,9 +67,8 @@ function install(k){
  reset.onclick=()=>{min.value=max.value=prop.value=state.value="";clear();};
  run.onclick=()=>{const q={mode:mode.value,family:family.value};for(const [n,e] of [["property_name",prop],["state",state],["key_min",min],["key_max",max]])if(e.value)q[n]=e.value;select(q);};
  K.panels.add("wafer",section,"Computational selection");
- const wait=()=>{if(!L.get(ID)){setTimeout(wait,100);return;}L.register({id:ID,module:ID,load:async()=>{await H.wafer;return {placed:8,total:8,why:"Pinned local cohort"};},draw});};wait();
+ const wait=()=>{if(!L.get(ID)){setTimeout(wait,100);return;}L.register({id:ID,module:ID,load:async()=>{await H.wafer;const res=await fetch("/__kuiper/select?mode=machine&family=Vg"); if(!res.ok)throw Error("Evidence unavailable");const d=await res.json();if(d.manifest_sha256!=="821abf96d3e4c2f42e61d578dcefdfbda366c145b067f9cc9206fdaa91b6cf2d")throw Error("Evidence pin");return {placed:d.rows.length,total:d.rows.length,why:"Pinned local cohort probe"};},draw});};wait();
  return Object.freeze({inspect,select,clear});
 }
-Kdummy();
-function Kdummy(){window.KY.register({schema:"kuiper.module.v1",id:ID,generation:GEN,requires,provides:[ID],install,inspect});}
+window.KY.register({schema:"kuiper.module.v1",id:ID,generation:GEN,requires,provides:[ID],install,inspect});
 })();
