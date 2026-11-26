@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "calculation_version": "kuiper-counter-v1",
+  "classification_policy": "source-path-utf8-exact-v1",
+  "wafer_commit": "f7a4cb9e3a764a72b7133bb275bb5387ea083be2",
+  "as_of_utc": "2026-11-26T17:02:58Z",
+  "inputs": {},
+  "wafer": {
+    "repositories": 101,
+    "commits": 16774,
+    "unissued_positions": "18908364000",
+    "address_space": "116449247985"
+  },
+  "metrics": {
+    "total_historical_line_occurrences": {
+      "status": "measured",
+      "value": "97540883985",
+      "population": "pinned_wafer_all_text"
+    },
+    "unique_code_lines": {
+      "status": "unavailable",
+      "value": null,
+      "population": "public_pinned_wafer_source",
+      "coverage": {
+        "repositories_measured": 0,
+        "repositories_target": 95,
+        "commits_measured": 0,
+        "commits_target": 0
+      }
+    },
+    "same_cohort_source_line_occurrences": {
+      "status": "unavailable",
+      "value": null,
+      "population": "public_pinned_wafer_source_nonblank"
+    },
+    "current_standing_text_lines": {
+      "status": "measured",
+      "value": "58416344",
+      "population": "pinned_standing_all_text",
+      "repositories": 84,
+      "files": 91302
+    }
+  },
+  "fixture_only": true
+}

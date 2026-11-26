@@ -1,53 +1,57 @@
 name: engine
-
-# The engine that runs with nobody paying and nobody watching. On a timer, on GitHub's machine, it
-# checks the repository, measures every PUBLIC repository of the estate, and commits what it found.
-# It uses no assistant and no paid credit. If every other machine is switched off, this still runs.
 on:
   schedule:
     - cron: '17 */6 * * *'
   workflow_dispatch:
-
 permissions:
   contents: write
-
 concurrency:
   group: engine
   cancel-in-progress: false
-
 jobs:
   harvest:
-    runs-on: ubuntu-latest
-    timeout-minutes: 80
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Check first, and fail closed
+      - name: Check first, fail closed
         run: python tools/ci_check.py
-      - name: Measure the public estate
+      - name: Measure public estate
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: python tools/harvest.py
-      - name: Check again with the new data in place
+      - name: Check standing
         run: python tools/ci_check.py
-      - name: Grow the wafer by every public commit since its rim
+      - name: Grow wafer
         timeout-minutes: 30
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: python tools/wafer_topup.py
-      - name: Check the grown wafer
+      - name: Check permanent register
         run: python tools/ci_check.py
-      - name: Commit the measurement
+      - name: Assemble a single verified snapshot and publish atomically
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          git config user.name "kuiper-engine"
-          git config user.email "actions@users.noreply.github.com"
+          set -euo pipefail
+          base=$(git rev-parse HEAD)
+          git config user.name kuiper-engine
+          git config user.email actions@users.noreply.github.com
           git add cosmos/standing.tsv cosmos/pulse.tsv cosmos/wafer.tsv cosmos/repos.tsv cosmos/wafer-meta.json
-          git diff --cached --quiet && exit 0
-          git commit -q -m "engine: lines standing and the wafer grown, measured by GitHub Actions"
-          git pull -q --rebase --autostash origin "${GITHUB_REF_NAME}"
-          git push -q origin "HEAD:${GITHUB_REF_NAME}"
+          if ! git diff --cached --quiet; then git commit -m "engine: measured public estate"; fi
+          pin=$(git rev-parse HEAD)
+          python tools/code_counter.py --wafer-commit "$pin" --max-repo-occurrences 100000000000 --output /tmp/kuiper-counter.json
+          python tools/build_edition13.py refresh "$pin" /tmp/kuiper-counter.json
+          git add live
+          if ! git diff --cached --quiet; then git commit -m "engine: verified data-only snapshot"; fi
+          git fetch origin "${GITHUB_REF_NAME}"
+          test "$(git rev-parse FETCH_HEAD)" = "$base"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
