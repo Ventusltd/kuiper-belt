@@ -96,7 +96,13 @@ const inspect=()=>({status,count:rows.length,keys:rows.map(r=>r.key),unknownKeys
   rendering:"Edition 12 WebGL2 base / existing Canvas2D overlay",execution});
 function clear(s="NOT SELECTED"){++generation;++requestEpoch;execution="NOT EXECUTED";unknownKeys=[];rows=[];bonds=[];proof=null;stageOperation=null;selectedQuery=null;status=s;if(ui){ui.result.textContent=s;ui.list.replaceChildren();ui.bond.textContent="";ui.stage.disabled=true;ui.execute.disabled=true;ui.stageStatus.textContent="NOT STAGED";ui.preview.value="";}if(K)K.redraw();}
 function element(tag,parent,text){const el=document.createElement(tag);if(text)el.textContent=text;parent.append(el);return el;}
-function field(parent,label,values){const lab=element("label",parent,label+" ");const el=element(values?"select":"input",lab);if(values)for(const [v,t] of values){const op=element("option",el,t);op.value=v;}return el;}
+function field(parent,label,values){
+ const id="ky-computation-"+label.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/-$/,"");
+ const lab=element("label",parent);lab.htmlFor=id;element("span",lab,label);
+ const el=element(values?"select":"input",lab);el.id=id;el.setAttribute("aria-label",label);
+ if(values)for(const [v,t] of values){const op=element("option",el,t);op.value=v;}
+ return el;
+}
 function key(raw){if(!/^\d+$/.test(String(raw)))throw Error("INVALID KEY");const k=Number(raw);if(!Number.isSafeInteger(k)||k<0||k>=H.SPACE)throw Error("KEY RANGE");return k;}
 async function select(q,expr=[]){
   clear("SELECTING");const epoch=generation;

@@ -46,6 +46,9 @@ with sync_playwright() as p:
         page.wait_for_function("KY.modules.layers.api.get('computation')?.status === 'OK'",timeout=60000)
         page.locator('[data-menu="wafer"] button').first.click()
         panel=page.locator("#ky-computation");panel.wait_for(state="visible")
+        for label,slug in [("Instrument","instrument"),("Family / operation","family-operation"),("A longitude","a-longitude"),("A latitude","a-latitude"),("B longitude","b-longitude"),("B latitude","b-latitude")]:
+            control=panel.get_by_label(label,exact=True)
+            assert control.count()==1 and control.get_attribute("id")=="ky-computation-"+slug
         select=panel.get_by_role("button",name="Select",exact=True)
         inspect=lambda:page.evaluate("KY.modules.computation.api.inspect()")
         wait_count=lambda n:page.wait_for_function("n=>KY.modules.computation.api.inspect().count===n",arg=n)
@@ -54,35 +57,35 @@ with sync_playwright() as p:
         assert inspect()["count"]==0
         mode["manifest"]=False
         for family,count in [("Vg",2),("Vn",2),("Vn+Vg",4),("Vd",4)]:
-            panel.get_by_label("Family / operation").select_option(family)
-            panel.get_by_label("Instrument").select_option("machine")
+            panel.get_by_label("Family / operation",exact=True).select_option(family)
+            panel.get_by_label("Instrument",exact=True).select_option("machine")
             select.focus();page.keyboard.press("Enter");wait_count(count);a=inspect()["keys"]
-            panel.get_by_label("Instrument").select_option("vedic");select.click();wait_count(count)
+            panel.get_by_label("Instrument",exact=True).select_option("vedic");select.click();wait_count(count)
             assert inspect()["keys"]==a
-            panel.get_by_label("Exclude property").select_option("runtime_effects")
-            panel.get_by_label("Exclude state").select_option("OBSERVED")
+            panel.get_by_label("Exclude property",exact=True).select_option("runtime_effects")
+            panel.get_by_label("Exclude state",exact=True).select_option("OBSERVED")
             select.click()
             page.wait_for_function("KY.modules.computation.api.inspect().status.includes('indeterminate')")
             assert inspect()["count"]==0 and len(inspect()["unknownKeys"])==count
             panel.get_by_role("button",name="Reset").click()
-            assert panel.get_by_label("Instrument").evaluate("el=>el===document.activeElement")
-        panel.get_by_label("Family / operation").select_option("Vd")
-        panel.get_by_label("Intersect property").select_option("runtime_effects")
-        panel.get_by_label("Intersect state").select_option("UNKNOWN")
+            assert panel.get_by_label("Instrument",exact=True).evaluate("el=>el===document.activeElement")
+        panel.get_by_label("Family / operation",exact=True).select_option("Vd")
+        panel.get_by_label("Intersect property",exact=True).select_option("runtime_effects")
+        panel.get_by_label("Intersect state",exact=True).select_option("UNKNOWN")
         select.click();wait_count(4)
         assert panel.get_by_role("button",name="Execute ORIENT").is_disabled()
-        panel.get_by_label("Exclude property").select_option("runtime_effects")
-        panel.get_by_label("Exclude state").select_option("UNKNOWN")
+        panel.get_by_label("Exclude property",exact=True).select_option("runtime_effects")
+        panel.get_by_label("Exclude state",exact=True).select_option("UNKNOWN")
         select.click()
         page.wait_for_function("KY.modules.computation.api.inspect().status.startsWith('SELECTED')");assert inspect()["count"]==0
-        panel.get_by_label("Intersect property").select_option("")
-        panel.get_by_label("Intersect state").select_option("")
-        panel.get_by_label("Exclude state").select_option("OBSERVED")
+        panel.get_by_label("Intersect property",exact=True).select_option("")
+        panel.get_by_label("Intersect state",exact=True).select_option("")
+        panel.get_by_label("Exclude state",exact=True).select_option("OBSERVED")
         select.click()
         page.wait_for_function("KY.modules.computation.api.inspect().status.includes('indeterminate')")
         assert inspect()["count"]==0 and len(inspect()["unknownKeys"])==4
         panel.get_by_role("button",name="Reset").click()
-        panel.get_by_label("Family / operation").select_option("Vg")
+        panel.get_by_label("Family / operation",exact=True).select_option("Vg")
         for case in ["span","key","blob","review","bond"]:
             mode["tamper"]=case;select.click()
             page.wait_for_function("KY.modules.computation.api.inspect().status.startsWith('REFUSED')")
@@ -103,14 +106,14 @@ with sync_playwright() as p:
         panel.get_by_role("button",name="Execute ORIENT").click()
         assert panel.get_by_role("status").last.inner_text().startswith("REFUSED")
         for label,value in [("A longitude","0"),("A latitude","0"),("B longitude","0"),("B latitude","2")]:
-            panel.get_by_label(label).fill(value)
+            panel.get_by_label(label,exact=True).fill(value)
         panel.get_by_role("button",name="Execute ORIENT").click()
         if runtime:
             page.wait_for_function("KY.modules.computation.api.inspect().execution==='REPORTED EXECUTED'",timeout=30000)
             first=json.loads(panel.locator("textarea[readonly]").input_value())
             assert abs(first["receipt"]["output"]["distance_km"]-222.63898158654712)<1e-8
             assert first["receipt"]["output"]["initial_bearing_deg"]==0
-            panel.get_by_label("B longitude").fill("-3");panel.get_by_label("B latitude").fill("0")
+            panel.get_by_label("B longitude",exact=True).fill("-3");panel.get_by_label("B latitude",exact=True).fill("0")
             assert panel.locator("textarea[readonly]").input_value()==""
             panel.get_by_role("button",name="Execute ORIENT").click()
             page.wait_for_function("KY.modules.computation.api.inspect().execution==='REPORTED EXECUTED'",timeout=30000)
