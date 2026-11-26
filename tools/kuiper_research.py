@@ -14,6 +14,7 @@ MODULE="202611261720-computation.js"
 CODE=ROOT/"tools/kuiper-computation"/MODULE
 # VEDIC operation groups are explicit supported meanings; not free-text interpretation.
 MEANINGS={"Vg":(1,5),"Vn":(15,16),"Vd":(24,25,26,27)}
+OPERATIONS={"Vg":"orient","Vd":"electrical"}  # nearest closure awaits B exact contract
 def selection(space,q):
     require(set(q)<= {"mode","family","property_name","state","key_min","key_max"},"UNKNOWN_QUERY_FIELD")
     mode=q.get("mode");family=q.get("family")
@@ -41,7 +42,8 @@ def selection(space,q):
             if family=="Vn" and b["from"].split(".")[0] in ("nearestSubstation","selected_location"):
                 bonds.append({"from":b["from"],"to":b["to"],"state":"CONDITIONAL","conditions":b.get("conditions")})
     result={"schema":"kuiper.local-selection.v1","manifest_sha256":JSON_SHA,"authority":"SELECTION_ONLY_NO_EXECUTION",
-      "rows":rows,"bonds":bonds,"query":q,"execution":"NOT_EXECUTED","review":"PENDING","redistribution":"BLOCKED"}
+      "rows":rows,"bonds":bonds,"bond_scope":"FAMILY_CANDIDATES_NOT_PROVEN_SELECTED_ENDPOINTS","query":q,
+      "stage_operation":OPERATIONS.get(family) if len(keys)==len(MEANINGS[family]) else None,"execution":"NOT_EXECUTED","review":"PENDING","redistribution":"BLOCKED"}
     result["receipt_sha256"]=hashlib.sha256(canonical(result)).hexdigest()
     return result
 
@@ -84,7 +86,14 @@ def serve(space,port):
             elif u.path==ED+"modules.json":self.send_bytes(canonical(manifest()))
             elif u.path==ED+"data/layers.json":self.send_bytes(canonical(layers()))
             elif u.path==ED+"modules/"+MODULE:self.send_bytes(CODE.read_bytes(),"text/javascript")
-            elif u.path.startswith(ED) or u.path.startswith("/cosmos/"):super().do_GET()
+            elif u.path.startswith(ED) or u.path.startswith("/cosmos/"):
+                target=Path(self.translate_path(u.path)).resolve()
+                allowed=(ROOT/ED.strip("/"),ROOT/"cosmos")
+                if not target.is_file() or not any(target.is_relative_to(x) for x in allowed):
+                    # Only the exact existing edition landing directory is served as index.
+                    if u.path==ED:super().do_GET()
+                    else:self.send_error(404)
+                else:super().do_GET()
             else:self.send_error(404)
     ThreadingHTTPServer(("127.0.0.1",port),Handler).serve_forever()
 def benchmark(space):
