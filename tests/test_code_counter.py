@@ -69,6 +69,26 @@ class CounterTests(unittest.TestCase):
                     c.measure(s,[(four[0]+1,four[1],four[2])],db)
             finally:
                 db.close()
+    def test_tree_context_and_streamed_noncode(self):
+        with tempfile.TemporaryDirectory() as t:
+            root=Path(t);r=root/"r";r.mkdir();run(r,"init","-q")
+            for name in ("docs","src"):
+                (r/name).mkdir()
+                (r/name/"a.py").write_bytes(b"x\n y\n")
+            (r/"large.txt").write_bytes(b"z\n"*100)
+            first=commit(r)
+            (r/"src"/"b.py").write_bytes(b"x\n")
+            second=commit(r)
+            db=c.open_db(root/"db")
+            try:
+                self.assertEqual(c.measure(r,[first,second],db)[0],5)
+                self.assertEqual(db.execute("SELECT count(*) FROM lines").fetchone()[0],2)
+                with c.BlobReader(r) as reader:
+                    oid=run(r,"rev-parse","HEAD:large.txt")
+                    with patch.object(c,"MAX_BLOB",32):
+                        self.assertEqual(reader.read(oid,retain=False),(100,None))
+            finally:
+                db.close()
     def test_pinned_fixture(self):
         with tempfile.TemporaryDirectory() as t:
             r=Path(t);run(r,"init","-q");(r/"cosmos").mkdir()

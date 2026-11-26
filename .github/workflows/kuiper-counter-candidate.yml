@@ -15,7 +15,7 @@ concurrency:
 jobs:
   measurement:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,12 +28,14 @@ jobs:
         run: git fetch --no-tags --depth=1 origin f7a4cb9e3a764a72b7133bb275bb5387ea083be2
       - name: Hand-counted fixtures
         run: python tests/test_code_counter.py -v
-      - name: Baseline plus expanded bounded public history
+      - name: Baseline, regression pilot, and all named wafer repositories
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           python tools/code_counter.py --wafer-commit f7a4cb9e3a764a72b7133bb275bb5387ea083be2 --output counter-baseline.json
-          python tools/code_counter.py --wafer-commit f7a4cb9e3a764a72b7133bb275bb5387ea083be2 --max-repo-occurrences 10000000 --output counter-candidate.json
+          python tools/code_counter.py --wafer-commit f7a4cb9e3a764a72b7133bb275bb5387ea083be2 --include grid-distance-maths --include maths --include faraday --output counter-pilot.json
+          python -c 'import json; m=json.load(open("counter-pilot.json"))["metrics"]; assert m["unique_code_lines"]["value"]=="4184" and m["same_cohort_source_line_occurrences"]["value"]=="82611"'
+          python tools/code_counter.py --wafer-commit f7a4cb9e3a764a72b7133bb275bb5387ea083be2 --max-repo-occurrences 100000000000 --output counter-candidate.json
       - name: Confirm no production input was changed
         if: always()
         run: git diff --exit-code -- cosmos editions .github/workflows/engine.yml
@@ -44,5 +46,6 @@ jobs:
           name: kuiper-counter-candidate
           path: |
             counter-baseline.json
+            counter-pilot.json
             counter-candidate.json
           if-no-files-found: warn

@@ -161,17 +161,44 @@ class BlobReader:
         self.p.terminate()
         self.p.stdout.close()
         self.p.wait(timeout=10)
-    def read(self, oid):
+    def read(self, oid, kind="blob", retain=True):
         self.p.stdin.write(oid.encode("ascii")+b"\n")
         self.p.stdin.flush()
         fields = self.p.stdout.readline().split()
-        require(len(fields) == 3 and fields[0] == oid.encode() and fields[1] == b"blob", "missing or invalid blob")
+        require(len(fields) == 3 and fields[0] == oid.encode() and fields[1] == kind.encode(), "missing or invalid object")
         size = integer(fields[2].decode())
-        require(size <= MAX_BLOB, "blob exceeds candidate resource bound")
-        body = self.p.stdout.read(size)
-        require(len(body) == size and self.p.stdout.read(1) == b"\n", "truncated blob")
-        require(hashlib.sha1(b"blob "+str(size).encode()+b"\0"+body).hexdigest() == oid, "blob identity mismatch")
-        return body
+        require(not retain or size <= MAX_BLOB, "retained object exceeds candidate resource bound")
+        h = hashlib.sha1(kind.encode()+b" "+str(size).encode()+b"\0")
+        body = bytearray()
+        left, n, binary, last = size, 0, False, b"\n"
+        while left:
+            block = self.p.stdout.read(min(left, 1 << 20))
+            require(bool(block), "truncated object")
+            h.update(block)
+            if retain:
+                body.extend(block)
+            if size-left < 8000:
+                binary |= b"\0" in block[:8000-(size-left)]
+            n += block.count(b"\n")
+            left -= len(block)
+            last = block[-1:]
+        require(self.p.stdout.read(1) == b"\n", "truncated object framing")
+        require(h.hexdigest() == oid, "object identity mismatch")
+        historic = 0 if binary else n + int(bool(size) and last != b"\n")
+        return historic, bytes(body) if retain else None
+
+def tree_entries(body):
+    """Raw Git tree parser; no display quoting, path separator or line splitting."""
+    pos = 0
+    while pos < len(body):
+        space = body.index(b" ", pos)
+        nul = body.index(b"\0", space+1)
+        require(nul+21 <= len(body), "truncated tree entry")
+        mode, name = body[pos:space], body[space+1:nul]
+        require(name and b"/" not in name, "invalid tree path")
+        oid = body[nul+1:nul+21].hex()
+        pos = nul+21
+        yield mode, name, oid
 
 def open_db(path):
     db = sqlite3.connect(path)
@@ -181,41 +208,57 @@ def open_db(path):
     return db
 
 def measure(repo, commits, db):
-    """Commit-prefix and full-tree reconciliation; one transaction per complete repo."""
-    counts = {}
-    source_counts = {}
-    occurrences = 0
-    identities = []
+    """Exact all-text and source totals, reusing immutable tree and blob objects.
+
+    Tree memoization includes the source-path exclusion context: identical trees at
+    vendor/ and src/ have equal historical totals but may have different source totals.
+    Every complete repository is a transaction; an unreconciled commit rolls it back.
+    """
+    counts, source_counts, tree_cache = {}, {}, {}
+    occurrences, identities = 0, []
     with db:
         with BlobReader(repo) as reader:
+            def tree_sum(oid, allowed):
+                key = (oid, allowed)
+                if key in tree_cache:
+                    return tree_cache[key]
+                _, raw = reader.read(oid, kind="tree")
+                historical, source = 0, 0
+                for mode, name, child in tree_entries(raw):
+                    if mode in (b"40000", b"040000"):
+                        # Invalid UTF-8 is an unclassifiable path, not silently omitted.
+                        try:
+                            dirname = name.decode("utf-8", "strict").lower()
+                        except UnicodeDecodeError:
+                            raise ValueError("non-UTF8 tracked path") from None
+                        h, s = tree_sum(child, allowed and dirname not in EXCLUDE)
+                    elif mode == b"160000":
+                        continue
+                    else:
+                        require(mode in (b"100644", b"100755", b"120000"), "unsupported blob mode")
+                        is_code = eligible(name, mode) and allowed
+                        if child not in counts or (is_code and child not in source_counts):
+                            n, body = reader.read(child, retain=is_code)
+                            counts[child] = n
+                            if is_code:
+                                count = 0
+                                for line in source_lines(body):
+                                    db.execute("INSERT OR IGNORE INTO lines VALUES (?)", (line,))
+                                    count += 1
+                                source_counts[child] = count
+                        h, s = counts[child], source_counts[child] if is_code else 0
+                    historical += h
+                    source += s
+                tree_cache[key] = historical, source
+                return historical, source
             for t, prefix, expected in commits:
                 full = git(repo, "rev-parse", "--verify", prefix+"^{commit}").decode().strip()
                 require(HEX40.fullmatch(full) and full.startswith(prefix), "unresolved commit")
-                require(int(git(repo, "show", "-s", "--format=%ct", full)) == t, "commit timestamp mismatch")
-                total = 0
-                for entry in git(repo, "ls-tree", "-r", "-z", full).split(b"\0"):
-                    if not entry:
-                        continue
-                    header, path = entry.split(b"\t", 1)
-                    mode, kind, oid = header.split()
-                    if kind != b"blob":
-                        continue
-                    oid = oid.decode("ascii")
-                    require(HEX40.fullmatch(oid), "unsupported object format")
-                    code = eligible(path, mode)
-                    if oid not in counts or (code and oid not in source_counts):
-                        body = reader.read(oid)
-                        counts[oid] = historical_lines(body)
-                        if code:
-                            count = 0
-                            for line in source_lines(body):
-                                db.execute("INSERT OR IGNORE INTO lines VALUES (?)", (line,))
-                                count += 1
-                            source_counts[oid] = count
-                    total += counts[oid]
-                    if code:
-                        occurrences += source_counts[oid]
+                timestamp, tree = git(repo, "show", "-s", "--format=%ct%n%T", full).decode().split()
+                require(int(timestamp) == t and HEX40.fullmatch(tree), "commit timestamp or tree mismatch")
+                total, source = tree_sum(tree, True)
                 require(total == expected, "commit line count disagrees with wafer")
+                occurrences += source
                 identities.append(full)
     return occurrences, identities
 
@@ -268,6 +311,7 @@ def candidate(repo, pin, requested, max_repo_occurrences=None):
     coverage["repositories_requested"] = len(selected)
     coverage["commits_requested"] = sum(len(commits[i]) for i in selected)
     failures = []
+    failure_reasons = {}
     full_ids = []
     occurrences = 0
     inventory = public_inventory() if selected else {}
@@ -281,10 +325,13 @@ def candidate(repo, pin, requested, max_repo_occurrences=None):
                 try:
                     public_clone(name, target, inventory)
                     n, ids = measure(target, commits[i], db)
-                except (OSError, ValueError, subprocess.SubprocessError, sqlite3.Error):
+                except (OSError, ValueError, subprocess.SubprocessError, sqlite3.Error) as exc:
                     # Do not log source content, clone credentials or exception bodies.
                     failures.append(name)
-                    print("repo index",i,"acquisition or reconciliation unavailable",flush=True)
+                    reasons = {"public identity or clone size bound not satisfied": "visibility_or_clone_size_bound", "commit line count disagrees with wafer": "historical_count_mismatch", "retained object exceeds candidate resource bound": "retained_object_size_bound", "missing or invalid object": "missing_git_object", "commit timestamp or tree mismatch": "commit_identity_mismatch"}
+                    reason = reasons.get(str(exc), "git_command_failed" if isinstance(exc,subprocess.SubprocessError) else "unclassified_acquisition_failure")
+                    failure_reasons[name] = reason
+                    print("repo index",i,"unavailable:",reason,flush=True)
                     continue
                 finally:
                     if target.exists():
@@ -301,6 +348,8 @@ def candidate(repo, pin, requested, max_repo_occurrences=None):
     print("candidate runtime seconds",round(time.monotonic()-started,3),"parent peak RSS KiB",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,flush=True)
     result["source_receipt"] = dict(requested_repositories=[repos[i][0] for i in selected],
                                    failed_repositories=failures,
+                                   failure_reasons=failure_reasons,
+                                   traversal="memoized_git_tree_by_path_context",
                                    resolved_commit_inventory_sha256=sha256(json.dumps(full_ids,separators=(",",":")).encode()),
                                    resource_bound_bytes=MAX_BLOB,
                                    repo_size_bound_kib=250000,
