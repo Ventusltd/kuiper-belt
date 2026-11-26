@@ -18,6 +18,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 10
           persist-credentials: false
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -34,10 +35,11 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: Ventusltd/kuiper-belt
-          ref: deaadba964502a8b1285c9c7727db51c088ec3f8
+          ref: dd55e05e789f2fdc4163f9a84046a8f71c8f309e
           path: e1-acquire/d1
           sparse-checkout: |
             tools/kuiper-computation/20261126-d1-computation.js
+            tools/kuiper-computation/test_d1_browser.py
           sparse-checkout-cone-mode: false
           persist-credentials: false
       - uses: actions/setup-python@v5
@@ -55,11 +57,31 @@ jobs:
           p="$RUNNER_TEMP/e1-input"
           mkdir -p "$s" "$p" "$s/browser-home" evidence
           mv e1-acquire/{factory,b} "$s/"
-          test "$(git -C e1-acquire/d1 rev-parse HEAD)" = deaadba964502a8b1285c9c7727db51c088ec3f8
-          test "$(git hash-object e1-acquire/d1/tools/kuiper-computation/20261126-d1-computation.js)" = 6f35f99fd68dcf374de9b0ed27ea8c076101fa6a
+          test "$(git -C e1-acquire/d1 rev-parse HEAD)" = dd55e05e789f2fdc4163f9a84046a8f71c8f309e
+          test "$(git hash-object e1-acquire/d1/tools/kuiper-computation/20261126-d1-computation.js)" = 26485d0689c6aeccad1c1401243093d9ec47d3a3
           cp e1-acquire/d1/tools/kuiper-computation/20261126-d1-computation.js tools/kuiper-computation/202611261720-computation.js
+          test "$(git hash-object e1-acquire/d1/tools/kuiper-computation/test_d1_browser.py)" = 6c45e3ea4ee61f5add23a1b48bee8855ed201d6a
+          cp e1-acquire/d1/tools/kuiper-computation/test_d1_browser.py "$s/d1-browser.py"
           mv e1-acquire/d1 "$RUNNER_TEMP/e1-d1"
           rmdir e1-acquire
+          git merge-base --is-ancestor e625da97e76a7d3b99361e01767e0fef0984c445 HEAD
+          git diff --name-only e625da97e76a7d3b99361e01767e0fef0984c445 HEAD > "$s/candidate-changes.txt"
+          python - "$s/candidate-changes.txt" <<'PY'
+          import pathlib,sys
+          actual=set(pathlib.Path(sys.argv[1]).read_text().splitlines())
+          assert actual=={".github/workflows/tacit-e1-runtime.yml","tools/kuiper_research.py","tools/kuiper_runtime.py","tools/test_kuiper_runtime.py","tools/test_kuiper_runtime_browser.py","tools/TACIT-E1-RUNTIME.md"}, actual
+          PY
+          gh api repos/Ventusltd/vedic-/actions/artifacts/15142906371/zip > "$s/b1.zip"
+          echo "77561125ed5829483f30f84391c9998a21915654737fbfa34ca336b43686dbe5  $s/b1.zip" | sha256sum -c -
+          python - "$s" <<'PY'
+          import pathlib,sys,zipfile,hashlib
+          s=pathlib.Path(sys.argv[1])
+          with zipfile.ZipFile(s/"b1.zip") as z:
+              hits=[x for x in z.infolist() if x.filename.split("/")[-1]=="tacit-b1-patterns.json"]
+              assert len(hits)==1 and hits[0].file_size<=2_000_000
+              raw=z.read(hits[0]);assert hashlib.sha256(raw).hexdigest()=="a5540a0978117750fd54739e423dbd4e7c0150ce1eba81d5139609ed2db7ee97"
+              s.joinpath("b1-patterns.json").write_bytes(raw)
+          PY
           gh api repos/Ventusltd/vedic-/actions/artifacts/15143370771/zip > "$s/a1.zip"
           echo "5b3dc6d98ea6f3dec757263869d77a6261ce29d57ddce8a8659dfcd633ab1a86  $s/a1.zip" | sha256sum -c -
           python - "$s" <<'PY'
@@ -123,4 +145,5 @@ jobs:
           path: |
             evidence/runtime.json
             evidence/browser.json
+            evidence/d1-browser.json
           if-no-files-found: error

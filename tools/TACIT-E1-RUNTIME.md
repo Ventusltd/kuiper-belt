@@ -1,0 +1,18 @@
+# TACIT E1 — staged research runtime (turns 11–13)
+Scope: only local server, adapter, exact acquisition and integration tests. The reserved branch descends from e625da97e76a7d3b99361e01767e0fef0984c445. No publication, admission, permanent identities, rights grants, or production pointer writes.
+
+## Reproducible replay
+Use the exact E1 workflow `.github/workflows/tacit-e1-runtime.yml` at the candidate commit; it verifies checkout pins, ZIP and member hashes, reconstructs the existing admitted package, creates a fresh Linux network namespace with loopback only and drops privileges, then executes:
+- `python -B tools/test_kuiper_runtime.py STAGE/bonds.zip STAGE evidence/runtime.json`
+- `python -B tools/test_kuiper_runtime_browser.py STAGE evidence/browser.json` (stages the exact D1 cartridge only in the disposable Actions checkout; runs D1's own final browser regression as well).
+The server is loopback-bound and the runtime starts only with explicitly configured stage. The worker refuses non-loopback network interfaces, arbitrary authority, changed manifests and keys. B1 v2 is invoked through the original VEDIC Package Factory; legacy v1 remains wire-compatible. The browser binds request generation; an old response cannot prove the current request. Additional D1 expressions are selection-only until exact producer proof is supported. No external network access during execution. Process group timeout, CPU and file limits and bounded server/worker concurrency. The test tears down servers in finally blocks; hosted namespace and private stage are disposable. No restricted source or package archive is uploaded; only sanitised receipts.
+
+## Exact acquisition
+- A1 7391b50343b7d7beecb8a32ccd748bfc00c2190b; artifact 15143370771, member 1233591210b19b006bb5970ecc85bdf0e5951cc3bef92e5e670871a4da0ca9e3.
+- B1 988e2293fd740ca434a9cf087fa873f841b7dc6f; artifact 15142906371 member a5540a0978117750fd54739e423dbd4e7c0150ce1eba81d5139609ed2db7ee97; factory 2ccc717933f97e7d191dae85360559a12de7ed21; original ORIENT archive SHA e83937c040499a7060b03ca2c4969e4414cdca48cb7f28a3ef9039f002486787. No archive distribution.
+- D1 dd55e05e789f2fdc4163f9a84046a8f71c8f309e; JS blob 26485d0689c6aeccad1c1401243093d9ec47d3a3; browser harness blob 6c45e3ea4ee61f5add23a1b48bee8855ed201d6a. Stage only; no changes to D1.
+- C1 independent predecessor baseline run 45870408515 and negative browser baseline 45870408533. Final combined independent C1 review remains OPEN; E1 tests are not independent review. F1 exact B1 CPU/impact run 45870832289, runtime artifact 15142108045 and impact artifact 15142297948. F1 combined runtime benchmark remains separate.
+- Earlier E1 run 45870459317 passed 12/12. Initial v2 integration run 45870798053 failed 1/13 at superseded B1 pending descriptor; preserve failure. Corrected E1 9c6eb44318698cbc15fabf19d5eb1e0978544b24 run 45870943421 passed 13/13 and actual desktop/mobile Chromium + stale response; artifact 15141808754, browser.json 12563348b9d879b46da6dc5be5624b63e4a85c69d36b89af03933ecd0b38f562. Final D1 successor staging is a new candidate and must pass independently.
+ 
+## Limits
+Exact Stars membership, public deployment, physical handset, GPU, full-origin compromise, engineering certification and rights remain OPEN/blocked or not authorised. The local same-origin boundary is not a defence against a fully compromised origin. E1 validates only existing eight-key cohort; the A1 property artifact is consumed for exact key parity, not a newly admitted executable property language. ORIENT is the only admitted operation; nearest/electrical default refusal remains mandatory. Do not merge on green CI alone.

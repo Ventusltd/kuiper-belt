@@ -1,5 +1,5 @@
 """Real browser transport through pinned D1 cartridge to E1/B1; C1 independent review separate."""
-import hashlib,json,sys,subprocess,time,urllib.request
+import hashlib,json,sys,subprocess,time,urllib.request,os
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 from kuiper_runtime import bcanon,MANIFEST
@@ -22,6 +22,10 @@ def main():
         assert len(a["properties"])==32 and len(a["bond_receipts"])==5 and len(a["source_entries"])==8
         assert a["selection_examples"][0]["keys"]==[r["key"] for r in sel["rows"]]
         assert get("/__kuiper/select?mode=vedic&family=Vg")["rows"]==sel["rows"]
+        braw=(stage/"b1-patterns.json").read_bytes()
+        assert hashlib.sha256(braw).hexdigest()=="a5540a0978117750fd54739e423dbd4e7c0150ce1eba81d5139609ed2db7ee97"
+        bp=json.loads(braw)
+        assert len(bp["results"])==2 and bp["redistribution"]=="BLOCKED"
         reports=[]
         with sync_playwright() as p:
             b=p.chromium.launch(headless=True,args=["--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"])
@@ -48,6 +52,7 @@ def main():
                     assert result["request_sha256"]==sha(request["request"]) and result["state"]=="EXECUTED_INTERNAL"
                     v2=result["pattern_receipt"];assert v2["legacy_receipt"]==result["receipt"] and v2["result_sha256"]==sha(v2["result"])
                     assert abs(result["output"]["distance_km"]-distance)<1e-7 and abs(result["output"]["initial_bearing_deg"]-bearing)<1e-7
+                    assert v2==bp["results"][len(results)],"EXACT_B1_PRODUCER_RECEIPT_MISMATCH"
                     page.wait_for_function("KY.modules.computation.api.inspect().execution === 'REPORTED EXECUTED'",timeout=10000)
                     results.append({"generation":result["generation"],"request_sha256":result["request_sha256"],"v2_pattern_sha256":v2["pattern_sha256"],"v2_result_sha256":v2["result_sha256"],"receipt_sha256":v2["receipt_sha256"],"output":result["output"]})
                 assert results[0]["v2_pattern_sha256"]==results[1]["v2_pattern_sha256"] and results[0]["v2_result_sha256"]!=results[1]["v2_result_sha256"]
@@ -79,7 +84,9 @@ def main():
                 assert page.evaluate("KY.modules.computation.api.inspect().count")==0
                 page.close()
             b.close()
-        report={"schema":"kuiper.e1.combined-research.v1","a1_member_sha256":hashlib.sha256(raw).hexdigest(),"a1_key_parity":True,"b1_actual_pattern_runtime":True,"browser":reports,"independent_review":"OPEN","ui_final_receipt_review":"CORRELATED_INDEPENDENT_REVIEW_OPEN","deployment":"NOT_AUTHORISED"}
+        # Invoke D1 own final pinned browser regression against the actual local server.
+        subprocess.run([sys.executable,"-B",str(stage/"d1-browser.py")],check=True,timeout=180,env={**os.environ,"BONDS_ZIP":str(stage/"bonds.zip"),"D1_RUNTIME":"1","D1_BROWSER":"chromium"})
+        report={"schema":"kuiper.e1.combined-research.v1","a1_member_sha256":hashlib.sha256(raw).hexdigest(),"a1_key_parity":True,"b1_actual_pattern_runtime":True,"b1_exact_producer_receipt_parity":True,"b1_member_sha256":hashlib.sha256(braw).hexdigest(),"d1_final_browser_suite":"PASS","c1_reference":"https://github.com/Ventusltd/neural-link-between-agents/actions/runs/45870408515","f1_reference":"https://github.com/Ventusltd/neural-link-between-agents/actions/runs/45870832289","browser":reports,"independent_review":"OPEN","ui_final_receipt_review":"CORRELATED_INDEPENDENT_REVIEW_OPEN","deployment":"NOT_AUTHORISED"}
         out.write_text(json.dumps(report,sort_keys=True,indent=2));print(json.dumps(report,sort_keys=True))
     finally:proc.terminate();proc.wait(timeout=5)
 if __name__=="__main__":main()
