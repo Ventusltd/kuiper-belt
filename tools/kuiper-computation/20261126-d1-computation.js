@@ -184,7 +184,7 @@ function draw(ctx){
 function installVedic(section){
  const pane=element("fieldset",section);pane.id="ky-vedic-language";element("legend",pane,"VEDIC · plain-English instructions");
  element("p",pane,"Describe a calculation, supply named points, review the interpretation, then run. Only verified operations are permitted.");
- const lab=element("label",pane,"Instruction");const instruction=element("textarea",lab);instruction.id="ky-vedic-instruction";lab.htmlFor=instruction.id;instruction.setAttribute("aria-label","VEDIC instruction");instruction.rows=4;instruction.maxLength=2000;instruction.style.cssText="width:100%;max-width:100%;box-sizing:border-box;background:#0b2029;color:#eafafa";
+ const lab=element("label",pane,"Instruction");const instruction=element("textarea",lab);instruction.id="ky-vedic-instruction";lab.htmlFor=instruction.id;instruction.setAttribute("aria-label","VEDIC instruction");instruction.rows=4;instruction.maxLength=1024;instruction.style.cssText="width:100%;max-width:100%;box-sizing:border-box;background:#0b2029;color:#eafafa";
  const sample=element("button",pane,"Use example instruction");sample.type="button";
  const locations=element("div",pane);element("p",locations,"Named points · WGS84 longitude and latitude in degrees. Enter only points you reference.");
  const pointFields={};
@@ -205,7 +205,7 @@ function installVedic(section){
  instruction.addEventListener("input",changed);for(const pair of Object.values(pointFields))for(const e of pair)e.addEventListener("input",changed);
  sample.onclick=()=>{instruction.value="Calculate the distance and initial bearing from point A to point B and from point A to point C, then identify the nearer destination.";changed();instruction.focus();};
  function read(){
-   const text=instruction.value.trim();require(text.length>0&&text.length<=2000,"Enter a VEDIC instruction.");
+   const text=instruction.value.trim();require(text.length>0&&text.length<=1024,"Enter a VEDIC instruction.");
    const points={};
    for(const [name,[lon,lat]] of Object.entries(pointFields)){
       if(!lon.value&&!lat.value)continue;
@@ -261,26 +261,27 @@ function installVedic(section){
  };
  execute.onclick=async()=>{
    if(!confirmed)return;
-   const selected=confirmed,epoch=++revision;execute.disabled=true;check.disabled=true;receipt=null;results.replaceChildren();phase="EXECUTING";message.textContent="Running verified mathematical operations…";
+   const selected=confirmed,epoch=++revision;execute.disabled=true;check.disabled=true;receipt=null;results.replaceChildren();phase="EXECUTING";evidence.textContent="";message.textContent="Running verified mathematical operations…";
    try{
      const {signed,wire,ok}=await call("/__kuiper/vedic-execute-auth",{...selected.request,plan_sha256:selected.plan.plan_sha256},epoch);
      const body=signed.body;require(body.schema==="kuiper.vedic-execution.v1"&&canon(body.plan)===canon(selected.plan),"CONFIRMED PLAN MISMATCH");
      if(!ok||body.stale_operations.includes("orient")){require(body.compound_receipt===null,"REFUSAL WITH RECEIPT");phase="REFUSED";message.textContent="Execution refused: "+body.state;confirmed=null;return;}
      const r=body.compound_receipt;
-     require(r&&r.plan_sha256===selected.plan.plan_sha256&&shaShape(r.receipt_sha256)&&Array.isArray(r.steps)&&r.steps.length===selected.plan.steps.length,"COMPOUND RECEIPT BINDING");
+     require(r&&r.schema==="tacit-b.compound-execution.v1"&&canon(r.plan)===canon(selected.plan)&&r.state===(selected.plan.comparison?"PARTIAL_EXECUTED":"EXECUTED_INTERNAL")&&r.rights==="BLOCKED"&&r.independent_review==="OPEN"&&r.context?.challenge===body.challenge&&r.context?.generation===body.generation&&shaShape(r.context?.selection_receipt_sha256)&&shaShape(r.receipt_sha256)&&Array.isArray(r.steps)&&r.steps.length===selected.plan.steps.length,"COMPOUND RECEIPT BINDING");
      const output=[];
      for(let i=0;i<r.steps.length;i++){
        const step=r.steps[i],spec=selected.plan.steps[i],v=step.values;
        require(step.id===spec.id&&step.from_point===spec.from_point&&step.to_point===spec.to_point&&canon(step.units)===canon(spec.outputs)&&v&&Number.isFinite(v.distance_km)&&v.distance_km>=0&&Number.isFinite(v.initial_bearing_deg)&&v.initial_bearing_deg>=0&&v.initial_bearing_deg<360&&step.bound_receipt&&shaShape(step.bound_receipt.receipt_sha256),"STEP RECEIPT / UNITS");
+       const bound=step.bound_receipt,pattern=bound.pattern_receipt;require(bound.schema==="tacit-b.execution-context.v1"&&canon(bound.context)===canon(r.context)&&pattern?.result?.admission===true&&pattern.result.state==="EXECUTED_INTERNAL"&&canon(pattern.result.output)===canon(v)&&canon(bound.request?.inputs)===canon(spec.inputs)&&canon(bound.request?.keys)===canon(spec.keys),"BOUND INTERMEDIATE");
        output.push("Point "+step.from_point+" → "+step.to_point+": "+v.distance_km.toFixed(3)+" km · "+v.initial_bearing_deg.toFixed(3)+"° initial bearing");
      }
-     if(selected.plan.comparison){require(r.comparison&&r.comparison.state==="REFUSED_NOT_ADMITTED"&&r.comparison.value===null,"UNAUTHORISED COMPARISON");output.push("Nearer destination: not calculated — comparison is not admitted.");}
+     if(selected.plan.comparison){require(r.comparison&&r.comparison.state==="REFUSED_NOT_ADMITTED"&&r.comparison.value===null&&canon(r.comparison.depends_on)===canon(selected.plan.comparison.depends_on)&&canon(r.comparison.inputs)===canon(r.steps.map(x=>({step_id:x.id,field:"distance_km",unit:"km",receipt_sha256:x.bound_receipt.receipt_sha256}))),"UNAUTHORISED COMPARISON");output.push("Nearer destination: not calculated — comparison is not admitted.");}
      else require(r.comparison===null,"UNREQUESTED COMPARISON");
      if(epoch!==revision)return;
      for(const line of output)element("p",results,line);
      evidence.textContent=JSON.stringify(wire,null,2);receipt={id:r.receipt_sha256,epoch:body.dependency_epoch};check.disabled=false;
      phase="REPORTED EXECUTED";message.textContent="Signed result verified at execution. Independent review pending. Recheck receipt status for currency.";
-   }catch(e){if(epoch===revision){phase="REFUSED";message.textContent="Cannot run: "+e.message;results.replaceChildren();}}
+   }catch(e){if(epoch===revision){phase="REFUSED";message.textContent="Cannot run: "+e.message;results.replaceChildren();evidence.textContent="";}}
    finally{if(epoch===revision&&confirmed===selected)execute.disabled=false;}
  };
  check.onclick=async()=>{

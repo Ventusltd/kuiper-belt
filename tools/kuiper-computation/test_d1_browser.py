@@ -169,12 +169,55 @@ with sync_playwright() as p:
                 page.wait_for_function("KY.modules.computation.api.inspect().execution==='REPORTED EXECUTED'",timeout=30000)
         else:
             page.wait_for_function("KY.modules.computation.api.inspect().execution==='REFUSED'")
+        # T17: no parser or fake execution in the browser. Unconfigured predecessor
+        # must refuse; E1's exact authenticated composition stage can opt in.
+        vedic=panel.locator("#ky-vedic-language")
+        vedic.get_by_role("button",name="Use example instruction").click()
+        assert vedic.get_by_label("VEDIC instruction",exact=True).evaluate("el=>el===document.activeElement")
+        for name,lon,lat in [("A",-3.18,51.48),("B",-2.59,51.45),("C",-1.55,53.8)]:
+            vedic.get_by_label("VEDIC "+name+" longitude",exact=True).fill(str(lon))
+            vedic.get_by_label("VEDIC "+name+" latitude",exact=True).fill(str(lat))
+        vpreview=vedic.get_by_role("button",name="Preview interpretation")
+        vrun=vedic.get_by_role("button",name="Run VEDIC instruction")
+        vphase=lambda:page.evaluate("KY.modules.computation.api.inspectVedic().phase")
+        if not trust:
+            vpreview.click()
+            assert vphase()=="REFUSED" and vrun.is_disabled()
+            assert "unsigned VEDIC" in vedic.locator("#ky-vedic-state").inner_text()
+        elif os.environ.get("D1_VEDIC_RUNTIME")=="1":
+            vpreview.click()
+            page.wait_for_function("KY.modules.computation.api.inspectVedic().phase==='PREVIEW READY'",timeout=45000)
+            assert vedic.locator("#ky-vedic-plan li").count()==3 and vrun.is_enabled()
+            vrun.click()
+            page.wait_for_function("KY.modules.computation.api.inspectVedic().phase==='REPORTED EXECUTED'",timeout=60000)
+            wire=json.loads(vedic.locator("#ky-vedic-evidence").text_content())
+            receipt=json.loads(wire["payload"])["compound_receipt"]
+            assert len(receipt["steps"])==2 and receipt["comparison"]["value"] is None
+            assert "not calculated" in vedic.locator("#ky-vedic-results").inner_text()
+            vedic.get_by_role("button",name="Check VEDIC receipt status").click()
+            page.wait_for_function("document.querySelector('#ky-vedic-state').textContent.includes('current for pinned inputs')",timeout=30000)
+            vedic.get_by_label("VEDIC B longitude",exact=True).fill("-2.7")
+            assert vrun.is_disabled() and not vedic.locator("#ky-vedic-results").inner_text()
+            vedic.get_by_label("VEDIC instruction",exact=True).fill("Orient from A to C and A to B")
+            vpreview.click()
+            page.wait_for_function("KY.modules.computation.api.inspectVedic().phase==='PREVIEW READY'",timeout=45000)
+            assert "A → C" in vedic.locator("#ky-vedic-plan li").first.inner_text()
+            vrun.click()
+            page.wait_for_function("KY.modules.computation.api.inspectVedic().phase==='REPORTED EXECUTED'",timeout=60000)
+            second=json.loads(json.loads(vedic.locator("#ky-vedic-evidence").text_content())["payload"])["compound_receipt"]
+            assert second["steps"][0]["to_point"]=="C" and second["steps"][1]["to_point"]=="B"
+            assert second["steps"][1]["values"]!=receipt["steps"][0]["values"]
+            for text in ("Orient A to D","Calculate distance and bearing from A to B in miles","Find the three nearest 132 kV substations"):
+                vedic.get_by_label("VEDIC instruction",exact=True).fill(text)
+                vpreview.click()
+                page.wait_for_function("KY.modules.computation.api.inspectVedic().phase==='REFUSED'",timeout=30000)
+                assert vrun.is_disabled() and not vedic.locator("#ky-vedic-results").inner_text()
         assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
         assert page.evaluate("document.getElementById('ky-computation').scrollWidth<=document.getElementById('ky-computation').clientWidth+2")
         page.screenshot(path=str(out/f"d1-{engine}-{width}.png"),mask=[panel.locator("ul"),panel.locator("pre"),panel.locator("textarea[readonly]")])
         panel.get_by_role("button",name="Reset").click();assert inspect()["count"]==0
         assert not errors,errors
-        results.append({"viewport":[width,height],"machine_vedic_parity":True,"intersection":True,"exclusion":True,"forged_occurrence_refused":True,"missing_inputs_refused":True,"reset":True,"overflow":False,"fresh_runtime":"TWO_ACTUAL_E1_REQUESTS" if runtime else "UNAVAILABLE_REFUSED","manifest_transport":"CI-only browser fixture; exact original bytes" if manifest_fixture else "actual E1 manifest route","engine":engine,"runtime_origin":"SIGNED_ACTUAL" if trust else "NOT_AUTHENTICATED","signed_negative_cases":5 if trust else 0,"signed_stale_aba":bool(trust),"signed_receipt_status":bool(trust),"exact_accessible_ids":True,"tamper_cases":5,"manifest_tamper":True,"stale_selection":True,"keyboard":True,"all_pattern_parity":True,"all_eight_unknown_exclusion":True})
+        results.append({"viewport":[width,height],"machine_vedic_parity":True,"intersection":True,"exclusion":True,"forged_occurrence_refused":True,"missing_inputs_refused":True,"reset":True,"overflow":False,"fresh_runtime":"TWO_ACTUAL_E1_REQUESTS" if runtime else "UNAVAILABLE_REFUSED","manifest_transport":"CI-only browser fixture; exact original bytes" if manifest_fixture else "actual E1 manifest route","engine":engine,"runtime_origin":"SIGNED_ACTUAL" if trust else "NOT_AUTHENTICATED","signed_negative_cases":5 if trust else 0,"signed_stale_aba":bool(trust),"signed_receipt_status":bool(trust),"vedic_editor":"ACTUAL_SIGNED_COMPOSITION" if trust and os.environ.get("D1_VEDIC_RUNTIME")=="1" else ("NOT_EXERCISED" if trust else "UNSIGNED_REFUSED"),"exact_accessible_ids":True,"tamper_cases":5,"manifest_tamper":True,"stale_selection":True,"keyboard":True,"all_pattern_parity":True,"all_eight_unknown_exclusion":True})
         page.close()
     # A malformed out-of-band pin must refuse before network execution, even
     # when the legacy server would otherwise accept a request.
