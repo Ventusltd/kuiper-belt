@@ -72,6 +72,23 @@ class Runtime:
         self.stage=stage.resolve();self.bonds=bonds.resolve()
         validate_stage(self.stage,self.bonds)
         self.lock=threading.BoundedSemaphore(1)
+    def vedic(self,wire,events):
+        # Same bounded runtime semaphore, clean environment, group timeout and offline worker.
+        if not self.lock.acquire(blocking=False):return None,"BUSY"
+        try:
+            with subprocess.Popen([sys.executable,"-B",str(Path(__file__).resolve()),"--vedic-worker",str(self.stage),str(self.bonds),str(events)],
+                    stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,
+                    env={"PATH":os.environ["PATH"],"HOME":"/nonexistent","PYTHONDONTWRITEBYTECODE":"1"},
+                    cwd=self.stage,start_new_session=True) as proc:
+                try:out,_=proc.communicate(bcanon(wire),timeout=75)
+                except subprocess.TimeoutExpired:
+                    os.killpg(proc.pid,signal.SIGKILL);proc.communicate();return None,"TIMEOUT"
+                if proc.returncode:return None,"RUNTIME_REFUSED"
+            proof=strict_body(out,512000,32)
+            fields(proof,("plan","compound_receipt"))
+            return proof,None
+        except (OSError,ValueError,KeyError,TypeError,subprocess.SubprocessError):return None,"RUNTIME_UNAVAILABLE"
+        finally:self.lock.release()
     def run(self,q,context=None):
         if not self.lock.acquire(blocking=False):return None,"BUSY"
         try:
@@ -148,5 +165,13 @@ def execute_envelope(space,body,runtime,match_receipt,context=None):
     require(result["pattern_sha256"]==pending["pattern_sha256"],"RUNTIME_PATTERN")
     return 200,{**base,"state":result["state"],"receipt":result,"output":result["output"],"archive_sha256":result["archive_sha256"],"pattern_request":proof["pattern_request"],"pattern_receipt":proof["pattern_receipt"],**({"bound_receipt":proof["bound_receipt"]} if context is not None else {})}
 if __name__=="__main__":
-    require(len(sys.argv)==4 and sys.argv[1]=="--worker","WORKER_ARGS")
-    worker(Path(sys.argv[2]),Path(sys.argv[3]))
+    if len(sys.argv)==5 and sys.argv[1]=="--vedic-worker":
+        import resource
+        resource.setrlimit(resource.RLIMIT_CPU,(60,60))
+        resource.setrlimit(resource.RLIMIT_FSIZE,(8_000_000,8_000_000))
+        resource.setrlimit(resource.RLIMIT_NOFILE,(128,128))
+        from kuiper_vedic import worker as vedic_worker
+        print(bcanon(vedic_worker(Path(sys.argv[2]),Path(sys.argv[3]),Path(sys.argv[4]),strict_body(sys.stdin.buffer.read(128001),128000,24))).decode(),end="")
+    else:
+        require(len(sys.argv)==4 and sys.argv[1]=="--worker","WORKER_ARGS")
+        worker(Path(sys.argv[2]),Path(sys.argv[3]))

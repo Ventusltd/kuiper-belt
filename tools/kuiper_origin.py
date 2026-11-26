@@ -37,7 +37,7 @@ class Origin:
         require(len(self.spki)==91 and self.spki[:27].hex()=="3059301306072a8648ce3d020106082a8648ce3d03010703420004","P256_ONLY")
         self.key_id=sha(self.spki)
         self.events=events
-        self.lock=threading.Lock();self.challenges=set();self.issued={};self.history=[];self.stale=set()
+        self.lock=threading.Lock();self.challenges=set();self.issued={};self.history=[];self.stale=set();self.previews=set()
         pinned_checkout(stage/"a1","46d21c7ef45c1133d1ef24039a79b8dd9978d667")
         sys.path.insert(0,str(stage/"a1"/"tools"))
         from tacit_a1_properties import Space
@@ -107,3 +107,62 @@ class Origin:
                         require(len(self.issued)<4096 or rid in self.issued,"RECEIPT_LIMIT")
                         self.issued[rid]=op
             return status,self.sign({**result,"auth_schema":"kuiper.runtime-origin.p256.v1","challenge":challenge,"dependency_epoch":len(self.history),"stale_operations":sorted(self.stale)})
+
+    def vedic(self,body,runtime,selected,execute=False):
+        with self.lock:
+            fields(body,("instruction","inputs","generation","challenge","plan_sha256") if execute else ("instruction","inputs","generation","challenge"))
+            challenge=body["challenge"];generation=body["generation"]
+            require(hex64(challenge) and challenge not in self.challenges and len(self.challenges)<4096,"CHALLENGE_REUSE_OR_LIMIT")
+            require(type(generation) is int and 0<=generation<=2**53-1,"GENERATION")
+            require(type(body["instruction"]) is str and 0<len(body["instruction"])<=1024 and type(body["inputs"]) is dict,"INSTRUCTION")
+            if execute:require(hex64(body["plan_sha256"]),"PLAN_DIGEST")
+            self.challenges.add(challenge);self.refresh()
+            context={"generation":generation,"selection_receipt_sha256":selected["receipt_sha256"],"challenge":challenge}
+            keys=[x["key"] for x in selected["rows"]]
+            def reply(status,state,plan=None,receipt=None):
+                result={"schema":"kuiper.vedic-execution.v1" if execute else "kuiper.vedic-plan.v1","state":state,"plan":plan,"generation":generation,"rights":"BLOCKED","auth_schema":"kuiper.runtime-origin.p256.v1","challenge":challenge,"dependency_epoch":len(self.history),"stale_operations":sorted(self.stale)}
+                if execute:result["compound_receipt"]=receipt
+                return status,self.sign(result)
+            def call(digest):
+                return runtime.vedic({"instruction":body["instruction"],"inputs":body["inputs"],"context":context,"plan_sha256":digest,"selection_keys":keys,"event_prefix":self.history},self.events)
+            proof,err=call(None)
+            self.refresh()
+            if err:return reply(503,err)
+            plan=proof["plan"]
+            require(plan["schema"]=="vedic.compound-plan.v1" and plan["instruction"]==body["instruction"] and plan["inputs"]==body["inputs"] and plan["plan_sha256"]==sha(bcanon({k:v for k,v in plan.items() if k!="plan_sha256"})),"PLAN_BINDING")
+            require(plan["manifest_sha256"]==MANIFEST and len(plan["steps"])<=8 and all(x["operation"]=="orient" and x["keys"]==keys for x in plan["steps"]),"PLAN_SCOPE")
+            require(plan["state"] in ("PLAN_PROPOSED","PARTIAL_PLAN","ABSTAIN"),"PLAN_STATE")
+            if not execute:
+                if plan["state"]!="ABSTAIN":
+                    require(len(self.previews)<4096 or plan["plan_sha256"] in self.previews,"PREVIEW_LIMIT")
+                    self.previews.add(plan["plan_sha256"])
+                return reply(200,plan["state"],plan)
+            if plan["plan_sha256"]!=body["plan_sha256"]:return reply(409,"PLAN_MISMATCH",plan)
+            if plan["state"]=="ABSTAIN":return reply(200,"ABSTAIN",plan)
+            if plan["plan_sha256"] not in self.previews:return reply(409,"PLAN_NOT_PREVIEWED",plan)
+            if "orient" in self.stale:return reply(409,"STALE_DEPENDENCY",plan)
+            epoch=self.ledger.begin("orient")
+            proof,err=call(plan["plan_sha256"]);self.refresh()
+            if "orient" in self.stale:return reply(409,"STALE_DEPENDENCY",plan)
+            if err:return reply(503,err,plan)
+            require(proof["plan"]==plan,"WORKER_PLAN")
+            receipt=proof["compound_receipt"]
+            require(receipt["schema"]=="tacit-b.compound-execution.v1" and receipt["plan"]==plan and receipt["context"]==context and receipt["rights"]=="BLOCKED","COMPOUND_BINDING")
+            require(receipt["receipt_sha256"]==sha(bcanon({k:v for k,v in receipt.items() if k!="receipt_sha256"})),"COMPOUND_SEAL")
+            require(receipt["state"]==("PARTIAL_EXECUTED" if plan["comparison"] else "EXECUTED_INTERNAL") and len(receipt["steps"])==len(plan["steps"]),"COMPOUND_STATE")
+            if plan["comparison"]:
+                comp=receipt["comparison"]
+                require(comp["value"] is None and comp["state"]=="REFUSED_NOT_ADMITTED" and comp["depends_on"]==plan["comparison"]["depends_on"],"COMPARISON_ADMISSION")
+            else:require(receipt["comparison"] is None,"COMPARISON_SCOPE")
+            for step,result in zip(plan["steps"],receipt["steps"]):
+                bound=result["bound_receipt"];q=bound["request"];v2=bound["pattern_receipt"]
+                require(result["id"]==step["id"] and result["from_point"]==step["from_point"] and result["to_point"]==step["to_point"] and result["units"]==step["outputs"] and q["inputs"]==step["inputs"] and q["keys"]==keys,"STEP_BINDING")
+                require(bound["context"]==context and bound["rights"]=="BLOCKED" and bound["receipt_sha256"]==sha(bcanon({k:v for k,v in bound.items() if k!="receipt_sha256"})) and v2["result"]["output"]==result["values"] and v2["result"]["state"]=="EXECUTED_INTERNAL","STEP_RECEIPT")
+                self.ledger.record_runtime(q,v2,epoch)
+            self.refresh()
+            if "orient" in self.stale:return reply(409,"STALE_DEPENDENCY",plan)
+            self.ledger.assert_current("orient",epoch)
+            rid=receipt["receipt_sha256"]
+            require(len(self.issued)<4096 or rid in self.issued,"RECEIPT_LIMIT")
+            self.issued[rid]="orient"
+            return reply(200,receipt["state"],plan,receipt)

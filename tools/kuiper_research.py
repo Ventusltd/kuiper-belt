@@ -126,7 +126,7 @@ def serve(space,port,b=None,runtime=None,manifest_raw=None,origin=None):
             self.send_response(status);self.send_header("Content-Type",kind);self.send_header("Content-Length",str(len(raw)))
             self.send_header("Cache-Control","no-store");self.send_header("X-Content-Type-Options","nosniff");self.end_headers();self.wfile.write(raw)
         def do_POST(self):
-            if (self.path not in ("/__kuiper/receipt","/__kuiper/execute","/__kuiper/execute-auth","/__kuiper/status-auth")
+            if (self.path not in ("/__kuiper/receipt","/__kuiper/execute","/__kuiper/execute-auth","/__kuiper/status-auth","/__kuiper/vedic-plan-auth","/__kuiper/vedic-execute-auth")
                 or self.headers.get_all("Host")!=[f"127.0.0.1:{port}"]
                 or self.headers.get_all("Origin")!=[f"http://127.0.0.1:{port}"]
                 or self.headers.get("Sec-Fetch-Site") not in (None,"same-origin")
@@ -140,7 +140,11 @@ def serve(space,port,b=None,runtime=None,manifest_raw=None,origin=None):
                 raw=self.rfile.read(n)
                 require(len(raw)==n,"INCOMPLETE_BODY")
                 body=strict_body(raw)
-                if self.path in ("/__kuiper/execute-auth","/__kuiper/status-auth"):
+                if self.path in ("/__kuiper/vedic-plan-auth","/__kuiper/vedic-execute-auth"):
+                    if origin is None or runtime is None:self.send_bytes(canonical({"state":"AUTH_UNAVAILABLE"}),status=503);return
+                    status,result=origin.vedic(body,runtime,selection(space,{"mode":"machine","family":"Vg"}),self.path=="/__kuiper/vedic-execute-auth")
+                    self.send_bytes(canonical(result),status=status)
+                elif self.path in ("/__kuiper/execute-auth","/__kuiper/status-auth"):
                     if origin is None:self.send_bytes(canonical({"state":"AUTH_UNAVAILABLE"}),status=503);return
                     status,result=origin.handle(body,lambda args,enabled,context:execute_envelope(space,args,runtime if enabled else None,match_receipt,context),self.path=="/__kuiper/status-auth")
                     self.send_bytes(canonical(result),status=status)

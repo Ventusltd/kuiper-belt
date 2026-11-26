@@ -79,7 +79,7 @@ def main():
                   if(mutate==='key')w.key_id='0'.repeat(64);
                   if(mutate==='signature')w.signature='0'.repeat(128);
                   const key=await crypto.subtle.importKey('spki',bytes(spki),{name:'ECDSA',namedCurve:'P-256'},false,['verify']);
-                  if(w.key_id!==pin||hex(await crypto.subtle.digest('SHA-256',bytes(spki)))!==pin||!await crypto.subtle.verify({name:'Ed25519'},key,bytes(w.signature),new TextEncoder().encode(w.payload)))return {valid:false};
+                  if(w.key_id!==pin||hex(await crypto.subtle.digest('SHA-256',bytes(spki)))!==pin||!await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},key,bytes(w.signature),new TextEncoder().encode(w.payload)))return {valid:false};
                   const r=JSON.parse(w.payload);return {valid:r.challenge===req.challenge&&r.generation===req.generation,body:r,status:res.status};
                 }"""
                 for i,mutation in enumerate((None,"payload","key","signature")):
