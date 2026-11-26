@@ -8,7 +8,7 @@ permissions:
   contents: read
 jobs:
   baseline:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 12
     strategy:
       fail-fast: false
@@ -57,6 +57,7 @@ jobs:
                           page.wait_for_function("() => {const c=document.querySelector('canvas'); return c && c.width>0 && c.height>0}", timeout=30000)
                           if name == "edition12":
                               page.wait_for_selector("#kuiper-menu-bar", timeout=60000)
+                              page.wait_for_function("() => window.KY?.hooks?.SPACE > 0 && Object.keys(window.KY?.modules||{}).includes('file')", timeout=60000)
                           page.wait_for_timeout(2500)
                           record.update(page.evaluate("""() => ({
                             finalUrl:location.href,title:document.title,
