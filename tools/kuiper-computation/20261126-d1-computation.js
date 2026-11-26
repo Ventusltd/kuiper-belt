@@ -8,7 +8,7 @@ const ID="computation", GEN="202611261720";
 // Never fetch a trust key from the runtime response or from the application origin.
 const trustConfigured=Object.hasOwn(window,"__KUIPER_RUNTIME_TRUST__");
 const launchTrust=trustConfigured?Object.freeze({spki_hex:window.__KUIPER_RUNTIME_TRUST__?.spki_hex,key_id:window.__KUIPER_RUNTIME_TRUST__?.key_id}):null;
-let trustKeyPromise=null,originState="NOT CHECKED",dependencyEpoch=null;
+let trustKeyPromise=null,originState="NOT CHECKED",dependencyEpoch=null,currentSigned=null;
 const hex=bytes=>Array.from(bytes,x=>x.toString(16).padStart(2,"0")).join("");
 const unhex=x=>{require(typeof x==="string"&&x.length%2===0&&/^[0-9a-f]+$/.test(x),"INVALID HEX");return Uint8Array.from(x.match(/../g),n=>parseInt(n,16));};
 async function trustedKey(){
@@ -20,7 +20,7 @@ async function trustedKey(){
  })();
  return trustKeyPromise;
 }
-async function signedPayload(raw,challenge,attempt){
+async function signedPayload(raw,challenge,attempt,allowStale=false){
  const o=JSON.parse(raw);
  require(o&&Object.keys(o).sort().join(",")==="key_id,payload,signature"&&o.key_id===launchTrust.key_id&&typeof o.payload==="string"&&o.payload.length<=1000000&&typeof o.signature==="string"&&o.signature.length===128,"SIGNED RESPONSE FORMAT / KEY");
  const key=await trustedKey();
@@ -28,7 +28,7 @@ async function signedPayload(raw,challenge,attempt){
  const body=JSON.parse(o.payload);
  require(body.auth_schema==="kuiper.runtime-origin.v1"&&body.challenge===challenge&&body.generation===attempt,"AUTHENTICATED RESPONSE REPLAY / GENERATION");
  require(Number.isSafeInteger(body.dependency_epoch)&&body.dependency_epoch>=0&&Array.isArray(body.stale_operations)&&body.stale_operations.every(x=>["orient","nearest-orient","electrical"].includes(x)),"DEPENDENCY STATE");
- require(!body.stale_operations.includes("orient"),"ORIENT DEPENDENCY STALE");
+ if(!allowStale)require(!body.stale_operations.includes("orient"),"ORIENT DEPENDENCY STALE");
  return {raw:o.payload,body,key_id:o.key_id,signature:o.signature};
 }
 const requires=["keyPlace","address","wafer","SPACE","repos","cam","o2","redraw","draw","layers"];
@@ -121,7 +121,7 @@ async function validateRuntime(raw,body,request,attempt,selectionProof){
 }
 const inspect=()=>({status,count:rows.length,keys:rows.map(r=>r.key),unknownKeys:unknownKeys.slice(),bonds:bonds.length,proof,
   rendering:"Edition 12 WebGL2 base / existing Canvas2D overlay",execution,originState,dependencyEpoch});
-function clear(s="NOT SELECTED"){++generation;++requestEpoch;execution="NOT EXECUTED";originState="NOT CHECKED";dependencyEpoch=null;unknownKeys=[];rows=[];bonds=[];proof=null;stageOperation=null;selectedQuery=null;status=s;if(ui){ui.result.textContent=s;ui.list.replaceChildren();ui.bond.textContent="";ui.stage.disabled=true;ui.execute.disabled=true;ui.stageStatus.textContent="NOT STAGED";ui.origin.textContent=trustConfigured?"Runtime: trusted launcher pin configured; awaiting execution":"Runtime: unauthenticated research mode";ui.preview.value="";}if(K)K.redraw();}
+function clear(s="NOT SELECTED"){++generation;++requestEpoch;execution="NOT EXECUTED";originState="NOT CHECKED";dependencyEpoch=null;currentSigned=null;unknownKeys=[];rows=[];bonds=[];proof=null;stageOperation=null;selectedQuery=null;status=s;if(ui){ui.result.textContent=s;ui.list.replaceChildren();ui.bond.textContent="";ui.stage.disabled=true;ui.execute.disabled=true;ui.statusCheck.disabled=true;ui.stageStatus.textContent="NOT STAGED";ui.origin.textContent=trustConfigured?"Runtime: trusted launcher pin configured; awaiting execution":"Runtime: unauthenticated research mode";ui.preview.value="";}if(K)K.redraw();}
 function element(tag,parent,text){const el=document.createElement(tag);if(text)el.textContent=text;parent.append(el);return el;}
 function field(parent,label,values){
  const id="ky-computation-"+label.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/-$/,"");
@@ -209,13 +209,14 @@ function install(k){
  const coordFields=["A longitude","A latitude","B longitude","B latitude"].map(n=>{const e=field(coords,n);e.type="number";e.step="any";e.inputMode="decimal";return e;});
  const execute=element("button",section,"Execute ORIENT");execute.type="button";execute.disabled=true;
  const stageStatus=element("p",section,"NOT STAGED");stageStatus.setAttribute("role","status");
+ const statusCheck=element("button",section,"Check receipt status");statusCheck.type="button";statusCheck.disabled=true;
  const origin=element("p",section,trustConfigured?"Runtime: trusted launcher pin configured; awaiting execution":"Runtime: unauthenticated research mode");origin.id="ky-computation-origin";origin.setAttribute("aria-live","polite");
  const preview=element("textarea",section);preview.readOnly=true;preview.rows=4;preview.setAttribute("aria-label","Local typed request and selection receipt");preview.style.cssText=input.style.cssText;
- ui={result,list,bond,stage,execute,stageStatus,preview,origin};
- function changed(){++requestEpoch;execution="NOT EXECUTED";originState="NOT CHECKED";dependencyEpoch=null;preview.value="";stageStatus.textContent="INPUT CHANGED · NOT EXECUTED";origin.textContent=trustConfigured?"Runtime: awaiting new authenticated execution":"Runtime: unauthenticated research mode";}
+ ui={result,list,bond,stage,execute,stageStatus,preview,origin,statusCheck};
+ function changed(){++requestEpoch;execution="NOT EXECUTED";originState="NOT CHECKED";dependencyEpoch=null;currentSigned=null;statusCheck.disabled=true;preview.value="";stageStatus.textContent="INPUT CHANGED · NOT EXECUTED";origin.textContent=trustConfigured?"Runtime: awaiting new authenticated execution":"Runtime: unauthenticated research mode";}
  input.addEventListener("input",changed);for(const e of coordFields)e.addEventListener("input",changed);
  execute.onclick=async()=>{
-   const epoch=generation,attempt=++requestEpoch;preview.value="";execution="EXECUTING";originState="NOT CHECKED";dependencyEpoch=null;stageStatus.textContent="EXECUTING · independent review pending";
+   const epoch=generation,attempt=++requestEpoch;preview.value="";execution="EXECUTING";originState="NOT CHECKED";dependencyEpoch=null;currentSigned=null;statusCheck.disabled=true;stageStatus.textContent="EXECUTING · independent review pending";
    try{
      require(stageOperation==="orient"&&proof&&rows.length===2,"NO ADMITTED ORIENT SELECTION");
      const v=coordFields.map(e=>{require(e.value.trim()!=="","COORDINATE REQUIRED");return Number(e.value);});
@@ -232,14 +233,36 @@ function install(k){
      if(trustConfigured){attestation=await signedPayload(raw,envelope.challenge,attempt);raw=attestation.raw;body=attestation.body;}
      else body=JSON.parse(raw);
      const r=await validateRuntime(raw,body,request,attempt,proof);
+     if(attestation){const p=body.pattern_receipt;require(p&&shaShape(p.receipt_sha256)&&p.schema==="tacit-b.kuiper-execution.v2"&&canon(p.legacy_receipt)===canon(r)&&canon(p.result.output)===canon(body.output)&&p.rights==="BLOCKED"&&p.independent_verification==="PENDING_EXACT_REQUEST_REVIEW","SIGNED PATTERN RECEIPT");}
      if(epoch!==generation||attempt!==requestEpoch)return;
      execution="REPORTED EXECUTED";
      originState=attestation?"SIGNATURE VERIFIED":"UNAUTHENTICATED RESEARCH";
      dependencyEpoch=attestation?body.dependency_epoch:null;
-     origin.textContent=attestation?"Runtime origin: signature verified against launcher pin · dependency epoch "+dependencyEpoch:"Runtime origin: NOT authenticated · correlated research receipt only";
+     if(attestation){currentSigned={id:body.pattern_receipt.receipt_sha256,epoch:dependencyEpoch};statusCheck.disabled=false;}
+     origin.textContent=attestation?"Runtime origin: signature verified at execution · dependency epoch "+dependencyEpoch+" · recheck for current status":"Runtime origin: NOT authenticated · correlated research receipt only";
      stageStatus.textContent="RUNTIME REPORTED EXECUTED · "+body.output.distance_km+" km · "+body.output.initial_bearing_deg+"° · receipt correlated · independent review pending";
-     preview.value=JSON.stringify({request,selection_receipt_sha256:proof,generation:attempt,receipt:r,review:"PENDING_EXACT_REQUEST_REVIEW",rights:"BLOCKED",origin:originState,...(attestation?{runtime_origin:{key_id:attestation.key_id,signature:attestation.signature,payload:attestation.raw,challenge:envelope.challenge,dependency_epoch:dependencyEpoch}}:{})},null,2);
+     preview.value=JSON.stringify({request,selection_receipt_sha256:proof,generation:attempt,receipt:r,review:"PENDING_EXACT_REQUEST_REVIEW",rights:"BLOCKED",origin:originState,...(attestation?{runtime_origin:{key_id:attestation.key_id,signature:attestation.signature,payload:attestation.raw,challenge:envelope.challenge,dependency_epoch:dependencyEpoch,pattern_receipt_sha256:currentSigned.id}}:{})},null,2);
    }catch(e){if(epoch===generation&&attempt===requestEpoch){execution="REFUSED";originState="REFUSED";dependencyEpoch=null;preview.value="";origin.textContent="Runtime: no accepted execution evidence";stageStatus.textContent="REFUSED · "+e.message;}}
+ };
+ statusCheck.onclick=async()=>{
+   if(!currentSigned)return;
+   const selected=currentSigned,epoch=generation,attempt=++requestEpoch,challenge=hex(crypto.getRandomValues(new Uint8Array(32)));
+   statusCheck.disabled=true;origin.textContent="Checking signed receipt status…";
+   try{
+     const response=await fetch("/__kuiper/status-auth",{method:"POST",headers:{"Content-Type":"application/json"},cache:"no-store",body:JSON.stringify({challenge,generation:attempt,operation:"orient",receipt_sha256:selected.id})});
+     const raw=await response.text();require(response.ok&&raw.length<=2000000,"STATUS REFUSED");
+     const {body}=await signedPayload(raw,challenge,attempt,true);
+     require(body.schema==="kuiper.receipt-status.v1"&&body.operation==="orient"&&body.receipt_sha256===selected.id&&body.rights==="BLOCKED"&&body.dependency_epoch>=selected.epoch,"STATUS BINDING");
+     require(["CURRENT_FOR_PINNED_INPUT","STALE_HISTORICAL_PRESERVED"].includes(body.state)&&(body.state==="STALE_HISTORICAL_PRESERVED")===body.stale_operations.includes("orient"),"STATUS STATE");
+     if(epoch!==generation||attempt!==requestEpoch||selected!==currentSigned)return;
+     dependencyEpoch=body.dependency_epoch;selected.epoch=dependencyEpoch;
+     execution=body.state==="STALE_HISTORICAL_PRESERVED"?"STALE HISTORICAL":"REPORTED EXECUTED";
+     originState=body.state;
+     origin.textContent=execution==="STALE HISTORICAL"?"Runtime: signed status STALE · historical receipt preserved · not current":"Runtime: signed status current for pinned inputs · epoch "+dependencyEpoch+" · as checked";
+     if(execution==="STALE HISTORICAL")stageStatus.textContent="STALE · previous output historical only · fresh execution blocked by dependency";
+     const history=JSON.parse(preview.value);history.latest_status={state:body.state,wire:JSON.parse(raw)};preview.value=JSON.stringify(history,null,2);
+   }catch(e){if(epoch===generation&&attempt===requestEpoch&&selected===currentSigned){originState="STATUS UNKNOWN";execution="STATUS UNKNOWN";origin.textContent="Runtime: status unavailable · prior receipt historical only";stageStatus.textContent="STATUS UNKNOWN · "+e.message;}}
+   finally{if(epoch===generation&&attempt===requestEpoch&&selected===currentSigned)statusCheck.disabled=false;}
  };
  for(const el of [mode,family,prop,state,min,max,reset,run])el.addEventListener("change",()=>{preview.value="";});
  reset.addEventListener("click",()=>{preview.value="";input.value="";});

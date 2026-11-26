@@ -141,6 +141,10 @@ with sync_playwright() as p:
             assert first["receipt"]["request_sha256"]!=second["receipt"]["request_sha256"]
             if trust:
                 assert first["runtime_origin"]["challenge"]!=second["runtime_origin"]["challenge"]
+                panel.get_by_role("button",name="Check receipt status").click()
+                page.wait_for_function("KY.modules.computation.api.inspect().originState==='CURRENT_FOR_PINNED_INPUT'",timeout=30000)
+                status=json.loads(panel.locator("textarea[readonly]").input_value())["latest_status"]
+                assert status["state"]=="CURRENT_FOR_PINNED_INPUT"
                 # Replaying a genuine prior signed payload is not a fresh execution.
                 previous=second["runtime_origin"]
                 mode["previous"]=json.dumps({k:previous[k] for k in ("key_id","signature","payload")})
@@ -170,7 +174,7 @@ with sync_playwright() as p:
         page.screenshot(path=str(out/f"d1-{engine}-{width}.png"),mask=[panel.locator("ul"),panel.locator("pre"),panel.locator("textarea[readonly]")])
         panel.get_by_role("button",name="Reset").click();assert inspect()["count"]==0
         assert not errors,errors
-        results.append({"viewport":[width,height],"machine_vedic_parity":True,"intersection":True,"exclusion":True,"forged_occurrence_refused":True,"missing_inputs_refused":True,"reset":True,"overflow":False,"fresh_runtime":"TWO_ACTUAL_E1_REQUESTS" if runtime else "UNAVAILABLE_REFUSED","manifest_transport":"CI-only browser fixture; exact original bytes" if manifest_fixture else "actual E1 manifest route","engine":engine,"runtime_origin":"SIGNED_ACTUAL" if trust else "NOT_AUTHENTICATED","signed_negative_cases":5 if trust else 0,"signed_stale_aba":bool(trust),"exact_accessible_ids":True,"tamper_cases":5,"manifest_tamper":True,"stale_selection":True,"keyboard":True,"all_pattern_parity":True,"all_eight_unknown_exclusion":True})
+        results.append({"viewport":[width,height],"machine_vedic_parity":True,"intersection":True,"exclusion":True,"forged_occurrence_refused":True,"missing_inputs_refused":True,"reset":True,"overflow":False,"fresh_runtime":"TWO_ACTUAL_E1_REQUESTS" if runtime else "UNAVAILABLE_REFUSED","manifest_transport":"CI-only browser fixture; exact original bytes" if manifest_fixture else "actual E1 manifest route","engine":engine,"runtime_origin":"SIGNED_ACTUAL" if trust else "NOT_AUTHENTICATED","signed_negative_cases":5 if trust else 0,"signed_stale_aba":bool(trust),"signed_receipt_status":bool(trust),"exact_accessible_ids":True,"tamper_cases":5,"manifest_tamper":True,"stale_selection":True,"keyboard":True,"all_pattern_parity":True,"all_eight_unknown_exclusion":True})
         page.close()
     # A malformed out-of-band pin must refuse before network execution, even
     # when the legacy server would otherwise accept a request.
