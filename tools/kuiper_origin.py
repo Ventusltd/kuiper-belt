@@ -52,8 +52,8 @@ class Origin:
         current=strict_body(self.events.read_bytes())
         fields(current,("schema","events"));require(current["schema"]=="kuiper.local-source-events.v1","EVENT_SCHEMA")
         rows=current["events"];require(type(rows) is list and len(rows)<=128 and rows[:len(self.history)]==self.history,"EVENT_ROLLBACK")
-        # Ledger owns all source-to-pattern impact semantics. Validate the entire
-        # appended events, fail closed on malformed input; no browser authority.
+        # Ledger owns all source-to-pattern impact semantics. Apply the exact
+        # appended events; fail closed on malformed input; no browser authority.
         for e in rows[len(self.history):]:
             require(type(e) is dict and e.get("kind") in ("source","presentation","property","closure"),"EVENT_KIND")
             if e["kind"]=="source":
@@ -98,7 +98,7 @@ class Origin:
                     status,result=execute(args,True,{"generation":body["generation"],"selection_receipt_sha256":body["selection_receipt_sha256"],"challenge":challenge})
                     self.refresh()
                     if op in self.stale:
-                        status=409;result={k:v for k,v in result.items() if k not in ("receipt","output","pattern_request","pattern_receipt","archive_sha256")}
+                        status=409;result={k:v for k,v in result.items() if k not in ("receipt","output","pattern_request","pattern_receipt","archive_sha256","bound_receipt")}
                         result.update(state="STALE_DEPENDENCY",receipt=None)
                     elif status==200:
                         self.ledger.assert_current(op,epoch)

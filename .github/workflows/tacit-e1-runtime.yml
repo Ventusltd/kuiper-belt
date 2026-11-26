@@ -53,7 +53,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: Ventusltd/kuiper-belt
-          ref: ebc95eb984f755613d6d1356007a48df32237485
+          ref: af78cdec7a3adbcf13f742f80d7b654abff0f7ce
           path: e1-acquire/d1-auth
           sparse-checkout: |
             tools/kuiper-computation/20261126-d1-computation.js
@@ -82,9 +82,9 @@ jobs:
           cp e1-acquire/d1/tools/kuiper-computation/test_d1_browser.py "$s/d1-browser.py"
           mv e1-acquire/d1 "$RUNNER_TEMP/e1-d1"
           mv e1-acquire/a1 "$s/a1"
-          test "$(git -C e1-acquire/d1-auth rev-parse HEAD)" = ebc95eb984f755613d6d1356007a48df32237485
-          test "$(git hash-object e1-acquire/d1-auth/tools/kuiper-computation/20261126-d1-computation.js)" = 2612e1720015ef58978c39ad8a9abd1cdf722398
-          test "$(git hash-object e1-acquire/d1-auth/tools/kuiper-computation/test_d1_browser.py)" = 9b037d0cf24663dd5e54c0c2baddfdbf6e96df1d
+          test "$(git -C e1-acquire/d1-auth rev-parse HEAD)" = af78cdec7a3adbcf13f742f80d7b654abff0f7ce
+          test "$(git hash-object e1-acquire/d1-auth/tools/kuiper-computation/20261126-d1-computation.js)" = e470d8041b9be7760cc525197b4a3c2901592665
+          test "$(git hash-object e1-acquire/d1-auth/tools/kuiper-computation/test_d1_browser.py)" = 0d1eb49e6ff740fc8645a9483536866e00757200
           cp e1-acquire/d1-auth/tools/kuiper-computation/20261126-d1-computation.js "$s/d1-auth.js"
           cp e1-acquire/d1-auth/tools/kuiper-computation/test_d1_browser.py "$s/d1-auth-browser.py"
           mv e1-acquire/d1-auth "$RUNNER_TEMP/e1-d1-auth"
@@ -122,7 +122,7 @@ jobs:
               s.joinpath("a1-property-impact.json").write_bytes(raw)
           PY
           python -m pip install playwright==1.51.0
-          PLAYWRIGHT_BROWSERS_PATH="$RUNNER_TEMP/e1-browser" python -m playwright install chromium
+          PLAYWRIGHT_BROWSERS_PATH="$RUNNER_TEMP/e1-browser" python -m playwright install chromium webkit
           gh api repos/Ventusltd/vedic-/actions/artifacts/15138897783/zip > "$s/bonds.zip"
           echo "649209e8723af1efd4c73f85ebd90b524a2312907d8a5e24759c8bf72ad1f72a  $s/bonds.zip" | sha256sum -c -
           gh api repos/Ventusltd/vedic-/actions/artifacts/15126683549/zip > "$p/producer.zip"
@@ -186,4 +186,5 @@ jobs:
             evidence/d1-browser.json
             evidence/origin.json
             evidence/d1-auth-browser.json
+            evidence/d1-auth-webkit.json
           if-no-files-found: error
