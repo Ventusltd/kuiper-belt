@@ -17,7 +17,8 @@ with sync_playwright() as p:
    assert page.locator('#kc-total').inner_text()=='97,540,883,985'
    assert page.locator('#kc-unique').inner_text()=='299,425'
    assert '83/95' in page.locator('#kc-coverage').inner_text()
-   assert page.evaluate("window.KY.inspect().refused.length") == 0
+   state=page.evaluate("window.KY.inspect()")
+   assert not state["refused"],state["refused"]
    menu=page.locator('#kmb-title-file')
    menu.click(); assert menu.get_attribute('aria-expanded')=='true'
    assert page.locator('#kmb-panel-file').is_visible()

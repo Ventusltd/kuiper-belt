@@ -71,6 +71,7 @@ def build(receipt):
     # Re-project only its validated substation indices, not historic wafer keys.
     st=next(m for m in mods["modules"] if m["id"]=="see-through")
     old=p/st["path"];s=old.read_text()
+    s=replace_once(s,"/* kuiper module see-through, generation 202611021026 (UTC),","/* kuiper module see-through, generation 202611261800 (UTC),")
     s=replace_once(s,"GEN = '202611021026', EDITION = '202611021201'","GEN = '202611261800', EDITION = '202611261800'")
     s=replace_once(s,"if (j.edition !== EDITION || j.edition !== KY.edition) throw new Error('data cut for edition ' + j.edition + ', page ' + KY.edition);","if (j.edition !== '202611021201' || EDITION !== KY.edition) throw new Error('source edition mismatch');")
     s=replace_once(s,"if (st.space !== H.SPACE) throw new Error('SPACE ' + H.fmt(st.space) + ' ≠ wafer ' + H.fmt(H.SPACE));","if (!Number.isSafeInteger(H.SPACE) || H.SPACE <= 0 || j.law.nrule !== 20000 || j.law.nsub !== 5800) throw new Error('projection domain'); st.space=H.SPACE;")
