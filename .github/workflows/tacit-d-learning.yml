@@ -71,6 +71,9 @@ jobs:
                   assert state['a']==state['b']==str(key),state
                   assert int(state['remainder'])==(key*2654435769)%2**32
                   assert abs(state['radius']-math.sqrt(key))<1e-9
+                  # COPY is intentionally hidden until the roller keypad opens.
+                  if not page.locator('.k1-copy').is_visible():
+                      page.locator('.k1-rl-b .k1-box').click()
                   page.locator('.k1-copy').click()
                   assert page.evaluate('typeof KGOne.lastCopy==="string" && KGOne.lastCopy.includes("MOD")')
                   page.screenshot(path=str(out/(name+'.png')))
