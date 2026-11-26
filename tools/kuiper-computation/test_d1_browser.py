@@ -47,6 +47,12 @@ with sync_playwright() as p:
         panel.get_by_label("Exclude state").select_option("UNKNOWN")
         select.click()
         page.wait_for_function("KY.modules.computation.api.inspect().status.startsWith('SELECTED')");assert inspect()["count"]==0
+        panel.get_by_label("Intersect property").select_option("")
+        panel.get_by_label("Intersect state").select_option("")
+        panel.get_by_label("Exclude state").select_option("OBSERVED")
+        select.click()
+        page.wait_for_function("KY.modules.computation.api.inspect().status.includes('indeterminate')")
+        assert inspect()["count"]==0 and len(inspect()["unknownKeys"])==4
         panel.get_by_role("button",name="Reset").click()
         panel.get_by_label("Family / operation").select_option("Vg")
         mode["tamper"]=True;select.click()
@@ -56,13 +62,31 @@ with sync_playwright() as p:
         assert panel.get_by_role("button",name="Execute ORIENT").is_enabled()
         panel.get_by_role("button",name="Execute ORIENT").click()
         assert panel.get_by_role("status").last.inner_text().startswith("REFUSED")
+        for label,value in [("A longitude","0"),("A latitude","0"),("B longitude","0"),("B latitude","2")]:
+            panel.get_by_label(label).fill(value)
+        panel.get_by_role("button",name="Execute ORIENT").click()
+        if os.environ.get("D1_RUNTIME")=="1":
+            page.wait_for_function("KY.modules.computation.api.inspect().execution==='REPORTED EXECUTED'",timeout=30000)
+            first=json.loads(panel.locator("textarea[readonly]").input_value())
+            assert abs(first["receipt"]["output"]["distance_km"]-222.63898158654712)<1e-8
+            assert first["receipt"]["output"]["initial_bearing_deg"]==0
+            panel.get_by_label("B longitude").fill("-3");panel.get_by_label("B latitude").fill("0")
+            assert panel.locator("textarea[readonly]").input_value()==""
+            panel.get_by_role("button",name="Execute ORIENT").click()
+            page.wait_for_function("KY.modules.computation.api.inspect().execution==='REPORTED EXECUTED'",timeout=30000)
+            second=json.loads(panel.locator("textarea[readonly]").input_value())
+            assert abs(second["receipt"]["output"]["distance_km"]-333.9584723798207)<1e-8
+            assert second["receipt"]["output"]["initial_bearing_deg"]==270
+            assert first["receipt"]["request_sha256"]!=second["receipt"]["request_sha256"]
+        else:
+            page.wait_for_function("KY.modules.computation.api.inspect().execution==='REFUSED'")
         assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
         assert page.evaluate("document.getElementById('ky-computation').scrollWidth<=document.getElementById('ky-computation').clientWidth+2")
-        page.screenshot(path=str(out/f"d1-{width}.png"),mask=[panel.locator("ul"),panel.locator("pre")])
+        page.screenshot(path=str(out/f"d1-{width}.png"),mask=[panel.locator("ul"),panel.locator("pre"),panel.locator("textarea[readonly]")])
         panel.get_by_role("button",name="Reset").click();assert inspect()["count"]==0
         assert not errors,errors
-        results.append({"viewport":[width,height],"machine_vedic_parity":True,"intersection":True,"exclusion":True,"forged_occurrence_refused":True,"missing_inputs_refused":True,"reset":True,"overflow":False,"fresh_runtime":"OPEN","manifest_transport":"CI-only browser fixture; exact original bytes"})
+        results.append({"viewport":[width,height],"machine_vedic_parity":True,"intersection":True,"exclusion":True,"forged_occurrence_refused":True,"missing_inputs_refused":True,"reset":True,"overflow":False,"fresh_runtime":"TWO_ACTUAL_E1_REQUESTS" if os.environ.get("D1_RUNTIME")=="1" else "UNAVAILABLE_REFUSED","manifest_transport":"CI-only browser fixture; exact original bytes"})
         page.close()
     browser.close()
 (out/"d1-browser.json").write_text(json.dumps(results,indent=2))
-print(json.dumps(results))
+print(json.dumps(results));print("browser member SHA256",hashlib.sha256((out/"d1-browser.json").read_bytes()).hexdigest())
