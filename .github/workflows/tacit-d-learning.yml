@@ -1,0 +1,96 @@
+name: TACIT D Kuiper learning and computational baseline
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  learning:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          mkdir -p /tmp/kuiper-d
+          python -m pip install playwright==1.51.0
+          python -m playwright install --with-deps chromium
+      - name: Play the frozen learning edition using Chromium
+        run: |
+          mkdir -p /tmp/kuiper-d
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/kuiper-d/server.log 2>&1 &
+          python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          import json, math, pathlib, time, urllib.request
+          out=pathlib.Path('/tmp/kuiper-d')
+          base='http://127.0.0.1:8765/learn-the-kuiper/202610050609/'
+          for attempt in range(30):
+              try:
+                  urllib.request.urlopen(base,timeout=1).close()
+                  break
+              except OSError:
+                  time.sleep(0.2)
+          observations=[]
+          with sync_playwright() as pw:
+              browser=pw.chromium.launch(headless=True)
+              for name,width,height in [('desktop',1280,800),('phone',390,844)]:
+                  context=browser.new_context(viewport={'width':width,'height':height},reduced_motion='reduce',has_touch=name=='phone',is_mobile=name=='phone')
+                  page=context.new_page()
+                  errors=[]
+                  page.on('pageerror',lambda e:errors.append(str(e)))
+                  page.goto(base+'?seed=42&calm=1&nogl=1',wait_until='load')
+                  page.wait_for_function('window.KGOne && KGOne.game && document.querySelector(".k1-cv")')
+                  page.locator('.k1-cv').wait_for(state='visible')
+                  target=page.evaluate('KGOne.game.state().target')
+                  before=page.evaluate('KGOne.game.state().found')
+                  page.keyboard.press('ArrowRight')
+                  for digit in target['b']:
+                      page.keyboard.press(digit)
+                  page.keyboard.press('Enter')
+                  page.wait_for_function('(n)=>KGOne.game.state().found>n',arg=before)
+                  assert page.evaluate('KGOne.game.state().score')>0, 'typed target not scored'
+                  levels=[]
+                  for i in range(6):
+                      page.locator(f'.k1-pip[data-l="{i}"]').click()
+                      levels.append(page.evaluate('()=>{const s=KGOne.game.state();return [s.level,String(s.M),String(s.C)]}'))
+                      assert levels[-1][0]==i
+                  assert levels[-1][1:]==['2654435769','4294967296']
+                  if not page.evaluate('KGOne.game.state().linked'):
+                      page.locator('.k1-link').click()
+                  assert page.evaluate('KGOne.game.state().linked')
+                  key=4294967297
+                  page.keyboard.press('ArrowRight')
+                  for digit in str(key):
+                      page.keyboard.press(digit)
+                  page.keyboard.press('Enter')
+                  state=page.evaluate('()=>{const s=KGOne.game.state(),v=KGOne.game.view();return {a:KGOne.dText(s.A),b:String(s.B),remainder:String(v.S),radius:v.dist}}')
+                  assert state['a']==state['b']==str(key),state
+                  assert int(state['remainder'])==(key*2654435769)%2**32
+                  assert abs(state['radius']-math.sqrt(key))<1e-9
+                  # COPY is intentionally hidden until the roller keypad opens.
+                  if not page.locator('.k1-copy').is_visible():
+                      page.locator('.k1-rl-b .k1-box').click()
+                  page.locator('.k1-copy').click()
+                  assert page.evaluate('typeof KGOne.lastCopy==="string" && KGOne.lastCopy.includes("MOD")')
+                  page.screenshot(path=str(out/(name+'.png')))
+                  context.set_offline(True)
+                  page.keyboard.press('ArrowUp')
+                  assert page.evaluate('String(KGOne.game.state().B)')==str(key+1)
+                  assert not errors,errors
+                  observations.append({'viewport':name,'scored_target':True,'levels':levels,'linked_key':state,'offline_interaction':True,'page_errors':errors})
+                  context.close()
+              browser.close()
+          (out/'learning.json').write_text(json.dumps(observations,indent=2))
+          print(json.dumps(observations,indent=2))
+          PY
+      - name: Preserve screenshots and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tacit-d-learning
+          path: /tmp/kuiper-d/
+          if-no-files-found: error

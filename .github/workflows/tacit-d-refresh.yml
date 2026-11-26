@@ -1,0 +1,60 @@
+name: TACIT D one-time measurement refresh
+on:
+  pull_request:
+    types: [synchronize]
+    paths:
+      - '.github/workflows/tacit-d-refresh.yml'
+permissions:
+  contents: read
+  actions: write
+jobs:
+  refresh:
+    if: github.event.pull_request.number == 1 && github.event.before == '9dc49c36c416fa9619215f779fa5b71cc8800744'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Compare deployed numbers and request existing engine only if stale
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: Ventusltd/kuiper-belt
+        run: |
+          set -eu
+          mkdir -p evidence
+          gh api "repos/$REPO/contents/cosmos/wafer-meta.json?ref=main" --jq .content | base64 -d > evidence/main-meta.json
+          if curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "https://ventusltd.github.io/kuiper-belt/cosmos/wafer-meta.json?t=$(date +%s)" > evidence/public-meta.json; then
+            python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('evidence')
+          a=json.loads((p/'main-meta.json').read_bytes())
+          b=json.loads((p/'public-meta.json').read_bytes())
+          fields=['issued_keys','address_space','commits','repositories','last_unix']
+          print(json.dumps({'main':{k:a[k] for k in fields},'public':{k:b[k] for k in fields},'same':all(a[k]==b[k] for k in fields)},indent=2))
+          PY
+          else
+            echo 'Public metadata unavailable; not asserting served parity.'
+          fi
+          gh run list --repo "$REPO" --workflow engine.yml --branch main --limit 10 --json databaseId,status,conclusion,createdAt > evidence/engine-before.json
+          python - <<'PY' > evidence/decision.txt
+          import json,time
+          from pathlib import Path
+          p=Path('evidence')
+          a=json.loads((p/'main-meta.json').read_bytes())
+          runs=json.loads((p/'engine-before.json').read_bytes())
+          if any(r['status']!='completed' for r in runs):
+              print('ALREADY_RUNNING')
+          elif time.time()-a['last_unix']>6*3600:
+              print('REFRESH')
+          else:
+              print('RECENT_ENOUGH')
+          PY
+          cat evidence/decision.txt
+          if [ "$(cat evidence/decision.txt)" = REFRESH ]; then
+            gh workflow run engine.yml --repo "$REPO" --ref main
+            echo 'DISPATCH_REQUEST_ACCEPTED' | tee evidence/dispatch.txt
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tacit-d-refresh-receipt
+          path: evidence/
