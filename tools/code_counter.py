@@ -9,6 +9,9 @@ import os
 from pathlib import Path
 import re
 import sqlite3
+import shutil
+import time
+import resource
 import subprocess
 import tempfile
 import urllib.request
@@ -216,14 +219,28 @@ def measure(repo, commits, db):
                 identities.append(full)
     return occurrences, identities
 
-def public_clone(name, target):
+def public_inventory():
+    out = {}
+    page = 1
+    while True:
+        req = urllib.request.Request("https://api.github.com/users/Ventusltd/repos?type=owner&per_page=100&page="+str(page),
+                                     headers={"User-Agent":"kuiper-read-only-counter","Accept":"application/vnd.github+json"})
+        with urllib.request.urlopen(req, timeout=30) as response:
+            items = json.load(response)
+        require(isinstance(items,list), "public inventory malformed")
+        if not items:
+            return out
+        for info in items:
+            name = info.get("name","")
+            if (SAFE_NAME.fullmatch(name) and info.get("private") is False
+                and info.get("visibility") == "public" and info.get("full_name","").lower() == ("Ventusltd/"+name).lower()):
+                out[name.lower()] = info.get("size")
+        page += 1
+
+def public_clone(name, target, inventory):
     require(SAFE_NAME.fullmatch(name) and not name.startswith("unnamed-"), "unapproved repository")
-    req = urllib.request.Request("https://api.github.com/repos/Ventusltd/"+name,
-                                 headers={"User-Agent":"kuiper-read-only-counter","Accept":"application/vnd.github+json"})
-    with urllib.request.urlopen(req, timeout=30) as response:
-        info = json.load(response)
-    require(info.get("private") is False and info.get("visibility") == "public"
-            and info.get("full_name","").lower() == ("Ventusltd/"+name).lower(), "public identity not confirmed")
+    size = inventory.get(name.lower())
+    require(type(size) is int and 0 <= size <= 250000, "public identity or clone size bound not satisfied")
     env = dict(os.environ, GIT_TERMINAL_PROMPT="0", GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL="/dev/null")
     for k in list(env):
         if k.startswith("GIT_CONFIG_") and k not in ("GIT_CONFIG_NOSYSTEM","GIT_CONFIG_GLOBAL"):
@@ -232,10 +249,13 @@ def public_clone(name, target):
                     "https://github.com/Ventusltd/"+name+".git", str(target)],
                    env=env, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=180)
 
-def candidate(repo, pin, requested):
+def candidate(repo, pin, requested, max_repo_occurrences=None):
     result, repos, commits, named = baseline(repo, pin)
     metric = result["metrics"]["unique_code_lines"]
     coverage = metric["coverage"]
+    require(max_repo_occurrences is None or (not requested and max_repo_occurrences > 0), "choose either explicit repos or a positive historical occurrence bound")
+    if max_repo_occurrences is not None:
+        requested = [repos[i][0] for i in sorted(named) if repos[i][1] <= max_repo_occurrences and commits[i]]
     wanted = set(requested)
     require(len(wanted) == len(requested), "duplicate requested repository")
     selected = [i for i in sorted(named) if repos[i][0] in wanted]
@@ -245,6 +265,8 @@ def candidate(repo, pin, requested):
     failures = []
     full_ids = []
     occurrences = 0
+    inventory = public_inventory() if selected else {}
+    started = time.monotonic()
     with tempfile.TemporaryDirectory(prefix="kuiper-counter-") as tmp:
         db = open_db(Path(tmp)/"private-local-lines.sqlite")
         try:
@@ -252,12 +274,17 @@ def candidate(repo, pin, requested):
                 name = repos[i][0]
                 target = Path(tmp)/("repo-"+str(i))
                 try:
-                    public_clone(name, target)
+                    public_clone(name, target, inventory)
                     n, ids = measure(target, commits[i], db)
                 except (OSError, ValueError, subprocess.SubprocessError, sqlite3.Error):
                     # Do not log source content, clone credentials or exception bodies.
                     failures.append(name)
+                    print("repo index",i,"acquisition or reconciliation unavailable",flush=True)
                     continue
+                finally:
+                    if target.exists():
+                        shutil.rmtree(target)
+                print("repo index",i,"reconciled commits",len(ids),flush=True)
                 occurrences += n
                 full_ids.extend((i, oid) for oid in ids)
                 coverage["repositories_measured"] += 1
@@ -266,10 +293,13 @@ def candidate(repo, pin, requested):
         finally:
             db.close()
     coverage["repositories_failed"] = len(failures)
+    print("candidate runtime seconds",round(time.monotonic()-started,3),"parent peak RSS KiB",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,flush=True)
     result["source_receipt"] = dict(requested_repositories=[repos[i][0] for i in selected],
                                    failed_repositories=failures,
                                    resolved_commit_inventory_sha256=sha256(json.dumps(full_ids,separators=(",",":")).encode()),
                                    resource_bound_bytes=MAX_BLOB,
+                                   repo_size_bound_kib=250000,
+                                   historical_occurrence_bound=max_repo_occurrences,
                                    coverage_note="Target is named wafer rows, not all estate history; redacted rows and late commits excluded.")
     if coverage["commits_measured"]:
         require(unique <= occurrences <= int(result["metrics"]["total_historical_line_occurrences"]["value"]), "source count invariant")
@@ -284,15 +314,16 @@ def main():
     p.add_argument("--repo", default=".")
     p.add_argument("--wafer-commit", required=True)
     p.add_argument("--include", action="append", default=[])
+    p.add_argument("--max-repo-occurrences", type=int)
     p.add_argument("--output", required=True)
     a = p.parse_args()
-    result = candidate(a.repo, a.wafer_commit, a.include)
+    result = candidate(a.repo, a.wafer_commit, a.include, a.max_repo_occurrences)
     body = (json.dumps(result, indent=2, sort_keys=True)+"\n").encode()
     Path(a.output).write_bytes(body)
     print("counter SHA256",sha256(body))
     print(body.decode())
     # A requested acquisition yielding no complete repository is a failed pilot.
-    return int(bool(a.include) and not result["metrics"]["unique_code_lines"]["coverage"]["repositories_measured"])
+    return int(bool(a.include or a.max_repo_occurrences) and not result["metrics"]["unique_code_lines"]["coverage"]["repositories_measured"])
 
 if __name__ == "__main__":
     raise SystemExit(main())
