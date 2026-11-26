@@ -1,0 +1,61 @@
+{
+  "as_of_utc": "2026-11-26T17:02:58Z",
+  "calculation_version": "kuiper-counter-v1",
+  "classification_policy": "source-path-utf8-exact-v1",
+  "inputs": {
+    "cosmos/repos.tsv": "e795027aa3e0243712b7b6ebfeb8a78a6ac6ac6240c470bc11f1354e9b658bf2",
+    "cosmos/standing.tsv": "2a27ca6c9bdabe2c7f5f851ae98e46c221b73f698a335c795bc2a2538b0f783e",
+    "cosmos/wafer-meta.json": "ad5a703b7fde5ba670680dad55d7aeb48a0b6ab315922c56e2368642aec95b81",
+    "cosmos/wafer.tsv": "10241925b7ae4011649a7c744e5f66a81c9096f0519d5aa489f9b90a859f2ae8"
+  },
+  "metrics": {
+    "current_standing_text_lines": {
+      "files": 91302,
+      "population": "pinned_standing_all_text",
+      "repositories": 84,
+      "status": "measured",
+      "value": "58416344"
+    },
+    "same_cohort_source_line_occurrences": {
+      "population": "public_pinned_wafer_source_nonblank",
+      "status": "unavailable",
+      "value": null
+    },
+    "total_historical_line_occurrences": {
+      "population": "pinned_wafer_all_text",
+      "status": "measured",
+      "value": "97540883985"
+    },
+    "unique_code_lines": {
+      "coverage": {
+        "commits_measured": 0,
+        "commits_requested": 0,
+        "commits_target": 16719,
+        "redacted_commit_rows": 55,
+        "redacted_repository_rows": 6,
+        "repositories_failed": 0,
+        "repositories_measured": 0,
+        "repositories_requested": 0,
+        "repositories_target": 95
+      },
+      "population": "public_pinned_wafer_source",
+      "status": "unavailable",
+      "value": null
+    }
+  },
+  "schema_version": 1,
+  "source_receipt": {
+    "coverage_note": "Target is named wafer rows, not all estate history; redacted rows and late commits excluded.",
+    "failed_repositories": [],
+    "requested_repositories": [],
+    "resolved_commit_inventory_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "resource_bound_bytes": 33554432
+  },
+  "wafer": {
+    "address_space": "116449247985",
+    "commits": 16774,
+    "repositories": 101,
+    "unissued_positions": "18908364000"
+  },
+  "wafer_commit": "f7a4cb9e3a764a72b7133bb275bb5387ea083be2"
+}

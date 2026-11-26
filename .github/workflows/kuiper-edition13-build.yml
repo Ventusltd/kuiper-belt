@@ -1,0 +1,57 @@
+name: Edition 13 integrated build and browser acceptance
+on:
+  push:
+    branches: [agent/kuiper-a-takeover-edition13-20261126]
+    paths: ['tools/edition13/**','tools/build_edition13.py','.github/workflows/kuiper-edition13-build.yml']
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: kuiper-edition13-build
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 45873104728
+          name: kuiper-counter-candidate
+          path: /tmp/counter
+      - name: Independently validate initial receipt and prepare immutable edition
+        run: |
+          git fetch --no-tags --depth=1 origin f7a4cb9e3a764a72b7133bb275bb5387ea083be2
+          python -m unittest discover -s tests -p 'test_kuiper_snapshot*.py' -v
+          python tools/build_edition13.py build /tmp/counter/counter-candidate.json
+          python tools/ci_check.py
+          git diff --exit-code -- editions/202611021201
+      - name: Browser acceptance
+        run: |
+          pip install playwright==1.55.0
+          python -m playwright install --with-deps chromium webkit
+          mkdir -p evidence
+          python tools/edition13/browser_test.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: edition13-browser-evidence
+          path: evidence
+          if-no-files-found: warn
+      - name: Commit verified candidate only
+        run: |
+          git config user.name kuiper-release
+          git config user.email actions@users.noreply.github.com
+          git add editions/202611261800 editions/index.html editions/README.md live
+          git commit -m "Edition 13: verified unified release candidate"
+          git push origin "HEAD:agent/kuiper-a-takeover-edition13-20261126"
