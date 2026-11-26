@@ -180,16 +180,135 @@ function draw(ctx){
     ctx.fillStyle=ctx.strokeStyle;ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
   }ctx.restore();
 }
+
+function installVedic(section){
+ const pane=element("fieldset",section);pane.id="ky-vedic-language";element("legend",pane,"VEDIC · plain-English instructions");
+ element("p",pane,"Describe a calculation, supply named points, review the interpretation, then run. Only verified operations are permitted.");
+ const lab=element("label",pane,"Instruction");const instruction=element("textarea",lab);instruction.id="ky-vedic-instruction";lab.htmlFor=instruction.id;instruction.setAttribute("aria-label","VEDIC instruction");instruction.rows=4;instruction.maxLength=2000;instruction.style.cssText="width:100%;max-width:100%;box-sizing:border-box;background:#0b2029;color:#eafafa";
+ const sample=element("button",pane,"Use example instruction");sample.type="button";
+ const locations=element("div",pane);element("p",locations,"Named points · WGS84 longitude and latitude in degrees. Enter only points you reference.");
+ const pointFields={};
+ for(const name of ["A","B","C"]){
+   const group=element("fieldset",locations);element("legend",group,"Point "+name);
+   const pair=["longitude","latitude"].map(axis=>{const e=field(group,"VEDIC "+name+" "+axis);e.type="number";e.step="any";e.inputMode="decimal";e.min=axis==="longitude"?-180:-90;e.max=axis==="longitude"?180:90;return e;});
+   pointFields[name]=pair;
+ }
+ const interpret=element("button",pane,"Preview interpretation");interpret.type="button";
+ const execute=element("button",pane,"Run VEDIC instruction");execute.type="button";execute.disabled=true;
+ const check=element("button",pane,"Check VEDIC receipt status");check.type="button";check.disabled=true;
+ const message=element("p",pane,trustConfigured?"Enter an instruction and named points.":"Trusted local runtime required. No unsigned execution.");message.id="ky-vedic-state";message.setAttribute("role","status");
+ const planList=element("ol",pane);planList.id="ky-vedic-plan";
+ const results=element("div",pane);results.id="ky-vedic-results";results.setAttribute("aria-live","polite");
+ const details=element("details",pane);element("summary",details,"Signed evidence and receipt");const evidence=element("pre",details);evidence.id="ky-vedic-evidence";
+ let revision=0,confirmed=null,receipt=null,phase="NOT INTERPRETED";
+ const changed=()=>{++revision;confirmed=null;receipt=null;phase="NOT INTERPRETED";execute.disabled=true;check.disabled=true;planList.replaceChildren();results.replaceChildren();evidence.textContent="";message.textContent="Inputs changed. Preview the interpretation again.";};
+ instruction.addEventListener("input",changed);for(const pair of Object.values(pointFields))for(const e of pair)e.addEventListener("input",changed);
+ sample.onclick=()=>{instruction.value="Calculate the distance and initial bearing from point A to point B and from point A to point C, then identify the nearer destination.";changed();instruction.focus();};
+ function read(){
+   const text=instruction.value.trim();require(text.length>0&&text.length<=2000,"Enter a VEDIC instruction.");
+   const points={};
+   for(const [name,[lon,lat]] of Object.entries(pointFields)){
+      if(!lon.value&&!lat.value)continue;
+      require(lon.value!==""&&lat.value!==""&&lon.validity.valid&&lat.validity.valid,"Point "+name+" needs both valid longitude and latitude.");
+      const longitude=Number(lon.value),latitude=Number(lat.value);
+      require(Number.isFinite(longitude)&&Number.isFinite(latitude)&&Math.abs(longitude)<=180&&Math.abs(latitude)<=90,"Invalid coordinates for point "+name);
+      points[name]={longitude,latitude};
+   }
+   require(Object.keys(points).length>=2,"Enter at least two named points.");
+   return {instruction:text,inputs:{crs:"WGS84",unit:"degrees",points}};
+ }
+ async function call(path,body,epoch){
+   require(trustConfigured,"Trusted local runtime required; unsigned VEDIC is not permitted.");
+   await trustedKey();require(epoch===revision,"INPUT CHANGED");
+   const attempt=++requestEpoch,challenge=hex(crypto.getRandomValues(new Uint8Array(32)));
+   const res=await fetch(path,{method:"POST",headers:{"Content-Type":"application/json"},cache:"no-store",body:JSON.stringify({...body,generation:attempt,challenge})});
+   const raw=await res.text();require(raw.length<=2000000,"RESPONSE SIZE");
+   require(res.ok||res.status===409,"Runtime unavailable or refused (HTTP "+res.status+").");
+   const signed=await signedPayload(raw,challenge,attempt,true);
+   require(epoch===revision,"INPUT CHANGED");
+   require(signed.body.rights==="BLOCKED","RIGHTS BOUNDARY");
+   return {signed,wire:JSON.parse(raw),ok:res.ok};
+ }
+ async function validatePlan(plan,request){
+   require(plan&&plan.schema==="vedic.compound-plan.v1"&&plan.instruction===request.instruction&&canon(plan.inputs)===canon(request.inputs)&&plan.manifest_sha256===PIN&&shaShape(plan.plan_sha256),"PLAN / INPUT BINDING");
+   require(["PLAN_PROPOSED","PARTIAL_PLAN","ABSTAIN"].includes(plan.state)&&Array.isArray(plan.steps)&&plan.steps.length<=8,"PLAN STATE");
+   if(plan.state==="ABSTAIN"){require(plan.steps.length===0,"ABSTAIN WITH STEPS");return;}
+   require(plan.steps.length>0,"EMPTY PLAN");
+   const manifest=await trustedManifest(),keys=expected(manifest,{mode:"vedic",family:"Vg"}).rows.map(r=>r.key);
+   const ids=new Set();
+   for(const step of plan.steps){
+     require(typeof step.id==="string"&&!ids.has(step.id)&&step.operation==="orient"&&step.meaning_id==="GG2050-VEDIC-000006"&&canon(step.keys)===canon(keys),"UNADMITTED / WRONG SOURCE STEP");ids.add(step.id);
+     const a=request.inputs.points[step.from_point],b=request.inputs.points[step.to_point];
+     require(a&&b&&step.from_point!==step.to_point&&canon(step.inputs)===canon({crs:"WGS84",unit:"degrees",point_a:a,point_b:b})&&Array.isArray(step.depends_on)&&step.depends_on.length===0&&canon(step.outputs)===canon({distance_km:"km",initial_bearing_deg:"degrees"}),"STEP INPUT / UNIT BINDING");
+   }
+   if(plan.comparison!==null)require(plan.comparison.operation==="nearer_destination"&&plan.comparison.state==="REFUSED_NOT_ADMITTED"&&plan.comparison.quantity==="distance_km"&&plan.comparison.unit==="km"&&Array.isArray(plan.comparison.depends_on)&&plan.comparison.depends_on.every(id=>ids.has(id)),"COMPARISON NOT AUTHORISED");
+ }
+ function showPlan(plan){
+   planList.replaceChildren();
+   for(const step of plan.steps)element("li",planList,"Point "+step.from_point+" → "+step.to_point+": distance (km) and initial bearing (degrees).");
+   if(plan.comparison)element("li",planList,"Nearer destination: not authorised; comparison will not execute.");
+ }
+ interpret.onclick=async()=>{
+   changed();const epoch=revision;phase="INTERPRETING";message.textContent="Checking interpretation with trusted VEDIC resolver…";
+   try{
+     const request=read();const {signed,wire,ok}=await call("/__kuiper/vedic-plan-auth",request,epoch);
+     const body=signed.body;require(body.schema==="kuiper.vedic-plan.v1","PLAN RESPONSE SCHEMA");await validatePlan(body.plan,request);
+     if(epoch!==revision)return;
+     showPlan(body.plan);evidence.textContent=JSON.stringify(wire,null,2);
+     if(!ok||body.plan.state==="ABSTAIN"||body.stale_operations.includes("orient")){phase="REFUSED";message.textContent="Cannot run: "+(body.plan.reason||body.state||"source dependency stale");return;}
+     confirmed={request,plan:body.plan};phase="PREVIEW READY";execute.disabled=false;message.textContent=body.plan.state==="PARTIAL_PLAN"?"Preview ready. Only the authorised calculations will run; comparison refused.":"Preview ready. Review the steps, then run.";
+   }catch(e){if(epoch===revision){phase="REFUSED";message.textContent="Cannot interpret: "+e.message;}}
+ };
+ execute.onclick=async()=>{
+   if(!confirmed)return;
+   const selected=confirmed,epoch=++revision;execute.disabled=true;check.disabled=true;receipt=null;results.replaceChildren();phase="EXECUTING";message.textContent="Running verified mathematical operations…";
+   try{
+     const {signed,wire,ok}=await call("/__kuiper/vedic-execute-auth",{...selected.request,plan_sha256:selected.plan.plan_sha256},epoch);
+     const body=signed.body;require(body.schema==="kuiper.vedic-execution.v1"&&canon(body.plan)===canon(selected.plan),"CONFIRMED PLAN MISMATCH");
+     if(!ok||body.stale_operations.includes("orient")){require(body.compound_receipt===null,"REFUSAL WITH RECEIPT");phase="REFUSED";message.textContent="Execution refused: "+body.state;confirmed=null;return;}
+     const r=body.compound_receipt;
+     require(r&&r.plan_sha256===selected.plan.plan_sha256&&shaShape(r.receipt_sha256)&&Array.isArray(r.steps)&&r.steps.length===selected.plan.steps.length,"COMPOUND RECEIPT BINDING");
+     const output=[];
+     for(let i=0;i<r.steps.length;i++){
+       const step=r.steps[i],spec=selected.plan.steps[i],v=step.values;
+       require(step.id===spec.id&&step.from_point===spec.from_point&&step.to_point===spec.to_point&&canon(step.units)===canon(spec.outputs)&&v&&Number.isFinite(v.distance_km)&&v.distance_km>=0&&Number.isFinite(v.initial_bearing_deg)&&v.initial_bearing_deg>=0&&v.initial_bearing_deg<360&&step.bound_receipt&&shaShape(step.bound_receipt.receipt_sha256),"STEP RECEIPT / UNITS");
+       output.push("Point "+step.from_point+" → "+step.to_point+": "+v.distance_km.toFixed(3)+" km · "+v.initial_bearing_deg.toFixed(3)+"° initial bearing");
+     }
+     if(selected.plan.comparison){require(r.comparison&&r.comparison.state==="REFUSED_NOT_ADMITTED"&&r.comparison.value===null,"UNAUTHORISED COMPARISON");output.push("Nearer destination: not calculated — comparison is not admitted.");}
+     else require(r.comparison===null,"UNREQUESTED COMPARISON");
+     if(epoch!==revision)return;
+     for(const line of output)element("p",results,line);
+     evidence.textContent=JSON.stringify(wire,null,2);receipt={id:r.receipt_sha256,epoch:body.dependency_epoch};check.disabled=false;
+     phase="REPORTED EXECUTED";message.textContent="Signed result verified at execution. Independent review pending. Recheck receipt status for currency.";
+   }catch(e){if(epoch===revision){phase="REFUSED";message.textContent="Cannot run: "+e.message;results.replaceChildren();}}
+   finally{if(epoch===revision&&confirmed===selected)execute.disabled=false;}
+ };
+ check.onclick=async()=>{
+   if(!receipt)return;const selected=receipt,epoch=++revision;check.disabled=true;execute.disabled=true;message.textContent="Checking signed receipt status…";
+   try{
+     const {signed,wire,ok}=await call("/__kuiper/status-auth",{operation:"orient",receipt_sha256:selected.id},epoch),body=signed.body;
+     require(ok&&body.schema==="kuiper.receipt-status.v1"&&body.operation==="orient"&&body.receipt_sha256===selected.id&&body.dependency_epoch>=selected.epoch&&["CURRENT_FOR_PINNED_INPUT","STALE_HISTORICAL_PRESERVED"].includes(body.state)&&(body.state==="STALE_HISTORICAL_PRESERVED")===body.stale_operations.includes("orient"),"STATUS BINDING");
+     selected.epoch=body.dependency_epoch;phase=body.state==="STALE_HISTORICAL_PRESERVED"?"STALE HISTORICAL":"REPORTED EXECUTED";
+     message.textContent=phase==="STALE HISTORICAL"?"Historical only: dependency changed. Preview and run again when authorised.":"Signed receipt current for pinned inputs, as checked.";
+     if(phase==="STALE HISTORICAL"){results.replaceChildren();confirmed=null;}
+     evidence.textContent+="\n\n"+JSON.stringify(wire,null,2);
+   }catch(e){if(epoch===revision){phase="STATUS UNKNOWN";results.replaceChildren();message.textContent="Status unknown; previous signed receipt is historical only.";}}
+   finally{if(epoch===revision){check.disabled=false;execute.disabled=!confirmed;}}
+ };
+ return {clear:changed,inspect:()=>({phase,confirmed:!!confirmed,receipt:receipt?.id??null})};
+}
+
 function install(k){
  K=k;H=k.hooks;L=k.modules.layers.api;
  const section=document.createElement("section");section.id="ky-computation";section.setAttribute("aria-label","Kuiper research selection");
  const css=element("style",document.head);css.textContent="#ky-computation{padding:8px;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere;color:#d8eeee}#ky-computation label{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0;align-items:center}#ky-computation input,#ky-computation select,#ky-computation button{max-width:100%;min-height:44px;box-sizing:border-box;background:#0b2029;color:#eafafa;border:1px solid #567985;border-radius:4px}#ky-computation fieldset{min-width:0;max-width:100%;box-sizing:border-box}#ky-computation ul{padding-left:18px}#ky-computation small{display:block}#ky-computation pre{white-space:pre-wrap;overflow-wrap:anywhere}";
  const title=element("h3",section,"Kuiper computational instruments");
  element("p",section,"Select exact source occurrences using machine predicates or the VEDIC instrument. Both resolve to the same bounded computational addresses; only admitted ORIENT can execute.");
+ const vedic=installVedic(section);
  const mode=field(section,"Instrument",[["machine","Machine predicate"],["vedic","VEDIC meaning"]]);
  const instrumentInfo=element("p",section,"Machine: select by Periodic Table module classification.");
  instrumentInfo.id="ky-computation-instrument-description";mode.setAttribute("aria-describedby",instrumentInfo.id);
- mode.addEventListener("change",()=>{instrumentInfo.textContent=mode.value==="vedic"?"VEDIC: resolve supported semantic meanings to the same exact source keys. No free-text interpretation or arbitrary code execution.":"Machine: select by Periodic Table module classification.";});
+ mode.addEventListener("change",()=>{instrumentInfo.textContent=mode.value==="vedic"?"VEDIC: resolve supported semantic meanings to the same exact source keys. Use the instruction editor above for bounded plain-English interpretation. No arbitrary code execution.":"Machine: select by Periodic Table module classification.";});
  const family=field(section,"Family / operation",[["Vg","Vg / ORIENT"],["Vn","Vn / nearest only"],["Vn+Vg","Nearest → ORIENT (four-key closure)"],["Vd","Vd / electrical"]]);
  const prop=field(section,"Property",[["","Any"],["producer_needs","Producer needs"],["producer_standalone","Producer standalone"],["runtime_effects","Runtime effects"],["typed_ports","Typed ports"]]);
  const state=field(section,"Evidence",[["","Any"],["DERIVED","Derived"],["OBSERVED","Observed"],["UNKNOWN","Unknown"]]);
@@ -285,11 +404,11 @@ function install(k){
  };
  for(const el of [mode,family,prop,state,min,max,inc,incState,exc,excState])el.addEventListener("change",()=>clear("INPUT CHANGED · NOT SELECTED"));
  for(const el of [min,max])el.addEventListener("input",()=>clear("INPUT CHANGED · NOT SELECTED"));
- reset.onclick=()=>{min.value=max.value=prop.value=state.value=inc.value=incState.value=exc.value=excState.value="";for(const e of coordFields)e.value="";clear();mode.focus();};
+ reset.onclick=()=>{vedic.clear();min.value=max.value=prop.value=state.value=inc.value=incState.value=exc.value=excState.value="";for(const e of coordFields)e.value="";clear();mode.focus();};
  run.onclick=()=>{const q={mode:mode.value,family:family.value};for(const [n,e] of [["property_name",prop],["state",state],["key_min",min],["key_max",max]])if(e.value)q[n]=e.value;select(q,[{name:inc.value,state:incState.value,exclude:false},{name:exc.value,state:excState.value,exclude:true}]);};
  K.panels.add("wafer",section,"Computational selection");
  const wait=()=>{if(!L.get(ID)){setTimeout(wait,100);return;}L.register({id:ID,module:ID,load:async()=>{await H.wafer;const res=await fetch("/__kuiper/select?mode=machine&family=Vg"); if(!res.ok)throw Error("Evidence unavailable");const d=await res.json();if(d.manifest_sha256!=="821abf96d3e4c2f42e61d578dcefdfbda366c145b067f9cc9206fdaa91b6cf2d")throw Error("Evidence pin");return {placed:d.rows.length,total:d.rows.length,why:"Availability probe only; selection requires authenticated manifest"};},draw});};wait();
- return Object.freeze({inspect,select,clear});
+ return Object.freeze({inspect,select,clear,inspectVedic:vedic.inspect});
 }
 window.KY.register({schema:"kuiper.module.v1",id:ID,generation:GEN,requires,provides:[ID],install,inspect});
 })();
