@@ -46,6 +46,12 @@ def main():
                 try:urllib.request.urlopen(BASE+"/__kuiper/select?mode=machine&family=Vg",timeout=2).close();break
                 except OSError:time.sleep(.1)
             else:raise RuntimeError("SERVER_START")
+            for engine in ("chromium","webkit"):
+                subprocess.run([sys.executable,"-B",str(stage/"d17-browser.py")],check=True,timeout=240,
+                    env={**os.environ,"D1_RUNTIME":"1","D1_VEDIC_RUNTIME":"1","D1_BROWSER":engine,"BONDS_ZIP":str(stage/"bonds.zip"),
+                         "D1_TRUST_JSON":json.dumps({"spki_hex":pub.hex(),"key_id":pin,"algorithm":"ECDSA-P256-SHA256"})})
+                Path("evidence/d1-browser.json").replace("evidence/d17-"+engine+".json")
+                check("actual_D1_VEDIC_"+engine,True)
             with sync_playwright() as p:
                 browser=p.chromium.launch(headless=True)
                 page=browser.new_page();page.goto(BASE+"/editions/202611021201/",wait_until="domcontentloaded")

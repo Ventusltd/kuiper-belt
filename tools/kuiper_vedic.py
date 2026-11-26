@@ -4,8 +4,8 @@ Executed in the existing resource-limited loopback-only worker, not a second run
 import os,sys,json,stat
 from pathlib import Path
 from kuiper_runtime import bcanon,sha,require,fields,strict_body,pinned_checkout,validate_stage,manifest_bytes,exact_file,ARCHIVE,MANIFEST,MAX_BODY
-A17="c4d6d309940d131d2a1ae6181701086aa7221839"
-B17="e0a094c8c672643f0b8a9967dea93c6ef7e4518a"
+A17="8e3dff7c905095349843c6b5341766019a67ee82"
+B17="1bdea5ffa295effa0417d22f4dd37b381da9e18b"
 
 def read_events(path):
     st=path.lstat()

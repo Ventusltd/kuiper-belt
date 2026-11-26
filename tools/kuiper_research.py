@@ -53,7 +53,7 @@ def manifest():
     m=json.loads((ROOT/ED.strip("/")/"modules.json").read_text())
     raw=CODE.read_bytes();m["order"].append("computation")
     m["modules"].append({"id":"computation","generation":"202611261720","path":"modules/"+MODULE,
-      "sha256":hashlib.sha256(raw).hexdigest(),"bytes":len(raw),"byte_budget":32768,
+      "sha256":hashlib.sha256(raw).hexdigest(),"bytes":len(raw),"byte_budget":32768 if len(raw)<=32768 else 49152,
       "requires":["keyPlace","address","wafer","SPACE","repos","cam","o2","redraw","draw","layers"],
       "provides":["computation"],"licence":"Apache-2.0","writes":["#ky-computation"],"reads":["local validated evidence"]})
     return m

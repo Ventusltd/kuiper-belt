@@ -65,14 +65,24 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: Ventusltd/vedic-
-          ref: c4d6d309940d131d2a1ae6181701086aa7221839
+          ref: 8e3dff7c905095349843c6b5341766019a67ee82
           path: e1-acquire/a17
           persist-credentials: false
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: Ventusltd/vedic-
-          ref: e0a094c8c672643f0b8a9967dea93c6ef7e4518a
+          ref: 1bdea5ffa295effa0417d22f4dd37b381da9e18b
           path: e1-acquire/b17
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Ventusltd/kuiper-belt
+          ref: 8c1d5c509284e5c9b75d7c3255d338bea0536362
+          path: e1-acquire/d17
+          sparse-checkout: |
+            tools/kuiper-computation/20261126-d1-computation.js
+            tools/kuiper-computation/test_d1_browser.py
+          sparse-checkout-cone-mode: false
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
@@ -103,6 +113,12 @@ jobs:
           cp e1-acquire/d1-auth/tools/kuiper-computation/test_d1_browser.py "$s/d1-auth-browser.py"
           mv e1-acquire/d1-auth "$RUNNER_TEMP/e1-d1-auth"
           mv e1-acquire/{a17,b17} "$s/"
+          test "$(git -C e1-acquire/d17 rev-parse HEAD)" = 8c1d5c509284e5c9b75d7c3255d338bea0536362
+          test "$(git hash-object e1-acquire/d17/tools/kuiper-computation/20261126-d1-computation.js)" = 42dd54673245f736a102ce8792efa4a3da252f0c
+          test "$(git hash-object e1-acquire/d17/tools/kuiper-computation/test_d1_browser.py)" = 41e0f173d91b0696488dd6fd2969e7a1c6849cd7
+          cp e1-acquire/d17/tools/kuiper-computation/20261126-d1-computation.js "$s/d17.js"
+          cp e1-acquire/d17/tools/kuiper-computation/test_d1_browser.py "$s/d17-browser.py"
+          mv e1-acquire/d17 "$RUNNER_TEMP/e1-d17"
           rmdir e1-acquire
           python -B "$s/a17/tools/tacit_a1_semantics.py" acquire --root "$s/semantics"
           gh api repos/Ventusltd/vedic-/actions/artifacts/15140897950/zip > "$s/impact.zip"
@@ -196,6 +212,7 @@ jobs:
       - name: Actual VEDIC compound instruction via signed browser runtime
         run: |
           set -euo pipefail
+          cp "$RUNNER_TEMP/e1-stage/d17.js" tools/kuiper-computation/202611261720-computation.js
           sudo unshare --net -- bash -c '
             set -euo pipefail
             ip link set lo up
@@ -213,4 +230,6 @@ jobs:
             evidence/d1-auth-browser.json
             evidence/d1-auth-webkit.json
             evidence/vedic.json
+            evidence/d17-chromium.json
+            evidence/d17-webkit.json
           if-no-files-found: error
