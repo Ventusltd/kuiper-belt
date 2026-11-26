@@ -1,0 +1,96 @@
+name: Kuiper B - public visual baseline
+on:
+  push:
+    branches: [agent/kuiper-b-unified-edition-20261126]
+    paths: ['.github/workflows/kuiper-b-baseline.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, webkit]
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          pip install playwright==1.55.0
+          python -m playwright install --with-deps ${{ matrix.engine }}
+      - name: Capture public pages (no deployment)
+        env:
+          ENGINE: ${{ matrix.engine }}
+        run: |
+          mkdir -p evidence
+          python - <<'PY'
+          import os, json, hashlib
+          from pathlib import Path
+          from playwright.sync_api import sync_playwright
+          engine = os.environ["ENGINE"]
+          targets = {
+              "original": "https://globalgrid2050.com/kuiper/",
+              "edition12": "https://ventusltd.github.io/kuiper-belt/editions/202611021201/",
+          }
+          sizes = {"desktop": (1440, 900), "portrait": (390, 844), "landscape": (844, 390)}
+          failures = []
+          with sync_playwright() as p:
+              options = {"args": ["--enable-webgl", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"]} if engine == "chromium" else {}
+              browser = getattr(p, engine).launch(**options)
+              for name, url in targets.items():
+                  for size, (w, h) in sizes.items():
+                      stem = f"{engine}-{name}-{size}"
+                      context = browser.new_context(viewport={"width": w, "height": h}, device_scale_factor=1, has_touch=size!="desktop")
+                      page = context.new_page()
+                      errors, requests, failed = [], [], []
+                      page.on("pageerror", lambda e: errors.append(str(e)))
+                      page.on("response", lambda res: requests.append({"url": res.url, "status": res.status}) if res.status >= 400 else None)
+                      page.on("requestfailed", lambda req: failed.append({"url": req.url, "failure": req.failure}))
+                      record = {"url": url, "viewport": [w,h], "engine": engine}
+                      try:
+                          response = page.goto(url, wait_until="domcontentloaded", timeout=60000)
+                          record["http"] = response.status if response else None
+                          page.wait_for_selector("canvas", timeout=60000)
+                          page.wait_for_function("() => {const c=document.querySelector('canvas'); return c && c.width>0 && c.height>0}", timeout=30000)
+                          if name == "edition12":
+                              page.wait_for_selector("#kuiper-menu-bar", timeout=60000)
+                          page.wait_for_timeout(2500)
+                          record.update(page.evaluate("""() => ({
+                            finalUrl:location.href,title:document.title,
+                            text:document.body.innerText.slice(0,12000),
+                            controls:Array.from(document.querySelectorAll('button,a')).filter(e=>e.getClientRects().length).map(e=>({text:e.innerText,href:e.getAttribute('href'),id:e.id})),
+                            canvases:Array.from(document.querySelectorAll('canvas')).map(e=>({id:e.id,width:e.width,height:e.height,rect:e.getBoundingClientRect().toJSON()})),
+                            refusals:document.querySelector('#refuse')?.innerText||null,
+                            modules:Object.keys(window.KY?.modules||{})
+                          })"""))
+                          image=page.screenshot(path=f"evidence/{stem}.png",timeout=30000)
+                          record["screenshot_sha256"]=hashlib.sha256(image).hexdigest()
+                          if record["http"]!=200: raise RuntimeError("Non-200 navigation")
+                          if name == "edition12":
+                              file_button=page.locator("#kuiper-menu-bar").get_by_text("FILE",exact=True)
+                              file_button.click(timeout=10000)
+                              record["file_text"]=page.locator("body").inner_text()[:16000]
+                              image=page.screenshot(path=f"evidence/{stem}-file.png",timeout=30000)
+                              record["file_screenshot_sha256"]=hashlib.sha256(image).hexdigest()
+                      except Exception as exc:
+                          record["capture_failure"]=str(exc)
+                          failures.append(stem)
+                          try: page.screenshot(path=f"evidence/{stem}-failure.png",timeout=10000)
+                          except Exception: pass
+                      finally:
+                          record.update(page_errors=errors,http_errors=requests,failed_requests=failed)
+                          Path(f"evidence/{stem}.json").write_text(json.dumps(record,indent=2))
+                          print(stem, "CAPTURE FAILED" if "capture_failure" in record else "CAPTURED", "page errors:",len(errors),"HTTP errors:",len(requests), flush=True)
+                          context.close()
+              browser.close()
+          if failures: raise SystemExit("Capture failures: "+", ".join(failures))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kuiper-b-baseline-${{ matrix.engine }}
+          path: evidence/
+          if-no-files-found: error
