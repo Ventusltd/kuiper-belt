@@ -44,6 +44,22 @@ jobs:
             tools/kuiper-computation/test_d1_browser.py
           sparse-checkout-cone-mode: false
           persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Ventusltd/vedic-
+          ref: 46d21c7ef45c1133d1ef24039a79b8dd9978d667
+          path: e1-acquire/a1
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Ventusltd/kuiper-belt
+          ref: ebc95eb984f755613d6d1356007a48df32237485
+          path: e1-acquire/d1-auth
+          sparse-checkout: |
+            tools/kuiper-computation/20261126-d1-computation.js
+            tools/kuiper-computation/test_d1_browser.py
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -65,7 +81,17 @@ jobs:
           test "$(git hash-object e1-acquire/d1/tools/kuiper-computation/test_d1_browser.py)" = 6c45e3ea4ee61f5add23a1b48bee8855ed201d6a
           cp e1-acquire/d1/tools/kuiper-computation/test_d1_browser.py "$s/d1-browser.py"
           mv e1-acquire/d1 "$RUNNER_TEMP/e1-d1"
+          mv e1-acquire/a1 "$s/a1"
+          test "$(git -C e1-acquire/d1-auth rev-parse HEAD)" = ebc95eb984f755613d6d1356007a48df32237485
+          test "$(git hash-object e1-acquire/d1-auth/tools/kuiper-computation/20261126-d1-computation.js)" = 2612e1720015ef58978c39ad8a9abd1cdf722398
+          test "$(git hash-object e1-acquire/d1-auth/tools/kuiper-computation/test_d1_browser.py)" = 9b037d0cf24663dd5e54c0c2baddfdbf6e96df1d
+          cp e1-acquire/d1-auth/tools/kuiper-computation/20261126-d1-computation.js "$s/d1-auth.js"
+          cp e1-acquire/d1-auth/tools/kuiper-computation/test_d1_browser.py "$s/d1-auth-browser.py"
+          mv e1-acquire/d1-auth "$RUNNER_TEMP/e1-d1-auth"
           rmdir e1-acquire
+          gh api repos/Ventusltd/vedic-/actions/artifacts/15140897950/zip > "$s/impact.zip"
+          gh api repos/Ventusltd/vedic-/actions/artifacts/15140134078/zip > "$s/b-final.zip"
+          gh api repos/Ventusltd/kuiper-belt/actions/artifacts/15141534328/zip > "$s/e1.zip"
           git merge-base --is-ancestor e625da97e76a7d3b99361e01767e0fef0984c445 HEAD
           git diff --name-only e625da97e76a7d3b99361e01767e0fef0984c445 HEAD > "$s/candidate-changes.txt"
           python - "$s/candidate-changes.txt" <<'PY'
@@ -144,6 +170,7 @@ jobs:
       - name: Authenticated runtime origin and live selective invalidation
         run: |
           set -euo pipefail
+          cp "$RUNNER_TEMP/e1-stage/d1-auth.js" tools/kuiper-computation/202611261720-computation.js
           sudo unshare --net -- bash -c '
             set -euo pipefail
             ip link set lo up
@@ -158,4 +185,5 @@ jobs:
             evidence/browser.json
             evidence/d1-browser.json
             evidence/origin.json
+            evidence/d1-auth-browser.json
           if-no-files-found: error

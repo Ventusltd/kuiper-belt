@@ -50,6 +50,10 @@ def main():
             check("legacy_downgrade_refused",post("/__kuiper/execute",{k:v for k,v in e.items() if k!="challenge"})[0]==403)
             check("duplicate_challenge_refused",post("/__kuiper/execute-auth",e)[0]==400)
             check("cross_origin_refused",post("/__kuiper/execute-auth",e,"https://invalid.example")[0]==403)
+            # Execute D1 own exact trusted UI regression before invalidating sources.
+            subprocess.run([sys.executable,"-B",str(stage/"d1-auth-browser.py")],check=True,timeout=240,env={**os.environ,"BONDS_ZIP":str(stage/"bonds.zip"),"D1_RUNTIME":"1","D1_BROWSER":"chromium","D1_TRUST_JSON":json.dumps({"spki_hex":pub.read_bytes().hex(),"key_id":pin})})
+            check("D1_actual_authenticated_UI",True)
+            Path("evidence/d1-browser.json").replace("evidence/d1-auth-browser.json")
             # Browser verifies using a key passed independently by the launch harness, not retrieved from server.
             with sync_playwright() as p:
                 browser=p.chromium.launch(headless=True)
@@ -93,7 +97,7 @@ def main():
             check("affected_orient_no_execution",code==409 and verify(w,q)["receipt"] is None)
             rows.pop();write_events()
             q=envelope("Vg","orient",points(0,2),16);check("rollback_fails_closed",post("/__kuiper/execute-auth",q)[0]==400)
-            out.write_text(json.dumps({"checks":checks,"PASS":len(checks),"FAIL":0,"scope":"LOCAL_TRUSTED_LAUNCHER_AND_OPERATOR_EVENT_REHEARSAL","independent_review":"OPEN","d1_auth_ui":"OPEN","deployment":"BLOCKED"},sort_keys=True,indent=2))
+            out.write_text(json.dumps({"checks":checks,"PASS":len(checks),"FAIL":0,"scope":"LOCAL_TRUSTED_LAUNCHER_AND_OPERATOR_EVENT_REHEARSAL","independent_review":"OPEN","d1_auth_ui":"PRODUCER_TEST_PASS","deployment":"BLOCKED"},sort_keys=True,indent=2))
             print(out.read_text())
         finally:proc.terminate();proc.wait(timeout=5)
 if __name__=="__main__":main()
