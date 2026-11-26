@@ -1,0 +1,34 @@
+name: Kuiper C snapshot candidate (read only)
+on:
+  pull_request:
+    paths:
+      - 'tools/kuiper_snapshot.py'
+      - 'tests/test_kuiper_snapshot.py'
+      - '.github/workflows/kuiper-c-snapshot-candidate.yml'
+permissions:
+  contents: read
+concurrency:
+  group: kuiper-c-candidate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Test snapshot contract
+        run: python -m unittest discover -s tests -p test_kuiper_snapshot.py -v
+      - name: Reconcile two real immutable harvest generations
+        run: |
+          git fetch --no-tags --depth=2 origin f7a4cb9e3a764a72b7133bb275bb5387ea083be2
+          python tools/kuiper_snapshot.py --pin eec3f1891294af9e93ce6613c10cdf71806802f2 --out "${RUNNER_TEMP}/kuiper-c"
+          python tools/kuiper_snapshot.py --pin f7a4cb9e3a764a72b7133bb275bb5387ea083be2 --previous eec3f1891294af9e93ce6613c10cdf71806802f2 --out "${RUNNER_TEMP}/kuiper-c"
+          python tools/kuiper_snapshot.py --pin f7a4cb9e3a764a72b7133bb275bb5387ea083be2 --previous f7a4cb9e3a764a72b7133bb275bb5387ea083be2 --out "${RUNNER_TEMP}/kuiper-c-repeat"
+          for d in "${RUNNER_TEMP}/kuiper-c-repeat/"*; do diff -r "$d" "${RUNNER_TEMP}/kuiper-c/$(basename "$d")"; done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kuiper-c-read-only-snapshots
+          path: ${{ runner.temp }}/kuiper-c
+          retention-days: 7
