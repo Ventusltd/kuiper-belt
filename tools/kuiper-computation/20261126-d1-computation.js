@@ -1,0 +1,415 @@
+/* kuiper module computation, generation 202611261720 (UTC), Apache-2.0
+   Local research cartridge. Existing layer registry, renderer and placement law.
+   No source bytes or manifest shipped with this module. */
+(() => {
+"use strict";
+const ID="computation", GEN="202611261720";
+// Only an independently trusted local launcher may inject this value BEFORE boot.
+// Never fetch a trust key from the runtime response or from the application origin.
+const trustConfigured=Object.hasOwn(window,"__KUIPER_RUNTIME_TRUST__");
+const launchTrust=trustConfigured?Object.freeze({spki_hex:window.__KUIPER_RUNTIME_TRUST__?.spki_hex,key_id:window.__KUIPER_RUNTIME_TRUST__?.key_id,algorithm:window.__KUIPER_RUNTIME_TRUST__?.algorithm}):null;
+let trustKeyPromise=null,originState="NOT CHECKED",dependencyEpoch=null,currentSigned=null;
+const hex=bytes=>Array.from(bytes,x=>x.toString(16).padStart(2,"0")).join("");
+const unhex=x=>{require(typeof x==="string"&&x.length%2===0&&/^[0-9a-f]+$/.test(x),"INVALID HEX");return Uint8Array.from(x.match(/../g),n=>parseInt(n,16));};
+async function trustedKey(){
+ require(trustConfigured&&launchTrust&&launchTrust.algorithm==="ECDSA-P256-SHA256"&&shaShape(launchTrust.key_id)&&typeof launchTrust.spki_hex==="string"&&launchTrust.spki_hex.length===182&&launchTrust.spki_hex.startsWith("3059301306072a8648ce3d020106082a8648ce3d03010703420004"),"TRUST PIN REQUIRED");
+ if(!trustKeyPromise)trustKeyPromise=(async()=>{
+   const spki=unhex(launchTrust.spki_hex);
+   require(await digest(spki)===launchTrust.key_id,"TRUST PIN MISMATCH");
+   return crypto.subtle.importKey("spki",spki,{name:"ECDSA",namedCurve:"P-256"},false,["verify"]);
+ })();
+ return trustKeyPromise;
+}
+async function signedPayload(raw,challenge,attempt,allowStale=false){
+ const o=JSON.parse(raw);
+ require(o&&Object.keys(o).sort().join(",")==="key_id,payload,signature"&&o.key_id===launchTrust.key_id&&typeof o.payload==="string"&&o.payload.length<=1000000&&typeof o.signature==="string"&&o.signature.length===128,"SIGNED RESPONSE FORMAT / KEY");
+ const key=await trustedKey();
+ require(await crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},key,unhex(o.signature),new TextEncoder().encode(o.payload)),"RUNTIME SIGNATURE INVALID");
+ const body=JSON.parse(o.payload);
+ require(body.auth_schema==="kuiper.runtime-origin.p256.v1"&&body.challenge===challenge&&body.generation===attempt,"AUTHENTICATED RESPONSE REPLAY / GENERATION");
+ require(Number.isSafeInteger(body.dependency_epoch)&&body.dependency_epoch>=0&&Array.isArray(body.stale_operations)&&body.stale_operations.every(x=>["orient","nearest-orient","electrical"].includes(x)),"DEPENDENCY STATE");
+ if(!allowStale)require(!body.stale_operations.includes("orient"),"ORIENT DEPENDENCY STALE");
+ return {raw:o.payload,body,key_id:o.key_id,signature:o.signature};
+}
+const requires=["keyPlace","address","wafer","SPACE","repos","cam","o2","redraw","draw","layers"];
+let K,H,L,rows=[],bonds=[],status="NOT SELECTED",generation=0,proof=null,stageOperation=null,selectedQuery=null,ui,execution="NOT EXECUTED",requestEpoch=0,manifestPromise=null,unknownKeys=[];
+const PIN="821abf96d3e4c2f42e61d578dcefdfbda366c145b067f9cc9206fdaa91b6cf2d";
+const GROUP={Vg:[1,5],Vn:[15,16],Vd:[24,25,26,27],"Vn+Vg":[1,5,15,16]};
+const OPS={Vg:"orient",Vd:"electrical","Vn+Vg":"nearest-orient"};
+const PROPS=["producer_needs","producer_standalone","runtime_effects","typed_ports"];
+const STATES=["DECLARED","DERIVED","OBSERVED","UNKNOWN"];
+const occ=s=>JSON.stringify(["repo","commit","path","blob","first","last"].map(k=>s[k]));
+const numberCanon=v=>!Number.isInteger(v)&&Math.abs(v)<0.0001?v.toExponential().replace(/e([+-])(\d)$/,"e$10$2"):JSON.stringify(v);
+const canon=v=>typeof v==="number"?numberCanon(v):Array.isArray(v)?"["+v.map(canon).join(",")+"]":v!==null&&typeof v==="object"?"{"+Object.keys(v).sort().map(k=>canon(k)+":"+canon(v[k])).join(",")+"}":JSON.stringify(v).replace(/[^\x00-\x7f]/g,c=>"\\u"+c.charCodeAt(0).toString(16).padStart(4,"0"));
+const digest=async raw=>Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",raw)),x=>x.toString(16).padStart(2,"0")).join("");
+const hash=async v=>digest(new TextEncoder().encode(canon(v)));
+function require(ok,why){if(!ok)throw Error(why);}
+async function trustedManifest(){
+ if(!manifestPromise)manifestPromise=(async()=>{
+   const r=await fetch("/__kuiper/manifest",{cache:"no-store"});
+   require(r.ok,"PINNED MANIFEST UNAVAILABLE");
+   const raw=await r.arrayBuffer();require(raw.byteLength<=2000000&&await digest(raw)===PIN,"MANIFEST BYTES MISMATCH");
+   const m=JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(raw));
+   require(m.schema==="vedic.tacit-a.typed-bond-manifest.v1"&&m.admission==="UNCHANGED"&&m.redistribution==="BLOCKED","MANIFEST AUTHORITY");
+   require(m.source_entries.length===8&&m.properties.length===32&&m.typed_bonds.length===5,"MANIFEST COHORT");
+   return m;
+ })().catch(e=>{manifestPromise=null;throw e;});
+ return manifestPromise;
+}
+function property(m,r,name){return m.properties.find(p=>occ(p.source_occurrence)===occ(r.source)&&p.property===name);}
+function expected(m,q){
+ require(Object.keys(q).every(k=>["mode","family","property_name","state","key_min","key_max"].includes(k)),"QUERY FIELD");
+ require(["machine","vedic"].includes(q.mode)&&Object.hasOwn(GROUP,q.family),"QUERY FAMILY");
+ require(!q.property_name||PROPS.includes(q.property_name),"QUERY PROPERTY");
+ require(!q.state||(q.property_name&&STATES.includes(q.state)),"QUERY STATE");
+ for(const k of ["key_min","key_max"])if(q[k]!==undefined)require(/^\d{1,15}$/.test(q[k])&&Number.isSafeInteger(Number(q[k])),"QUERY RANGE");
+ require(q.key_min===undefined||q.key_max===undefined||Number(q.key_min)<=Number(q.key_max),"QUERY RANGE");
+ const rs=m.source_entries.filter(r=>{
+   const k=r.kuiper.key,p=property(m,r,q.property_name);
+   const group=q.mode==="machine"?q.family.split("+").includes(r.module_classification.symbol):GROUP[q.family].map(n=>"GG2050-VEDIC-"+String(n).padStart(6,"0")).includes(r.meaning_id);
+   return group&&(q.key_min===undefined||k>=Number(q.key_min))&&(q.key_max===undefined||k<=Number(q.key_max))&&(!q.property_name||p&&(!q.state||p.state===q.state));
+ }).sort((a,b)=>a.kuiper.key-b.kuiper.key);
+ const rows=rs.map(r=>({key:String(r.kuiper.key),meaning:r.meaning_id,module:r.module_classification.symbol,source:r.source,evidence:property(m,r,q.property_name)?.state??r.kuiper.state}));
+ const bonds=rows.length?m.typed_bonds.filter(b=>q.family==="Vd"?["voltageDropVolts","lossesWatts"].includes(b.from.split(".")[0]):["Vn","Vn+Vg"].includes(q.family)&&["nearestSubstation","selected_location"].includes(b.from.split(".")[0])).map(b=>({from:b.from,to:b.to,state:"CONDITIONAL",conditions:b.conditions??null})):[];
+ return {schema:"kuiper.local-selection.v1",manifest_sha256:PIN,authority:"SELECTION_ONLY_NO_EXECUTION",rows,bonds,bond_scope:"FAMILY_CANDIDATES_NOT_PROVEN_SELECTED_ENDPOINTS",query:q,stage_operation:rows.length===GROUP[q.family].length?(OPS[q.family]??null):null,execution:"NOT_EXECUTED",review:"PENDING",redistribution:"BLOCKED"};
+}
+async function authenticate(body,q,m){
+ const {receipt_sha256,...actual}=body;
+ const want=expected(m,q);
+ require(canon(actual)===canon(want)&&receipt_sha256===await hash(want),"SELECTION EXACT JOIN / RECEIPT MISMATCH");
+ return want;
+}
+function filterRows(m,rs,expr){
+ const unknown=[];
+ const selected=rs.filter(r=>{
+   const source=m.source_entries.find(x=>String(x.kuiper.key)===String(r.key));
+   const checks=expr.map(x=>{
+      if(!x.name){require(!x.state,"STATE WITHOUT PROPERTY");return true;}
+      require(PROPS.includes(x.name)&&(!x.state||STATES.includes(x.state)),"EXPRESSION");
+      const p=property(m,source,x.name);
+      if(!p||p.state==="UNKNOWN"&&x.state&&x.state!=="UNKNOWN")return null;
+      const match=!x.state||p.state===x.state;
+      return x.exclude?!match:match;
+   });
+   if(checks.includes(false))return false;
+   if(checks.includes(null)){unknown.push(r.key);return false;}
+   return true;
+ });
+ return {selected,unknown};
+}
+const ARCHIVE="e83937c040499a7060b03ca2c4969e4414cdca48cb7f28a3ef9039f002486787";
+const DESCRIPTOR="b45e61e955e0d0ddde15495f9be7c3fc4943c3193dd8f318a4249524f2fb5f53";
+const shaText=x=>digest(new TextEncoder().encode(x));
+const bHash=x=>shaText(canon(x)+"\n");
+const shaShape=x=>typeof x==="string"&&/^[0-9a-f]{64}$/.test(x);
+async function validateRuntime(raw,body,request,attempt,selectionProof){
+ const r=body.receipt,pattern={operation:"orient",manifest_sha256:PIN,keys:request.keys};
+ require(body.schema==="kuiper.local-execution.v1"&&body.generation===attempt&&body.selection_receipt_sha256===selectionProof,"STALE / WRONG SELECTION RESPONSE");
+ require(body.request_sha256===await bHash(request)&&body.pattern_sha256===await bHash(pattern),"REQUEST / PATTERN MISMATCH");
+ require(body.state==="EXECUTED_INTERNAL"&&body.review==="PENDING_EXACT_REQUEST_REVIEW"&&body.rights==="BLOCKED"&&body.archive_sha256===ARCHIVE,"RUNTIME STATE / AUTHORITY");
+ require(r&&r.schema==="tacit-b.kuiper-execution.v1"&&r.request_sha256===body.request_sha256&&r.pattern_sha256===body.pattern_sha256&&canon(r.pattern)===canon(pattern),"RECEIPT BINDING");
+ require(r.state===body.state&&r.admission===true&&r.formal_gate==="ADMITTED_ORIENT_ONLY"&&r.archive_sha256===ARCHIVE&&r.descriptor_sha256===DESCRIPTOR&&r.rights==="BLOCKED"&&r.independent_verification==="PENDING_EXACT_REQUEST_REVIEW","RECEIPT AUTHORITY");
+ require(canon(r.nodes)===canon(["distanceKm","initialBearingDeg"])&&shaShape(r.runtime_receipt_sha256)&&shaShape(r.receipt_sha256),"RECEIPT FIELDS");
+ const o=body.output;
+ require(o&&Object.keys(o).sort().join(",")==="distance_km,initial_bearing_deg"&&canon(o)===canon(r.output)&&Number.isFinite(o.distance_km)&&o.distance_km>=0&&Number.isFinite(o.initial_bearing_deg)&&o.initial_bearing_deg>=0&&o.initial_bearing_deg<360,"OUTPUT PORTS");
+ // Preserve Python's exact numeric spellings in the sorted ASCII wire receipt.
+ const wire=raw.match(/"receipt":(\{.*\}),"request_sha256":/s)?.[1];
+ require(wire&&canon(JSON.parse(wire))===canon(r),"RECEIPT WIRE FORMAT");
+ const marker='"receipt_sha256":"'+r.receipt_sha256+'",';
+ require(wire.split(marker).length===2&&await shaText(wire.replace(marker,"")+"\n")===r.receipt_sha256,"RECEIPT DIGEST");
+ return r;
+}
+const inspect=()=>({status,count:rows.length,keys:rows.map(r=>r.key),unknownKeys:unknownKeys.slice(),bonds:bonds.length,proof,
+  rendering:"Edition 12 WebGL2 base / existing Canvas2D overlay",execution,originState,dependencyEpoch});
+function clear(s="NOT SELECTED"){++generation;++requestEpoch;execution="NOT EXECUTED";originState="NOT CHECKED";dependencyEpoch=null;currentSigned=null;unknownKeys=[];rows=[];bonds=[];proof=null;stageOperation=null;selectedQuery=null;status=s;if(ui){ui.result.textContent=s;ui.list.replaceChildren();ui.bond.textContent="";ui.stage.disabled=true;ui.execute.disabled=true;ui.statusCheck.disabled=true;ui.stageStatus.textContent="NOT STAGED";ui.origin.textContent=trustConfigured?"Runtime: trusted launcher pin configured; awaiting execution":"Runtime: unauthenticated research mode";ui.preview.value="";}if(K)K.redraw();}
+function element(tag,parent,text){const el=document.createElement(tag);if(text)el.textContent=text;parent.append(el);return el;}
+function field(parent,label,values){
+ const id="ky-computation-"+label.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/-$/,"");
+ const lab=element("label",parent);lab.htmlFor=id;element("span",lab,label);
+ const el=element(values?"select":"input",lab);el.id=id;el.setAttribute("aria-label",label);
+ if(values)for(const [v,t] of values){const op=element("option",el,t);op.value=v;}
+ return el;
+}
+function key(raw){if(!/^\d+$/.test(String(raw)))throw Error("INVALID KEY");const k=Number(raw);if(!Number.isSafeInteger(k)||k<0||k>=H.SPACE)throw Error("KEY RANGE");return k;}
+async function select(q,expr=[]){
+  clear("SELECTING");const epoch=generation;
+  try{
+    const m=await trustedManifest();if(epoch!==generation)return;
+    const res=await fetch("/__kuiper/select?"+new URLSearchParams(q),{cache:"no-store"});
+    const body=await res.json();if(epoch!==generation)return;
+    if(!res.ok)throw Error(body.error||"REFUSED");
+    if(body.schema!=="kuiper.local-selection.v1"||body.manifest_sha256!=="821abf96d3e4c2f42e61d578dcefdfbda366c145b067f9cc9206fdaa91b6cf2d"||body.authority!=="SELECTION_ONLY_NO_EXECUTION")throw Error("EVIDENCE PIN");
+    await authenticate(body,q,m);if(epoch!==generation)return;
+    const {selected,unknown}=filterRows(m,body.rows,expr);unknownKeys=unknown;
+    if(q.property_name&&q.state&&q.state!=="UNKNOWN"){
+      const baseline=expected(m,{...q,state:"UNKNOWN"});
+      unknownKeys=[...new Set([...unknownKeys,...filterRows(m,baseline.rows,expr).selected.map(r=>r.key)])].sort((a,b)=>Number(a)-Number(b));
+    }
+    const next=selected.map(r=>{
+      const k=key(r.key), a=H.address(k);
+      if(!a||a.silent)throw Error("UNISSUED KEY");
+      const name=H.repos[a.c.repo].name.toLowerCase(),source=r.source.repo.toLowerCase();
+      if(name!==source&&name!==source.split("/").pop())throw Error("REPO MISMATCH");
+      if(!r.source.commit.startsWith(a.c.sha))throw Error("REVISION MISMATCH");
+      return {...r,key:k,xy:H.keyPlace(k)};
+    });
+    if(new Set(next.map(r=>r.key)).size!==next.length)throw Error("DUPLICATE");
+    rows=next;bonds=rows.length?body.bonds:[];proof=expr.some(x=>x.name)?null:body.receipt_sha256;stageOperation=expr.some(x=>x.name)?null:body.stage_operation;selectedQuery=body.query;status="SELECTED · "+rows.length+" authenticated keys · NOT EXECUTED"+(expr.some(x=>x.name)?" · LOCAL EXPRESSION / SELECTION ONLY":"");
+    if(unknownKeys.length)status+=" · "+unknownKeys.length+" indeterminate, not selected";
+    ui.result.textContent=status;ui.stage.disabled=!stageOperation;ui.execute.disabled=stageOperation!=="orient"; if(rows.length)L.set(ID,true);
+    for(const r of rows){
+      const li=element("li",ui.list);
+      const line=element("span",li,r.key+" · "+r.meaning+" · "+r.module+" · "+r.evidence);
+      line.style.color=r.evidence==="UNKNOWN"?"#ffcf78":r.evidence==="OBSERVED"?"#a4efb4":"#78e7ef";
+      const source=m.source_entries.find(x=>String(x.kuiper.key)===String(r.key));
+      element("small",li,PROPS.map(n=>n+": "+(property(m,source,n)?.state??"UNKNOWN")).join(" · "));
+      element("small",li," "+r.source.repo+"@"+r.source.commit.slice(0,12)+" "+r.source.path+":"+r.source.first+"–"+r.source.last+" · exact Stars membership MISSING");
+    }
+    if(unknownKeys.length)element("li",ui.list,"Indeterminate keys (not selected): "+unknownKeys.join(", "));
+    ui.bond.textContent=(bonds.length?"Family candidate ports (not proven selected endpoint edges):\n"+bonds.map(b=>b.from+" → "+b.to+" · CONDITIONAL"+(b.conditions?" · "+JSON.stringify(b.conditions):"")).join("\n"):"No conditional bonds selected");
+    K.redraw();
+  }catch(e){if(epoch===generation)clear("REFUSED · "+e.message);}
+}
+function draw(ctx){
+  if(!L?.get(ID)?.on)return;
+  const c=K.cam,w=ctx.canvas.width,h=ctx.canvas.height;
+  ctx.save();for(const r of rows){
+    const x=(r.xy[0]-c.x)*c.zoom+w/2,y=h/2-(r.xy[1]-c.y)*c.zoom;
+    if(x<-10||x>w+10||y<-10||y>h+10)continue;
+    ctx.strokeStyle=r.evidence==="UNKNOWN"?"#ffcf78":r.evidence==="OBSERVED"?"#a4efb4":"#2ee6e6";ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);ctx.stroke();
+    ctx.fillStyle=ctx.strokeStyle;ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
+  }ctx.restore();
+}
+
+function installVedic(section){
+ const pane=element("fieldset",section);pane.id="ky-vedic-language";element("legend",pane,"VEDIC · plain-English instructions");
+ element("p",pane,"Describe a calculation, supply named points, review the interpretation, then run. Only verified operations are permitted.");
+ const lab=element("label",pane,"Instruction");const instruction=element("textarea",lab);instruction.id="ky-vedic-instruction";lab.htmlFor=instruction.id;instruction.setAttribute("aria-label","VEDIC instruction");instruction.rows=4;instruction.maxLength=1024;instruction.style.cssText="width:100%;max-width:100%;box-sizing:border-box;background:#0b2029;color:#eafafa";
+ const sample=element("button",pane,"Use example instruction");sample.type="button";
+ const locations=element("div",pane);element("p",locations,"Named points · WGS84 longitude and latitude in degrees. Enter only points you reference.");
+ const pointFields={};
+ for(const name of ["A","B","C"]){
+   const group=element("fieldset",locations);element("legend",group,"Point "+name);
+   const pair=["longitude","latitude"].map(axis=>{const e=field(group,"VEDIC "+name+" "+axis);e.type="number";e.step="any";e.inputMode="decimal";e.min=axis==="longitude"?-180:-90;e.max=axis==="longitude"?180:90;return e;});
+   pointFields[name]=pair;
+ }
+ const interpret=element("button",pane,"Preview interpretation");interpret.type="button";
+ const execute=element("button",pane,"Run VEDIC instruction");execute.type="button";execute.disabled=true;
+ const check=element("button",pane,"Check VEDIC receipt status");check.type="button";check.disabled=true;
+ const message=element("p",pane,trustConfigured?"Enter an instruction and named points.":"Trusted local runtime required. No unsigned execution.");message.id="ky-vedic-state";message.setAttribute("role","status");
+ const planList=element("ol",pane);planList.id="ky-vedic-plan";
+ const results=element("div",pane);results.id="ky-vedic-results";results.setAttribute("aria-live","polite");
+ const details=element("details",pane);element("summary",details,"Signed evidence and receipt");const evidence=element("pre",details);evidence.id="ky-vedic-evidence";
+ let revision=0,confirmed=null,receipt=null,phase="NOT INTERPRETED";
+ const changed=()=>{++revision;confirmed=null;receipt=null;phase="NOT INTERPRETED";execute.disabled=true;check.disabled=true;planList.replaceChildren();results.replaceChildren();evidence.textContent="";message.textContent="Inputs changed. Preview the interpretation again.";};
+ instruction.addEventListener("input",changed);for(const pair of Object.values(pointFields))for(const e of pair)e.addEventListener("input",changed);
+ sample.onclick=()=>{instruction.value="Calculate the distance and initial bearing from point A to point B and from point A to point C, then identify the nearer destination.";changed();instruction.focus();};
+ function read(){
+   const text=instruction.value.trim();require(text.length>0&&text.length<=1024,"Enter a VEDIC instruction.");
+   const points={};
+   for(const [name,[lon,lat]] of Object.entries(pointFields)){
+      if(!lon.value&&!lat.value)continue;
+      require(lon.value!==""&&lat.value!==""&&lon.validity.valid&&lat.validity.valid,"Point "+name+" needs both valid longitude and latitude.");
+      const longitude=Number(lon.value),latitude=Number(lat.value);
+      require(Number.isFinite(longitude)&&Number.isFinite(latitude)&&Math.abs(longitude)<=180&&Math.abs(latitude)<=90,"Invalid coordinates for point "+name);
+      points[name]={longitude,latitude};
+   }
+   require(Object.keys(points).length>=2,"Enter at least two named points.");
+   return {instruction:text,inputs:{crs:"WGS84",unit:"degrees",points}};
+ }
+ async function call(path,body,epoch){
+   require(trustConfigured,"Trusted local runtime required; unsigned VEDIC is not permitted.");
+   await trustedKey();require(epoch===revision,"INPUT CHANGED");
+   const attempt=++requestEpoch,challenge=hex(crypto.getRandomValues(new Uint8Array(32)));
+   const res=await fetch(path,{method:"POST",headers:{"Content-Type":"application/json"},cache:"no-store",body:JSON.stringify({...body,generation:attempt,challenge})});
+   const raw=await res.text();require(raw.length<=2000000,"RESPONSE SIZE");
+   require(res.ok||res.status===409,"Runtime unavailable or refused (HTTP "+res.status+").");
+   const signed=await signedPayload(raw,challenge,attempt,true);
+   require(epoch===revision,"INPUT CHANGED");
+   require(signed.body.rights==="BLOCKED","RIGHTS BOUNDARY");
+   return {signed,wire:JSON.parse(raw),ok:res.ok};
+ }
+ async function validatePlan(plan,request){
+   require(plan&&plan.schema==="vedic.compound-plan.v1"&&plan.instruction===request.instruction&&canon(plan.inputs)===canon(request.inputs)&&plan.manifest_sha256===PIN&&shaShape(plan.plan_sha256),"PLAN / INPUT BINDING");
+   require(["PLAN_PROPOSED","PARTIAL_PLAN","ABSTAIN"].includes(plan.state)&&Array.isArray(plan.steps)&&plan.steps.length<=8,"PLAN STATE");
+   if(plan.state==="ABSTAIN"){require(plan.steps.length===0,"ABSTAIN WITH STEPS");return;}
+   require(plan.steps.length>0,"EMPTY PLAN");
+   const manifest=await trustedManifest(),keys=expected(manifest,{mode:"vedic",family:"Vg"}).rows.map(r=>r.key);
+   const ids=new Set();
+   for(const step of plan.steps){
+     require(typeof step.id==="string"&&!ids.has(step.id)&&step.operation==="orient"&&step.meaning_id==="GG2050-VEDIC-000006"&&canon(step.keys)===canon(keys),"UNADMITTED / WRONG SOURCE STEP");ids.add(step.id);
+     const a=request.inputs.points[step.from_point],b=request.inputs.points[step.to_point];
+     require(a&&b&&step.from_point!==step.to_point&&canon(step.inputs)===canon({crs:"WGS84",unit:"degrees",point_a:a,point_b:b})&&Array.isArray(step.depends_on)&&step.depends_on.length===0&&canon(step.outputs)===canon({distance_km:"km",initial_bearing_deg:"degrees"}),"STEP INPUT / UNIT BINDING");
+   }
+   if(plan.comparison!==null)require(plan.comparison.operation==="nearer_destination"&&plan.comparison.state==="REFUSED_NOT_ADMITTED"&&plan.comparison.quantity==="distance_km"&&plan.comparison.unit==="km"&&Array.isArray(plan.comparison.depends_on)&&plan.comparison.depends_on.every(id=>ids.has(id)),"COMPARISON NOT AUTHORISED");
+ }
+ function showPlan(plan){
+   planList.replaceChildren();
+   for(const step of plan.steps)element("li",planList,"Point "+step.from_point+" → "+step.to_point+": distance (km) and initial bearing (degrees).");
+   if(plan.comparison)element("li",planList,"Nearer destination: not authorised; comparison will not execute.");
+ }
+ interpret.onclick=async()=>{
+   changed();const epoch=revision;phase="INTERPRETING";message.textContent="Checking interpretation with trusted VEDIC resolver…";
+   try{
+     const request=read();const {signed,wire,ok}=await call("/__kuiper/vedic-plan-auth",request,epoch);
+     const body=signed.body;require(body.schema==="kuiper.vedic-plan.v1","PLAN RESPONSE SCHEMA");await validatePlan(body.plan,request);
+     if(epoch!==revision)return;
+     showPlan(body.plan);evidence.textContent=JSON.stringify(wire,null,2);
+     if(!ok||body.plan.state==="ABSTAIN"||body.stale_operations.includes("orient")){phase="REFUSED";message.textContent="Cannot run: "+(body.plan.reason||body.state||"source dependency stale");return;}
+     confirmed={request,plan:body.plan};phase="PREVIEW READY";execute.disabled=false;message.textContent=body.plan.state==="PARTIAL_PLAN"?"Preview ready. Only the authorised calculations will run; comparison refused.":"Preview ready. Review the steps, then run.";
+   }catch(e){if(epoch===revision){phase="REFUSED";message.textContent="Cannot interpret: "+e.message;}}
+ };
+ execute.onclick=async()=>{
+   if(!confirmed)return;
+   const selected=confirmed,epoch=++revision;execute.disabled=true;check.disabled=true;receipt=null;results.replaceChildren();phase="EXECUTING";evidence.textContent="";message.textContent="Running verified mathematical operations…";
+   try{
+     const {signed,wire,ok}=await call("/__kuiper/vedic-execute-auth",{...selected.request,plan_sha256:selected.plan.plan_sha256},epoch);
+     const body=signed.body;require(body.schema==="kuiper.vedic-execution.v1"&&canon(body.plan)===canon(selected.plan),"CONFIRMED PLAN MISMATCH");
+     if(!ok||body.stale_operations.includes("orient")){require(body.compound_receipt===null,"REFUSAL WITH RECEIPT");phase="REFUSED";message.textContent="Execution refused: "+body.state;confirmed=null;return;}
+     const r=body.compound_receipt;
+     require(r&&r.schema==="tacit-b.compound-execution.v1"&&canon(r.plan)===canon(selected.plan)&&r.state===(selected.plan.comparison?"PARTIAL_EXECUTED":"EXECUTED_INTERNAL")&&r.rights==="BLOCKED"&&r.independent_review==="OPEN"&&r.context?.challenge===body.challenge&&r.context?.generation===body.generation&&shaShape(r.context?.selection_receipt_sha256)&&shaShape(r.receipt_sha256)&&Array.isArray(r.steps)&&r.steps.length===selected.plan.steps.length,"COMPOUND RECEIPT BINDING");
+     const output=[];
+     for(let i=0;i<r.steps.length;i++){
+       const step=r.steps[i],spec=selected.plan.steps[i],v=step.values;
+       require(step.id===spec.id&&step.from_point===spec.from_point&&step.to_point===spec.to_point&&canon(step.units)===canon(spec.outputs)&&v&&Number.isFinite(v.distance_km)&&v.distance_km>=0&&Number.isFinite(v.initial_bearing_deg)&&v.initial_bearing_deg>=0&&v.initial_bearing_deg<360&&step.bound_receipt&&shaShape(step.bound_receipt.receipt_sha256),"STEP RECEIPT / UNITS");
+       const bound=step.bound_receipt,pattern=bound.pattern_receipt;require(bound.schema==="tacit-b.execution-context.v1"&&canon(bound.context)===canon(r.context)&&pattern?.result?.admission===true&&pattern.result.state==="EXECUTED_INTERNAL"&&canon(pattern.result.output)===canon(v)&&canon(bound.request?.inputs)===canon(spec.inputs)&&canon(bound.request?.keys)===canon(spec.keys),"BOUND INTERMEDIATE");
+       output.push("Point "+step.from_point+" → "+step.to_point+": "+v.distance_km.toFixed(3)+" km · "+v.initial_bearing_deg.toFixed(3)+"° initial bearing");
+     }
+     if(selected.plan.comparison){require(r.comparison&&r.comparison.state==="REFUSED_NOT_ADMITTED"&&r.comparison.value===null&&canon(r.comparison.depends_on)===canon(selected.plan.comparison.depends_on)&&canon(r.comparison.inputs)===canon(r.steps.map(x=>({step_id:x.id,field:"distance_km",unit:"km",receipt_sha256:x.bound_receipt.receipt_sha256}))),"UNAUTHORISED COMPARISON");output.push("Nearer destination: not calculated — comparison is not admitted.");}
+     else require(r.comparison===null,"UNREQUESTED COMPARISON");
+     if(epoch!==revision)return;
+     for(const line of output)element("p",results,line);
+     evidence.textContent=JSON.stringify(wire,null,2);receipt={id:r.receipt_sha256,epoch:body.dependency_epoch};check.disabled=false;
+     phase="REPORTED EXECUTED";message.textContent="Signed result verified at execution. Independent review pending. Recheck receipt status for currency.";
+   }catch(e){if(epoch===revision){phase="REFUSED";message.textContent="Cannot run: "+e.message;results.replaceChildren();evidence.textContent="";}}
+   finally{if(epoch===revision&&confirmed===selected)execute.disabled=false;}
+ };
+ check.onclick=async()=>{
+   if(!receipt)return;const selected=receipt,epoch=++revision;check.disabled=true;execute.disabled=true;message.textContent="Checking signed receipt status…";
+   try{
+     const {signed,wire,ok}=await call("/__kuiper/status-auth",{operation:"orient",receipt_sha256:selected.id},epoch),body=signed.body;
+     require(ok&&body.schema==="kuiper.receipt-status.v1"&&body.operation==="orient"&&body.receipt_sha256===selected.id&&body.dependency_epoch>=selected.epoch&&["CURRENT_FOR_PINNED_INPUT","STALE_HISTORICAL_PRESERVED"].includes(body.state)&&(body.state==="STALE_HISTORICAL_PRESERVED")===body.stale_operations.includes("orient"),"STATUS BINDING");
+     selected.epoch=body.dependency_epoch;phase=body.state==="STALE_HISTORICAL_PRESERVED"?"STALE HISTORICAL":"REPORTED EXECUTED";
+     message.textContent=phase==="STALE HISTORICAL"?"Historical only: dependency changed. Preview and run again when authorised.":"Signed receipt current for pinned inputs, as checked.";
+     if(phase==="STALE HISTORICAL"){results.replaceChildren();confirmed=null;}
+     evidence.textContent+="\n\n"+JSON.stringify(wire,null,2);
+   }catch(e){if(epoch===revision){phase="STATUS UNKNOWN";results.replaceChildren();message.textContent="Status unknown; previous signed receipt is historical only.";}}
+   finally{if(epoch===revision){check.disabled=false;execute.disabled=!confirmed;}}
+ };
+ return {clear:changed,inspect:()=>({phase,confirmed:!!confirmed,receipt:receipt?.id??null})};
+}
+
+function install(k){
+ K=k;H=k.hooks;L=k.modules.layers.api;
+ const section=document.createElement("section");section.id="ky-computation";section.setAttribute("aria-label","Kuiper research selection");
+ const css=element("style",document.head);css.textContent="#ky-computation{padding:8px;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere;color:#d8eeee}#ky-computation label{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0;align-items:center}#ky-computation input,#ky-computation select,#ky-computation button{max-width:100%;min-height:44px;box-sizing:border-box;background:#0b2029;color:#eafafa;border:1px solid #567985;border-radius:4px}#ky-computation fieldset{min-width:0;max-width:100%;box-sizing:border-box}#ky-computation ul{padding-left:18px}#ky-computation small{display:block}#ky-computation pre{white-space:pre-wrap;overflow-wrap:anywhere}";
+ const title=element("h3",section,"Kuiper computational instruments");
+ element("p",section,"Select exact source occurrences using machine predicates or the VEDIC instrument. Both resolve to the same bounded computational addresses; only admitted ORIENT can execute.");
+ const vedic=installVedic(section);
+ const mode=field(section,"Instrument",[["machine","Machine predicate"],["vedic","VEDIC meaning"]]);
+ const instrumentInfo=element("p",section,"Machine: select by Periodic Table module classification.");
+ instrumentInfo.id="ky-computation-instrument-description";mode.setAttribute("aria-describedby",instrumentInfo.id);
+ mode.addEventListener("change",()=>{instrumentInfo.textContent=mode.value==="vedic"?"VEDIC: resolve supported semantic meanings to the same exact source keys. Use the instruction editor above for bounded plain-English interpretation. No arbitrary code execution.":"Machine: select by Periodic Table module classification.";});
+ const family=field(section,"Family / operation",[["Vg","Vg / ORIENT"],["Vn","Vn / nearest only"],["Vn+Vg","Nearest → ORIENT (four-key closure)"],["Vd","Vd / electrical"]]);
+ const prop=field(section,"Property",[["","Any"],["producer_needs","Producer needs"],["producer_standalone","Producer standalone"],["runtime_effects","Runtime effects"],["typed_ports","Typed ports"]]);
+ const state=field(section,"Evidence",[["","Any"],["DERIVED","Derived"],["OBSERVED","Observed"],["UNKNOWN","Unknown"]]);
+ const expression=element("fieldset",section);element("legend",expression,"Additional property expression (local selection only)");
+ const propOptions=[["","None"],...PROPS.map(n=>[n,n])],stateOptions=[["","Any"],...STATES.map(n=>[n,n])];
+ const inc=field(expression,"Intersect property",propOptions),incState=field(expression,"Intersect state",stateOptions);
+ const exc=field(expression,"Exclude property",propOptions),excState=field(expression,"Exclude state",stateOptions);
+ element("p",expression,"UNKNOWN is explicit evidence, not false or zero. Additional expressions cannot execute without an exact server proof.");
+ const min=field(section,"Minimum key"),max=field(section,"Maximum key");min.inputMode=max.inputMode="numeric";
+ const run=element("button",section,"Select");run.type="button";
+ const reset=element("button",section,"Reset");reset.type="button";
+ const result=element("p",section,"NOT SELECTED");result.setAttribute("role","status");result.setAttribute("aria-live","polite");
+ const list=element("ul",section),bond=element("pre",section);
+ const label=element("label",section,"Typed inputs (JSON; explicit user declaration)");const input=element("textarea",label);input.rows=4;input.style.cssText="width:100%;box-sizing:border-box;max-width:100%;background:#0b2029;color:#eafafa";
+ const stage=element("button",section,"Stage B request");stage.type="button";stage.disabled=true;
+ const coords=element("fieldset",section);element("legend",coords,"ORIENT typed WGS84 coordinates (degrees)");
+ const coordFields=["A longitude","A latitude","B longitude","B latitude"].map(n=>{const e=field(coords,n);e.type="number";e.step="any";e.inputMode="decimal";return e;});
+ const execute=element("button",section,"Execute ORIENT");execute.type="button";execute.disabled=true;
+ const stageStatus=element("p",section,"NOT STAGED");stageStatus.setAttribute("role","status");
+ const statusCheck=element("button",section,"Check receipt status");statusCheck.type="button";statusCheck.disabled=true;
+ const origin=element("p",section,trustConfigured?"Runtime: trusted launcher pin configured; awaiting execution":"Runtime: unauthenticated research mode");origin.id="ky-computation-origin";origin.setAttribute("aria-live","polite");
+ const preview=element("textarea",section);preview.readOnly=true;preview.rows=4;preview.setAttribute("aria-label","Local typed request and selection receipt");preview.style.cssText=input.style.cssText;
+ ui={result,list,bond,stage,execute,stageStatus,preview,origin,statusCheck};
+ function changed(){++requestEpoch;execution="NOT EXECUTED";originState="NOT CHECKED";dependencyEpoch=null;currentSigned=null;statusCheck.disabled=true;preview.value="";stageStatus.textContent="INPUT CHANGED · NOT EXECUTED";origin.textContent=trustConfigured?"Runtime: awaiting new authenticated execution":"Runtime: unauthenticated research mode";}
+ input.addEventListener("input",changed);for(const e of coordFields)e.addEventListener("input",changed);
+ execute.onclick=async()=>{
+   const epoch=generation,attempt=++requestEpoch;preview.value="";execution="EXECUTING";originState="NOT CHECKED";dependencyEpoch=null;currentSigned=null;statusCheck.disabled=true;stageStatus.textContent="EXECUTING · independent review pending";
+   try{
+     require(stageOperation==="orient"&&proof&&rows.length===2,"NO ADMITTED ORIENT SELECTION");
+     const v=coordFields.map(e=>{require(e.value.trim()!=="","COORDINATE REQUIRED");return Number(e.value);});
+     require(v.every(Number.isFinite)&&Math.abs(v[0])<=180&&Math.abs(v[2])<=180&&Math.abs(v[1])<=90&&Math.abs(v[3])<=90,"COORDINATE RANGE");
+     const request={schema:"tacit-b.kuiper-request.v1",operation:"orient",manifest_sha256:PIN,keys:rows.map(r=>String(r.key)),inputs:{crs:"WGS84",unit:"degrees",point_a:{longitude:v[0],latitude:v[1]},point_b:{longitude:v[2],latitude:v[3]}}};
+     const envelope={request,query:selectedQuery,selection_receipt_sha256:proof,generation:attempt};
+     if(trustConfigured){await trustedKey();envelope.challenge=hex(crypto.getRandomValues(new Uint8Array(32)));}
+     if(epoch!==generation||attempt!==requestEpoch)return;
+     const response=await fetch(trustConfigured?"/__kuiper/execute-auth":"/__kuiper/execute",{method:"POST",headers:{"Content-Type":"application/json"},cache:"no-store",body:JSON.stringify(envelope)});
+     let raw=await response.text();if(epoch!==generation||attempt!==requestEpoch)return;
+     require(raw.length<=2000000,"RESPONSE SIZE");
+     require(response.ok,"RUNTIME REFUSED · HTTP "+response.status);
+     let body,attestation=null;
+     if(trustConfigured){attestation=await signedPayload(raw,envelope.challenge,attempt);raw=attestation.raw;body=attestation.body;}
+     else body=JSON.parse(raw);
+     const r=await validateRuntime(raw,body,request,attempt,proof);
+     if(attestation){const p=body.pattern_receipt;require(p&&shaShape(p.receipt_sha256)&&p.schema==="tacit-b.kuiper-execution.v2"&&canon(p.legacy_receipt)===canon(r)&&canon(p.result.output)===canon(body.output)&&p.rights==="BLOCKED"&&p.independent_verification==="PENDING_EXACT_REQUEST_REVIEW","SIGNED PATTERN RECEIPT");}
+     if(epoch!==generation||attempt!==requestEpoch)return;
+     execution="REPORTED EXECUTED";
+     originState=attestation?"SIGNATURE VERIFIED":"UNAUTHENTICATED RESEARCH";
+     dependencyEpoch=attestation?body.dependency_epoch:null;
+     if(attestation){currentSigned={id:body.pattern_receipt.receipt_sha256,epoch:dependencyEpoch};statusCheck.disabled=false;}
+     origin.textContent=attestation?"Runtime origin: signature verified at execution · dependency epoch "+dependencyEpoch+" · recheck for current status":"Runtime origin: NOT authenticated · correlated research receipt only";
+     stageStatus.textContent="RUNTIME REPORTED EXECUTED · "+body.output.distance_km+" km · "+body.output.initial_bearing_deg+"° · receipt correlated · independent review pending";
+     preview.value=JSON.stringify({request,selection_receipt_sha256:proof,generation:attempt,receipt:r,review:"PENDING_EXACT_REQUEST_REVIEW",rights:"BLOCKED",origin:originState,...(attestation?{runtime_origin:{key_id:attestation.key_id,signature:attestation.signature,payload:attestation.raw,challenge:envelope.challenge,dependency_epoch:dependencyEpoch,pattern_receipt_sha256:currentSigned.id}}:{})},null,2);
+   }catch(e){if(epoch===generation&&attempt===requestEpoch){execution="REFUSED";originState="REFUSED";dependencyEpoch=null;preview.value="";origin.textContent="Runtime: no accepted execution evidence";stageStatus.textContent="REFUSED · "+e.message;}}
+ };
+ statusCheck.onclick=async()=>{
+   if(!currentSigned)return;
+   const selected=currentSigned,epoch=generation,attempt=++requestEpoch,challenge=hex(crypto.getRandomValues(new Uint8Array(32)));
+   statusCheck.disabled=true;origin.textContent="Checking signed receipt status…";
+   try{
+     const response=await fetch("/__kuiper/status-auth",{method:"POST",headers:{"Content-Type":"application/json"},cache:"no-store",body:JSON.stringify({challenge,generation:attempt,operation:"orient",receipt_sha256:selected.id})});
+     const raw=await response.text();require(response.ok&&raw.length<=2000000,"STATUS REFUSED");
+     const {body}=await signedPayload(raw,challenge,attempt,true);
+     require(body.schema==="kuiper.receipt-status.v1"&&body.operation==="orient"&&body.receipt_sha256===selected.id&&body.rights==="BLOCKED"&&body.dependency_epoch>=selected.epoch,"STATUS BINDING");
+     require(["CURRENT_FOR_PINNED_INPUT","STALE_HISTORICAL_PRESERVED"].includes(body.state)&&(body.state==="STALE_HISTORICAL_PRESERVED")===body.stale_operations.includes("orient"),"STATUS STATE");
+     if(epoch!==generation||attempt!==requestEpoch||selected!==currentSigned)return;
+     dependencyEpoch=body.dependency_epoch;selected.epoch=dependencyEpoch;
+     execution=body.state==="STALE_HISTORICAL_PRESERVED"?"STALE HISTORICAL":"REPORTED EXECUTED";
+     originState=body.state;
+     origin.textContent=execution==="STALE HISTORICAL"?"Runtime: signed status STALE · historical receipt preserved · not current":"Runtime: signed status current for pinned inputs · epoch "+dependencyEpoch+" · as checked";
+     if(execution==="STALE HISTORICAL")stageStatus.textContent="STALE · previous output historical only · fresh execution blocked by dependency";
+     const history=JSON.parse(preview.value);history.latest_status={state:body.state,wire:JSON.parse(raw)};preview.value=JSON.stringify(history,null,2);
+   }catch(e){if(epoch===generation&&attempt===requestEpoch&&selected===currentSigned){originState="STATUS UNKNOWN";execution="STATUS UNKNOWN";origin.textContent="Runtime: status unavailable · prior receipt historical only";stageStatus.textContent="STATUS UNKNOWN · "+e.message;}}
+   finally{if(epoch===generation&&attempt===requestEpoch&&selected===currentSigned)statusCheck.disabled=false;}
+ };
+ for(const el of [mode,family,prop,state,min,max,reset,run])el.addEventListener("change",()=>{preview.value="";});
+ reset.addEventListener("click",()=>{preview.value="";input.value="";});
+ run.addEventListener("click",()=>{preview.value="";});
+ stage.onclick=async()=>{
+   changed();const epoch=generation,attempt=++requestEpoch,raw=input.value;
+   try{
+     if(!stageOperation||!proof||!rows.length||raw.length>16000)throw Error("NO COMPLETE SUPPORTED SELECTION OR INPUT TOO LARGE");
+     const inputs=JSON.parse(raw);if(!inputs||Array.isArray(inputs)||typeof inputs!=="object")throw Error("TYPED INPUT OBJECT REQUIRED");
+     const request={schema:"tacit-b.kuiper-request.v1",operation:stageOperation,manifest_sha256:"821abf96d3e4c2f42e61d578dcefdfbda366c145b067f9cc9206fdaa91b6cf2d",keys:rows.map(r=>String(r.key)),inputs};
+     const res=await fetch("/__kuiper/receipt",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({request,query:selectedQuery,selection_receipt_sha256:proof})});
+     const observed=await res.json();
+     if(epoch!==generation||attempt!==requestEpoch||raw!==input.value)return;
+     if(!res.ok)throw Error(observed.error||"RECEIPT REFUSED");
+     require(observed.request_sha256===await bHash(request)&&observed.pattern_sha256===await bHash({operation:request.operation,manifest_sha256:PIN,keys:request.keys}),"STAGED REQUEST BINDING");
+     if(epoch!==generation||attempt!==requestEpoch)return;
+     preview.value=JSON.stringify({request,request_sha256:observed.request_sha256,pattern_sha256:observed.pattern_sha256,selection_receipt_sha256:proof,execution:"NOT EXECUTED",redistribution:"BLOCKED"},null,2);
+     stageStatus.textContent=observed.scope?"HISTORICAL RECEIPT REPORTED · NOT LIVE EXECUTION · output withheld":"STAGED ONLY · NOT EXECUTED";
+   }catch(e){if(epoch===generation&&attempt===requestEpoch)stageStatus.textContent="REFUSED · "+e.message;}
+ };
+ for(const el of [mode,family,prop,state,min,max,inc,incState,exc,excState])el.addEventListener("change",()=>clear("INPUT CHANGED · NOT SELECTED"));
+ for(const el of [min,max])el.addEventListener("input",()=>clear("INPUT CHANGED · NOT SELECTED"));
+ reset.onclick=()=>{vedic.clear();min.value=max.value=prop.value=state.value=inc.value=incState.value=exc.value=excState.value="";for(const e of coordFields)e.value="";clear();mode.focus();};
+ run.onclick=()=>{const q={mode:mode.value,family:family.value};for(const [n,e] of [["property_name",prop],["state",state],["key_min",min],["key_max",max]])if(e.value)q[n]=e.value;select(q,[{name:inc.value,state:incState.value,exclude:false},{name:exc.value,state:excState.value,exclude:true}]);};
+ K.panels.add("wafer",section,"Computational selection");
+ const wait=()=>{if(!L.get(ID)){setTimeout(wait,100);return;}L.register({id:ID,module:ID,load:async()=>{await H.wafer;const res=await fetch("/__kuiper/select?mode=machine&family=Vg"); if(!res.ok)throw Error("Evidence unavailable");const d=await res.json();if(d.manifest_sha256!=="821abf96d3e4c2f42e61d578dcefdfbda366c145b067f9cc9206fdaa91b6cf2d")throw Error("Evidence pin");return {placed:d.rows.length,total:d.rows.length,why:"Availability probe only; selection requires authenticated manifest"};},draw});};wait();
+ return Object.freeze({inspect,select,clear,inspectVedic:vedic.inspect});
+}
+window.KY.register({schema:"kuiper.module.v1",id:ID,generation:GEN,requires,provides:[ID],install,inspect});
+})();
