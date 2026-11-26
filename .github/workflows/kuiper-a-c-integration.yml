@@ -1,0 +1,46 @@
+name: Kuiper A-C integration candidate
+on:
+  push:
+    branches: [agent/kuiper-a-code-counter-20261126]
+    paths: ['.github/workflows/kuiper-a-c-integration.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  integrated:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Retrieve pinned source and independent validator
+        run: |
+          git fetch --no-tags --depth=2 origin f7a4cb9e3a764a72b7133bb275bb5387ea083be2
+          git fetch --no-tags --depth=1 origin a68bd60e44f5d2afca49e429b1f956946754a360
+          git show a68bd60e44f5d2afca49e429b1f956946754a360:tools/kuiper_snapshot.py > "$RUNNER_TEMP/kuiper_snapshot.py"
+      - name: Download exact A receipt
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 45872610300
+          name: kuiper-counter-candidate
+          path: ${{ runner.temp }}/a-receipt
+      - name: Independent C admission of actual expanded measurement
+        run: |
+          cd "$RUNNER_TEMP/a-receipt"
+          echo '018fe85e52d9c30214d70bf38fe97f1a6f13727b17c29c5ab9b1ab49845c07b4  counter-candidate.json' | sha256sum -c -
+          cd "$GITHUB_WORKSPACE"
+          python "$RUNNER_TEMP/kuiper_snapshot.py" --pin f7a4cb9e3a764a72b7133bb275bb5387ea083be2 --previous eec3f1891294af9e93ce6613c10cdf71806802f2 --counter "$RUNNER_TEMP/a-receipt/counter-candidate.json" --out "$RUNNER_TEMP/kuiper-integrated" | tee "$RUNNER_TEMP/integrated-receipt.json"
+          python "$RUNNER_TEMP/kuiper_snapshot.py" --pin f7a4cb9e3a764a72b7133bb275bb5387ea083be2 --previous eec3f1891294af9e93ce6613c10cdf71806802f2 --counter "$RUNNER_TEMP/a-receipt/counter-candidate.json" --out "$RUNNER_TEMP/kuiper-repeat"
+          diff -r "$RUNNER_TEMP/kuiper-integrated" "$RUNNER_TEMP/kuiper-repeat"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kuiper-a-c-integrated
+          path: |
+            ${{ runner.temp }}/kuiper-integrated
+            ${{ runner.temp }}/integrated-receipt.json
+          if-no-files-found: error
