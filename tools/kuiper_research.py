@@ -2,7 +2,8 @@
 python tools/kuiper_research.py /path/to/bonds.zip --port 8765
 Open http://127.0.0.1:8765/editions/202611021201/
 """
-import argparse, hashlib, json, time, tracemalloc, zipfile
+import argparse, hashlib, json, time, tracemalloc, zipfile, threading
+from kuiper_runtime import Runtime, strict_body, execute_envelope, MAX_BODY
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
@@ -104,21 +105,46 @@ def match_receipt(space,b,envelope):
     return {**pending,"state":out["state"],"scope":"HISTORICAL_PINNED_B_EXECUTION_NOT_LIVE","output":out["output"],
         "admission":out["admission"],"formal_gate":out["formal_gate"],"receipt_sha256":out["receipt_sha256"],
         "producer_proof_sha256":B_JSON,"review":"PENDING_EXACT_REQUEST_REVIEW"}
-def serve(space,port,b=None):
+def serve(space,port,b=None,runtime=None):
+    slots=threading.BoundedSemaphore(8)
+    class LocalServer(ThreadingHTTPServer):
+        def process_request(self,request,address):
+            if not slots.acquire(blocking=False):
+                self.shutdown_request(request);return
+            try:super().process_request(request,address)
+            except BaseException:slots.release();raise
+        def process_request_thread(self,request,address):
+            try:super().process_request_thread(request,address)
+            finally:slots.release()
     class Handler(SimpleHTTPRequestHandler):
         def __init__(self,*a,**kw):super().__init__(*a,directory=str(ROOT),**kw)
+        def setup(self):
+            self.request.settimeout(5);super().setup()
+        def do_HEAD(self):self.send_error(405)
         def send_bytes(self,raw,kind="application/json",status=200):
             self.send_response(status);self.send_header("Content-Type",kind);self.send_header("Content-Length",str(len(raw)))
-            self.send_header("Cache-Control","no-store");self.end_headers();self.wfile.write(raw)
+            self.send_header("Cache-Control","no-store");self.send_header("X-Content-Type-Options","nosniff");self.end_headers();self.wfile.write(raw)
         def do_POST(self):
-            if self.path!="/__kuiper/receipt" or self.headers.get("Host")!=f"127.0.0.1:{port}" or self.headers.get("Origin")!=f"http://127.0.0.1:{port}":
+            if (self.path not in ("/__kuiper/receipt","/__kuiper/execute")
+                or self.headers.get_all("Host")!=[f"127.0.0.1:{port}"]
+                or self.headers.get_all("Origin")!=[f"http://127.0.0.1:{port}"]
+                or self.headers.get("Sec-Fetch-Site") not in (None,"same-origin")
+                or self.headers.get("Transfer-Encoding") is not None):
                 self.send_error(403);return
             try:
-                n=int(self.headers.get("Content-Length","0"))
-                require(0<n<=32000 and self.headers.get("Content-Type")=="application/json","REQUEST_SIZE_TYPE")
-                body=json.loads(self.rfile.read(n))
-                self.send_bytes(canonical(match_receipt(space,b,body)))
-            except (ValueError,KeyError,TypeError) as e:self.send_bytes(canonical({"error":str(e)}),status=400)
+                lengths=self.headers.get_all("Content-Length") or []
+                require(len(lengths)==1 and lengths[0].isascii() and lengths[0].isdigit() and len(lengths[0])<=6,"REQUEST_LENGTH")
+                n=int(lengths[0])
+                require(0<n<=MAX_BODY and self.headers.get_all("Content-Type")==["application/json"],"REQUEST_SIZE_TYPE")
+                raw=self.rfile.read(n)
+                require(len(raw)==n,"INCOMPLETE_BODY")
+                body=strict_body(raw)
+                if self.path=="/__kuiper/execute":
+                    status,result=execute_envelope(space,body,runtime,match_receipt)
+                    self.send_bytes(canonical(result),status=status)
+                else:self.send_bytes(canonical(match_receipt(space,b,body)))
+            except (ValueError,KeyError,TypeError,AttributeError,RecursionError,TimeoutError) as e:
+                self.send_bytes(canonical({"state":"REFUSED","error":"INVALID_REQUEST"}),status=400)
         def do_GET(self):
             # Restrict the local evidence endpoint to same-origin browser and loopback.
             if self.headers.get("Host")!=f"127.0.0.1:{port}" or self.headers.get("Sec-Fetch-Site")=="cross-site":
@@ -143,7 +169,7 @@ def serve(space,port,b=None):
                     else:self.send_error(404)
                 else:super().do_GET()
             else:self.send_error(404)
-    ThreadingHTTPServer(("127.0.0.1",port),Handler).serve_forever()
+    with LocalServer(("127.0.0.1",port),Handler) as server:server.serve_forever()
 def benchmark(space):
     repeats=1000
     tracemalloc.start();t=time.perf_counter_ns()
@@ -153,8 +179,8 @@ def benchmark(space):
     return {"cohort":8,"repeats":repeats,"selection_and_receipt_total_ns":elapsed,"peak_python_traced_bytes":peak,
       "projection_with_node_startup_ns":projection,"gpu":"NOT_RUN","rendering":"NOT_MEASURED"}
 def main():
-    p=argparse.ArgumentParser();p.add_argument("zip",type=Path);p.add_argument("--port",type=int,default=8765);p.add_argument("--benchmark",action="store_true");p.add_argument("--b-proof",type=Path)
+    p=argparse.ArgumentParser();p.add_argument("zip",type=Path);p.add_argument("--port",type=int,default=8765);p.add_argument("--benchmark",action="store_true");p.add_argument("--b-proof",type=Path);p.add_argument("--runtime-stage",type=Path)
     a=p.parse_args();t=time.perf_counter_ns();s=Space(load(a.zip));parse=time.perf_counter_ns()-t
     if a.benchmark:print(json.dumps({**benchmark(s),"local_zip_load_and_validation_ns":parse},sort_keys=True))
-    else:serve(s,a.port,load_b(a.b_proof))
+    else:serve(s,a.port,load_b(a.b_proof),Runtime(a.runtime_stage,a.zip) if a.runtime_stage else None)
 if __name__=="__main__":main()

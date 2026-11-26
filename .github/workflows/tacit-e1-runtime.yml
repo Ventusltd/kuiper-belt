@@ -1,0 +1,88 @@
+name: TACIT E1 local runtime integration
+on:
+  pull_request:
+    paths:
+      - 'tools/kuiper_runtime.py'
+      - 'tools/kuiper_research.py'
+      - 'tools/test_kuiper_runtime.py'
+      - '.github/workflows/tacit-e1-runtime.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  runtime:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Ventusltd/vedic-
+          ref: 2ccc717933f97e7d191dae85360559a12de7ed21
+          path: e1-acquire/factory
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Ventusltd/vedic-
+          ref: dbca4db3658850f421e8f7319b7cef7e540c1a46
+          path: e1-acquire/b
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Acquire fixed reviewed inputs, never caller-selected
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          s="$RUNNER_TEMP/e1-stage"
+          p="$RUNNER_TEMP/e1-input"
+          mkdir -p "$s" "$p" evidence
+          mv e1-acquire/{factory,b} "$s/"
+          rmdir e1-acquire
+          gh api repos/Ventusltd/vedic-/actions/artifacts/15138897783/zip > "$s/bonds.zip"
+          echo "649209e8723af1efd4c73f85ebd90b524a2312907d8a5e24759c8bf72ad1f72a  $s/bonds.zip" | sha256sum -c -
+          gh api repos/Ventusltd/vedic-/actions/artifacts/15126683549/zip > "$p/producer.zip"
+          python - "$p" <<'PY'
+          import pathlib,sys,zipfile,hashlib
+          p=pathlib.Path(sys.argv[1])
+          assert p.joinpath("producer.zip").stat().st_size<=8_000_000
+          with zipfile.ZipFile(p/"producer.zip") as z:
+              for src,dest,digest in [("source-receipt/receipt.json","receipt.json","83147e90c0f0831ee1f82ce5e721a3521dc843421a96ae9cba3425343d0b3c19"),("source-receipt/v9-geodesy.mjs","module.mjs","af9b5a8796b51a1e4368491b98961a197adec539f2fa0f3ed226552a876864bb")]:
+                  assert z.namelist().count(src)==1 and z.getinfo(src).file_size<=2_000_000
+                  raw=z.read(src);assert hashlib.sha256(raw).hexdigest()==digest
+                  p.joinpath(dest).write_bytes(raw)
+          PY
+          curl -fsSL --max-time 60 --max-filesize 2097152 https://raw.githubusercontent.com/Ventusltd/ventus-grid-engine/487ec7bd38dfa5aecb1c75da53b4a866ab2101cb/LICENSE -o "$p/LICENSE"
+          curl -fsSL --max-time 60 --max-filesize 2097152 https://raw.githubusercontent.com/Ventusltd/vedic-/2adc1fa9c52f1d242e601b1580927996e7cb31da/tools/package_builder.py -o "$p/prototype.py"
+          test "$(git hash-object "$p/LICENSE")" = d645695673349e3947e8e5ae42332d0ac3164cd7
+          test "$(git hash-object "$p/prototype.py")" = 63849940adf32580e5c3aab4ea9dc2b36a35c319
+      - name: Reproduce admitted archive and actual HTTP execution inside offline namespace
+        run: |
+          set -euo pipefail
+          s="$RUNNER_TEMP/e1-stage"
+          p="$RUNNER_TEMP/e1-input"
+          mkdir "$p/out"
+          sudo unshare --net -- bash -c '
+            set -euo pipefail
+            ip link set lo up
+            exec setpriv --reuid "$1" --regid "$2" --clear-groups env -i PATH="$3" HOME=/nonexistent PYTHONDONTWRITEBYTECODE=1 bash -c "
+              set -euo pipefail
+              python -B \"\$1/factory/tools/package_factory.py\" build --descriptor \"\$1/factory/packages/factory/admissions/orient.json\" --inputs \"\$2\" --out \"\$2/out/package.zip\" > \"\$1/build-receipt.json\"
+              mv \"\$2/out/package.zip\" \"\$1/package.zip\"
+              python -B tools/test_kuiper_runtime.py \"\$1/bonds.zip\" \"\$1\" evidence/runtime.json
+            " bash "$4" "$5"
+          ' bash "$(id -u)" "$(id -g)" "$PATH" "$s" "$p"
+          sha256sum "$s/package.zip" evidence/runtime.json
+          echo 'No live endpoint, source bytes, or package archive published.'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tacit-e1-sanitised-runtime-proof
+          path: evidence/runtime.json
+          if-no-files-found: error
