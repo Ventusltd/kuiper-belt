@@ -4,6 +4,33 @@
 (() => {
 "use strict";
 const ID="computation", GEN="202611261720";
+// Only an independently trusted local launcher may inject this value BEFORE boot.
+// Never fetch a trust key from the runtime response or from the application origin.
+const trustConfigured=Object.hasOwn(window,"__KUIPER_RUNTIME_TRUST__");
+const launchTrust=trustConfigured?Object.freeze({spki_hex:window.__KUIPER_RUNTIME_TRUST__?.spki_hex,key_id:window.__KUIPER_RUNTIME_TRUST__?.key_id}):null;
+let trustKeyPromise=null,originState="NOT CHECKED",dependencyEpoch=null;
+const hex=bytes=>Array.from(bytes,x=>x.toString(16).padStart(2,"0")).join("");
+const unhex=x=>{require(typeof x==="string"&&x.length%2===0&&/^[0-9a-f]+$/.test(x),"INVALID HEX");return Uint8Array.from(x.match(/../g),n=>parseInt(n,16));};
+async function trustedKey(){
+ require(trustConfigured&&launchTrust&&shaShape(launchTrust.key_id)&&typeof launchTrust.spki_hex==="string"&&launchTrust.spki_hex.length===88,"TRUST PIN REQUIRED");
+ if(!trustKeyPromise)trustKeyPromise=(async()=>{
+   const spki=unhex(launchTrust.spki_hex);
+   require(await digest(spki)===launchTrust.key_id,"TRUST PIN MISMATCH");
+   return crypto.subtle.importKey("spki",spki,{name:"Ed25519"},false,["verify"]);
+ })();
+ return trustKeyPromise;
+}
+async function signedPayload(raw,challenge,attempt){
+ const o=JSON.parse(raw);
+ require(o&&Object.keys(o).sort().join(",")==="key_id,payload,signature"&&o.key_id===launchTrust.key_id&&typeof o.payload==="string"&&o.payload.length<=1000000&&typeof o.signature==="string"&&o.signature.length===128,"SIGNED RESPONSE FORMAT / KEY");
+ const key=await trustedKey();
+ require(await crypto.subtle.verify({name:"Ed25519"},key,unhex(o.signature),new TextEncoder().encode(o.payload)),"RUNTIME SIGNATURE INVALID");
+ const body=JSON.parse(o.payload);
+ require(body.auth_schema==="kuiper.runtime-origin.v1"&&body.challenge===challenge&&body.generation===attempt,"AUTHENTICATED RESPONSE REPLAY / GENERATION");
+ require(Number.isSafeInteger(body.dependency_epoch)&&body.dependency_epoch>=0&&Array.isArray(body.stale_operations)&&body.stale_operations.every(x=>["orient","nearest-orient","electrical"].includes(x)),"DEPENDENCY STATE");
+ require(!body.stale_operations.includes("orient"),"ORIENT DEPENDENCY STALE");
+ return {raw:o.payload,body,key_id:o.key_id,signature:o.signature};
+}
 const requires=["keyPlace","address","wafer","SPACE","repos","cam","o2","redraw","draw","layers"];
 let K,H,L,rows=[],bonds=[],status="NOT SELECTED",generation=0,proof=null,stageOperation=null,selectedQuery=null,ui,execution="NOT EXECUTED",requestEpoch=0,manifestPromise=null,unknownKeys=[];
 const PIN="821abf96d3e4c2f42e61d578dcefdfbda366c145b067f9cc9206fdaa91b6cf2d";
@@ -93,8 +120,8 @@ async function validateRuntime(raw,body,request,attempt,selectionProof){
  return r;
 }
 const inspect=()=>({status,count:rows.length,keys:rows.map(r=>r.key),unknownKeys:unknownKeys.slice(),bonds:bonds.length,proof,
-  rendering:"Edition 12 WebGL2 base / existing Canvas2D overlay",execution});
-function clear(s="NOT SELECTED"){++generation;++requestEpoch;execution="NOT EXECUTED";unknownKeys=[];rows=[];bonds=[];proof=null;stageOperation=null;selectedQuery=null;status=s;if(ui){ui.result.textContent=s;ui.list.replaceChildren();ui.bond.textContent="";ui.stage.disabled=true;ui.execute.disabled=true;ui.stageStatus.textContent="NOT STAGED";ui.preview.value="";}if(K)K.redraw();}
+  rendering:"Edition 12 WebGL2 base / existing Canvas2D overlay",execution,originState,dependencyEpoch});
+function clear(s="NOT SELECTED"){++generation;++requestEpoch;execution="NOT EXECUTED";originState="NOT CHECKED";dependencyEpoch=null;unknownKeys=[];rows=[];bonds=[];proof=null;stageOperation=null;selectedQuery=null;status=s;if(ui){ui.result.textContent=s;ui.list.replaceChildren();ui.bond.textContent="";ui.stage.disabled=true;ui.execute.disabled=true;ui.stageStatus.textContent="NOT STAGED";ui.origin.textContent=trustConfigured?"Runtime: trusted launcher pin configured; awaiting execution":"Runtime: unauthenticated research mode";ui.preview.value="";}if(K)K.redraw();}
 function element(tag,parent,text){const el=document.createElement(tag);if(text)el.textContent=text;parent.append(el);return el;}
 function field(parent,label,values){
  const id="ky-computation-"+label.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/-$/,"");
@@ -157,8 +184,12 @@ function install(k){
  K=k;H=k.hooks;L=k.modules.layers.api;
  const section=document.createElement("section");section.id="ky-computation";section.setAttribute("aria-label","Kuiper research selection");
  const css=element("style",document.head);css.textContent="#ky-computation{padding:8px;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere;color:#d8eeee}#ky-computation label{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0;align-items:center}#ky-computation input,#ky-computation select,#ky-computation button{max-width:100%;min-height:44px;box-sizing:border-box;background:#0b2029;color:#eafafa;border:1px solid #567985;border-radius:4px}#ky-computation fieldset{min-width:0;max-width:100%;box-sizing:border-box}#ky-computation ul{padding-left:18px}#ky-computation small{display:block}#ky-computation pre{white-space:pre-wrap;overflow-wrap:anywhere}";
- const title=element("h3",section,"Computational selection — local research");
+ const title=element("h3",section,"Kuiper computational instruments");
+ element("p",section,"Select exact source occurrences using machine predicates or the VEDIC instrument. Both resolve to the same bounded computational addresses; only admitted ORIENT can execute.");
  const mode=field(section,"Instrument",[["machine","Machine predicate"],["vedic","VEDIC meaning"]]);
+ const instrumentInfo=element("p",section,"Machine: select by Periodic Table module classification.");
+ instrumentInfo.id="ky-computation-instrument-description";mode.setAttribute("aria-describedby",instrumentInfo.id);
+ mode.addEventListener("change",()=>{instrumentInfo.textContent=mode.value==="vedic"?"VEDIC: resolve supported semantic meanings to the same exact source keys. No free-text interpretation or arbitrary code execution.":"Machine: select by Periodic Table module classification.";});
  const family=field(section,"Family / operation",[["Vg","Vg / ORIENT"],["Vn","Vn / nearest only"],["Vn+Vg","Nearest → ORIENT (four-key closure)"],["Vd","Vd / electrical"]]);
  const prop=field(section,"Property",[["","Any"],["producer_needs","Producer needs"],["producer_standalone","Producer standalone"],["runtime_effects","Runtime effects"],["typed_ports","Typed ports"]]);
  const state=field(section,"Evidence",[["","Any"],["DERIVED","Derived"],["OBSERVED","Observed"],["UNKNOWN","Unknown"]]);
@@ -178,33 +209,43 @@ function install(k){
  const coordFields=["A longitude","A latitude","B longitude","B latitude"].map(n=>{const e=field(coords,n);e.type="number";e.step="any";e.inputMode="decimal";return e;});
  const execute=element("button",section,"Execute ORIENT");execute.type="button";execute.disabled=true;
  const stageStatus=element("p",section,"NOT STAGED");stageStatus.setAttribute("role","status");
+ const origin=element("p",section,trustConfigured?"Runtime: trusted launcher pin configured; awaiting execution":"Runtime: unauthenticated research mode");origin.id="ky-computation-origin";origin.setAttribute("aria-live","polite");
  const preview=element("textarea",section);preview.readOnly=true;preview.rows=4;preview.setAttribute("aria-label","Local typed request and selection receipt");preview.style.cssText=input.style.cssText;
- ui={result,list,bond,stage,execute,stageStatus,preview};
- function changed(){++requestEpoch;execution="NOT EXECUTED";preview.value="";stageStatus.textContent="INPUT CHANGED · NOT EXECUTED";}
+ ui={result,list,bond,stage,execute,stageStatus,preview,origin};
+ function changed(){++requestEpoch;execution="NOT EXECUTED";originState="NOT CHECKED";dependencyEpoch=null;preview.value="";stageStatus.textContent="INPUT CHANGED · NOT EXECUTED";origin.textContent=trustConfigured?"Runtime: awaiting new authenticated execution":"Runtime: unauthenticated research mode";}
  input.addEventListener("input",changed);for(const e of coordFields)e.addEventListener("input",changed);
  execute.onclick=async()=>{
-   const epoch=generation,attempt=++requestEpoch;preview.value="";execution="EXECUTING";stageStatus.textContent="EXECUTING · independent review pending";
+   const epoch=generation,attempt=++requestEpoch;preview.value="";execution="EXECUTING";originState="NOT CHECKED";dependencyEpoch=null;stageStatus.textContent="EXECUTING · independent review pending";
    try{
      require(stageOperation==="orient"&&proof&&rows.length===2,"NO ADMITTED ORIENT SELECTION");
      const v=coordFields.map(e=>{require(e.value.trim()!=="","COORDINATE REQUIRED");return Number(e.value);});
      require(v.every(Number.isFinite)&&Math.abs(v[0])<=180&&Math.abs(v[2])<=180&&Math.abs(v[1])<=90&&Math.abs(v[3])<=90,"COORDINATE RANGE");
      const request={schema:"tacit-b.kuiper-request.v1",operation:"orient",manifest_sha256:PIN,keys:rows.map(r=>String(r.key)),inputs:{crs:"WGS84",unit:"degrees",point_a:{longitude:v[0],latitude:v[1]},point_b:{longitude:v[2],latitude:v[3]}}};
-     const response=await fetch("/__kuiper/execute",{method:"POST",headers:{"Content-Type":"application/json"},cache:"no-store",body:JSON.stringify({request,query:selectedQuery,selection_receipt_sha256:proof,generation:attempt})});
-     const raw=await response.text();if(epoch!==generation||attempt!==requestEpoch)return;
-     require(raw.length<=1000000,"RESPONSE SIZE");
+     const envelope={request,query:selectedQuery,selection_receipt_sha256:proof,generation:attempt};
+     if(trustConfigured){await trustedKey();envelope.challenge=hex(crypto.getRandomValues(new Uint8Array(32)));}
+     if(epoch!==generation||attempt!==requestEpoch)return;
+     const response=await fetch(trustConfigured?"/__kuiper/execute-auth":"/__kuiper/execute",{method:"POST",headers:{"Content-Type":"application/json"},cache:"no-store",body:JSON.stringify(envelope)});
+     let raw=await response.text();if(epoch!==generation||attempt!==requestEpoch)return;
+     require(raw.length<=2000000,"RESPONSE SIZE");
      require(response.ok,"RUNTIME REFUSED · HTTP "+response.status);
-     const body=JSON.parse(raw),r=await validateRuntime(raw,body,request,attempt,proof);
+     let body,attestation=null;
+     if(trustConfigured){attestation=await signedPayload(raw,envelope.challenge,attempt);raw=attestation.raw;body=attestation.body;}
+     else body=JSON.parse(raw);
+     const r=await validateRuntime(raw,body,request,attempt,proof);
      if(epoch!==generation||attempt!==requestEpoch)return;
      execution="REPORTED EXECUTED";
+     originState=attestation?"SIGNATURE VERIFIED":"UNAUTHENTICATED RESEARCH";
+     dependencyEpoch=attestation?body.dependency_epoch:null;
+     origin.textContent=attestation?"Runtime origin: signature verified against launcher pin · dependency epoch "+dependencyEpoch:"Runtime origin: NOT authenticated · correlated research receipt only";
      stageStatus.textContent="RUNTIME REPORTED EXECUTED · "+body.output.distance_km+" km · "+body.output.initial_bearing_deg+"° · receipt correlated · independent review pending";
-     preview.value=JSON.stringify({request,selection_receipt_sha256:proof,generation:attempt,receipt:r,review:"PENDING_EXACT_REQUEST_REVIEW",rights:"BLOCKED"},null,2);
-   }catch(e){if(epoch===generation&&attempt===requestEpoch){execution="REFUSED";stageStatus.textContent="REFUSED · "+e.message;}}
+     preview.value=JSON.stringify({request,selection_receipt_sha256:proof,generation:attempt,receipt:r,review:"PENDING_EXACT_REQUEST_REVIEW",rights:"BLOCKED",origin:originState,...(attestation?{runtime_origin:{key_id:attestation.key_id,signature:attestation.signature,challenge:envelope.challenge,dependency_epoch:dependencyEpoch}}:{})},null,2);
+   }catch(e){if(epoch===generation&&attempt===requestEpoch){execution="REFUSED";originState="REFUSED";dependencyEpoch=null;preview.value="";origin.textContent="Runtime: no accepted execution evidence";stageStatus.textContent="REFUSED · "+e.message;}}
  };
  for(const el of [mode,family,prop,state,min,max,reset,run])el.addEventListener("change",()=>{preview.value="";});
  reset.addEventListener("click",()=>{preview.value="";input.value="";});
  run.addEventListener("click",()=>{preview.value="";});
  stage.onclick=async()=>{
-   preview.value="";const epoch=generation,attempt=++requestEpoch,raw=input.value;
+   changed();const epoch=generation,attempt=++requestEpoch,raw=input.value;
    try{
      if(!stageOperation||!proof||!rows.length||raw.length>16000)throw Error("NO COMPLETE SUPPORTED SELECTION OR INPUT TOO LARGE");
      const inputs=JSON.parse(raw);if(!inputs||Array.isArray(inputs)||typeof inputs!=="object")throw Error("TYPED INPUT OBJECT REQUIRED");

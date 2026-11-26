@@ -13,11 +13,14 @@ out=Path("evidence");out.mkdir(exist_ok=True)
 results=[]
 engine=os.environ.get("D1_BROWSER","chromium")
 runtime=os.environ.get("D1_RUNTIME")=="1"
+trust=os.environ.get("D1_TRUST_JSON")
+assert not trust or runtime, "trusted runtime test requires actual runtime"
 manifest_fixture=not runtime or os.environ.get("D1_MANIFEST_FIXTURE")=="1"
 with sync_playwright() as p:
     browser=p.chromium.launch(headless=True,args=["--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"]) if engine=="chromium" else p.webkit.launch(headless=True)
     for width,height in [(1280,800),(390,844)]:
         page=browser.new_page(viewport={"width":width,"height":height},has_touch=width<500,is_mobile=width<500)
+        if trust:page.add_init_script("window.__KUIPER_RUNTIME_TRUST__="+trust)
         errors=[];page.on("pageerror",lambda e:errors.append(str(e)))
         mode={"tamper":None,"manifest":True,"hold":False,"held":None}
         def route(r):
@@ -111,6 +114,8 @@ with sync_playwright() as p:
         if runtime:
             page.wait_for_function("KY.modules.computation.api.inspect().execution==='REPORTED EXECUTED'",timeout=30000)
             first=json.loads(panel.locator("textarea[readonly]").input_value())
+            assert inspect()["originState"]==("SIGNATURE VERIFIED" if trust else "UNAUTHENTICATED RESEARCH")
+            if trust:assert first["runtime_origin"]["key_id"]==json.loads(trust)["key_id"]
             assert abs(first["receipt"]["output"]["distance_km"]-222.63898158654712)<1e-8
             assert first["receipt"]["output"]["initial_bearing_deg"]==0
             panel.get_by_label("B longitude",exact=True).fill("-3");panel.get_by_label("B latitude",exact=True).fill("0")
@@ -128,7 +133,7 @@ with sync_playwright() as p:
         page.screenshot(path=str(out/f"d1-{engine}-{width}.png"),mask=[panel.locator("ul"),panel.locator("pre"),panel.locator("textarea[readonly]")])
         panel.get_by_role("button",name="Reset").click();assert inspect()["count"]==0
         assert not errors,errors
-        results.append({"viewport":[width,height],"machine_vedic_parity":True,"intersection":True,"exclusion":True,"forged_occurrence_refused":True,"missing_inputs_refused":True,"reset":True,"overflow":False,"fresh_runtime":"TWO_ACTUAL_E1_REQUESTS" if runtime else "UNAVAILABLE_REFUSED","manifest_transport":"CI-only browser fixture; exact original bytes" if manifest_fixture else "actual E1 manifest route","engine":engine,"tamper_cases":5,"manifest_tamper":True,"stale_selection":True,"keyboard":True,"all_pattern_parity":True,"all_eight_unknown_exclusion":True})
+        results.append({"viewport":[width,height],"machine_vedic_parity":True,"intersection":True,"exclusion":True,"forged_occurrence_refused":True,"missing_inputs_refused":True,"reset":True,"overflow":False,"fresh_runtime":"TWO_ACTUAL_E1_REQUESTS" if runtime else "UNAVAILABLE_REFUSED","manifest_transport":"CI-only browser fixture; exact original bytes" if manifest_fixture else "actual E1 manifest route","engine":engine,"runtime_origin":"SIGNED_ACTUAL" if trust else "NOT_AUTHENTICATED","tamper_cases":5,"manifest_tamper":True,"stale_selection":True,"keyboard":True,"all_pattern_parity":True,"all_eight_unknown_exclusion":True})
         page.close()
     browser.close()
 (out/"d1-browser.json").write_text(json.dumps(results,indent=2))
