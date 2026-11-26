@@ -5,10 +5,10 @@
 "use strict";
 const ID="computation", GEN="202611261720";
 const requires=["keyPlace","address","wafer","SPACE","repos","cam","o2","redraw","draw","layers"];
-let K,H,L,rows=[],bonds=[],status="NOT SELECTED",generation=0,proof=null,stageOperation=null,ui;
+let K,H,L,rows=[],bonds=[],status="NOT SELECTED",generation=0,proof=null,stageOperation=null,selectedQuery=null,ui;
 const inspect=()=>({status,count:rows.length,keys:rows.map(r=>r.key),bonds:bonds.length,proof,
   rendering:"Edition 12 WebGL2 base / existing Canvas2D overlay",execution:"NOT EXECUTED"});
-function clear(s="NOT SELECTED"){++generation;rows=[];bonds=[];proof=null;stageOperation=null;status=s;if(ui){ui.result.textContent=s;ui.list.replaceChildren();ui.bond.textContent="";ui.stage.disabled=true;ui.stageStatus.textContent="NOT STAGED";}if(K)K.redraw();}
+function clear(s="NOT SELECTED"){++generation;rows=[];bonds=[];proof=null;stageOperation=null;selectedQuery=null;status=s;if(ui){ui.result.textContent=s;ui.list.replaceChildren();ui.bond.textContent="";ui.stage.disabled=true;ui.stageStatus.textContent="NOT STAGED";ui.preview.value="";}if(K)K.redraw();}
 function element(tag,parent,text){const el=document.createElement(tag);if(text)el.textContent=text;parent.append(el);return el;}
 function field(parent,label,values){const lab=element("label",parent,label+" ");const el=element(values?"select":"input",lab);if(values)for(const [v,t] of values){const op=element("option",el,t);op.value=v;}return el;}
 function key(raw){if(!/^\d+$/.test(String(raw)))throw Error("INVALID KEY");const k=Number(raw);if(!Number.isSafeInteger(k)||k<0||k>=H.SPACE)throw Error("KEY RANGE");return k;}
@@ -28,7 +28,7 @@ async function select(q){
       return {...r,key:k,xy:H.keyPlace(k)};
     });
     if(new Set(next.map(r=>r.key)).size!==next.length)throw Error("DUPLICATE");
-    rows=next;bonds=body.bonds;proof=body.receipt_sha256;stageOperation=body.stage_operation;status="SELECTED · "+rows.length+" keys · NOT EXECUTED";
+    rows=next;bonds=body.bonds;proof=body.receipt_sha256;stageOperation=body.stage_operation;selectedQuery=body.query;status="SELECTED · "+rows.length+" keys · NOT EXECUTED";
     ui.result.textContent=status;ui.stage.disabled=!stageOperation; if(rows.length)L.set(ID,true);
     for(const r of rows){
       const li=element("li",ui.list);
@@ -67,7 +67,7 @@ function install(k){
  const stage=element("button",section,"Stage B request");stage.type="button";stage.disabled=true;
  const stageStatus=element("p",section,"NOT STAGED");stageStatus.setAttribute("role","status");
  const preview=element("textarea",section);preview.readOnly=true;preview.rows=4;preview.setAttribute("aria-label","Local typed request and selection receipt");preview.style.cssText=input.style.cssText;
- ui={result,list,bond,stage,stageStatus};
+ ui={result,list,bond,stage,stageStatus,preview};
  input.addEventListener("input",()=>{preview.value="";stageStatus.textContent="INPUT CHANGED · NOT STAGED";});
  for(const el of [mode,family,prop,state,min,max,reset,run])el.addEventListener("change",()=>{preview.value="";});
  reset.addEventListener("click",()=>{preview.value="";input.value="";});
@@ -78,10 +78,12 @@ function install(k){
      if(!stageOperation||!proof||!rows.length||raw.length>16000)throw Error("NO COMPLETE SUPPORTED SELECTION OR INPUT TOO LARGE");
      const inputs=JSON.parse(raw);if(!inputs||Array.isArray(inputs)||typeof inputs!=="object")throw Error("TYPED INPUT OBJECT REQUIRED");
      const request={schema:"tacit-b.kuiper-request.v1",operation:stageOperation,manifest_sha256:"821abf96d3e4c2f42e61d578dcefdfbda366c145b067f9cc9206fdaa91b6cf2d",keys:rows.map(r=>String(r.key)),inputs};
-     const encoded=JSON.stringify(request);const digest=[...new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(encoded)))].map(x=>x.toString(16).padStart(2,"0")).join("");
+     const res=await fetch("/__kuiper/receipt",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({request,query:selectedQuery,selection_receipt_sha256:proof})});
+     const observed=await res.json();
      if(epoch!==generation||raw!==input.value)return;
-     preview.value=JSON.stringify({request,request_json_sha256:digest,selection_receipt_sha256:proof,execution:"NOT EXECUTED",review:"PENDING",redistribution:"BLOCKED"},null,2);
-     stageStatus.textContent="STAGED ONLY · B validates typed inputs and authority · NOT EXECUTED";
+     if(!res.ok)throw Error(observed.error||"RECEIPT REFUSED");
+     preview.value=JSON.stringify({request,request_sha256:observed.request_sha256,pattern_sha256:observed.pattern_sha256,selection_receipt_sha256:proof,execution:observed.state,observation:observed,redistribution:"BLOCKED"},null,2);
+     stageStatus.textContent=observed.scope?"PINNED HISTORICAL B RECEIPT · "+observed.state+" · review pending · NOT LIVE EXECUTION":"STAGED ONLY · B validates typed inputs and authority · NOT EXECUTED";
    }catch(e){stageStatus.textContent="REFUSED · "+e.message;}
  };
  for(const el of [mode,family,prop,state,min,max])el.addEventListener("change",()=>clear("INPUT CHANGED · NOT SELECTED"));
