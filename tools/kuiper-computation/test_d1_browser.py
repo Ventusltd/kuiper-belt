@@ -22,7 +22,7 @@ with sync_playwright() as p:
         page=browser.new_page(viewport={"width":width,"height":height},has_touch=width<500,is_mobile=width<500)
         if trust:page.add_init_script("window.__KUIPER_RUNTIME_TRUST__="+trust)
         errors=[];page.on("pageerror",lambda e:errors.append(str(e)))
-        mode={"tamper":None,"manifest":True,"hold":False,"held":None}
+        mode={"tamper":None,"manifest":True,"hold":False,"held":None,"auth_case":None,"previous":None,"auth_held":None}
         def route(r):
             url=r.request.url
             if url==base+"/__kuiper/manifest" and (manifest_fixture or mode["manifest"]):
@@ -41,6 +41,19 @@ with sync_playwright() as p:
                 body.pop("receipt_sha256")
                 body["receipt_sha256"]=hashlib.sha256(json.dumps(body,sort_keys=True,separators=(",",":"),ensure_ascii=True).encode()).hexdigest()
                 return r.fulfill(response=response,json=body)
+            if url==base+"/__kuiper/execute-auth" and mode["auth_case"]:
+                case=mode["auth_case"]
+                if case=="replay":return r.fulfill(status=200,content_type="application/json",body=mode["previous"])
+                response=r.fetch();assert response.ok
+                if case=="delay":mode["auth_held"]=(r,response);return
+                payload=response.json()
+                if case=="signature":payload["signature"]=("0" if payload["signature"][0]!="0" else "1")+payload["signature"][1:]
+                elif case=="key":payload["key_id"]="0"*64
+                elif case=="payload":
+                    altered=json.loads(payload["payload"]);altered["output"]["distance_km"]+=1
+                    payload["payload"]=json.dumps(altered,sort_keys=True,separators=(",",":"))
+                elif case=="unsigned":return r.fulfill(status=200,content_type="application/json",body=payload["payload"])
+                return r.fulfill(response=response,json=payload)
             if url.startswith(base+"/") or url.startswith("blob:"):return r.continue_()
             return r.abort()
         page.route("**/*",route)
@@ -126,6 +139,30 @@ with sync_playwright() as p:
             assert abs(second["receipt"]["output"]["distance_km"]-333.9584723798207)<1e-8
             assert second["receipt"]["output"]["initial_bearing_deg"]==270
             assert first["receipt"]["request_sha256"]!=second["receipt"]["request_sha256"]
+            if trust:
+                assert first["runtime_origin"]["challenge"]!=second["runtime_origin"]["challenge"]
+                # Replaying a genuine prior signed payload is not a fresh execution.
+                previous=second["runtime_origin"]
+                mode["previous"]=json.dumps({k:previous[k] for k in ("key_id","signature","payload")})
+                for case in ("signature","key","payload","unsigned","replay"):
+                    mode["auth_case"]=case
+                    panel.get_by_role("button",name="Execute ORIENT").click()
+                    page.wait_for_function("KY.modules.computation.api.inspect().execution==='REFUSED'",timeout=30000)
+                    assert not panel.locator("textarea[readonly]").input_value()
+                    assert inspect()["originState"]=="REFUSED"
+                mode["auth_case"]="delay"
+                panel.get_by_role("button",name="Execute ORIENT").click()
+                for _ in range(100):
+                    if mode["auth_held"]:break
+                    page.wait_for_timeout(100)
+                assert mode["auth_held"] is not None
+                coordinate=panel.get_by_label("B longitude",exact=True);coordinate.fill("-2");coordinate.fill("-3")
+                held,response=mode["auth_held"];held.fulfill(response=response)
+                page.wait_for_timeout(300)
+                assert inspect()["execution"]=="NOT EXECUTED" and not panel.locator("textarea[readonly]").input_value()
+                mode["auth_case"]=None
+                panel.get_by_role("button",name="Execute ORIENT").click()
+                page.wait_for_function("KY.modules.computation.api.inspect().execution==='REPORTED EXECUTED'",timeout=30000)
         else:
             page.wait_for_function("KY.modules.computation.api.inspect().execution==='REFUSED'")
         assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
@@ -133,8 +170,33 @@ with sync_playwright() as p:
         page.screenshot(path=str(out/f"d1-{engine}-{width}.png"),mask=[panel.locator("ul"),panel.locator("pre"),panel.locator("textarea[readonly]")])
         panel.get_by_role("button",name="Reset").click();assert inspect()["count"]==0
         assert not errors,errors
-        results.append({"viewport":[width,height],"machine_vedic_parity":True,"intersection":True,"exclusion":True,"forged_occurrence_refused":True,"missing_inputs_refused":True,"reset":True,"overflow":False,"fresh_runtime":"TWO_ACTUAL_E1_REQUESTS" if runtime else "UNAVAILABLE_REFUSED","manifest_transport":"CI-only browser fixture; exact original bytes" if manifest_fixture else "actual E1 manifest route","engine":engine,"runtime_origin":"SIGNED_ACTUAL" if trust else "NOT_AUTHENTICATED","tamper_cases":5,"manifest_tamper":True,"stale_selection":True,"keyboard":True,"all_pattern_parity":True,"all_eight_unknown_exclusion":True})
+        results.append({"viewport":[width,height],"machine_vedic_parity":True,"intersection":True,"exclusion":True,"forged_occurrence_refused":True,"missing_inputs_refused":True,"reset":True,"overflow":False,"fresh_runtime":"TWO_ACTUAL_E1_REQUESTS" if runtime else "UNAVAILABLE_REFUSED","manifest_transport":"CI-only browser fixture; exact original bytes" if manifest_fixture else "actual E1 manifest route","engine":engine,"runtime_origin":"SIGNED_ACTUAL" if trust else "NOT_AUTHENTICATED","signed_negative_cases":5 if trust else 0,"signed_stale_aba":bool(trust),"exact_accessible_ids":True,"tamper_cases":5,"manifest_tamper":True,"stale_selection":True,"keyboard":True,"all_pattern_parity":True,"all_eight_unknown_exclusion":True})
         page.close()
+    # A malformed out-of-band pin must refuse before network execution, even
+    # when the legacy server would otherwise accept a request.
+    page=browser.new_page(viewport={"width":390,"height":844})
+    page.add_init_script("window.__KUIPER_RUNTIME_TRUST__={spki_hex:'00',key_id:'"+"0"*64+"'}")
+    requests=[]
+    def invalid_pin_route(r):
+        url=r.request.url
+        if url==base+"/__kuiper/manifest" and manifest_fixture:return r.fulfill(status=200,content_type="application/json",body=raw)
+        if "/__kuiper/execute" in url:requests.append(url);return r.abort()
+        if url.startswith(base+"/") or url.startswith("blob:"):return r.continue_()
+        return r.abort()
+    page.route("**/*",invalid_pin_route)
+    page.goto(base+"/editions/202611021201/",wait_until="domcontentloaded",timeout=60000)
+    page.wait_for_function("window.KY && KY.inspect().done && KY.modules.computation && KY.hooks.SPACE>0",timeout=90000)
+    page.wait_for_function("KY.modules.layers.api.get('computation')?.status === 'OK'",timeout=60000)
+    page.locator('[data-menu="wafer"] button').first.click()
+    panel=page.locator("#ky-computation");panel.get_by_role("button",name="Select",exact=True).click()
+    page.wait_for_function("KY.modules.computation.api.inspect().count===2")
+    for label,value in [("A longitude","0"),("A latitude","0"),("B longitude","1"),("B latitude","0")]:
+        panel.get_by_label(label,exact=True).fill(value)
+    panel.get_by_role("button",name="Execute ORIENT").click()
+    page.wait_for_function("KY.modules.computation.api.inspect().execution==='REFUSED'")
+    assert not requests and not panel.locator("textarea[readonly]").input_value()
+    results.append({"engine":engine,"malformed_launcher_pin_refused_before_network":True})
+    page.close()
     browser.close()
 (out/"d1-browser.json").write_text(json.dumps(results,indent=2))
 print(json.dumps(results));print("browser member SHA256",hashlib.sha256((out/"d1-browser.json").read_bytes()).hexdigest())

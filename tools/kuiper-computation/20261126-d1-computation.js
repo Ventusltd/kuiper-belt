@@ -238,7 +238,7 @@ function install(k){
      dependencyEpoch=attestation?body.dependency_epoch:null;
      origin.textContent=attestation?"Runtime origin: signature verified against launcher pin · dependency epoch "+dependencyEpoch:"Runtime origin: NOT authenticated · correlated research receipt only";
      stageStatus.textContent="RUNTIME REPORTED EXECUTED · "+body.output.distance_km+" km · "+body.output.initial_bearing_deg+"° · receipt correlated · independent review pending";
-     preview.value=JSON.stringify({request,selection_receipt_sha256:proof,generation:attempt,receipt:r,review:"PENDING_EXACT_REQUEST_REVIEW",rights:"BLOCKED",origin:originState,...(attestation?{runtime_origin:{key_id:attestation.key_id,signature:attestation.signature,challenge:envelope.challenge,dependency_epoch:dependencyEpoch}}:{})},null,2);
+     preview.value=JSON.stringify({request,selection_receipt_sha256:proof,generation:attempt,receipt:r,review:"PENDING_EXACT_REQUEST_REVIEW",rights:"BLOCKED",origin:originState,...(attestation?{runtime_origin:{key_id:attestation.key_id,signature:attestation.signature,payload:attestation.raw,challenge:envelope.challenge,dependency_epoch:dependencyEpoch}}:{})},null,2);
    }catch(e){if(epoch===generation&&attempt===requestEpoch){execution="REFUSED";originState="REFUSED";dependencyEpoch=null;preview.value="";origin.textContent="Runtime: no accepted execution evidence";stageStatus.textContent="REFUSED · "+e.message;}}
  };
  for(const el of [mode,family,prop,state,min,max,reset,run])el.addEventListener("change",()=>{preview.value="";});
@@ -261,6 +261,7 @@ function install(k){
    }catch(e){if(epoch===generation&&attempt===requestEpoch)stageStatus.textContent="REFUSED · "+e.message;}
  };
  for(const el of [mode,family,prop,state,min,max,inc,incState,exc,excState])el.addEventListener("change",()=>clear("INPUT CHANGED · NOT SELECTED"));
+ for(const el of [min,max])el.addEventListener("input",()=>clear("INPUT CHANGED · NOT SELECTED"));
  reset.onclick=()=>{min.value=max.value=prop.value=state.value=inc.value=incState.value=exc.value=excState.value="";for(const e of coordFields)e.value="";clear();mode.focus();};
  run.onclick=()=>{const q={mode:mode.value,family:family.value};for(const [n,e] of [["property_name",prop],["state",state],["key_min",min],["key_max",max]])if(e.value)q[n]=e.value;select(q,[{name:inc.value,state:incState.value,exclude:false},{name:exc.value,state:excState.value,exclude:true}]);};
  K.panels.add("wafer",section,"Computational selection");
