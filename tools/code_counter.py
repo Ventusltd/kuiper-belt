@@ -225,6 +225,9 @@ def public_inventory():
     while True:
         req = urllib.request.Request("https://api.github.com/users/Ventusltd/repos?type=owner&per_page=100&page="+str(page),
                                      headers={"User-Agent":"kuiper-read-only-counter","Accept":"application/vnd.github+json"})
+        token = os.environ.get("GITHUB_TOKEN")
+        if token:
+            req.add_header("Authorization", "Bearer " + token)
         with urllib.request.urlopen(req, timeout=30) as response:
             items = json.load(response)
         require(isinstance(items,list), "public inventory malformed")
@@ -243,6 +246,8 @@ def public_clone(name, target, inventory):
     require(type(size) is int and 0 <= size <= 250000, "public identity or clone size bound not satisfied")
     env = dict(os.environ, GIT_TERMINAL_PROMPT="0", GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL="/dev/null")
     for k in list(env):
+        if k in {"GITHUB_TOKEN", "GH_TOKEN", "GIT_ASKPASS", "SSH_ASKPASS"}:
+            del env[k]
         if k.startswith("GIT_CONFIG_") and k not in ("GIT_CONFIG_NOSYSTEM","GIT_CONFIG_GLOBAL"):
             del env[k]
     subprocess.run(["git","-c","credential.helper=","clone","--quiet","--bare","--no-single-branch","--no-tags",
