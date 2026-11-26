@@ -2,7 +2,7 @@
 python tools/kuiper_research.py /path/to/bonds.zip --port 8765
 Open http://127.0.0.1:8765/editions/202611021201/
 """
-import argparse, hashlib, json, time, tracemalloc
+import argparse, hashlib, json, time, tracemalloc, zipfile
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
@@ -65,12 +65,60 @@ def layers():
       "requires":["keyPlace","o2"],"module":MODULE})
     return m
 
-def serve(space,port):
+B_ZIP="74fe853f050765545dfeb6404c8c84c9d9413754c0d8ec38131182544c7a4149"
+B_JSON="7bb9e81ca066cafbaeae75a358da42768bb9db6a63746710025d88b7e0701796"
+def bcanon(v):
+    # Exact existing factory canonical contract, including trailing newline.
+    return (json.dumps(v,sort_keys=True,ensure_ascii=True,allow_nan=False,separators=(",",":"))+"\n").encode()
+def digest(raw):return hashlib.sha256(raw).hexdigest()
+def load_b(path):
+    if path is None:return None
+    require(digest(path.read_bytes())==B_ZIP,"B_ZIP_PIN")
+    with zipfile.ZipFile(path) as z:
+        members=[i for i in z.infolist() if i.filename.split("/")[-1]=="tacit-b-kuiper.json"]
+        require(len(members)==1 and members[0].file_size<=1_000_000,"B_MEMBER")
+        raw=z.read(members[0])
+    require(digest(raw)==B_JSON,"B_JSON_PIN")
+    b=json.loads(raw)
+    require(b["schema"]=="tacit-b.kuiper-bridge-proof.v1" and b["rights"]=="BLOCKED","B_PROOF_SCHEMA")
+    return b
+def match_receipt(space,b,envelope):
+    require(set(envelope)=={"request","query","selection_receipt_sha256"},"ENVELOPE_FIELDS")
+    selected=selection(space,envelope["query"])
+    require(selected["receipt_sha256"]==envelope["selection_receipt_sha256"],"STALE_SELECTION")
+    req=envelope["request"]
+    require(set(req)=={"schema","operation","manifest_sha256","keys","inputs"},"REQUEST_FIELDS")
+    require(req["schema"]=="tacit-b.kuiper-request.v1" and req["manifest_sha256"]==JSON_SHA,"REQUEST_PIN")
+    op=req["operation"]
+    require(op and op==selected["stage_operation"] and req["keys"]==[r["key"] for r in selected["rows"]],"SELECTION_KEYS")
+    require(isinstance(req["inputs"],dict),"INPUT_FIELDS")
+    rh=digest(bcanon(req));pattern={"operation":op,"manifest_sha256":JSON_SHA,"keys":req["keys"]}
+    ph=digest(bcanon(pattern))
+    pending={"request_sha256":rh,"pattern_sha256":ph,"state":"NOT EXECUTED","review":"PENDING","rights":"BLOCKED"}
+    # Reproduce no runtime here. Only the exact authenticated historical request may show an observation.
+    if b is None or bcanon(req)!=bcanon(b["requests"].get(op)):return pending
+    out=b["results"][op]
+    require(out["request_sha256"]==rh and out["pattern_sha256"]==ph and out["pattern"]==pattern,"B_LINK")
+    require(digest(bcanon({k:v for k,v in out.items() if k!="receipt_sha256"}))==out["receipt_sha256"],"B_RECEIPT_PIN")
+    require(out["rights"]=="BLOCKED" and out["state"] in ("EXECUTED_INTERNAL","PRE_ADMISSION_EXECUTED","NO_ELIGIBLE_RECORD"),"B_AUTHORITY")
+    return {**pending,"state":out["state"],"scope":"HISTORICAL_PINNED_B_EXECUTION_NOT_LIVE","output":out["output"],
+        "admission":out["admission"],"formal_gate":out["formal_gate"],"receipt_sha256":out["receipt_sha256"],
+        "producer_proof_sha256":B_JSON,"review":"PENDING_EXACT_REQUEST_REVIEW"}
+def serve(space,port,b=None):
     class Handler(SimpleHTTPRequestHandler):
         def __init__(self,*a,**kw):super().__init__(*a,directory=str(ROOT),**kw)
         def send_bytes(self,raw,kind="application/json",status=200):
             self.send_response(status);self.send_header("Content-Type",kind);self.send_header("Content-Length",str(len(raw)))
             self.send_header("Cache-Control","no-store");self.end_headers();self.wfile.write(raw)
+        def do_POST(self):
+            if self.path!="/__kuiper/receipt" or self.headers.get("Host")!=f"127.0.0.1:{port}" or self.headers.get("Origin")!=f"http://127.0.0.1:{port}":
+                self.send_error(403);return
+            try:
+                n=int(self.headers.get("Content-Length","0"))
+                require(0<n<=32000 and self.headers.get("Content-Type")=="application/json","REQUEST_SIZE_TYPE")
+                body=json.loads(self.rfile.read(n))
+                self.send_bytes(canonical(match_receipt(space,b,body)))
+            except (ValueError,KeyError,TypeError) as e:self.send_bytes(canonical({"error":str(e)}),status=400)
         def do_GET(self):
             # Restrict the local evidence endpoint to same-origin browser and loopback.
             if self.headers.get("Host")!=f"127.0.0.1:{port}" or self.headers.get("Sec-Fetch-Site")=="cross-site":
@@ -105,8 +153,8 @@ def benchmark(space):
     return {"cohort":8,"repeats":repeats,"selection_and_receipt_total_ns":elapsed,"peak_python_traced_bytes":peak,
       "projection_with_node_startup_ns":projection,"gpu":"NOT_RUN","rendering":"NOT_MEASURED"}
 def main():
-    p=argparse.ArgumentParser();p.add_argument("zip",type=Path);p.add_argument("--port",type=int,default=8765);p.add_argument("--benchmark",action="store_true")
+    p=argparse.ArgumentParser();p.add_argument("zip",type=Path);p.add_argument("--port",type=int,default=8765);p.add_argument("--benchmark",action="store_true");p.add_argument("--b-proof",type=Path)
     a=p.parse_args();t=time.perf_counter_ns();s=Space(load(a.zip));parse=time.perf_counter_ns()-t
     if a.benchmark:print(json.dumps({**benchmark(s),"local_zip_load_and_validation_ns":parse},sort_keys=True))
-    else:serve(s,a.port)
+    else:serve(s,a.port,load_b(a.b_proof))
 if __name__=="__main__":main()
