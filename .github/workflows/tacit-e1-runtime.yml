@@ -122,7 +122,7 @@ jobs:
               s.joinpath("a1-property-impact.json").write_bytes(raw)
           PY
           python -m pip install playwright==1.51.0
-          PLAYWRIGHT_BROWSERS_PATH="$RUNNER_TEMP/e1-browser" python -m playwright install chromium webkit
+          PLAYWRIGHT_BROWSERS_PATH="$RUNNER_TEMP/e1-browser" python -m playwright install --with-deps chromium webkit
           gh api repos/Ventusltd/vedic-/actions/artifacts/15138897783/zip > "$s/bonds.zip"
           echo "649209e8723af1efd4c73f85ebd90b524a2312907d8a5e24759c8bf72ad1f72a  $s/bonds.zip" | sha256sum -c -
           gh api repos/Ventusltd/vedic-/actions/artifacts/15126683549/zip > "$p/producer.zip"
