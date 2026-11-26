@@ -28,13 +28,13 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: Ventusltd/vedic-
-          ref: d9e49e45821ae1da72347fdc6e47647518101b75
+          ref: 988e2293fd740ca434a9cf087fa873f841b7dc6f
           path: e1-acquire/b
           persist-credentials: false
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: Ventusltd/kuiper-belt
-          ref: 5a2a1b1bb521d558137647ada73ebc6c348e987d
+          ref: deaadba964502a8b1285c9c7727db51c088ec3f8
           path: e1-acquire/d1
           sparse-checkout: |
             tools/kuiper-computation/20261126-d1-computation.js
@@ -53,10 +53,10 @@ jobs:
           set -euo pipefail
           s="$RUNNER_TEMP/e1-stage"
           p="$RUNNER_TEMP/e1-input"
-          mkdir -p "$s" "$p" evidence
+          mkdir -p "$s" "$p" "$s/browser-home" evidence
           mv e1-acquire/{factory,b} "$s/"
-          test "$(git -C e1-acquire/d1 rev-parse HEAD)" = 5a2a1b1bb521d558137647ada73ebc6c348e987d
-          test "$(git hash-object e1-acquire/d1/tools/kuiper-computation/20261126-d1-computation.js)" = 8ff4a3d4e2647f0934aa7685828eb70260ed4c6b
+          test "$(git -C e1-acquire/d1 rev-parse HEAD)" = deaadba964502a8b1285c9c7727db51c088ec3f8
+          test "$(git hash-object e1-acquire/d1/tools/kuiper-computation/20261126-d1-computation.js)" = 6f35f99fd68dcf374de9b0ed27ea8c076101fa6a
           cp e1-acquire/d1/tools/kuiper-computation/20261126-d1-computation.js tools/kuiper-computation/202611261720-computation.js
           mv e1-acquire/d1 "$RUNNER_TEMP/e1-d1"
           rmdir e1-acquire
@@ -114,7 +114,7 @@ jobs:
           sudo unshare --net -- bash -c '
             set -euo pipefail
             ip link set lo up
-            exec setpriv --reuid "$1" --regid "$2" --clear-groups env -i PATH="$3" HOME=/nonexistent PLAYWRIGHT_BROWSERS_PATH="$4" PYTHONDONTWRITEBYTECODE=1 python -B tools/test_kuiper_runtime_browser.py "$5" evidence/browser.json
+            exec setpriv --reuid "$1" --regid "$2" --clear-groups env -i PATH="$3" HOME="$5/browser-home" PLAYWRIGHT_BROWSERS_PATH="$4" PYTHONDONTWRITEBYTECODE=1 python -B tools/test_kuiper_runtime_browser.py "$5" evidence/browser.json
           ' bash "$(id -u)" "$(id -g)" "$PATH" "$RUNNER_TEMP/e1-browser" "$RUNNER_TEMP/e1-stage"
           sha256sum evidence/browser.json
       - uses: actions/upload-artifact@v4

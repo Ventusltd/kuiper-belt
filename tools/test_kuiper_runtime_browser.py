@@ -48,18 +48,38 @@ def main():
                     assert result["request_sha256"]==sha(request["request"]) and result["state"]=="EXECUTED_INTERNAL"
                     v2=result["pattern_receipt"];assert v2["legacy_receipt"]==result["receipt"] and v2["result_sha256"]==sha(v2["result"])
                     assert abs(result["output"]["distance_km"]-distance)<1e-7 and abs(result["output"]["initial_bearing_deg"]-bearing)<1e-7
+                    page.wait_for_function("KY.modules.computation.api.inspect().execution === 'REPORTED EXECUTED'",timeout=10000)
                     results.append({"generation":result["generation"],"request_sha256":result["request_sha256"],"v2_pattern_sha256":v2["pattern_sha256"],"v2_result_sha256":v2["result_sha256"],"receipt_sha256":v2["receipt_sha256"],"output":result["output"]})
                 assert results[0]["v2_pattern_sha256"]==results[1]["v2_pattern_sha256"] and results[0]["v2_result_sha256"]!=results[1]["v2_result_sha256"]
                 page.wait_for_function("KY.modules.computation.api.inspect().execution !== 'EXECUTING'",timeout=30000)
                 state=page.evaluate("KY.modules.computation.api.inspect().execution")
+                assert state=="REPORTED EXECUTED"
+                # Hold a real fresh response until the operator edits its input.
+                held=[]
+                def hold(route):held.append((route,route.fetch(timeout=45000)))
+                page.route("**/__kuiper/execute",hold)
+                panel.get_by_label("B longitude",exact=True).fill("4")
+                panel.get_by_role("button",name="Execute ORIENT").click()
+                for _ in range(100):
+                    if held:break
+                    page.wait_for_timeout(50)
+                assert len(held)==1,"HELD_RESPONSE"
+                panel.get_by_label("B longitude",exact=True).fill("5")
+                route,response=held[0];assert response.status==200
+                with page.expect_response(lambda r:r.url==base+"/__kuiper/execute"):
+                    route.fulfill(response=response)
+                page.wait_for_timeout(200)
+                assert page.evaluate("KY.modules.computation.api.inspect().execution")=="NOT EXECUTED"
+                assert panel.locator("textarea[readonly]").input_value()==""
+                page.unroute("**/__kuiper/execute",hold)
                 assert not errors,errors
                 assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
-                reports.append({"viewport":[width,height],"results":results,"ui_execution_state":state,"page_errors":len(errors),"renderer":"Chromium software rendering"})
+                reports.append({"viewport":[width,height],"results":results,"ui_execution_state":state,"stale_real_response_discarded":True,"page_errors":len(errors),"renderer":"Chromium software rendering"})
                 panel.get_by_role("button",name="Reset").click()
                 assert page.evaluate("KY.modules.computation.api.inspect().count")==0
                 page.close()
             b.close()
-        report={"schema":"kuiper.e1.combined-research.v1","a1_member_sha256":hashlib.sha256(raw).hexdigest(),"a1_key_parity":True,"b1_actual_pattern_runtime":True,"browser":reports,"independent_review":"OPEN","ui_final_receipt_review":"OPEN","deployment":"NOT_AUTHORISED"}
+        report={"schema":"kuiper.e1.combined-research.v1","a1_member_sha256":hashlib.sha256(raw).hexdigest(),"a1_key_parity":True,"b1_actual_pattern_runtime":True,"browser":reports,"independent_review":"OPEN","ui_final_receipt_review":"CORRELATED_INDEPENDENT_REVIEW_OPEN","deployment":"NOT_AUTHORISED"}
         out.write_text(json.dumps(report,sort_keys=True,indent=2));print(json.dumps(report,sort_keys=True))
     finally:proc.terminate();proc.wait(timeout=5)
 if __name__=="__main__":main()
