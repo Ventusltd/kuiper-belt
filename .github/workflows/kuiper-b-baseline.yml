@@ -71,13 +71,17 @@ jobs:
                           record["screenshot_sha256"]=hashlib.sha256(image).hexdigest()
                           if record["http"]!=200: raise RuntimeError("Non-200 navigation")
                           if name == "edition12":
-                              file_button=page.locator("#kuiper-menu-bar").get_by_text("FILE",exact=True)
+                              file_button=page.locator("#kmb-title-file")
+                              assert file_button.count()==1 and file_button.is_visible(), "FILE title missing or duplicated"
                               file_button.click(timeout=10000)
+                              page.wait_for_function("document.querySelector('#kmb-title-file').getAttribute('aria-expanded') === 'true'")
+                              assert page.locator("#kmb-panel-file").is_visible(), "FILE panel did not open"
                               record["file_text"]=page.locator("body").inner_text()[:16000]
                               image=page.screenshot(path=f"evidence/{stem}-file.png",timeout=30000)
                               record["file_screenshot_sha256"]=hashlib.sha256(image).hexdigest()
                       except Exception as exc:
                           record["capture_failure"]=str(exc)
+                          print(stem, str(exc), flush=True)
                           failures.append(stem)
                           try: page.screenshot(path=f"evidence/{stem}-failure.png",timeout=10000)
                           except Exception: pass
