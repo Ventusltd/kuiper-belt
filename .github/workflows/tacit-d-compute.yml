@@ -1,0 +1,51 @@
+name: TACIT D sparse computation
+on:
+  pull_request:
+    paths:
+      - tools/kuiper_select.py
+      - .github/workflows/tacit-d-compute.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  select:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Acquire existing A manifest without redistributing its bytes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api repos/Ventusltd/vedic-/actions/artifacts/15138897783/zip > "$RUNNER_TEMP/bonds.zip"
+      - name: Execute twice and test digest, selection, properties and original placement
+        run: |
+          mkdir evidence
+          for n in first second; do
+            sudo unshare --net -- setpriv --reuid "$(id -u)" --regid "$(id -g)" --clear-groups "$(command -v python)" tools/kuiper_select.py "$RUNNER_TEMP/bonds.zip" --self-test > "evidence/$n.json"
+          done
+          cmp evidence/first.json evidence/second.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('evidence/first.json')
+          r=json.loads(p.read_bytes())
+          print(json.dumps({k:v for k,v in r.items() if k!='checks'},indent=2))
+          # Do not distribute peer addresses or source-related data in output.
+          r['checks']=[x.split(' ')[0] if x.startswith(('high-key MOD ','radius ')) else x for x in r['checks']]
+          p.write_text(json.dumps(r,sort_keys=True,indent=2))
+          Path('evidence/second.json').unlink()
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kuiper-sparse-selection-proof
+          path: evidence/
+          if-no-files-found: error
