@@ -2,8 +2,9 @@
 python tools/kuiper_research.py /path/to/bonds.zip --port 8765
 Open http://127.0.0.1:8765/editions/202611021201/
 """
-import argparse, hashlib, json, time, tracemalloc, zipfile, threading
+import argparse, hashlib, json, time, tracemalloc, zipfile, threading, subprocess
 from kuiper_runtime import Runtime, strict_body, execute_envelope, MAX_BODY, manifest_bytes
+from kuiper_origin import Origin
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
@@ -105,7 +106,7 @@ def match_receipt(space,b,envelope):
     return {**pending,"state":out["state"],"scope":"HISTORICAL_PINNED_B_EXECUTION_NOT_LIVE","output":out["output"],
         "admission":out["admission"],"formal_gate":out["formal_gate"],"receipt_sha256":out["receipt_sha256"],
         "producer_proof_sha256":B_JSON,"review":"PENDING_EXACT_REQUEST_REVIEW"}
-def serve(space,port,b=None,runtime=None,manifest_raw=None):
+def serve(space,port,b=None,runtime=None,manifest_raw=None,origin=None):
     slots=threading.BoundedSemaphore(8)
     class LocalServer(ThreadingHTTPServer):
         def process_request(self,request,address):
@@ -125,7 +126,7 @@ def serve(space,port,b=None,runtime=None,manifest_raw=None):
             self.send_response(status);self.send_header("Content-Type",kind);self.send_header("Content-Length",str(len(raw)))
             self.send_header("Cache-Control","no-store");self.send_header("X-Content-Type-Options","nosniff");self.end_headers();self.wfile.write(raw)
         def do_POST(self):
-            if (self.path not in ("/__kuiper/receipt","/__kuiper/execute")
+            if (self.path not in ("/__kuiper/receipt","/__kuiper/execute","/__kuiper/execute-auth","/__kuiper/status-auth")
                 or self.headers.get_all("Host")!=[f"127.0.0.1:{port}"]
                 or self.headers.get_all("Origin")!=[f"http://127.0.0.1:{port}"]
                 or self.headers.get("Sec-Fetch-Site") not in (None,"same-origin")
@@ -139,11 +140,16 @@ def serve(space,port,b=None,runtime=None,manifest_raw=None):
                 raw=self.rfile.read(n)
                 require(len(raw)==n,"INCOMPLETE_BODY")
                 body=strict_body(raw)
-                if self.path=="/__kuiper/execute":
+                if self.path in ("/__kuiper/execute-auth","/__kuiper/status-auth"):
+                    if origin is None:self.send_bytes(canonical({"state":"AUTH_UNAVAILABLE"}),status=503);return
+                    status,result=origin.handle(body,lambda args,enabled:execute_envelope(space,args,runtime if enabled else None,match_receipt),self.path=="/__kuiper/status-auth")
+                    self.send_bytes(canonical(result),status=status)
+                elif self.path=="/__kuiper/execute":
+                    if origin is not None:self.send_bytes(canonical({"state":"AUTH_REQUIRED"}),status=403);return
                     status,result=execute_envelope(space,body,runtime,match_receipt)
                     self.send_bytes(canonical(result),status=status)
                 else:self.send_bytes(canonical(match_receipt(space,b,body)))
-            except (ValueError,KeyError,TypeError,AttributeError,RecursionError,TimeoutError) as e:
+            except (ValueError,KeyError,TypeError,AttributeError,RecursionError,TimeoutError,OSError,subprocess.SubprocessError) as e:
                 self.send_bytes(canonical({"state":"REFUSED","error":"INVALID_REQUEST"}),status=400)
         def do_GET(self):
             # Restrict the local evidence endpoint to same-origin browser and loopback.
@@ -182,8 +188,16 @@ def benchmark(space):
     return {"cohort":8,"repeats":repeats,"selection_and_receipt_total_ns":elapsed,"peak_python_traced_bytes":peak,
       "projection_with_node_startup_ns":projection,"gpu":"NOT_RUN","rendering":"NOT_MEASURED"}
 def main():
-    p=argparse.ArgumentParser();p.add_argument("zip",type=Path);p.add_argument("--port",type=int,default=8765);p.add_argument("--benchmark",action="store_true");p.add_argument("--b-proof",type=Path);p.add_argument("--runtime-stage",type=Path)
+    p=argparse.ArgumentParser();p.add_argument("zip",type=Path);p.add_argument("--port",type=int,default=8765);p.add_argument("--benchmark",action="store_true");p.add_argument("--b-proof",type=Path);p.add_argument("--runtime-stage",type=Path);p.add_argument("--origin-key",type=Path);p.add_argument("--source-events",type=Path)
     a=p.parse_args();t=time.perf_counter_ns();s=Space(load(a.zip));parse=time.perf_counter_ns()-t
     if a.benchmark:print(json.dumps({**benchmark(s),"local_zip_load_and_validation_ns":parse},sort_keys=True))
-    else:serve(s,a.port,load_b(a.b_proof),Runtime(a.runtime_stage,a.zip) if a.runtime_stage else None,manifest_bytes(a.zip))
+    else:
+        require(bool(a.origin_key)==bool(a.source_events),"ORIGIN_CONFIG")
+        require(not a.origin_key or a.runtime_stage,"ORIGIN_STAGE")
+        if a.origin_key:
+            for pth in (a.origin_key,a.source_events):
+                require(not pth.resolve().is_relative_to(ROOT),"PRIVATE_CONFIG_OUTSIDE_WEB_ROOT")
+        runtime=Runtime(a.runtime_stage,a.zip) if a.runtime_stage else None
+        origin=Origin(a.origin_key,a.runtime_stage,a.source_events) if a.origin_key else None
+        serve(s,a.port,load_b(a.b_proof),runtime,manifest_bytes(a.zip),origin)
 if __name__=="__main__":main()
