@@ -4,6 +4,9 @@ on:
     paths:
       - 'tools/kuiper_snapshot.py'
       - 'tools/kuiper_sync_readback.py'
+      - 'tools/kuiper_snapshot_stage.py'
+      - 'tests/test_kuiper_snapshot_stage.py'
+      - 'tests/fixtures/kuiper-c/**'
       - 'tests/test_kuiper_snapshot.py'
       - '.github/workflows/kuiper-c-snapshot-candidate.yml'
 permissions:
@@ -20,7 +23,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Test snapshot contract
-        run: python -m unittest discover -s tests -p test_kuiper_snapshot.py -v
+        run: python -m unittest discover -s tests -p 'test_kuiper_snapshot*.py' -v
       - name: Reconcile two real immutable harvest generations
         run: |
           git fetch --no-tags --depth=2 origin f7a4cb9e3a764a72b7133bb275bb5387ea083be2
@@ -28,10 +31,25 @@ jobs:
           python tools/kuiper_snapshot.py --pin f7a4cb9e3a764a72b7133bb275bb5387ea083be2 --previous eec3f1891294af9e93ce6613c10cdf71806802f2 --out "${RUNNER_TEMP}/kuiper-c"
           python tools/kuiper_snapshot.py --pin f7a4cb9e3a764a72b7133bb275bb5387ea083be2 --previous f7a4cb9e3a764a72b7133bb275bb5387ea083be2 --out "${RUNNER_TEMP}/kuiper-c-repeat"
           for d in "${RUNNER_TEMP}/kuiper-c-repeat/"*; do diff -r "$d" "${RUNNER_TEMP}/kuiper-c/$(basename "$d")"; done
+      - name: Independently admit A's exact measured candidate receipt and exercise stage rollback
+        run: |
+          cd tests/fixtures/kuiper-c
+          printf '%s\n' '3815b63ba35e254178c2380ce61c06b204da9ad97aa68932135e84188fd5ab6e  counter-baseline.json' '934b710e13ada132d118187d109ba30c6c87942ea8d53c314b82a7f4cc9beb12  counter-candidate.json' | sha256sum -c -
+          cd ../../..
+          python tools/kuiper_snapshot.py --pin f7a4cb9e3a764a72b7133bb275bb5387ea083be2 --counter tests/fixtures/kuiper-c/counter-baseline.json --out "${RUNNER_TEMP}/kuiper-c-stage" > "${RUNNER_TEMP}/baseline-stage.json"
+          python tools/kuiper_snapshot.py --pin f7a4cb9e3a764a72b7133bb275bb5387ea083be2 --counter tests/fixtures/kuiper-c/counter-candidate.json --out "${RUNNER_TEMP}/kuiper-c-stage" > "${RUNNER_TEMP}/candidate-stage.json"
+          base=$(python -c 'import json,sys;print(json.load(open(sys.argv[1]))["snapshot_sha256"])' "${RUNNER_TEMP}/baseline-stage.json")
+          candidate=$(python -c 'import json,sys;print(json.load(open(sys.argv[1]))["snapshot_sha256"])' "${RUNNER_TEMP}/candidate-stage.json")
+          python -m tools.kuiper_snapshot_stage "${RUNNER_TEMP}/kuiper-c-stage" "$base" "$candidate"
+          cat "${RUNNER_TEMP}/candidate-stage.json"
       - name: Read back public data bytes without changing either route
         run: python tools/kuiper_sync_readback.py "${RUNNER_TEMP}/kuiper-c/readback.json"
       - uses: actions/upload-artifact@v4
         with:
           name: kuiper-c-read-only-snapshots
-          path: ${{ runner.temp }}/kuiper-c
+          path: |
+            ${{ runner.temp }}/kuiper-c
+            ${{ runner.temp }}/kuiper-c-stage
+            ${{ runner.temp }}/candidate-stage.json
+            ${{ runner.temp }}/baseline-stage.json
           retention-days: 7
